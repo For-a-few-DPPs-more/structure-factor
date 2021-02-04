@@ -23,4 +23,13 @@ class StructureFactor():
     def get_ensemble_estimate(self, wave_vectors):
         """compute the ensemble estimator described in [Coste, 2020].
         """
-        return npr.rand(len(wave_vectors))
+        return npr.randn(len(wave_vectors))
+
+    def plot_ensemble_estimate(self, wave_vectors):
+        """plot 2D and plot 1D
+        """
+
+    def get_fourier_estimate(self, wave_vector_norms):
+        """compute the Fourier estimator.
+        """
+        return npr.randn(len(wave_vectors))
