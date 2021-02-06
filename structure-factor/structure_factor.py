@@ -76,7 +76,7 @@ class StructureFactor():
             plt.title("scattering intensity")
             plt.show()
         else :
-            raise ValueError("arg should be one of the following str 'all', 'plot' and 'color_level'.  ")
+            raise ValueError("arg should be one of the following str: 'all', 'plot' and 'color_level'.  ")
     def get_fourier_estimate(self, wave_vector_norms):
         """compute the Fourier estimator.
         """
