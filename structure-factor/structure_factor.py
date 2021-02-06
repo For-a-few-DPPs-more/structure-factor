@@ -32,6 +32,8 @@ class StructureFactor():
         y_waves : y coordinates of the wave vector
         si : scattering intensity of data for wave vectors defined by (x_waves, y_waves)
         """
+        if x_waves.shape != y_wave.shape :
+            raise IndexError("x_waves and y_waves should have the same shape.")
         si = 0 # initial value of scatteing intensity
         x_data = self.x_data #reshape x coordinate's of the point process into the well shape
         y_data = self.y_data #reshape y coordinate's of the point process into the well shape
@@ -49,19 +51,22 @@ class StructureFactor():
         wave_lengh =  np.sqrt(np.abs(x_waves)**2 + np.abs(y_waves)**2 )
         ones_ = np.ones((x_wave.shape)).T
         x_ones_ = np.linspace(np.min(wave_lengh), np.max(wave_lengh), np.max(x_wave.shape))
-        if arg == "all" :
-            fig , ax = plt.subplots(1, 3, figsize=(24, 7))
-            ax[0].plot(self.x_data, self.y_data, 'b.')
-            ax[0].title.set_text("data")
-            ax[1].loglog(wave_lengh, si, 'k,')
-            ax[1].loglog(x_ones_, ones_, 'r-', label="y=1")
-            ax[1].legend(loc=1)
-            ax[1].set_xlabel("wave lengh")
-            ax[1].set_ylabel("scattering intensity (SI)")
-            ax[1].title.set_text("loglog plot")
-            f_0 = ax[2].imshow(np.log10(si), extent=[-np.log10(si).shape[1]/2., np.log10(si).shape[1]/2., -np.log10(si).shape[0]/2., np.log10(si).shape[0]/2. ], cmap="PRGn")
-            fig.colorbar(f_0, ax = ax[2])
-            ax[2].title.set_text("scattering intensity")
+        if arg == "all":
+            if np.min(x_wave.shape) == 1 or np.min(y_wave.shape) == 1 :
+                raise ValueError("X_waves, Y_waves should be meshgrids or choose arg = 'plot'. ")
+            else: 
+                fig , ax = plt.subplots(1, 3, figsize=(24, 7))
+                ax[0].plot(self.x_data, self.y_data, 'b.')
+                ax[0].title.set_text("data")
+                ax[1].loglog(wave_lengh, si, 'k,')
+                ax[1].loglog(x_ones_, ones_, 'r-', label="y=1")
+                ax[1].legend(loc=1)
+                ax[1].set_xlabel("wave lengh")
+                ax[1].set_ylabel("scattering intensity (SI)")
+                ax[1].title.set_text("loglog plot")
+                f_0 = ax[2].imshow(np.log10(si), extent=[-np.log10(si).shape[1]/2., np.log10(si).shape[1]/2., -np.log10(si).shape[0]/2., np.log10(si).shape[0]/2. ], cmap="PRGn")
+                fig.colorbar(f_0, ax = ax[2])
+                ax[2].title.set_text("scattering intensity")
         elif arg == "plot":
             plt.loglog(wave_lengh, si, 'k,')
             plt.loglog(x_ones_, ones_, 'r-', label="y=1")
@@ -71,10 +76,13 @@ class StructureFactor():
             plt.title("loglog plot")
             plt.show()
         elif arg == "color_level":
-            f_0 = plt.imshow(np.log10(si), extent=[-np.log10(si).shape[1]/2., np.log10(si).shape[1]/2., -np.log10(si).shape[0]/2., np.log10(si).shape[0]/2. ], cmap="PRGn")
-            plt.colorbar(f_0)
-            plt.title("scattering intensity")
-            plt.show()
+            if np.min(x_wave.shape) == 1 or np.min(y_wave.shape) == 1 :
+                raise ValueError("X_waves, Y_waves should be meshgrids or choose arg = 'plot'. ")
+            else :
+                f_0 = plt.imshow(np.log10(si), extent=[-np.log10(si).shape[1]/2., np.log10(si).shape[1]/2., -np.log10(si).shape[0]/2., np.log10(si).shape[0]/2. ], cmap="PRGn")
+                plt.colorbar(f_0)
+                plt.title("scattering intensity")
+                plt.show()
         else :
             raise ValueError("arg should be one of the following str: 'all', 'plot' and 'color_level'.  ")
     def get_fourier_estimate(self, wave_vector_norms):
