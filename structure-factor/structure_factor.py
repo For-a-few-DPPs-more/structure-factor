@@ -32,7 +32,7 @@ class StructureFactor():
         y_waves : y coordinates of the wave vector
         si : scattering intensity of data for wave vectors defined by (x_waves, y_waves)
         """
-        if x_waves.shape != y_wave.shape :
+        if x_waves.shape != y_waves.shape :
             raise IndexError("x_waves and y_waves should have the same shape.")
         si = 0 # initial value of scatteing intensity
         x_data = self.x_data #reshape x coordinate's of the point process into the well shape
