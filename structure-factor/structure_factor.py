@@ -49,10 +49,10 @@ class StructureFactor():
         arg : could be "all", "color_level", "plot" 
         """
         wave_lengh =  np.sqrt(np.abs(x_waves)**2 + np.abs(y_waves)**2 )
-        ones_ = np.ones((x_wave.shape)).T
-        x_ones_ = np.linspace(np.min(wave_lengh), np.max(wave_lengh), np.max(x_wave.shape))
+        ones_ = np.ones((x_waves.shape)).T
+        x_ones_ = np.linspace(np.min(wave_lengh), np.max(wave_lengh), np.max(x_waves.shape))
         if arg == "all":
-            if np.min(x_wave.shape) == 1 or np.min(y_wave.shape) == 1 :
+            if np.min(x_waves.shape) == 1 or np.min(y_waves.shape) == 1 :
                 raise ValueError("X_waves, Y_waves should be meshgrids or choose arg = 'plot'. ")
             else: 
                 fig , ax = plt.subplots(1, 3, figsize=(24, 7))
@@ -76,7 +76,7 @@ class StructureFactor():
             plt.title("loglog plot")
             plt.show()
         elif arg == "color_level":
-            if np.min(x_wave.shape) == 1 or np.min(y_wave.shape) == 1 :
+            if np.min(x_waves.shape) == 1 or np.min(y_waves.shape) == 1 :
                 raise ValueError("X_waves, Y_waves should be meshgrids or choose arg = 'plot'. ")
             else :
                 f_0 = plt.imshow(np.log10(si), extent=[-np.log10(si).shape[1]/2., np.log10(si).shape[1]/2., -np.log10(si).shape[0]/2., np.log10(si).shape[0]/2. ], cmap="PRGn")
