@@ -72,7 +72,7 @@ class StructureFactor():
                 ax[0].title.set_text("data")
                 ax[1].loglog(wave_lengh, si, 'k,')
                 ax[1].loglog(x_ones_, ones_, 'r--')
-                ax[1].legend(['y=1'], shadow=True,loc=1)
+                ax[1].legend(["scattering intensity", "y=1" ], shadow=True,loc=1)
                 ax[1].set_xlabel("wave lengh")
                 ax[1].set_ylabel("scattering intensity (SI)")
                 ax[1].title.set_text("loglog plot")
@@ -134,7 +134,7 @@ class StructureFactor():
         g = pcf(data_r, correction=args)
         g_pd = pd.DataFrame.from_records(g) # as pandas data frame
         return (g_pd)
-    def get_pcf_fv_estimate(self, raduis, method_, r_vec=None, r_max = None):
+    def get_pcf_fv_estimate(self, raduis, method_, r_vec=None, r_max=None):
         """compute the pair correlation function of data using the R packadge spatstat pcf.ppp
         raduis: raduis of the ball which contains the data on which the pair correlation function will be conputed
         g: the pair correlation function 
