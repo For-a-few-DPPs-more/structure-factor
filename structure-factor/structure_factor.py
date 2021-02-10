@@ -110,6 +110,8 @@ class StructureFactor():
         args: correction ( should be one of : "translate", "Ripley", "isotropic", "best", "good" , "all", "none"
         for more details see : "https://rdrr.io/cran/spatstat/man/pcf.ppp.html")
         """
+        if args not in ["translate", "Ripley", "isotropic", "best", "good" , "all", "none"] :
+            raise ValueError("arg should be one of the following str: 'translate', 'Ripley', 'isotropic', 'best', 'good' , 'all', 'none'.  ")
         utils = rpackages.importr('utils')
         utils.chooseCRANmirror(ind = 1)
         spatstat = rpackages.importr('spatstat')
