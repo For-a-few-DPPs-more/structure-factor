@@ -38,7 +38,7 @@ class StructureFactor():
         if self.d != 2:
             raise ValueError("The library only supports 2D patterns so far")
 
-    def get_ensemble_estimate(self, x_waves, y_waves):
+    def get_scattering_intensity_estimate(self, x_waves, y_waves):
         """compute the ensemble estimator described in [Coste, 2020].
         x_waves : x coordinates of the wave vector 
         y_waves : y coordinates of the wave vector
@@ -55,7 +55,7 @@ class StructureFactor():
         si = (1 / n_data)*np.abs(si) ** 2
         return si
 
-    def plot_ensemble_estimate(self, arg, si, x_waves, y_waves):
+    def plot_scattering_intensity_estimate(self, arg, si, x_waves, y_waves):
         """plot 2D and plot 1D
         wave_lengh : norm of the waves defined by (x_waves, y_waves)
         arg : could be "all", "color_level", "plot" 
@@ -201,6 +201,3 @@ class StructureFactor():
         """compute the Fourier estimator.
         """
         return npr.randn(len(wave_vectors))
-
-
-
