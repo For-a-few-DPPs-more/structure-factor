@@ -37,30 +37,39 @@ class StructureFactor():
         self.data = np.array(data)
         self.x_data = data[:, 0]
         self.y_data = data[:, 1]
-        self.n_data = max(self.x_data.shape)
+        #self.n_data = max(self.x_data.shape)
 
     def get_scattering_intensity_estimate(self, x_waves, y_waves):
-        """compute the ensemble estimator described in [Coste, 2020].
+        """compute the ensemble estimator described in http://www.scoste.fr/survey_hyperuniformity.pdf.(equation 4.5) 
+        which is an approximation of the structure factor, but at zero it gives different result.
         x_waves : x coordinates of the wave vector 
         y_waves : y coordinates of the wave vector
+        si_ : the sum inthe formula of the scattering intensity
         si : scattering intensity of data for wave vectors defined by (x_waves, y_waves)
         """
+        self.x_waves = x_waves
+        self.y_waves = y_waves
         if x_waves.shape != y_waves.shape :
             raise IndexError("x_waves and y_waves should have the same shape.")
-        si_ = 0 # initial value of scatteing intensity
-        x_data = self.x_data #reshape x coordinate's of the point process into the well shape
-        y_data = self.y_data #reshape y coordinate's of the point process into the well shape
+        si_ = 0 # initial value of the sum in the scattering intensity
+        x_data = self.x_data 
+        y_data = self.y_data 
         n_data = self.n_data
         for k in range(0,n_data):
             si_ = si_ + np.exp(- 1j * (x_waves * x_data[k] + y_waves * y_data[k]))
         self.si = (1 / n_data)*np.abs(si_) ** 2
         return self.si
 
-    def plot_scattering_intensity_estimate(self, arg, x_waves, y_waves):
+    def plot_scattering_intensity_estimate(self, arg):
         """plot 2D and plot 1D
         wave_lengh : norm of the waves defined by (x_waves, y_waves)
-        arg : could be "all", "color_level", "plot" 
+        arg : (str) could be "all", "color_level" or "plot".
+             define the type of plot to be visualized
+        x_ones_, ones_ : vectors implemented to add the line y=1 to the plot whic correspond to the 
+                        theoretical value of the structure factor of a Poisson point process
         """
+        x_waves = self.x_waves
+        y_waves = self.y_waves
         si = self.si
         wave_lengh =  np.sqrt(np.abs(x_waves)**2 + np.abs(y_waves)**2 )
         ones_ = np.ones((x_waves.shape)).T
@@ -74,9 +83,9 @@ class StructureFactor():
                 ax[0].title.set_text("data")
                 ax[1].loglog(wave_lengh, si, 'k,')
                 ax[1].loglog(x_ones_, ones_, 'r--')
-                ax[1].legend(["scattering intensity", "y=1" ], shadow=True,loc=1)
-                ax[1].set_xlabel("wave lengh")
-                ax[1].set_ylabel("scattering intensity (SI)")
+                ax[1].legend(["Scattering intensity", "y=1" ], shadow=True,loc=1)
+                ax[1].set_xlabel("wave lengh (k)")
+                ax[1].set_ylabel("scattering intensity (SI(k))")
                 ax[1].title.set_text("loglog plot")
                 f_0 = ax[2].imshow(np.log10(si), extent=[-np.log10(si).shape[1]/2., np.log10(si).shape[1]/2., -np.log10(si).shape[0]/2., np.log10(si).shape[0]/2. ], cmap="PRGn")
                 fig.colorbar(f_0, ax = ax[2])
@@ -85,9 +94,9 @@ class StructureFactor():
         elif arg == "plot":
             plt.loglog(wave_lengh, si, 'k,')
             plt.loglog(x_ones_, ones_, 'r--')
-            plt.legend(['y=1'], loc=1)
-            plt.xlabel("wave lengh")
-            plt.ylabel("scattering intensity (SI)")
+            plt.legend(['Scattering intensity','y=1'], loc=1)
+            plt.xlabel("wave lengh (k)")
+            plt.ylabel("Scattering intensity (SI(k))")
             plt.title("loglog plot")
             plt.show()
         elif arg == "color_level":
@@ -97,22 +106,30 @@ class StructureFactor():
             else :
                 f_0 = plt.imshow(np.log10(si), extent=[-np.log10(si).shape[1]/2., np.log10(si).shape[1]/2., -np.log10(si).shape[0]/2., np.log10(si).shape[0]/2. ], cmap="PRGn")
                 plt.colorbar(f_0)
-                plt.title("scattering intensity")
+                plt.title("Scattering intensity")
                 plt.show()
         else :
             raise ValueError("arg should be one of the following str: 'all', 'plot' and 'color_level'.  ")
     def get_pcf_estimate(self, raduis, args, correction_=None, r_vec=None, r_max=None):
-        """compute the pair correlation function of data using the R packadge spatstat pcf.ppp
-        raduis: raduis of the ball which contains the data on which the pair correlation function will be conputed
+        """compute the pair correlation function of data using the R packadge spatstat pcf.ppp, and pcf. fv
+        args : (srt) should be 'fv' or 'ppp'. If it is set to be 'fv' then pcf.fv is used, if 'ppp' then 
+              pcf.ppp is used. 
+        raduis: raduis of the ball which contains the data on which the pair correlation function will
+                be conmputed.
+        correction_: if args= 'ppp' : correction ( should be one of : "translate", "Ripley", "isotropic",
+                    "best", "good" , "all"
+                    if args='fv' : keep the default value 'None'.
+        r_vec : if args = 'ppp' : keep the default 'None'
+                if arg = 'fv' : is the vector of raduis to evaluate g. it's prefered to can keep the default 
+                or to set an r_max 
+        r_max : if args = 'ppp' : keep the default 'None'
+                if arg = 'fv' : r_max is the maximum raduis on which g will be evaluated
         g: the pair correlation function 
         g_pd: the pair coorelation function as data frame
-        x_data_r: x_data transered into R object 
+        x_data_r: x_data transfered into R object 
         y_data_r: y_data transfered into R object
         data_r : data transformed into R object
-        r_vec : default  
         
-        ags: (str) should be "fv" or "ppp" 
-        correction_: if arg_1= ppp : correction ( should be one of : "translate", "Ripley", "isotropic", "best", "good" , "all", "none"
         for more details see : "https://rdrr.io/cran/spatstat/man/pcf.ppp.html")
               if arg_1 = "fv": arg_2 is the method ("a", "b", "c" or "d")
         """
@@ -127,7 +144,7 @@ class StructureFactor():
         r_base = importr('base')
         ppp = robjects.r('ppp')
         pcf = robjects.r('pcf')
-        pcf_fv = robjects.r('pcf.fv')
+        #pcf_fv = robjects.r('pcf.fv')
         Kest = robjects.r('Kest')
         #r_hist = robjects.r("hist")
         #barplot = robjects.r("barplot")
@@ -167,13 +184,13 @@ class StructureFactor():
     
     def plot_pcf_estimate(self, args):
         """
-        plot the pair correlation function estimation
+        plot the pair correlation function estimation using get_pcf_estimate. 
         args: (str), should be 'pcf', 'trans', 'iso' or 'un'
         """
         pcf_estimation_pd = self.pcf_estimation_pd
         g_key = (pcf_estimation_pd.keys()).tolist()
         if g_key.count(args) == 0:
-            raise ValueError("The data frame does not contain the chosen args. Check pcf_estimation_pd.keys() to plot one of them. ")
+            raise ValueError("The data frame does not contains the chosen args. Check pcf_estimation_pd.keys() to plot one of them. ")
         r_vec = np.array(pcf_estimation_pd["r"])
         g_to_plot = np.array(pcf_estimation_pd[args])
         g_theo = np.array(pcf_estimation_pd["theo"])
@@ -203,7 +220,7 @@ class StructureFactor():
         r_vec = np.array(pcf_estimation_pd["r"])
         g_theo = np.array(pcf_estimation_pd["theo"])
         h_estimation = pcf_estimation_pd[args] -1
-        h_estimation[0] = - 1
+        h_estimation[0] = -1 
         transformer = HankelTransform(order=0, max_radius=max(pcf_estimation_pd['r']), n_points=pcf_estimation_pd['r'].shape[0])
         sf_estimation = 1 + 1/np.pi*transformer.qdht(h_estimation)
         wave_lengh = transformer.kr
