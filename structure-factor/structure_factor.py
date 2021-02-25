@@ -202,12 +202,13 @@ class StructureFactor():
         plt.ylabel("g(r)")
         plt.title("Pair correlation function ")
         
-    def get_fourier_estimate(self, args): 
+    def get_fourier_estimate(self, args, intensity): 
         """
          compute the approximation of the structure factor of data by evaluating the fourier transform of the paire
         approximated by the R packadge spatstat
         args: (str) one of the following str: 'pcf', 'ppp_trans', 'ppp_iso' or 'ppp_un'. It specified the method chosen
         to approximate the pcf 
+        intensity: intensity of the point process
         'pcf' if pcf.fv is used
         'trans', 'iso' or 'un': if pcf.ppp is used and trans, iso, un to specifiy which edge correction is used
         """
@@ -222,7 +223,7 @@ class StructureFactor():
         h_estimation = pcf_estimation_pd[args] -1
         h_estimation[0] = -1 
         transformer = HankelTransform(order=0, max_radius=max(pcf_estimation_pd['r']), n_points=pcf_estimation_pd['r'].shape[0])
-        sf_estimation = 1 + 1/np.pi*transformer.qdht(h_estimation)
+        sf_estimation = 1 + intensity*transformer.qdht(h_estimation)
         wave_lengh = transformer.kr
         ones_ = np.ones(sf_estimation.shape).T
         fig , ax = plt.subplots(1, 2, figsize=(24, 7))
