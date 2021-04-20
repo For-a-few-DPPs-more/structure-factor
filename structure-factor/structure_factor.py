@@ -21,9 +21,10 @@ rpy2.robjects.numpy2ri.activate()
 pandas2ri.activate()
 
     
+
 class Symmetric_Fourier_Transform():
 
-    def __init__(self, ndim=2, N=None, h=0.05):
+    def __init__(self, ndim=2, N=None, h=0.1):
         self._h = h
         self.ndim = ndim
     
@@ -63,6 +64,11 @@ class Symmetric_Fourier_Transform():
             return a
         self.dpsi = d_psi(h * self._zeros) #dpsi(h*ksi)        
         self._factor = None
+    
+    def _g(self, r_vector, data_g):
+        data_h = data_g - 1 
+        self.g = interpolate.interp1d(r_vector, data_h, axis=0, fill_value='extrapolate', kind='cubic')
+        return(self.g)
 
     def _k(self, k):
         return np.array( np.array(k))
@@ -73,24 +79,36 @@ class Symmetric_Fourier_Transform():
             self._factor = np.pi * self.w * self.kernel * self.dpsi #pi*w*J_0(pi*psi(h*ksi))*dpsi(h*ksi)
         return self._factor
 
-    def _get_series(self, f, k=1):
+    def _get_series(self, g, k=1):
         with np.errstate(divide="ignore"):  # numpy safely divides by 0
             args = np.divide.outer(self.x, k).T  # x = r*k
-        return self._series_fac * f(args) * (self.x)    
+        return self._series_fac * g(args) * (self.x)    
 
-    def transform(self, f, k=1):
+    def transform(self, g=None,  r_vector=None, data_g=None , k=1):
+        h = self._h
         k = self._k(k) # k as array
         #k_0 = np.isclose(k, 0) #index for zeros k
         #kn0 = np.invert(k_0) # index  for non zero k
         #k_tmp = k[kn0] # kwithout values close to zero
+        if g == None:
+            g = self._g(r_vector, data_g)
+            self.k_min = (np.pi * 3.2)/(h* np.max(r_vector))
         k_tmp = k
         knorm = np.array(k_tmp **2) #k**2
         # The basic transform has a norm of 1.
         norm = (2 * np.pi) 
-        summation = self._get_series(f, k_tmp) # pi*w*J0(x)
+        summation = self._get_series(g, k_tmp) # pi*w*J0(x)
         ret = np.empty(k.shape, dtype=summation.dtype)
         #ret[kn0] = np.array(norm * np.sum(summation, axis=-1) / knorm) #2pi*summation/k**2
         ret = np.array(norm * np.sum(summation, axis=-1) / knorm) #2pi*summation/k**2
+        #plt.figure(figsize=(8, 5))
+        #plt.plot(k, 1 + 1/np.pi*ret, 'b.', label="S(k)")
+        #plt.plot(k, 1 + 1/np.pi*ret, 'b')
+        #plt.axvline(x = self.k_min, color="red", linestyle ="--", label="fiable k_min")
+        #plt.xlabel("|k|")
+        #plt.ylabel("S(k)")
+        #plt.legend()
+        #plt.show()
         # care about k=0
         #ret_0 = 0
         #if np.any(k_0):
@@ -101,7 +119,8 @@ class Symmetric_Fourier_Transform():
             #int_res = quad(integrand, 0, np.inf)
             #ret_0 = int_res[0] * norm
             #ret[k_0] = ret_0
-        return ret
+        
+        return (ret, self.k_min)
 
 
 class StructureFactor(Symmetric_Fourier_Transform):
@@ -132,18 +151,27 @@ class StructureFactor(Symmetric_Fourier_Transform):
         self.y_data = data[:, 1]
         #self.n_data = max(self.x_data.shape)
 
-    def get_scattering_intensity_estimate(self, x_waves, y_waves):
+    def get_scattering_intensity_estimate(self, L, max_wave_lenght, arg="1D"):
         """compute the ensemble estimator described in http://www.scoste.fr/survey_hyperuniformity.pdf.(equation 4.5) 
         which is an approximation of the structure factor, but at zero it gives different result.
-        x_waves : x coordinates of the wave vector 
-        y_waves : y coordinates of the wave vector
+        the datat should be simulated in a square of lenght L 
+        L : int: lenght of the square that contains the data  
+        max_wave_lengh : int  maximum wavelengh
+        arg: str: 1D, 2D. 
         si_ : the sum inthe formula of the scattering intensity
         si : scattering intensity of data for wave vectors defined by (x_waves, y_waves)
         """
+        x_max = np.floor(max_wave_lengh*L/(2*np.pi*np.sqrt(2)))
+        if arg=="2D":
+            x_grid = np.linspace(1, x_max, x_max)
+            x_waves, y_waves = np.meshgrid(x_grid, x_grid)
+        else:
+            x_waves = np.linspace(1, x_max, x_max)
+            y_waves = x_waves
         self.x_waves = x_waves
         self.y_waves = y_waves
-        if x_waves.shape != y_waves.shape :
-            raise IndexError("x_waves and y_waves should have the same shape.")
+        #if x_waves.shape != y_waves.shape :
+         #   raise IndexError("x_waves and y_waves should have the same shape.")
         si_ = 0 # initial value of the sum in the scattering intensity
         x_data = self.x_data 
         y_data = self.y_data 
@@ -256,7 +284,7 @@ class StructureFactor(Symmetric_Fourier_Transform):
         if args == "ppp":          
             if correction_ not in ["translate", "Ripley", "isotropic", "best", "good" , "all", None] :
                 raise ValueError("correction should be one of the following str: 'translate', 'Ripley', 'isotropic', 'best', 'good' , 'all', 'none'.")
-            pcf_estimation = pcf(data_r, correction=correction_)
+            pcf_estimation = pcf(data_r, spar=0.2, correction=correction_)
                              
         if args == "fv":
             if correction_ not in ["a", "b", "c", "d", None] :
@@ -272,7 +300,7 @@ class StructureFactor(Symmetric_Fourier_Transform):
             else :
                 robjects.r('kest_data = Kest(data_r)')
             robjects.globalenv['method_']= correction_
-            pcf_estimation = robjects.conversion.rpy2py(robjects.r('pcf.fv(kest_data,  method=method_)'))  
+            pcf_estimation = robjects.conversion.rpy2py(robjects.r('pcf.fv(kest_data, spar=0.2, all.knots=FALSE,  keep.data=TRUE,  method=method_)'))  
                              
         self.pcf_estimation_pd = pd.DataFrame.from_records(pcf_estimation).fillna(0) # as pandas data frame
         return self.pcf_estimation_pd
@@ -297,7 +325,7 @@ class StructureFactor(Symmetric_Fourier_Transform):
         plt.ylabel("g(r)")
         plt.title("Pair correlation function ")
         
-    def get_fourier_estimate(self, args, arg_2, N= None, h=None, wave_lengh=None): 
+    def get_fourier_estimate(self, args, arg_2, N= None, h=0.1, wave_lengh=None): 
         """
          compute the approximation of the structure factor of data by evaluating the fourier transform of the paire
         approximated by the R packadge spatstat
@@ -327,12 +355,12 @@ class StructureFactor(Symmetric_Fourier_Transform):
         if arg_2 == "estimation_2":
             if N==None :
                 N = 1000
-            if h ==None :
-                h=0.0001
             super().__init__(N=N, h=h)
             h_estimation_interpolate = interpolate.interp1d(r_vec, h_estimation, axis=0, fill_value='extrapolate', kind='cubic')
             #h_estimation_interpolate = lambda x : - np.exp(-x**2)
-            sf_estimation_2 = 1 + intensity * super().transform(h_estimation_interpolate, wave_lengh)
+            sf, self.k_min = super().transform(data_g=g_to_plot,r_vector=r_vec, k=wave_lengh)
+            print(self.k_min)
+            sf_estimation_2 = 1 + intensity * sf
             ones_ = np.ones(sf_estimation_2.shape).T
             fig , ax = plt.subplots(1, 2, figsize=(24, 7))
             ax[0].plot(r_vec, g_theo, 'r--', label="y=1")
@@ -344,6 +372,7 @@ class StructureFactor(Symmetric_Fourier_Transform):
             ax[0].title.set_text("Pair correlation function ")
             ax[1].plot(wave_lengh[1:], sf_estimation_2[1:],'b' )
             ax[1].scatter(wave_lengh, sf_estimation_2, c='k', s=1, label="sf")  
+            ax[1].axvline(x = self.k_min, color="red", linestyle ="--", label="fiable k_min")
             ax[1].plot(wave_lengh, ones_, 'r--', label="y=1")
             ax[1].legend()
             ax[1].set_xlabel('k')
