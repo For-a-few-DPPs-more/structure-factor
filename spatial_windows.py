@@ -49,7 +49,7 @@ class BallWindow(AbstractSpatialWindow):
 
     @property
     def volume(self):
-        d, r = self.dimension, self.r
+        d, r = self.dimension, self.radius
         if d == 1:
             return 2 * r
         if d == 2:
