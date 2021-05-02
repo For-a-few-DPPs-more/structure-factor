@@ -30,45 +30,36 @@ class Symmetric_Fourier_Transform():
     
         def roots(N):
             return np.array([mpm.besseljzero(0, i + 1) for i in range(N)]) / np.pi #first N Roots of the Bessel J(nu) functions divided by pi.
-        self._zeros = roots(N)
+        self._zeros = roots(N) # Xi
        
         def psi(t):
             return t * np.tanh(np.pi * np.sinh(t) / 2)
 
         def get_x(h, zeros):
             return np.pi * psi(h * zeros) / h 
-        self.x = get_x(h, self._zeros) #pi*psi(h*ksi/pi)
-    
-        def kernel(x, nu):
-            if np.isclose(nu, 0):
-                return j0(x)
-            if np.isclose(nu, 1):
-                return j1(x)
-            if np.isclose(nu, np.floor(nu)):
-                return jn(int(nu), x)
-            return jv(nu, x)
-        self.kernel = kernel(self.x, 0) #J_0(pi*psi(h*ksi))
+        self.x = get_x(h, self._zeros) #pi*psi(h*ksi/pi)/h
+        self.kernel = j0(self.x) #J_0(pi*psi(h*ksi))
 
         def weight(zeros):
-            return yv(0, np.pi * zeros) / kernel(np.pi * zeros, 1)
+            return yv(0, np.pi * zeros) / j1(np.pi * zeros)
         self.w = weight(self._zeros) #(Y_0(pi*zeros)/J_1(pi*zeros))
         
         def d_psi(t):
             t = np.array(t, dtype=float)
-            a = np.ones_like(t)
-            mask = t < 6
-            t = t[mask]
-            a[mask] = (np.pi * t * np.cosh(t) + np.sinh(np.pi * np.sinh(t))) / (
+            d_psi = np.ones_like(t)
+            exact_t = t < 6
+            t = t[exact_t]
+            d_psi[exact_t] = (np.pi * t * np.cosh(t) + np.sinh(np.pi * np.sinh(t))) / (
                 1.0 + np.cosh(np.pi * np.sinh(t))
             )
-            return a
+            return d_psi
         self.dpsi = d_psi(h * self._zeros) #dpsi(h*ksi)        
         self._factor = None
     
-    def _g(self, r_vector, data_g):
-        data_h = data_g - 1 
-        self.g = interpolate.interp1d(r_vector, data_h, axis=0, fill_value='extrapolate', kind='cubic')
-        return(self.g)
+    def _f(self, r_vector, data_g):
+        data_f = data_g - 1 
+        self.f = interpolate.interp1d(r_vector, data_f, axis=0, fill_value='extrapolate', kind='cubic')
+        return(self.f)
 
     def _k(self, k):
         return np.array( np.array(k))
@@ -79,28 +70,26 @@ class Symmetric_Fourier_Transform():
             self._factor = np.pi * self.w * self.kernel * self.dpsi #pi*w*J_0(pi*psi(h*ksi))*dpsi(h*ksi)
         return self._factor
 
-    def _get_series(self, g, k=1):
+    def _get_series(self, f, k=1):
         with np.errstate(divide="ignore"):  # numpy safely divides by 0
-            args = np.divide.outer(self.x, k).T  # x = r*k
-        return self._series_fac * g(args) * (self.x)    
+            args = np.divide.outer(self.x, k).T  # x/k
+        return self._series_fac * f(args) * (self.x)    
 
-    def transform(self, g=None,  r_vector=None, data_g=None , k=1):
-        h = self._h
+    def transform(self, f=None,  r_vector=None, data_g=None , k=1):
+        f = self._f
         k = self._k(k) # k as array
         #k_0 = np.isclose(k, 0) #index for zeros k
         #kn0 = np.invert(k_0) # index  for non zero k
         #k_tmp = k[kn0] # kwithout values close to zero
-        if g == None:
-            g = self._g(r_vector, data_g)
+        if f == None:
+            f = self._f(r_vector, data_g)
             self.k_min = (np.pi * 3.2)/(h* np.max(r_vector))
-        k_tmp = k
-        knorm = np.array(k_tmp **2) #k**2
-        # The basic transform has a norm of 1.
-        norm = (2 * np.pi) 
+        k_ = k
+        knorm = np.array(k_ **2) #k**2
         summation = self._get_series(g, k_tmp) # pi*w*J0(x)
         ret = np.empty(k.shape, dtype=summation.dtype)
         #ret[kn0] = np.array(norm * np.sum(summation, axis=-1) / knorm) #2pi*summation/k**2
-        ret = np.array(norm * np.sum(summation, axis=-1) / knorm) #2pi*summation/k**2
+        ret = np.array(2*np.pi * np.sum(summation, axis=-1) / knorm) #2pi*summation/k**2
         #plt.figure(figsize=(8, 5))
         #plt.plot(k, 1 + 1/np.pi*ret, 'b.', label="S(k)")
         #plt.plot(k, 1 + 1/np.pi*ret, 'b')
@@ -284,7 +273,7 @@ class StructureFactor(Symmetric_Fourier_Transform):
         if args == "ppp":          
             if correction_ not in ["translate", "Ripley", "isotropic", "best", "good" , "all", None] :
                 raise ValueError("correction should be one of the following str: 'translate', 'Ripley', 'isotropic', 'best', 'good' , 'all', 'none'.")
-            pcf_estimation = pcf(data_r, spar=0.2, correction=correction_)
+            pcf_estimation = pcf(data_r, spar=0.4, correction=correction_)
                              
         if args == "fv":
             if correction_ not in ["a", "b", "c", "d", None] :
@@ -300,7 +289,7 @@ class StructureFactor(Symmetric_Fourier_Transform):
             else :
                 robjects.r('kest_data = Kest(data_r)')
             robjects.globalenv['method_']= correction_
-            pcf_estimation = robjects.conversion.rpy2py(robjects.r('pcf.fv(kest_data, spar=0.2, all.knots=FALSE,  keep.data=TRUE,  method=method_)'))  
+            pcf_estimation = robjects.conversion.rpy2py(robjects.r('pcf.fv(kest_data, spar=0.4, all.knots=FALSE,  keep.data=TRUE,  method=method_)'))  
                              
         self.pcf_estimation_pd = pd.DataFrame.from_records(pcf_estimation).fillna(0) # as pandas data frame
         return self.pcf_estimation_pd
