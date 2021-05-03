@@ -5,7 +5,7 @@ from pyhank import HankelTransform
 from scipy.integrate import quad
 from scipy import interpolate
 from mpmath import fp as mpm
-from scipy.special import  j0, j1, yv
+from scipy.special import  yv, jv
 import pandas as pd
 import rpy2.robjects.numpy2ri
 rpy2.robjects.numpy2ri.activate()
@@ -26,6 +26,7 @@ class Symmetric_Fourier_Transform():
     correlation function (of just having the exact function), and taking the Fourier transform of the total pair correlation function .
     
     input:
+        d: int, dimension of the space
         N: int, number of sample points used to approximate the integral by a sum.
         h: float, step size in the sum.
         r_vector: array, vector containing the radius on which the pair correlation function is evaluated
@@ -37,14 +38,15 @@ class Symmetric_Fourier_Transform():
         k_min: float, minimum confidence value of wavelength  
     """
 
-    def __init__(self, N=None, h=0.1):
+    def __init__(self, d=2, N=None, h=0.1):
         
         self._h = h
+        self.d = d
         if not isinstance(N, int):
             raise TypeError("N should be an integer.")
         
         def roots(N):
-            return np.array([mpm.besseljzero(0, i + 1) for i in range(N)]) / np.pi #first N Roots of the Bessel J_0 functions divided by pi.
+            return np.array([mpm.besseljzero(d/2 -1, i + 1) for i in range(N)]) / np.pi #first N Roots of the Bessel J_(d/2-1) functions divided by pi.
         self._zeros = roots(N) # Xi
        
         def psi(t):
@@ -53,11 +55,11 @@ class Symmetric_Fourier_Transform():
         def get_x(h, zeros):
             return np.pi * psi(h * zeros) / h 
         self.x = get_x(h, self._zeros) #pi*psi(h*ksi/pi)/h
-        self.kernel = j0(self.x) #J_0(pi*psi(h*ksi))
+        self.kernel = jv(d/2 -1, self.x) #J_(d/2-1)(pi*psi(h*ksi))
 
-        def weight(zeros):
-            return yv(0, np.pi * zeros) / j1(np.pi * zeros)
-        self.w = weight(self._zeros) #(Y_0(pi*zeros)/J_1(pi*zeros))
+        def weight(d, zeros):
+            return yv(d/2-1, np.pi * zeros) / jv(d/2, np.pi * zeros)
+        self.w = weight(d, self._zeros) #(Y_0(pi*zeros)/J_1(pi*zeros))
         
         def d_psi(t):
             t = np.array(t, dtype=float)
@@ -82,13 +84,13 @@ class Symmetric_Fourier_Transform():
     @property
     def _series_fac(self):
         if self._factor is None:
-            self._factor = np.pi * self.w * self.kernel * self.dpsi #pi*w*J_0(pi*psi(h*ksi))*dpsi(h*ksi)
+            self._factor = np.pi * self.w * self.kernel * self.dpsi #pi*w*J_(d/2-1)(x)*dpsi(h*zeros)
         return self._factor
 
     def _get_series(self, f, k, alpha):
         with np.errstate(divide="ignore"):  # numpy safely divides by 0
             args = np.divide.outer(self.x, k).T  # x/k
-        return self._series_fac * (f(args) -1*alpha) * (self.x)    
+        return self._series_fac * (f(args) -1*alpha) * (self.x**(self.d/2))    #pi*w*J_(d/2-1)(x)*dpsi(h*zeros)f(x/k)J_(d/2-1)(x)*x**(d/2)
 
     def transform(self, k, g=None,  r_vector=None, data_g=None ):
         k = self._k(k) 
@@ -102,7 +104,8 @@ class Symmetric_Fourier_Transform():
             summation = self._get_series(g, k, alpha=1) # pi*w*J0(x)
            
         ret = np.empty(k.shape, dtype=summation.dtype)
-        ret = np.array(2*np.pi * np.sum(summation, axis=-1) / np.array(k **2)) #2pi*summation/k**2
+        pi_factor = (2*np.pi)**(self.d/2)
+        ret = np.array(pi_factor * np.sum(summation, axis=-1) / np.array(k **self.d)) #2pi/k**2*sum(pi*w*f(x/k)J_0(x)*dpsi(h*ksi)*x)
         return (ret, self.k_min)
 
 
@@ -324,7 +327,7 @@ class Structure_Factor(Symmetric_Fourier_Transform):
               estimation_2 : using  symetric_fourrier_transform based on ogata 2005 with a change of variable 
                             h = step, 
                             N= number of point used to approximate the integral by a sum 
-                            wave_lengh = vector contaning the wave vectors k on which we evaluate the strcture factor.
+                            wave_lengh = vector contaning the wave vectors k on which we evaluate the structure factor.
         """
         intensity = self.intensity
         pcf_estimation_pd = self.pcf_estimation_pd
@@ -340,7 +343,7 @@ class Structure_Factor(Symmetric_Fourier_Transform):
         if arg_2 == "estimation_2":
             if N==None :
                 N = 1000
-            super().__init__(N=N, h=h)
+            super().__init__(d= self.d, N=N, h=h)
 
             #h_estimation_interpolate = interpolate.interp1d(r_vec, h_estimation, axis=0, fill_value='extrapolate', kind='cubic')
             sf, self.k_min = super().transform(data_g=g_to_plot,r_vector=r_vec, k=wave_lengh)
