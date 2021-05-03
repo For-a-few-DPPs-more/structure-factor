@@ -5,17 +5,14 @@ from pyhank import HankelTransform
 from scipy.integrate import quad
 from scipy import interpolate
 from mpmath import fp as mpm
-from scipy.special import gamma, j0, j1, jn, jv, yv
-from scipy.special import jn_zeros as _jn_zeros
+from scipy.special import  j0, j1, yv
 import pandas as pd
 import rpy2.robjects.numpy2ri
 rpy2.robjects.numpy2ri.activate()
 from rpy2.robjects import r, pandas2ri
 import rpy2.robjects as robjects
 import rpy2.robjects.packages as rpackages
-from rpy2.robjects.packages import importr, data
-from rpy2.robjects.vectors import StrVector
-from rpy2.robjects.conversion import localconverter
+from rpy2.robjects.packages import importr
 import rpy2.robjects.numpy2ri
 rpy2.robjects.numpy2ri.activate()
 pandas2ri.activate()
@@ -23,13 +20,31 @@ pandas2ri.activate()
     
 
 class Symmetric_Fourier_Transform():
-
-    def __init__(self, ndim=2, N=None, h=0.1):
-        self._h = h
-        self.ndim = ndim
+    """
+    implement Symmetric Fourier transform based on OGATA paper "Integration Based On Bessel Function", with a change of variable allowing to 
+    approximate the Symmetric Fourier transform, needed to approximate the structure factor of a set of data, by first approximating the pair 
+    correlation function (of just having the exact function), and taking the Fourier transform of the total pair correlation function .
     
+    input:
+        N: int, number of sample points used to approximate the integral by a sum.
+        h: float, step size in the sum.
+        r_vector: array, vector containing the radius on which the pair correlation function is evaluated
+        g: function, pair correlation function if it's  known else it will be approximated (see class Structure_Factor)
+        data_g: array_like(r_vector), vector containing the evaluations of the pair correlation function on r_vec
+        k: array, vector containing the wavelength on which we want to approximate the structure factor
+    output:
+        ret: array_like(k), estimation of the fourier transform of the total correlation function (pair correlation function -1)
+        k_min: float, minimum confidence value of wavelength  
+    """
+
+    def __init__(self, N=None, h=0.1):
+        
+        self._h = h
+        if not isinstance(N, int):
+            raise TypeError("N should be an integer.")
+        
         def roots(N):
-            return np.array([mpm.besseljzero(0, i + 1) for i in range(N)]) / np.pi #first N Roots of the Bessel J(nu) functions divided by pi.
+            return np.array([mpm.besseljzero(0, i + 1) for i in range(N)]) / np.pi #first N Roots of the Bessel J_0 functions divided by pi.
         self._zeros = roots(N) # Xi
        
         def psi(t):
@@ -70,54 +85,35 @@ class Symmetric_Fourier_Transform():
             self._factor = np.pi * self.w * self.kernel * self.dpsi #pi*w*J_0(pi*psi(h*ksi))*dpsi(h*ksi)
         return self._factor
 
-    def _get_series(self, f, k=1):
+    def _get_series(self, f, k, alpha):
         with np.errstate(divide="ignore"):  # numpy safely divides by 0
             args = np.divide.outer(self.x, k).T  # x/k
-        return self._series_fac * f(args) * (self.x)    
+        return self._series_fac * (f(args) -1*alpha) * (self.x)    
 
-    def transform(self, f=None,  r_vector=None, data_g=None , k=1):
-        f = self._f
-        k = self._k(k) # k as array
-        #k_0 = np.isclose(k, 0) #index for zeros k
-        #kn0 = np.invert(k_0) # index  for non zero k
-        #k_tmp = k[kn0] # kwithout values close to zero
-        if f == None:
+    def transform(self, k, g=None,  r_vector=None, data_g=None ):
+        k = self._k(k) 
+        if g == None:
             f = self._f(r_vector, data_g)
-            self.k_min = (np.pi * 3.2)/(h* np.max(r_vector))
-        k_ = k
-        knorm = np.array(k_ **2) #k**2
-        summation = self._get_series(g, k_tmp) # pi*w*J0(x)
+            self.k_min = (np.pi * 3.2)/(self._h* np.max(r_vector))
+            summation = self._get_series(f, k, alpha=0) # pi*w*J0(x)
+            
+        else :
+            self.k_min = np.min(k)
+            summation = self._get_series(g, k, alpha=1) # pi*w*J0(x)
+           
         ret = np.empty(k.shape, dtype=summation.dtype)
-        #ret[kn0] = np.array(norm * np.sum(summation, axis=-1) / knorm) #2pi*summation/k**2
-        ret = np.array(2*np.pi * np.sum(summation, axis=-1) / knorm) #2pi*summation/k**2
-        #plt.figure(figsize=(8, 5))
-        #plt.plot(k, 1 + 1/np.pi*ret, 'b.', label="S(k)")
-        #plt.plot(k, 1 + 1/np.pi*ret, 'b')
-        #plt.axvline(x = self.k_min, color="red", linestyle ="--", label="fiable k_min")
-        #plt.xlabel("|k|")
-        #plt.ylabel("S(k)")
-        #plt.legend()
-        #plt.show()
-        # care about k=0
-        #ret_0 = 0
-        #if np.any(k_0):
-
-            #def integrand(r):
-                #return f(r).real * (r)
-
-            #int_res = quad(integrand, 0, np.inf)
-            #ret_0 = int_res[0] * norm
-            #ret[k_0] = ret_0
-        
+        ret = np.array(2*np.pi * np.sum(summation, axis=-1) / np.array(k **2)) #2pi*summation/k**2
         return (ret, self.k_min)
 
 
-class StructureFactor(Symmetric_Fourier_Transform):
+class Structure_Factor(Symmetric_Fourier_Transform):
     """
-    implement various estimators of the structure factor of a point process.
-    data : data set of shape nxdim NumPy array (x_data and y_data are the coordinates of data's points)
-    n_data :  number of points of in data
-    intensity: average number of data in unit volume
+    implement various estimators of the structure factor of a point process in dimension 2.
+    
+    input:
+        data : 2d_array, data set of shape nxdim NumPy array (x_data and y_data are the coordinates of data's points)
+        n_data :  number of points of in data
+        intensity: average number of data in unit volume
     """
 
     def __init__(self, data, intensity: float):
@@ -143,11 +139,11 @@ class StructureFactor(Symmetric_Fourier_Transform):
     def get_scattering_intensity_estimate(self, L, max_wave_lenght, arg="1D"):
         """compute the ensemble estimator described in http://www.scoste.fr/survey_hyperuniformity.pdf.(equation 4.5) 
         which is an approximation of the structure factor, but at zero it gives different result.
-        the datat should be simulated in a square of lenght L 
-        L : int: lenght of the square that contains the data  
-        max_wave_lengh : int  maximum wavelengh
+        the data should be simulated in a square of length L 
+        L : int: length of the square that contains the data  
+        max_wave_length : int  maximum wavelength
         arg: str: 1D, 2D. 
-        si_ : the sum inthe formula of the scattering intensity
+        si_ : the sum in the formula of the scattering intensity
         si : scattering intensity of data for wave vectors defined by (x_waves, y_waves)
         """
         x_max = np.floor(max_wave_lengh*L/(2*np.pi*np.sqrt(2)))
@@ -345,11 +341,12 @@ class StructureFactor(Symmetric_Fourier_Transform):
             if N==None :
                 N = 1000
             super().__init__(N=N, h=h)
-            h_estimation_interpolate = interpolate.interp1d(r_vec, h_estimation, axis=0, fill_value='extrapolate', kind='cubic')
-            #h_estimation_interpolate = lambda x : - np.exp(-x**2)
+
+            #h_estimation_interpolate = interpolate.interp1d(r_vec, h_estimation, axis=0, fill_value='extrapolate', kind='cubic')
             sf, self.k_min = super().transform(data_g=g_to_plot,r_vector=r_vec, k=wave_lengh)
-            print(self.k_min)
+            print("The fialble minimum wavelenght is :",  self.k_min)
             sf_estimation_2 = 1 + intensity * sf
+            sf_interpolate = interpolate.interp1d(wave_lengh, sf_estimation_2, axis=0, fill_value='extrapolate', kind='cubic')
             ones_ = np.ones(sf_estimation_2.shape).T
             fig , ax = plt.subplots(1, 2, figsize=(24, 7))
             ax[0].plot(r_vec, g_theo, 'r--', label="y=1")
@@ -360,15 +357,15 @@ class StructureFactor(Symmetric_Fourier_Transform):
             ax[0].set_ylabel("g(r)")
             ax[0].title.set_text("Pair correlation function ")
             ax[1].plot(wave_lengh[1:], sf_estimation_2[1:],'b' )
-            ax[1].scatter(wave_lengh, sf_estimation_2, c='k', s=1, label="sf")  
-            ax[1].axvline(x = self.k_min, color="red", linestyle ="--", label="fiable k_min")
+            ax[1].scatter(wave_lengh, sf_estimation_2, c='k', s=1, label="sf")
+            ax[1].plot(self.k_min, sf_interpolate(self.k_min), "ro", label="fiable k_min")  
             ax[1].plot(wave_lengh, ones_, 'r--', label="y=1")
             ax[1].legend()
             ax[1].set_xlabel('k')
             ax[1].set_ylabel('S(k)')
             ax[1].title.set_text('structur factor of data' )
             plt.show()
-            return( wave_lengh, sf_estimation_2)
+            return( wave_lengh, sf_estimation_2, self.k_min)
         if arg_2 == "estimation_1":
             h_estimation[0] = -1 
             transformer = HankelTransform(order=0, max_radius=max(pcf_estimation_pd['r']), n_points=pcf_estimation_pd['r'].shape[0])
