@@ -160,47 +160,48 @@ class Structure_Factor(Symmetric_Fourier_Transform):
         
         if arg=="2D":
             x_grid = np.linspace(0, x_max, n_k)
-            x_waves, y_waves = np.meshgrid(x_grid, x_grid)
+            x_k, y_k = np.meshgrid(x_grid, x_grid)
         else:
-            x_waves = np.linspace(1, x_max, x_max) 
-            y_waves = x_waves
+            x_k = np.linspace(1, x_max, x_max) 
+            y_k = x_k
             
-        self.x_waves = x_waves
-        self.y_waves = y_waves
+        self.x_k = x_k
+        self.y_k = y_k
         si_ = 0 # initial value of the sum in the scattering intensity
         x_data = self.x_data 
         y_data = self.y_data 
         n_data = self.n_data
-        for k in range(0,n_data):
-            si_ = si_ + np.exp(- 1j * (x_waves * x_data[k] + y_waves * y_data[k])) #the sum in the formula of the scattering intensity
+        for i in range(0,n_data):
+            si_ = si_ + np.exp(- 1j * (x_k * x_data[i] + y_k * y_data[i])) #the sum in the formula of the scattering intensity
         self.si = (1 / n_data)*np.abs(si_) ** 2
         return self.si
 
     def plot_scattering_intensity_estimate(self, arg):
-        """plot 2D and plot 1D
-        wave_lengh : norm of the waves defined by (x_waves, y_waves)
-        arg : (str) could be "all", "color_level" or "plot".
-             define the type of plot to be visualized
-        x_ones_, ones_ : vectors implemented to add the line y=1 to the plot which correspond to the 
-                        theoretical value of the structure factor of a Poisson point process
+        """2D and  1D plot of the scattering intensity
+        
+        input:
+            arg: str, ("all","color_level" or "plot), is the plot visualization type.
+        
+        note that x_ones_, ones_  are  vectors used to add the line y=1 to the plot corresponding to the 
+        theoretical value of the structure factor of a Poisson point process.
         """
-        x_waves = self.x_waves
-        y_waves = self.y_waves
+        x_k = self.x_k
+        y_k = self.y_k
         si = self.si
-        wave_lengh =  np.sqrt(np.abs(x_waves)**2 + np.abs(y_waves)**2 )
-        ones_ = np.ones((x_waves.shape)).T
-        x_ones_ = np.linspace(np.min(wave_lengh), np.max(wave_lengh), np.max(x_waves.shape))
+        norm_k =  np.sqrt(np.abs(x_k)**2 + np.abs(y_k)**2 )
+        ones_ = np.ones_like(x_k).T
+        x_ones_ = np.linspace(np.min(norm_k), np.max(norm_k), np.max(x_k.shape))
         if arg == "all":
-            if np.min(x_waves.shape) == 1 or np.min(y_waves.shape) == 1 :
-                raise ValueError("X_waves, Y_waves should be meshgrids or choose arg = 'plot'. ")
+            if np.min(x_k.shape) == 1 or np.min(y_k.shape) == 1 :
+                raise ValueError("X_k, Y_k should be meshgrids or choose arg = 'plot'. ")
             else: 
                 fig , ax = plt.subplots(1, 3, figsize=(24, 7))
                 ax[0].plot(self.x_data, self.y_data, 'b.')
                 ax[0].title.set_text("data")
-                ax[1].loglog(wave_lengh, si, 'k,')
+                ax[1].loglog(norm_k, si, 'k,')
                 ax[1].loglog(x_ones_, ones_, 'r--')
                 ax[1].legend(["Scattering intensity", "y=1" ], shadow=True,loc=1)
-                ax[1].set_xlabel("wave lengh (k)")
+                ax[1].set_xlabel("wave length (k)")
                 ax[1].set_ylabel("scattering intensity (SI(k))")
                 ax[1].title.set_text("loglog plot")
                 f_0 = ax[2].imshow(np.log10(si), extent=[-np.log10(si).shape[1]/2., np.log10(si).shape[1]/2., -np.log10(si).shape[0]/2., np.log10(si).shape[0]/2. ], cmap="PRGn")
@@ -208,17 +209,17 @@ class Structure_Factor(Symmetric_Fourier_Transform):
                 ax[2].title.set_text("scattering intensity")
                 plt.show()
         elif arg == "plot":
-            plt.loglog(wave_lengh, si, 'k,')
+            plt.loglog(norm_k, si, 'k,')
             plt.loglog(x_ones_, ones_, 'r--')
             plt.legend(['Scattering intensity','y=1'], loc=1)
-            plt.xlabel("wave lengh (k)")
+            plt.xlabel("wave length (k)")
             plt.ylabel("Scattering intensity (SI(k))")
             plt.title("loglog plot")
             plt.show()
         elif arg == "color_level":
-            if np.min(x_waves.shape) == 1 or np.min(y_waves.shape) == 1 :
+            if np.min(x_k.shape) == 1 or np.min(y_k.shape) == 1 :
                 
-                raise ValueError("X_waves, Y_waves should be meshgrids or choose arg = 'plot'. ")
+                raise ValueError("X_k, Y_k should be meshgrids or choose arg = 'plot'. ")
             else :
                 f_0 = plt.imshow(np.log10(si), extent=[-np.log10(si).shape[1]/2., np.log10(si).shape[1]/2., -np.log10(si).shape[0]/2., np.log10(si).shape[0]/2. ], cmap="PRGn")
                 plt.colorbar(f_0)
