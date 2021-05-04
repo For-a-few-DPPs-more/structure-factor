@@ -92,7 +92,7 @@ class Symmetric_Fourier_Transform():
             args = np.divide.outer(self.x, k).T  # x/k
         return self._series_fac * (f(args) -1*alpha) * (self.x**(self.d/2))    #pi*w*J_(d/2-1)(x)*dpsi(h*zeros)f(x/k)J_(d/2-1)(x)*x**(d/2)
 
-    def transform(self, k, g=None,  r_vector=None, data_g=None ):
+    def transform(self, k, g=None, data_g=None, r_vector=None):
         k = self._k(k) 
         if g == None:
             f = self._f(r_vector, data_g)
@@ -109,25 +109,28 @@ class Symmetric_Fourier_Transform():
         return (ret, self.k_min)
 
 
+
+
 class Structure_Factor(Symmetric_Fourier_Transform):
     """
-    implement various estimators of the structure factor of a point process in dimension 2.
+    implement various estimators of the structure factor of a point process.
     
     input:
-        data : 2d_array, data set of shape nxdim NumPy array (x_data and y_data are the coordinates of data's points)
-        n_data :  number of points of in data
-        intensity: average number of data in unit volume
+        data: nd_array, data set of shape nxd array 
+             where: n is the number of data points 
+                    d is the dimension of the space
+        intensity: average number of data per unit volume
     """
 
     def __init__(self, data, intensity: float):
         if not isinstance(data, np.ndarray):
-            raise TypeError("Input data should be an (nxdim) NumPy array")
+            raise TypeError("Input data should be an (nxd) NumPy array")
 
         try:
             self.n_data = data.shape[0]
             self.d = data.shape[1]
         except:
-            raise IndexError("Input data should be an (nxdim) NumPy array")
+            raise IndexError("Input data should be an (nxd) NumPy array")
 
         if self.d != 2:
             raise ValueError("The library only supports 2D patterns so far")
@@ -137,35 +140,39 @@ class Structure_Factor(Symmetric_Fourier_Transform):
         self.intensity = intensity
         self.x_data = data[:, 0]
         self.y_data = data[:, 1]
-        #self.n_data = max(self.x_data.shape)
 
-    def get_scattering_intensity_estimate(self, L, max_wave_lenght, arg="1D"):
+
+    def get_scattering_intensity_estimate(self, L, max_k, n_k=None, arg="1D"):
         """compute the ensemble estimator described in http://www.scoste.fr/survey_hyperuniformity.pdf.(equation 4.5) 
-        which is an approximation of the structure factor, but at zero it gives different result.
-        the data should be simulated in a square of length L 
-        L : int: length of the square that contains the data  
-        max_wave_length : int  maximum wavelength
-        arg: str: 1D, 2D. 
-        si_ : the sum in the formula of the scattering intensity
-        si : scattering intensity of data for wave vectors defined by (x_waves, y_waves)
+        which converges to the structure factor as n_data and the volume of the space converges to infinity.
+        Note that the data should be simulated in a square.
+        The allowed valued of wave vectors are 2*pi/n_data*Z*d
+        
+        input:
+            L : int, length of the square that contains the data  
+            max_k : int,  maximum wave
+            arg: str (1D, 2D), evaluate the structure on vector(1D), or meshgrid(2D)
+            n_k: int, if arg=2D then n_k is the number of wave vector considered in each row, else default is None
+        output:  
+            si : scattering intensity of data for wave vectors defined by (x_waves, y_waves)
         """
-        x_max = np.floor(max_wave_lengh*L/(2*np.pi*np.sqrt(2)))
+        x_max = np.floor(max_k*L/(2*np.pi*np.sqrt(2)))
+        
         if arg=="2D":
-            x_grid = np.linspace(1, x_max, x_max)
+            x_grid = np.linspace(0, x_max, n_k)
             x_waves, y_waves = np.meshgrid(x_grid, x_grid)
         else:
-            x_waves = np.linspace(1, x_max, x_max)
+            x_waves = np.linspace(1, x_max, x_max) 
             y_waves = x_waves
+            
         self.x_waves = x_waves
         self.y_waves = y_waves
-        #if x_waves.shape != y_waves.shape :
-         #   raise IndexError("x_waves and y_waves should have the same shape.")
         si_ = 0 # initial value of the sum in the scattering intensity
         x_data = self.x_data 
         y_data = self.y_data 
         n_data = self.n_data
         for k in range(0,n_data):
-            si_ = si_ + np.exp(- 1j * (x_waves * x_data[k] + y_waves * y_data[k]))
+            si_ = si_ + np.exp(- 1j * (x_waves * x_data[k] + y_waves * y_data[k])) #the sum in the formula of the scattering intensity
         self.si = (1 / n_data)*np.abs(si_) ** 2
         return self.si
 
@@ -174,7 +181,7 @@ class Structure_Factor(Symmetric_Fourier_Transform):
         wave_lengh : norm of the waves defined by (x_waves, y_waves)
         arg : (str) could be "all", "color_level" or "plot".
              define the type of plot to be visualized
-        x_ones_, ones_ : vectors implemented to add the line y=1 to the plot whic correspond to the 
+        x_ones_, ones_ : vectors implemented to add the line y=1 to the plot which correspond to the 
                         theoretical value of the structure factor of a Poisson point process
         """
         x_waves = self.x_waves
@@ -219,33 +226,39 @@ class Structure_Factor(Symmetric_Fourier_Transform):
                 plt.show()
         else :
             raise ValueError("arg should be one of the following str: 'all', 'plot' and 'color_level'.  ")
-    def get_pcf_estimate(self, raduis, args, correction_=None, r_vec=None, r_max=None):
-        """compute the pair correlation function of data using the R packadge spatstat pcf.ppp, and pcf. fv
-        args : (srt) should be 'fv' or 'ppp'. If it is set to be 'fv' then pcf.fv is used, if 'ppp' then 
-              pcf.ppp is used. 
-        raduis: raduis of the ball which contains the data on which the pair correlation function will
-                be conmputed.
-        correction_: if args= 'ppp' : correction ( should be one of : "translate", "Ripley", "isotropic",
-                    "best", "good" , "all"
-                    if args='fv' : keep the default value 'None'.
-        r_vec : if args = 'ppp' : keep the default 'None'
-                if arg = 'fv' : is the vector of raduis to evaluate g. it's prefered to can keep the default 
-                or to set an r_max 
-        r_max : if args = 'ppp' : keep the default 'None'
-                if arg = 'fv' : r_max is the maximum raduis on which g will be evaluated
-        g: the pair correlation function 
-        g_pd: the pair coorelation function as data frame
-        x_data_r: x_data transfered into R object 
-        y_data_r: y_data transfered into R object
-        data_r : data transformed into R object
+
+    def get_pcf_estimate(self, radius, args, correction_=None, r_vec=None, r_max=None, spar_=None):
+        """compute the pair correlation function of data using the R package spatstat pcf.ppp, and pcf. fv
+        
+        input:
+            args: str,  ('fv' or 'ppp'). If it is set to be 'fv' then pcf.fv is used, if 'ppp' then 
+                  pcf.ppp is used. 
+            radius: float, radius of the ball which contains the data on which the pair correlation function will
+                    be evaluated.
+            correction_: str, 
+                        if args= 'ppp' : correction  should be one of: "translate", "Ripley", "isotropic",
+                        "best", "good" , "all".
+                        if args='fv' : correction should be one of: "a", "b", "c" or "d" .
+            r_vec: array, 
+                    if arg = 'fv' : r_vec is the vector of radius on which g will be evaluated. it's preferred to
+                    keep the default or to set an r_max .
+                    if args = 'ppp' : keep the default 'None'
+            r_max: float,
+                    if args = 'ppp' : keep the default 'None'
+                    if arg = 'fv' : r_max is the maximum radius on which g will be evaluated
+            spar_: float, sparsity parameter.
+            
+        output:
+            pcf_estimation_pd: dataframe, pandas data frame containing a column of radius, a column of ones which 
+                               represent the theoretical values of the pcf corresponding to a Poisson point process
+                               the remaining columns contains the pcf approximated by diffrent constrantes.
         
         for more details see : "https://rdrr.io/cran/spatstat/man/pcf.ppp.html")
-              if arg_1 = "fv": arg_2 is the method ("a", "b", "c" or "d")
         """
         if args not in ["fv", "ppp"]:
             raise ValueError(" args should be 'fv', or 'ppp'")
-        if not np.isscalar(raduis):
-            raise ValueError("raduis must be a scalar")
+        if not np.isscalar(radius):
+            raise ValueError("radius must be a scalar")
         
         utils = rpackages.importr('utils')
         utils.chooseCRANmirror(ind = 1)
@@ -255,29 +268,24 @@ class Structure_Factor(Symmetric_Fourier_Transform):
         r_base = importr('base')
         ppp = robjects.r('ppp')
         pcf = robjects.r('pcf')
-        #pcf_fv = robjects.r('pcf.fv')
         Kest = robjects.r('Kest')
-        #r_hist = robjects.r("hist")
-        #barplot = robjects.r("barplot")
-        #owin = robjects.r("owin") #si on prend un rectangle
+        
 
         x_data = self.x_data 
         y_data = self.y_data 
-
-
         x_data_r = robjects.vectors.FloatVector(x_data)
         y_data_r = robjects.vectors.FloatVector(y_data)
-        
-        data_r = ppp(x_data_r, y_data_r, window=disc(raduis, center(0, 0)))                    
+        data_r = ppp(x_data_r, y_data_r, window=disc(radius, center(0, 0)))     
+                       
         if args == "ppp":          
             if correction_ not in ["translate", "Ripley", "isotropic", "best", "good" , "all", None] :
                 raise ValueError("correction should be one of the following str: 'translate', 'Ripley', 'isotropic', 'best', 'good' , 'all', 'none'.")
-            pcf_estimation = pcf(data_r, spar=0.4, correction=correction_)
+            pcf_estimation = pcf(data_r, spar=spar_, correction=correction_)
                              
         if args == "fv":
             if correction_ not in ["a", "b", "c", "d", None] :
                 raise ValueError("correction_ should be one of the following str: 'a', 'b', 'c', 'd', None.")  
-            robjects.globalenv['data_r'] = data_r #Transfert ppp_data comme variable dans R.
+            robjects.globalenv['data_r'] = data_r #Transfert ppp_data as variables in  R.
             if r_max != None :
                 robjects.globalenv['r_max']= r_max
                 robjects.r('kest_data = Kest(data_r, rmax=r_max)')
@@ -288,20 +296,24 @@ class Structure_Factor(Symmetric_Fourier_Transform):
             else :
                 robjects.r('kest_data = Kest(data_r)')
             robjects.globalenv['method_']= correction_
-            pcf_estimation = robjects.conversion.rpy2py(robjects.r('pcf.fv(kest_data, spar=0.4, all.knots=FALSE,  keep.data=TRUE,  method=method_)'))  
-                             
-        self.pcf_estimation_pd = pd.DataFrame.from_records(pcf_estimation).fillna(0) # as pandas data frame
+            if spar_ is not None:
+                robjects.globalenv['spar_']= spar_
+                pcf_estimation = robjects.conversion.rpy2py(robjects.r('pcf.fv(kest_data, spar=spar_, all.knots=FALSE,  keep.data=TRUE,  method=method_)'))  
+            else:
+                pcf_estimation = robjects.conversion.rpy2py(robjects.r('pcf.fv(kest_data, all.knots=FALSE,  keep.data=TRUE,  method=method_)'))             
+        self.pcf_estimation_pd = pd.DataFrame.from_records(pcf_estimation).fillna(0) # fill nan values with zeros
         return self.pcf_estimation_pd
     
     def plot_pcf_estimate(self, args):
         """
         plot the pair correlation function estimation using get_pcf_estimate. 
-        args: (str), should be 'pcf', 'trans', 'iso' or 'un'
+        input:
+            args: (str), should be 'pcf', 'trans', 'iso' or 'un'.
         """
         pcf_estimation_pd = self.pcf_estimation_pd
         g_key = (pcf_estimation_pd.keys()).tolist()
         if g_key.count(args) == 0:
-            raise ValueError("The data frame does not contains the chosen args. Check pcf_estimation_pd.keys() to plot one of them. ")
+            raise ValueError("The data frame does not contains the chosen args. Check pcf_estimation_pd.keys(). ")
         r_vec = np.array(pcf_estimation_pd["r"])
         g_to_plot = np.array(pcf_estimation_pd[args])
         g_theo = np.array(pcf_estimation_pd["theo"])
@@ -313,43 +325,80 @@ class Structure_Factor(Symmetric_Fourier_Transform):
         plt.ylabel("g(r)")
         plt.title("Pair correlation function ")
         
-    def get_fourier_estimate(self, args, arg_2, N= None, h=0.1, wave_lengh=None): 
+    def get_fourier_estimate(self, args=None, arg_2=None, g=None, N= None, h=0.1, k=None): 
         """
-         compute the approximation of the structure factor of data by evaluating the fourier transform of the paire
-        approximated by the R packadge spatstat
-        args: (str) one of the following str: 'pcf', 'ppp_trans', 'ppp_iso' or 'ppp_un'. It specified the method chosen
-        to approximate the pcf 
-        intensity: intensity of the point process
-        'pcf' if pcf.fv is used
-        'trans', 'iso' or 'un': if pcf.ppp is used and trans, iso, un to specifiy which edge correction is used
-        arg_2: estimation_1, estimation_2
-              estimation_1:  estimation of hankel transform via Quasi hankel transform Vega and Sicairos 2004.
-              estimation_2 : using  symetric_fourrier_transform based on ogata 2005 with a change of variable 
-                            h = step, 
-                            N= number of point used to approximate the integral by a sum 
-                            wave_lengh = vector contaning the wave vectors k on which we evaluate the structure factor.
+        compute the approximation of the structure factor of data by evaluating the Symmetric Fourier transform of the 
+        approximated pair correlation function.
+        
+        input:
+            args: str, ('pcf', 'ppp_trans', 'ppp_iso' or 'ppp_un'). Specifies the method chosen
+                            to approximate the pcf.
+                 'pcf' if pcf.fv is used.
+                 'trans', 'iso' or 'un': if pcf.ppp is used. Specifies which edge correction is used
+            arg_2: str, (estimation_1, estimation_2)
+                   estimation_1:  estimation of Hankel transform via Quasi Hankel transform Vega and Sicairos 2004.
+                   estimation_2 : use the class Symetric_Fourier_Transform.
+            g: func, the pair correlation function if is know and need only to evaluate the structure factor.
+            N, h, k: variable for the Symetric_Fourier_transform, see above
+        output:
+            if arg_2 = estimation_1:
+            norm_k: array containing the norm of the wave vector on which the structure facture is approximated
+            sf_estimation: array containing the estimation of the structure factor.
+            if arg_2 = estimation_2:
+            sf_estimation_2: array containing th estimation of the structure factor.
+            self.k_min: approximated minimal threshold of confidence for the wave length.  
+
         """
         intensity = self.intensity
+        
         pcf_estimation_pd = self.pcf_estimation_pd
         g_key = (pcf_estimation_pd.keys()).tolist()
-        if not np.isscalar(intensity):
-            raise ValueError("intensity must be a scalar")
-        if g_key.count(args) == 0:
-                raise ValueError("The data frame does not contain the chosen args. Check pcf_estimation_pd.keys() to plot one of them. ")
+        intensity = self.intensity
+        if g is not None and not callable(g):
+            raise TypeError("g should be of type function representing the pair correlation function.")
+        
+        if  g == None and g_key.count(args) == 0:
+            raise ValueError("The data frame does not contains the chosen args. Check pcf_estimation_pd.keys() to plot one of them. ")
+
         g_to_plot = np.array(pcf_estimation_pd[args])
         r_vec = np.array(pcf_estimation_pd["r"])
         g_theo = np.array(pcf_estimation_pd["theo"])
         h_estimation = pcf_estimation_pd[args] -1
+        
+        if arg_2 == "estimation_1":
+            h_estimation[0] = -1 
+            transformer = HankelTransform(order=0, max_radius=max(pcf_estimation_pd['r']), n_points=pcf_estimation_pd['r'].shape[0])
+            sf_estimation = 1 + intensity*transformer.qdht(h_estimation)
+            norm_k = transformer.kr
+            ones_ = np.ones_like(sf_estimation)
+            
+            fig , ax = plt.subplots(1, 2, figsize=(24, 7))
+            ax[0].plot(r_vec, g_theo, 'r--', label="y=1")
+            ax[0].scatter(r_vec, g_to_plot, c='k', s=1, label="pcf")
+            ax[0].plot(r_vec, g_to_plot, 'b')
+            ax[0].title.set_text("Pair correlation function ")
+            ax[0].legend()
+            ax[0].set_xlabel("r")
+            ax[0].set_ylabel("g(r)")
+            ax[1].plot(norm_k[1:], sf_estimation[1:],'b' )
+            ax[1].scatter(norm_k, sf_estimation, c='k', s=1, label="sf")  
+            ax[1].plot(norm_k, ones_, 'r--', label="y=1")
+            ax[1].legend()
+            ax[1].set_xlabel('k')
+            ax[1].set_ylabel('S(k)')
+            ax[1].title.set_text('structure factor of data' )
+            plt.show()
+            return (norm_k, sf_estimation)
+
         if arg_2 == "estimation_2":
             if N==None :
                 N = 1000
             super().__init__(d= self.d, N=N, h=h)
 
-            #h_estimation_interpolate = interpolate.interp1d(r_vec, h_estimation, axis=0, fill_value='extrapolate', kind='cubic')
-            sf, self.k_min = super().transform(data_g=g_to_plot,r_vector=r_vec, k=wave_lengh)
-            print("The fialble minimum wavelenght is :",  self.k_min)
+            sf, self.k_min = super().transform(k=k, g=g, data_g=g_to_plot, r_vector=r_vec)
+            print("The reliable minimum wavelength is :",  self.k_min)
             sf_estimation_2 = 1 + intensity * sf
-            sf_interpolate = interpolate.interp1d(wave_lengh, sf_estimation_2, axis=0, fill_value='extrapolate', kind='cubic')
+            sf_interpolate = interpolate.interp1d(k, sf_estimation_2, axis=0, fill_value='extrapolate', kind='cubic')
             ones_ = np.ones(sf_estimation_2.shape).T
             fig , ax = plt.subplots(1, 2, figsize=(24, 7))
             ax[0].plot(r_vec, g_theo, 'r--', label="y=1")
@@ -359,36 +408,15 @@ class Structure_Factor(Symmetric_Fourier_Transform):
             ax[0].set_xlabel("r")
             ax[0].set_ylabel("g(r)")
             ax[0].title.set_text("Pair correlation function ")
-            ax[1].plot(wave_lengh[1:], sf_estimation_2[1:],'b' )
-            ax[1].scatter(wave_lengh, sf_estimation_2, c='k', s=1, label="sf")
-            ax[1].plot(self.k_min, sf_interpolate(self.k_min), "ro", label="fiable k_min")  
-            ax[1].plot(wave_lengh, ones_, 'r--', label="y=1")
+            ax[1].plot(k[1:], sf_estimation_2[1:],'b' )
+            ax[1].scatter(k, sf_estimation_2, c='k', s=1, label="sf")
+            ax[1].plot(self.k_min, sf_interpolate(self.k_min), "ro", label="reliable k_min")  
+            ax[1].plot(k, ones_, 'r--', label="y=1")
             ax[1].legend()
             ax[1].set_xlabel('k')
             ax[1].set_ylabel('S(k)')
-            ax[1].title.set_text('structur factor of data' )
+            ax[1].title.set_text('structure factor of data' )
             plt.show()
-            return( wave_lengh, sf_estimation_2, self.k_min)
-        if arg_2 == "estimation_1":
-            h_estimation[0] = -1 
-            transformer = HankelTransform(order=0, max_radius=max(pcf_estimation_pd['r']), n_points=pcf_estimation_pd['r'].shape[0])
-            sf_estimation = 1 + intensity*transformer.qdht(h_estimation)
-            wave_lengh = transformer.kr
-            ones_ = np.ones(sf_estimation.shape).T
-            fig , ax = plt.subplots(1, 2, figsize=(24, 7))
-            ax[0].plot(r_vec, g_theo, 'r--', label="y=1")
-            ax[0].scatter(r_vec, g_to_plot, c='k', s=1, label="pcf")
-            ax[0].plot(r_vec, g_to_plot, 'b')
-            ax[0].legend()
-            ax[0].set_xlabel("r")
-            ax[0].set_ylabel("g(r)")
-            ax[0].title.set_text("Pair correlation function ")
-            ax[1].plot(wave_lengh[1:], sf_estimation[1:],'b' )
-            ax[1].scatter(wave_lengh, sf_estimation, c='k', s=1, label="sf")  
-            ax[1].plot(wave_lengh, ones_, 'r--', label="y=1")
-            ax[1].legend()
-            ax[1].set_xlabel('k')
-            ax[1].set_ylabel('S(k)')
-            ax[1].title.set_text('structur factor of data' )
-            plt.show()
-            return (wave_lengh, sf_estimation)
+            return(sf_estimation_2, self.k_min)
+            
+        
