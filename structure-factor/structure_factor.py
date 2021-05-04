@@ -281,7 +281,10 @@ class Structure_Factor(Symmetric_Fourier_Transform):
         if args == "ppp":          
             if correction_ not in ["translate", "Ripley", "isotropic", "best", "good" , "all", None] :
                 raise ValueError("correction should be one of the following str: 'translate', 'Ripley', 'isotropic', 'best', 'good' , 'all', 'none'.")
-            pcf_estimation = pcf(data_r, spar=spar_, correction=correction_)
+            if spar_ is not None:
+                pcf_estimation = pcf(data_r, spar=spar_, correction=correction_)
+            else :
+                pcf_estimation = pcf(data_r, correction=correction_)
                              
         if args == "fv":
             if correction_ not in ["a", "b", "c", "d", None] :
@@ -301,8 +304,10 @@ class Structure_Factor(Symmetric_Fourier_Transform):
                 robjects.globalenv['spar_']= spar_
                 pcf_estimation = robjects.conversion.rpy2py(robjects.r('pcf.fv(kest_data, spar=spar_, all.knots=FALSE,  keep.data=TRUE,  method=method_)'))  
             else:
-                pcf_estimation = robjects.conversion.rpy2py(robjects.r('pcf.fv(kest_data, all.knots=FALSE,  keep.data=TRUE,  method=method_)'))             
+                pcf_estimation = robjects.conversion.rpy2py(robjects.r('pcf.fv(kest_data, all.knots=FALSE,  keep.data=TRUE,  method=method_)')) 
+        pcf_estimation.replace([np.inf, -np.inf], np.nan, inplace=True)            
         self.pcf_estimation_pd = pd.DataFrame.from_records(pcf_estimation).fillna(0) # fill nan values with zeros
+        
         return self.pcf_estimation_pd
     
     def plot_pcf_estimate(self, args):
@@ -351,7 +356,6 @@ class Structure_Factor(Symmetric_Fourier_Transform):
 
         """
         intensity = self.intensity
-        
         pcf_estimation_pd = self.pcf_estimation_pd
         g_key = (pcf_estimation_pd.keys()).tolist()
         intensity = self.intensity
