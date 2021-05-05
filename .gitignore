@@ -1,3 +1,5 @@
+notebooks/
+data/
 .DS_Store
 .vscode/
 # Byte-compiled / optimized / DLL files
