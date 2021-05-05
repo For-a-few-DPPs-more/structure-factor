@@ -8,6 +8,7 @@ from utils import get_random_number_generator
 class HomogeneousPoissonPointProcess(object):
     """`Homogeneous Poisson Point Process <https://en.wikipedia.org/wiki/Poisson_point_process#Spatial_Poisson_point_process>`_
     """
+
     def __init__(self, intensity=1.0):
         if not intensity > 0:
             raise TypeError("intensity argument must be positive")
