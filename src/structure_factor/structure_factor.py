@@ -9,8 +9,7 @@ import matplotlib.pyplot as plt
 from pyhank import HankelTransform
 from scipy.integrate import quad
 from scipy import interpolate
-from mpmath import fp as mpm
-from scipy.special import yv, jv
+from scipy.special import jv
 import pandas as pd
 import rpy2.robjects.numpy2ri
 rpy2.robjects.numpy2ri.activate()
