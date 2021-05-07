@@ -2,9 +2,12 @@
 # coding=utf-8
 
 import numpy as np
+from mpmath import fp as mpm
+from scipy.special import yv, jv
 
 
 def get_random_number_generator(seed):
+    return np.random.default_rng(seed)
     """Turn seed into a np.random.Generator instance
     """
     if isinstance(seed, np.random.Generator):
