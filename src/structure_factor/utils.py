@@ -18,7 +18,7 @@ def get_random_number_generator(seed):
     return np.random.default_rng(seed)
 
 
-def roots(N):
+def roots(d, N):
     # first N Roots of the Bessel J_(d/2-1) functions divided by pi.
     return np.array([mpm.besseljzero(d/2 - 1, i + 1) for i in range(N)]) / np.pi
 

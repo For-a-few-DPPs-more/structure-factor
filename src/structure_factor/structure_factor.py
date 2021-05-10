@@ -38,7 +38,7 @@ class SymmetricFourierTransform():
         self._h = h
         self.d = d
         self.N = N
-        self._zeros = roots(N)  # Xi
+        self._zeros = roots(d, N)  # Xi
         self.x = get_x(h, self._zeros)  # pi*psi(h*ksi/pi)/h
         self.kernel = jv(d/2 - 1, self.x)  # J_(d/2-1)(pi*psi(h*ksi))
         self.w = weight(d, self._zeros)  # (Y_0(pi*zeros)/J_1(pi*zeros))
@@ -304,9 +304,11 @@ class StructureFactor(SymmetricFourierTransform):
             else:
                 pcf_estimation = robjects.conversion.rpy2py(robjects.r(
                     'pcf.fv(kest_data, all.knots=FALSE,  keep.data=TRUE,  method=method_)'))
-        pcf_estimation.replace([np.inf, -np.inf], np.nan, inplace=True)
+        pcf_data_farme = pd.DataFrame.from_records(
+            pcf_estimation)
+        pcf_data_farme.replace([np.inf, -np.inf], np.nan, inplace=True)
         self.pcf_estimation_pd = pd.DataFrame.from_records(
-            pcf_estimation).fillna(0)  # fill nan values with zeros
+            pcf_data_farme).fillna(0)  # fill nan values with zeros
 
         return self.pcf_estimation_pd
 
