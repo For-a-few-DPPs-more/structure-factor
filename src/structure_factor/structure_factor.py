@@ -160,10 +160,10 @@ class StructureFactor(SymmetricFourierTransform):
         x_max = np.floor(max_k*L/(2*np.pi*np.sqrt(2)))
 
         if arg == "2D":
-            x_grid = np.linspace(0, x_max, n_k)
+            x_grid = np.linspace(0, x_max, int(n_k))
             x_k, y_k = np.meshgrid(x_grid, x_grid)
         else:
-            x_k = np.linspace(1, x_max, x_max)
+            x_k = np.linspace(1, x_max, int(x_max))
             y_k = x_k
 
         self.x_k = x_k
