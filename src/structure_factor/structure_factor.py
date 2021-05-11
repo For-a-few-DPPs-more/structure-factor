@@ -12,12 +12,13 @@ from scipy import interpolate
 from scipy.special import jv
 import pandas as pd
 import rpy2.robjects.numpy2ri
+
 rpy2.robjects.numpy2ri.activate()
 rpy2.robjects.numpy2ri.activate()
 pandas2ri.activate()
 
 
-class SymmetricFourierTransform():
+class SymmetricFourierTransform:
     """
     implement Symmetric Fourier transform based on OGATA paper "Integration Based On Bessel Function", with a change of variable allowing to
     approximate the Symmetric Fourier transform, needed to approximate the structure factor of a set of data, by first approximating the pair
@@ -40,7 +41,7 @@ class SymmetricFourierTransform():
         self.N = N
         self._zeros = roots(d, N)  # Xi
         self.x = get_x(h, self._zeros)  # pi*psi(h*ksi/pi)/h
-        self.kernel = jv(d/2 - 1, self.x)  # J_(d/2-1)(pi*psi(h*ksi))
+        self.kernel = jv(d / 2 - 1, self.x)  # J_(d/2-1)(pi*psi(h*ksi))
         self.w = weight(d, self._zeros)  # (Y_0(pi*zeros)/J_1(pi*zeros))
         self.dpsi = d_psi(h * self._zeros)  # dpsi(h*ksi)
         self._factor = None
@@ -54,8 +55,9 @@ class SymmetricFourierTransform():
         """
         data_f = data_g - 1
         self.f = interpolate.interp1d(
-            r_vector, data_f, axis=0, fill_value='extrapolate', kind='cubic')
-        return(self.f)
+            r_vector, data_f, axis=0, fill_value="extrapolate", kind="cubic"
+        )
+        return self.f
 
     def _k(self, k):
         return np.array(np.array(k))
@@ -63,17 +65,24 @@ class SymmetricFourierTransform():
     @property
     def _series_fac(self):
         if self._factor is None:
-            self._factor = np.pi * self.w * self.kernel * \
-                self.dpsi  # pi*w*J_(d/2-1)(x)*dpsi(h*zeros)
+            self._factor = (
+                np.pi * self.w * self.kernel * self.dpsi
+            )  # pi*w*J_(d/2-1)(x)*dpsi(h*zeros)
         return self._factor
 
     def _get_series(self, f, k, alpha):
         with np.errstate(divide="ignore"):  # numpy safely divides by 0
             args = np.divide.outer(self.x, k).T  # x/k
         # pi*w*J_(d/2-1)(x)*dpsi(h*zeros)f(x/k)J_(d/2-1)(x)*x**(d/2)
-        return self._series_fac * (f(args) - 1*alpha) * (self.x**(self.d/2))
+        return self._series_fac * (f(args) - 1 * alpha) * (self.x ** (self.d / 2))
 
-    def transform(self, k, g=None,  r_vector=None, data_g=None,):
+    def transform(
+        self,
+        k,
+        g=None,
+        r_vector=None,
+        data_g=None,
+    ):
         """Return an approximation of the symmetric Fourier transform of the total correlation function (h = g-1), and an estimation of the minimum confidence wave length.
 
         Args:
@@ -90,7 +99,7 @@ class SymmetricFourierTransform():
         k = self._k(k)
         if g == None:
             f = self._f(r_vector, data_g)
-            self.k_min = (np.pi * 3.2)/(self._h * np.max(r_vector))
+            self.k_min = (np.pi * 3.2) / (self._h * np.max(r_vector))
             summation = self._get_series(f, k, alpha=0)  # pi*w*J0(x)
 
         else:
@@ -98,10 +107,9 @@ class SymmetricFourierTransform():
             summation = self._get_series(g, k, alpha=1)  # pi*w*J0(x)
 
         ret = np.empty(k.shape, dtype=summation.dtype)
-        pi_factor = (2*np.pi)**(self.d/2)
+        pi_factor = (2 * np.pi) ** (self.d / 2)
         # 2pi/k**2*sum(pi*w*f(x/k)J_0(x)*dpsi(h*ksi)*x)
-        ret = np.array(pi_factor * np.sum(summation,
-                                          axis=-1) / np.array(k ** self.d))
+        ret = np.array(pi_factor * np.sum(summation, axis=-1) / np.array(k ** self.d))
         return (ret, self.k_min)
 
 
@@ -141,6 +149,7 @@ class StructureFactor(SymmetricFourierTransform):
         self.y_data = data[:, 1]
 
     def get_scattering_intensity_estimate(self, L, max_k, n_k=None, arg="1D"):
+        # todo modifier la docstring
         """compute the ensemble estimator described in http://www.scoste.fr/survey_hyperuniformity.pdf.(equation 4.5)
         which converges to the structure factor as n_data and the volume of the space goes to infinity.
         Notes:  The data should be simulated in a square.
@@ -155,29 +164,26 @@ class StructureFactor(SymmetricFourierTransform):
         Returns:
             norm_k (np.ndarray): wavelength of the wave vectors (x_k, y_k)
             si (np.ndarray_like(norm_k)): scattering intensity of the data on the wave vectors (x_k, y_k)
-
         """
-        x_max = np.floor(max_k*L/(2*np.pi*np.sqrt(2)))
 
-        if arg == "2D":
-            x_grid = np.linspace(0, x_max, int(n_k))
-            x_k, y_k = np.meshgrid(x_grid, x_grid)
+        x_max = np.floor(max_k * L / (2 * np.pi * np.sqrt(2)))
+        print(x_max)
+        if n_k is None:
+            wave_vectors = np.zeros((int(x_max), self.d))
+            wave_vectors[:, 0] = np.linspace(1, x_max, int(x_max))
+            wave_vectors[:, 1] = wave_vectors[:, 0]
         else:
-            x_k = np.linspace(1, x_max, int(x_max))
-            y_k = x_k
+            x_grid = np.linspace(0, x_max, int(n_k))
+            xx, yy = np.meshgrid(x_grid, x_grid)
+            wave_vectors = np.vstack((xx.ravel(), yy.ravel())).T
 
-        self.x_k = x_k
-        self.y_k = y_k
-        self.norm_k = np.sqrt(x_k**2 + y_k**2)
-        si_ = 0  # initial value of the sum in the scattering intensity
-        x_data = self.x_data
-        y_data = self.y_data
-        n_data = self.n_data
-        for i in range(0, n_data):
-            # the sum in the formula of the scattering intensity
-            si_ = si_ + np.exp(- 1j * (x_k * x_data[i] + y_k * y_data[i]))
-        self.si = (1 / n_data)*np.abs(si_) ** 2
-        return self.norm_k, self.si
+        norm_wave_vectors = np.linalg.norm(wave_vectors, axis=1)
+        points = np.vstack((self.x_data, self.y_data))
+        scattering_intensity = (
+            np.abs(np.sum(np.exp(-1j * np.dot(wave_vectors, points)), axis=1)) ** 2
+        )
+        scattering_intensity /= self.n_data
+        return norm_wave_vectors, scattering_intensity
 
     def plot_scattering_intensity_estimate(self, arg):
         """2D and  1D plot of the scattering intensity
@@ -188,34 +194,41 @@ class StructureFactor(SymmetricFourierTransform):
         x_k = self.x_k
         y_k = self.y_k
         si = self.si
-        norm_k = np.sqrt(np.abs(x_k)**2 + np.abs(y_k)**2)
+        norm_k = np.sqrt(np.abs(x_k) ** 2 + np.abs(y_k) ** 2)
         ones_ = np.ones_like(x_k).T
-        x_ones_ = np.linspace(
-            np.min(norm_k), np.max(norm_k), np.max(x_k.shape))
+        x_ones_ = np.linspace(np.min(norm_k), np.max(norm_k), np.max(x_k.shape))
         if arg == "all":
             if np.min(x_k.shape) == 1 or np.min(y_k.shape) == 1:
                 raise ValueError(
-                    "X_k, Y_k should be meshgrids or choose arg = 'plot'. ")
+                    "X_k, Y_k should be meshgrids or choose arg = 'plot'. "
+                )
             else:
                 fig, ax = plt.subplots(1, 3, figsize=(24, 7))
-                ax[0].plot(self.x_data, self.y_data, 'b.')
+                ax[0].plot(self.x_data, self.y_data, "b.")
                 ax[0].title.set_text("data")
-                ax[1].loglog(norm_k, si, 'k,')
-                ax[1].loglog(x_ones_, ones_, 'r--')
-                ax[1].legend(["Scattering intensity", "y=1"],
-                             shadow=True, loc=1)
+                ax[1].loglog(norm_k, si, "k,")
+                ax[1].loglog(x_ones_, ones_, "r--")
+                ax[1].legend(["Scattering intensity", "y=1"], shadow=True, loc=1)
                 ax[1].set_xlabel("wave length (k)")
                 ax[1].set_ylabel("scattering intensity (SI(k))")
                 ax[1].title.set_text("loglog plot")
-                f_0 = ax[2].imshow(np.log10(si), extent=[-np.log10(si).shape[1]/2., np.log10(
-                    si).shape[1]/2., -np.log10(si).shape[0]/2., np.log10(si).shape[0]/2.], cmap="PRGn")
+                f_0 = ax[2].imshow(
+                    np.log10(si),
+                    extent=[
+                        -np.log10(si).shape[1] / 2.0,
+                        np.log10(si).shape[1] / 2.0,
+                        -np.log10(si).shape[0] / 2.0,
+                        np.log10(si).shape[0] / 2.0,
+                    ],
+                    cmap="PRGn",
+                )
                 fig.colorbar(f_0, ax=ax[2])
                 ax[2].title.set_text("scattering intensity")
                 plt.show()
         elif arg == "plot":
-            plt.loglog(norm_k, si, 'k,')
-            plt.loglog(x_ones_, ones_, 'r--')
-            plt.legend(['Scattering intensity', 'y=1'], loc=1)
+            plt.loglog(norm_k, si, "k,")
+            plt.loglog(x_ones_, ones_, "r--")
+            plt.legend(["Scattering intensity", "y=1"], loc=1)
             plt.xlabel("wave length (k)")
             plt.ylabel("Scattering intensity (SI(k))")
             plt.title("loglog plot")
@@ -224,18 +237,30 @@ class StructureFactor(SymmetricFourierTransform):
             if np.min(x_k.shape) == 1 or np.min(y_k.shape) == 1:
 
                 raise ValueError(
-                    "X_k, Y_k should be meshgrids or choose arg = 'plot'. ")
+                    "X_k, Y_k should be meshgrids or choose arg = 'plot'. "
+                )
             else:
-                f_0 = plt.imshow(np.log10(si), extent=[-np.log10(si).shape[1]/2., np.log10(
-                    si).shape[1]/2., -np.log10(si).shape[0]/2., np.log10(si).shape[0]/2.], cmap="PRGn")
+                f_0 = plt.imshow(
+                    np.log10(si),
+                    extent=[
+                        -np.log10(si).shape[1] / 2.0,
+                        np.log10(si).shape[1] / 2.0,
+                        -np.log10(si).shape[0] / 2.0,
+                        np.log10(si).shape[0] / 2.0,
+                    ],
+                    cmap="PRGn",
+                )
                 plt.colorbar(f_0)
                 plt.title("Scattering intensity")
                 plt.show()
         else:
             raise ValueError(
-                "arg should be one of the following str: 'all', 'plot' and 'color_level'.  ")
+                "arg should be one of the following str: 'all', 'plot' and 'color_level'.  "
+            )
 
-    def get_pcf_estimate(self, radius, args, correction_=None, r_vec=None, r_max=None, spar_=None):
+    def get_pcf_estimate(
+        self, radius, args, correction_=None, r_vec=None, r_max=None, spar_=None
+    ):
         """compute the pair correlation function of data using the R package spatstat pcf.ppp, and pcf. fv.
          for more details see : "https://rdrr.io/cran/spatstat/man/pcf.ppp.html")
 
@@ -255,15 +280,15 @@ class StructureFactor(SymmetricFourierTransform):
         if not np.isscalar(radius):
             raise ValueError("radius must be a scalar")
 
-        utils = rpackages.importr('utils')
+        utils = rpackages.importr("utils")
         utils.chooseCRANmirror(ind=1)
-        spatstat = rpackages.importr('spatstat')
+        spatstat = rpackages.importr("spatstat")
         disc = robjects.r("disc")
-        center = robjects.r('c')
-        r_base = importr('base')
-        ppp = robjects.r('ppp')
-        pcf = robjects.r('pcf')
-        Kest = robjects.r('Kest')
+        center = robjects.r("c")
+        r_base = importr("base")
+        ppp = robjects.r("ppp")
+        pcf = robjects.r("pcf")
+        Kest = robjects.r("Kest")
 
         x_data = self.x_data
         y_data = self.y_data
@@ -272,48 +297,63 @@ class StructureFactor(SymmetricFourierTransform):
         data_r = ppp(x_data_r, y_data_r, window=disc(radius, center(0, 0)))
 
         if args == "ppp":
-            if correction_ not in ["translate", "Ripley", "isotropic", "best", "good", "all", None]:
+            if correction_ not in [
+                "translate",
+                "Ripley",
+                "isotropic",
+                "best",
+                "good",
+                "all",
+                None,
+            ]:
                 raise ValueError(
-                    "correction should be one of the following str: 'translate', 'Ripley', 'isotropic', 'best', 'good' , 'all', 'none'.")
+                    "correction should be one of the following str: 'translate', 'Ripley', 'isotropic', 'best', 'good' , 'all', 'none'."
+                )
             if spar_ is not None:
-                pcf_estimation = pcf(data_r, spar=spar_,
-                                     correction=correction_)
+                pcf_estimation = pcf(data_r, spar=spar_, correction=correction_)
             else:
                 pcf_estimation = pcf(data_r, correction=correction_)
 
         if args == "fv":
             if correction_ not in ["a", "b", "c", "d", None]:
                 raise ValueError(
-                    "correction_ should be one of the following str: 'a', 'b', 'c', 'd', None.")
+                    "correction_ should be one of the following str: 'a', 'b', 'c', 'd', None."
+                )
             # Transfert ppp_data as variables in  R.
-            robjects.globalenv['data_r'] = data_r
+            robjects.globalenv["data_r"] = data_r
             if r_max != None:
-                robjects.globalenv['r_max'] = r_max
-                robjects.r('kest_data = Kest(data_r, rmax=r_max)')
+                robjects.globalenv["r_max"] = r_max
+                robjects.r("kest_data = Kest(data_r, rmax=r_max)")
             elif r_vec is not None:
-                robjects.globalenv['r_vec'] = r_vec
+                robjects.globalenv["r_vec"] = r_vec
                 r_vec_r = robjects.vectors.FloatVector(r_vec)
-                robjects.r('kest_data = Kest(data_r, r=r_vec)')
+                robjects.r("kest_data = Kest(data_r, r=r_vec)")
             else:
-                robjects.r('kest_data = Kest(data_r)')
-            robjects.globalenv['method_'] = correction_
+                robjects.r("kest_data = Kest(data_r)")
+            robjects.globalenv["method_"] = correction_
             if spar_ is not None:
-                robjects.globalenv['spar_'] = spar_
-                pcf_estimation = robjects.conversion.rpy2py(robjects.r(
-                    'pcf.fv(kest_data, spar=spar_, all.knots=FALSE,  keep.data=TRUE,  method=method_)'))
+                robjects.globalenv["spar_"] = spar_
+                pcf_estimation = robjects.conversion.rpy2py(
+                    robjects.r(
+                        "pcf.fv(kest_data, spar=spar_, all.knots=FALSE,  keep.data=TRUE,  method=method_)"
+                    )
+                )
             else:
-                pcf_estimation = robjects.conversion.rpy2py(robjects.r(
-                    'pcf.fv(kest_data, all.knots=FALSE,  keep.data=TRUE,  method=method_)'))
-        pcf_data_farme = pd.DataFrame.from_records(
-            pcf_estimation)
+                pcf_estimation = robjects.conversion.rpy2py(
+                    robjects.r(
+                        "pcf.fv(kest_data, all.knots=FALSE,  keep.data=TRUE,  method=method_)"
+                    )
+                )
+        pcf_data_farme = pd.DataFrame.from_records(pcf_estimation)
         pcf_data_farme.replace([np.inf, -np.inf], np.nan, inplace=True)
-        self.pcf_estimation_pd = pd.DataFrame.from_records(
-            pcf_data_farme).fillna(0)  # fill nan values with zeros
+        self.pcf_estimation_pd = pd.DataFrame.from_records(pcf_data_farme).fillna(
+            0
+        )  # fill nan values with zeros
 
         return self.pcf_estimation_pd
 
     def plot_pcf_estimate(self, args):
-        """ plot the pair correlation function estimation approximated by get_pcf_estimate.
+        """plot the pair correlation function estimation approximated by get_pcf_estimate.
 
         Args:
             args (str): ('pcf', 'trans', 'iso' or 'un'), type of pcf already approximated.
@@ -323,19 +363,22 @@ class StructureFactor(SymmetricFourierTransform):
         g_key = (pcf_estimation_pd.keys()).tolist()
         if g_key.count(args) == 0:
             raise ValueError(
-                "The data frame does not contains the chosen args. Check pcf_estimation_pd.keys(). ")
+                "The data frame does not contains the chosen args. Check pcf_estimation_pd.keys(). "
+            )
         r_vec = np.array(pcf_estimation_pd["r"])
         g_to_plot = np.array(pcf_estimation_pd[args])
         g_theo = np.array(pcf_estimation_pd["theo"])
-        plt.plot(r_vec, g_theo, 'r--', label="y=1")
-        plt.scatter(r_vec, g_to_plot, c='k', s=1, label="pcf")
-        plt.plot(r_vec, g_to_plot, 'b')
+        plt.plot(r_vec, g_theo, "r--", label="y=1")
+        plt.scatter(r_vec, g_to_plot, c="k", s=1, label="pcf")
+        plt.plot(r_vec, g_to_plot, "b")
         plt.legend()
         plt.xlabel("r")
         plt.ylabel("g(r)")
         plt.title("Pair correlation function ")
 
-    def get_fourier_estimate(self, args=None, arg_2=None, g=None, N=None, h=0.1, k=None):
+    def get_fourier_estimate(
+        self, args=None, arg_2=None, g=None, N=None, h=0.1, k=None
+    ):
         """compute an approximation of the structure factor by evaluating the Symmetric Fourier transform of the approximated pair correlation function or the exact if it's known.
 
         Args:
@@ -363,11 +406,13 @@ class StructureFactor(SymmetricFourierTransform):
         intensity = self.intensity
         if g is not None and not callable(g):
             raise TypeError(
-                "g should be of type function representing the pair correlation function.")
+                "g should be of type function representing the pair correlation function."
+            )
 
         if g == None and g_key.count(args) == 0:
             raise ValueError(
-                "The data frame does not contains the chosen args. Check pcf_estimation_pd.keys() to plot one of them. ")
+                "The data frame does not contains the chosen args. Check pcf_estimation_pd.keys() to plot one of them. "
+            )
 
         g_to_plot = np.array(pcf_estimation_pd[args])
         r_vec = np.array(pcf_estimation_pd["r"])
@@ -376,27 +421,30 @@ class StructureFactor(SymmetricFourierTransform):
 
         if arg_2 == "estimation_1":
             h_estimation[0] = -1
-            transformer = HankelTransform(order=0, max_radius=max(
-                pcf_estimation_pd['r']), n_points=pcf_estimation_pd['r'].shape[0])
-            sf_estimation = 1 + intensity*transformer.qdht(h_estimation)
+            transformer = HankelTransform(
+                order=0,
+                max_radius=max(pcf_estimation_pd["r"]),
+                n_points=pcf_estimation_pd["r"].shape[0],
+            )
+            sf_estimation = 1 + intensity * transformer.qdht(h_estimation)
             norm_k = transformer.kr
             ones_ = np.ones_like(sf_estimation)
 
             fig, ax = plt.subplots(1, 2, figsize=(24, 7))
-            ax[0].plot(r_vec, g_theo, 'r--', label="y=1")
-            ax[0].scatter(r_vec, g_to_plot, c='k', s=1, label="pcf")
-            ax[0].plot(r_vec, g_to_plot, 'b')
+            ax[0].plot(r_vec, g_theo, "r--", label="y=1")
+            ax[0].scatter(r_vec, g_to_plot, c="k", s=1, label="pcf")
+            ax[0].plot(r_vec, g_to_plot, "b")
             ax[0].title.set_text("Pair correlation function ")
             ax[0].legend()
             ax[0].set_xlabel("r")
             ax[0].set_ylabel("g(r)")
-            ax[1].plot(norm_k[1:], sf_estimation[1:], 'b')
-            ax[1].scatter(norm_k, sf_estimation, c='k', s=1, label="sf")
-            ax[1].plot(norm_k, ones_, 'r--', label="y=1")
+            ax[1].plot(norm_k[1:], sf_estimation[1:], "b")
+            ax[1].scatter(norm_k, sf_estimation, c="k", s=1, label="sf")
+            ax[1].plot(norm_k, ones_, "r--", label="y=1")
             ax[1].legend()
-            ax[1].set_xlabel('k')
-            ax[1].set_ylabel('S(k)')
-            ax[1].title.set_text('structure factor of data')
+            ax[1].set_xlabel("k")
+            ax[1].set_ylabel("S(k)")
+            ax[1].title.set_text("structure factor of data")
             plt.show()
             return (norm_k, sf_estimation)
 
@@ -405,28 +453,32 @@ class StructureFactor(SymmetricFourierTransform):
                 N = 1000
             super().__init__(d=self.d, N=N, h=h)
 
-            sf, self.k_min = super().transform(k=k, g=g, data_g=g_to_plot, r_vector=r_vec)
-            print("The reliable minimum wavelength is :",  self.k_min)
+            sf, self.k_min = super().transform(
+                k=k, g=g, data_g=g_to_plot, r_vector=r_vec
+            )
+            print("The reliable minimum wavelength is :", self.k_min)
             sf_estimation_2 = 1 + intensity * sf
             sf_interpolate = interpolate.interp1d(
-                k, sf_estimation_2, axis=0, fill_value='extrapolate', kind='cubic')
+                k, sf_estimation_2, axis=0, fill_value="extrapolate", kind="cubic"
+            )
             ones_ = np.ones(sf_estimation_2.shape).T
             fig, ax = plt.subplots(1, 2, figsize=(24, 7))
-            ax[0].plot(r_vec, g_theo, 'r--', label="y=1")
-            ax[0].scatter(r_vec, g_to_plot, c='k', s=1, label="pcf")
-            ax[0].plot(r_vec, g_to_plot, 'b')
+            ax[0].plot(r_vec, g_theo, "r--", label="y=1")
+            ax[0].scatter(r_vec, g_to_plot, c="k", s=1, label="pcf")
+            ax[0].plot(r_vec, g_to_plot, "b")
             ax[0].legend()
             ax[0].set_xlabel("r")
             ax[0].set_ylabel("g(r)")
             ax[0].title.set_text("Pair correlation function ")
-            ax[1].plot(k[1:], sf_estimation_2[1:], 'b')
-            ax[1].scatter(k, sf_estimation_2, c='k', s=1, label="sf")
-            ax[1].plot(self.k_min, sf_interpolate(
-                self.k_min), "ro", label="reliable k_min")
-            ax[1].plot(k, ones_, 'r--', label="y=1")
+            ax[1].plot(k[1:], sf_estimation_2[1:], "b")
+            ax[1].scatter(k, sf_estimation_2, c="k", s=1, label="sf")
+            ax[1].plot(
+                self.k_min, sf_interpolate(self.k_min), "ro", label="reliable k_min"
+            )
+            ax[1].plot(k, ones_, "r--", label="y=1")
             ax[1].legend()
-            ax[1].set_xlabel('k')
-            ax[1].set_ylabel('S(k)')
-            ax[1].title.set_text('structure factor of data')
+            ax[1].set_xlabel("k")
+            ax[1].set_ylabel("S(k)")
+            ax[1].title.set_text("structure factor of data")
             plt.show()
-            return(sf_estimation_2, self.k_min)
+            return (sf_estimation_2, self.k_min)
