@@ -2,7 +2,14 @@ from rpy2.robjects.packages import importr
 import rpy2.robjects.packages as rpackages
 import rpy2.robjects as robjects
 from rpy2.robjects import r, pandas2ri
-from structure_factor.utils import roots, psi, d_psi, get_x, weight
+from structure_factor.utils import (
+    roots,
+    psi,
+    d_psi,
+    get_x,
+    weight,
+    estimate_scattering_intensity,
+)
 import numpy as np
 import numpy.random as npr
 import matplotlib.pyplot as plt
@@ -120,7 +127,7 @@ class StructureFactor(SymmetricFourierTransform):
         SymmetricFourierTransform (class)
     """
 
-    def __init__(self, data, intensity: float):
+    def __init__(self, data: np.ndarray, intensity: float):
         """
         Args:
             data (np.array): data set of shape nxd array where, n is the number of data points and d is the dimension of the space (for now d=2).
@@ -131,25 +138,17 @@ class StructureFactor(SymmetricFourierTransform):
             IndexError: [description]
             ValueError: [description]
         """
-        if not isinstance(data, np.ndarray):
-            raise TypeError("Input data should be an (nxd) NumPy array")
-
-        try:
-            self.n_data = data.shape[0]
-            self.d = data.shape[1]
-        except:
-            raise IndexError("Input data should be an (nxd) NumPy array")
-
-        if self.d != 2:
-            raise ValueError("The library only supports 2D patterns so far")
-
-        self.data = np.array(data)
+        if data.ndim != 2 and data.shape[1] != 2:
+            raise ValueError("data must be nx2 array")
+        self.n_data, self.d = data.shape
+        self.data = data
         self.intensity = intensity
         self.x_data = data[:, 0]
         self.y_data = data[:, 1]
 
-    def get_scattering_intensity_estimate(self, L, max_k, n_k=None, arg="1D"):
+    def get_scattering_intensity_estimate(self, L, max_wave, n_k=None, arg="1D"):
         # todo modifier la docstring
+        # todo renommer max_k et explicité dans le docsting
         """compute the ensemble estimator described in http://www.scoste.fr/survey_hyperuniformity.pdf.(equation 4.5)
         which converges to the structure factor as n_data and the volume of the space goes to infinity.
         Notes:  The data should be simulated in a square.
@@ -166,24 +165,21 @@ class StructureFactor(SymmetricFourierTransform):
             si (np.ndarray_like(norm_k)): scattering intensity of the data on the wave vectors (x_k, y_k)
         """
 
-        x_max = np.floor(max_k * L / (2 * np.pi * np.sqrt(2)))
-        print(x_max)
+        max_wave = np.floor(max_k * L / (2 * np.pi * np.sqrt(2)))
         if n_k is None:
-            wave_vectors = np.zeros((int(x_max), self.d))
-            wave_vectors[:, 0] = np.linspace(1, x_max, int(x_max))
+            wave_vectors = np.zeros((int(max_wave), self.d))
+            wave_vectors[:, 0] = np.linspace(1, max_wave, int(max_wave))
             wave_vectors[:, 1] = wave_vectors[:, 0]
         else:
-            x_grid = np.linspace(0, x_max, int(n_k))
+            x_grid = np.linspace(0, max_wave, int(n_k))
             xx, yy = np.meshgrid(x_grid, x_grid)
             wave_vectors = np.vstack((xx.ravel(), yy.ravel())).T
 
-        norm_wave_vectors = np.linalg.norm(wave_vectors, axis=1)
-        points = np.vstack((self.x_data, self.y_data))
-        scattering_intensity = (
-            np.abs(np.sum(np.exp(-1j * np.dot(wave_vectors, points)), axis=1)) ** 2
+        self.norm_wave_vectors = np.linalg.norm(wave_vectors, axis=1)
+        self.scattering_intensity = estimate_scattering_intensity(
+            wave_vectors, self.data
         )
-        scattering_intensity /= self.n_data
-        return norm_wave_vectors, scattering_intensity
+        return self.norm_wave_vectors, self.scattering_intensity
 
     def plot_scattering_intensity_estimate(self, arg):
         """2D and  1D plot of the scattering intensity
