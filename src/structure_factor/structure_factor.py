@@ -164,8 +164,8 @@ class StructureFactor(SymmetricFourierTransform):
             meshgrid_size (int): if the requested evaluation is on a meshgrid,  then meshgrid_size is the number of wave vector in each row of the meshgrid. Defaults to None.
 
         Returns:
-            norm_wave_vector (np.ndarray): wavelength of the wave vectors (x_k, y_k)
-            scattering_intensity (np.ndarray_like(norm_wave_vector)): scattering intensity of the data on the wave vectors (x_k, y_k)
+            norm_wave_vector (np.ndarray): wavelength of the wave vectors.
+            scattering_intensity (np.ndarray_like(norm_wave_vector)): scattering intensity of the data evaluated on the wave vectors.
 
         """
 
@@ -178,13 +178,16 @@ class StructureFactor(SymmetricFourierTransform):
             wave_vector[:, 1] = wave_vector[:, 0]
         else:
             x_grid = np.linspace(0, maximum_k, int(meshgrid_size))
-            xx, yy = np.meshgrid(x_grid, x_grid)
-            wave_vector = np.vstack((xx.ravel(), yy.ravel())).T
+            X, Y = np.meshgrid(x_grid, x_grid)
+            wave_vector = np.vstack((X.ravel(), Y.ravel())).T
 
         self.norm_wave_vector = np.linalg.norm(wave_vector, axis=1)
         self.scattering_intensity = estimate_scattering_intensity(
             wave_vector, self.data
         )
+        if meshgrid_size is not None:
+            self.norm_wave_vector = self.norm_wave_vector.reshape(X.shape)
+            self.scattering_intensity = self.scattering_intensity.reshape(X.shape)
         return self.norm_wave_vector, self.scattering_intensity
 
     def plot_scattering_intensity_estimate(self, arg):
