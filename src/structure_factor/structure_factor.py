@@ -149,7 +149,6 @@ class StructureFactor(SymmetricFourierTransform):
     def get_scattering_intensity_estimate(self, L, maximum_wave, n_k=None, arg="1D"):
         # todo modifier la docstring
         # todo à changer les nom pour les rendrent plus facile
-        # todo renommer maximum_wave et expliquer plus dans le docsting
         """compute the ensemble estimator described in http://www.scoste.fr/survey_hyperuniformity.pdf.(equation 4.5)
         which converges to the structure factor as n_data and the volume of the space goes to infinity.
         Notes:  The data should be simulated in a square.
