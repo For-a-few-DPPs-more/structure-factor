@@ -146,41 +146,45 @@ class StructureFactor(SymmetricFourierTransform):
         self.x_data = data[:, 0]
         self.y_data = data[:, 1]
 
-    def estimate_scattering_intensity(self, L, max_k, n_k=None, arg="1D"):
+    def estimate_scattering_intensity(self, L, maximum_wave, meshgrid_size=None):
         # todo modifier la docstring
-        # todo renommer max_k et explicité dans le docsting
-        """compute the ensemble estimator described in http://www.scoste.fr/survey_hyperuniformity.pdf.(equation 4.5)
-        which converges to the structure factor as n_data and the volume of the space goes to infinity.
-        Notes:  The data should be simulated in a square.
-                The allowed valued of wave vectors are 2*pi/n_data*k with k in Z*d
+        # todo replace the link bellow to the link of our future paper :).
+        """compute the ensemble estimator described in http://www.scoste.fr/survey_hyperuniformity.pdf.(equation 4.5).
+        This estimation converges to the structure factor in the thermodynamic limits.
+
+        Notes:  The data should be simulated inside a cube.
+                The allowed values of wave vectors are the points of the dual of the lattice having fundamental cell the cubic window .
+                This is represented inside wave_vectors which we defines as:
+                wave_vectors = 2*pi*k_vector/L
+                where, k_vector is a vector of integer from 1 into maximum_k, and L in the length side of the cubic window.
 
         Args:
             L (int): length of the square that contains the data.
-            max_k (int): maximum k
-            n_k (int): if arg=2D then n_k is the number of wave vector in each row. Defaults to None.
-            arg (str): (1D or 2D), chose of evaluation of the structure factor on vector(1D), or meshgrid(2D). Defaults to "1D".
+            maximum_wave (int): maximum of wave vector
+            meshgrid_size (int): if the requested evaluation is on a meshgrid,  then meshgrid_size is the number of wave vector in each row of the meshgrid. Defaults to None.
 
 
         Returns:
-            norm_k (np.ndarray): wavelength of the wave vectors (x_k, y_k)
-            si (np.ndarray_like(norm_k)): scattering intensity of the data on the wave vectors (x_k, y_k)
+            norm_wave_vector (np.ndarray): wavelength of the wave vectors (x_k, y_k)
+            scattering_intensity (np.ndarray_like(norm_wave_vector)): scattering intensity of the data on the wave vectors (x_k, y_k)
+
         """
 
-        max_k = np.floor(max_k * L / (2 * np.pi * np.sqrt(2)))
-        if n_k is None:
-            x = np.linspace(1, max_k, int(max_k))
-            wave_vectors = np.column_stack((x, x))
+        maximum_k = np.floor(maximum_wave * L / (2 * np.pi * np.sqrt(2)))
+        if meshgrid_size is None:
+            x = np.linspace(1, maximum_k, int(maximum_k))
+            wave_vector = np.column_stack((x, x))
         else:
-            x_grid = np.linspace(0, max_k, int(n_k))
+            x_grid = np.linspace(0, maximum_k, int(meshgrid_size))
             xx, yy = np.meshgrid(x_grid, x_grid)
-            wave_vectors = np.column_stack((xx.ravel(), yy.ravel()))
+            wave_vector = np.column_stack((xx.ravel(), yy.ravel()))
 
-        # todo attributes self.norm_wave_vectors and self.scattering_intensity are not defined in __init__ nor used later in code, do ze need to instantiate them ?
-        self.norm_wave_vectors = np.linalg.norm(wave_vectors, axis=1)
+        # todo attributes self.norm_wave_vector and self.scattering_intensity are not defined in __init__ nor used later in code, do ze need to instantiate them ?
+        self.norm_wave_vector = np.linalg.norm(wave_vector, axis=1)
         self.scattering_intensity = estimate_scattering_intensity(
-            wave_vectors, self.data
+            wave_vector, self.data
         )
-        return self.norm_wave_vectors, self.scattering_intensity
+        return self.norm_wave_vector, self.scattering_intensity
 
     def plot_scattering_intensity_estimate(self, arg):
         """2D and  1D plot of the scattering intensity
