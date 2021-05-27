@@ -146,7 +146,7 @@ class StructureFactor(SymmetricFourierTransform):
         self.x_data = data[:, 0]
         self.y_data = data[:, 1]
 
-    def get_scattering_intensity_estimate(self, L, maximum_wave, n_k=None, arg="1D"):
+    def get_scattering_intensity_estimate(self, L, maximum_wave, meshgrid_size=None):
         # todo modifier la docstring
         # todo à changer les nom pour les rendrent plus facile
         """compute the ensemble estimator described in http://www.scoste.fr/survey_hyperuniformity.pdf.(equation 4.5)
@@ -157,8 +157,7 @@ class StructureFactor(SymmetricFourierTransform):
         Args:
             L (int): length of the square that contains the data.
             maximum_wave (int): maximum of wave vector
-            n_k (int): if arg=2D then n_k is the number of wave vector in each row. Defaults to None.
-            arg (str): (1D or 2D), chose of evaluation of the structure factor on vector(1D), or meshgrid(2D). Defaults to "1D".
+            meshgrid_size (int): if the evaluation is on a meshgrid then meshgrid_size is the number of wave vector in each row of the meshgrid. Defaults to None.
 
         Returns:
             norm_k (np.ndarray): wavelength of the wave vectors (x_k, y_k)
@@ -168,14 +167,14 @@ class StructureFactor(SymmetricFourierTransform):
         """
 
         maximum_k = np.floor(maximum_wave * L / (2 * np.pi))
-        if n_k is None:
+        if meshgrid_size is None:
             wave_vectors = np.zeros((int(maximum_k), self.d))
             wave_vectors[:, 0] = (2 * np.pi / L) * np.linspace(
                 1, maximum_k, int(maximum_k)
             )
             wave_vectors[:, 1] = wave_vectors[:, 0]
         else:
-            x_grid = np.linspace(0, maximum_k, int(n_k))
+            x_grid = np.linspace(0, maximum_k, int(meshgrid_size))
             xx, yy = np.meshgrid(x_grid, x_grid)
             wave_vectors = np.vstack((xx.ravel(), yy.ravel())).T
 
