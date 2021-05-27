@@ -147,7 +147,6 @@ class StructureFactor(SymmetricFourierTransform):
         self.y_data = data[:, 1]
 
     def get_scattering_intensity_estimate(self, L, maximum_wave, meshgrid_size=None):
-        # todo modifier la docstring
         # todo replace the link bellow to the link of our future paper :).
         """compute the ensemble estimator described in http://www.scoste.fr/survey_hyperuniformity.pdf.(equation 4.5).
         This estimation converges to the structure factor in the thermodynamic limits.
