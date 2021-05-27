@@ -24,6 +24,8 @@ rpy2.robjects.numpy2ri.activate()
 rpy2.robjects.numpy2ri.activate()
 pandas2ri.activate()
 
+# todo change `is None` to `is None`
+
 
 class SymmetricFourierTransform:
     """
@@ -33,6 +35,7 @@ class SymmetricFourierTransform:
     self....
     """
 
+    # todo give more explicit names to attributes: ex zeros -> quadrature_nodes
     def __init__(self, N, d=2, h=0.1):
         """
         Args:
@@ -43,46 +46,39 @@ class SymmetricFourierTransform:
         """
         if not isinstance(N, int):
             raise TypeError("N should be an integer.")
-        self._h = h
-        self.d = d
         self.N = N
+        self.d = d
+        self.step = h
+
+        self.k_min = 0.0
         self._zeros = roots(d, N)  # Xi
         self.x = get_x(h, self._zeros)  # pi*psi(h*ksi/pi)/h
         self.kernel = jv(d / 2 - 1, self.x)  # J_(d/2-1)(pi*psi(h*ksi))
         self.w = weight(d, self._zeros)  # (Y_0(pi*zeros)/J_1(pi*zeros))
         self.dpsi = d_psi(h * self._zeros)  # dpsi(h*ksi)
-        self._factor = None
+        # pi*w*J_(d/2-1)(x)*dpsi(h*zeros)
+        self._factor = np.pi * self.w * self.kernel * self.dpsi
 
-    def _f(self, r_vector, data_g):
+    # todo rename function eg interpolate_correlation_function, interpolate
+    def interpolate_correlation_function(self, r_vector, data_g):
         """given evaluations of the pair correlation function (g), it returns an interpolation of the total correlation function (h=g-1)
 
         Args:
             r_vector (np.array): vector containing the radius on which the pair correlation function is evaluated.
             data_g (np.array_like(r_vector)): vector containing the evaluations of the pair correlation function on r_vec.
         """
-        data_f = data_g - 1
-        self.f = interpolate.interp1d(
-            r_vector, data_f, axis=0, fill_value="extrapolate", kind="cubic"
+
+        return interpolate.interp1d(
+            r_vector, data_g - 1.0, axis=0, fill_value="extrapolate", kind="cubic"
         )
-        return self.f
-
-    def _k(self, k):
-        return np.array(np.array(k))
-
-    @property
-    def _series_fac(self):
-        if self._factor is None:
-            self._factor = (
-                np.pi * self.w * self.kernel * self.dpsi
-            )  # pi*w*J_(d/2-1)(x)*dpsi(h*zeros)
-        return self._factor
 
     def _get_series(self, f, k, alpha):
         with np.errstate(divide="ignore"):  # numpy safely divides by 0
             args = np.divide.outer(self.x, k).T  # x/k
         # pi*w*J_(d/2-1)(x)*dpsi(h*zeros)f(x/k)J_(d/2-1)(x)*x**(d/2)
-        return self._series_fac * (f(args) - 1 * alpha) * (self.x ** (self.d / 2))
+        return self._factor * (f(args) - 1 * alpha) * (self.x ** (self.d / 2))
 
+    # todo give more explicit names to arguments k -> wave_lengths, g -> pcf (pair correlation function)
     def transform(
         self,
         k,
@@ -103,24 +99,28 @@ class SymmetricFourierTransform:
             ret (np.array_like(k)): estimation of the fourier transform of the total correlation function.
             k_min (float): minimum confidence value of wavelength.
         """
-        k = self._k(k)
-        if g == None:
-            f = self._f(r_vector, data_g)
-            self.k_min = (np.pi * 3.2) / (self._h * np.max(r_vector))
+        k = np.array(k)
+        # todo naming is confusing between f, g and h = (g - 1)
+        if g is None:
+            f = self.interpolate_correlation_function(r_vector, data_g)
+            self.k_min = (np.pi * 3.2) / (self.step * np.max(r_vector))
             summation = self._get_series(f, k, alpha=0)  # pi*w*J0(x)
-
         else:
             self.k_min = np.min(k)
             summation = self._get_series(g, k, alpha=1)  # pi*w*J0(x)
 
-        ret = np.empty(k.shape, dtype=summation.dtype)
-        pi_factor = (2 * np.pi) ** (self.d / 2)
         # 2pi/k**2*sum(pi*w*f(x/k)J_0(x)*dpsi(h*ksi)*x)
-        ret = np.array(pi_factor * np.sum(summation, axis=-1) / np.array(k ** self.d))
-        return (ret, self.k_min)
+        ret = (
+            (2 * np.pi) ** (self.d / 2)
+            * np.sum(summation, axis=-1)
+            / np.array(k ** self.d)
+        )
+
+        return ret, self.k_min
 
 
 class StructureFactor(SymmetricFourierTransform):
+    # todo. clarify the inheritance from SymmetricFourierTransform. it is necessary ? Init from super is not used in __init__ but later and parent' methods don't seem to be used as intended.
     """implement various estimators of the structure factor of a point process.
 
     Args:
@@ -146,7 +146,7 @@ class StructureFactor(SymmetricFourierTransform):
         self.x_data = data[:, 0]
         self.y_data = data[:, 1]
 
-    def get_scattering_intensity_estimate(self, L, max_wave, n_k=None, arg="1D"):
+    def estimate_scattering_intensity(self, L, max_k, n_k=None, arg="1D"):
         # todo modifier la docstring
         # todo renommer max_k et explicité dans le docsting
         """compute the ensemble estimator described in http://www.scoste.fr/survey_hyperuniformity.pdf.(equation 4.5)
@@ -160,21 +160,22 @@ class StructureFactor(SymmetricFourierTransform):
             n_k (int): if arg=2D then n_k is the number of wave vector in each row. Defaults to None.
             arg (str): (1D or 2D), chose of evaluation of the structure factor on vector(1D), or meshgrid(2D). Defaults to "1D".
 
+
         Returns:
             norm_k (np.ndarray): wavelength of the wave vectors (x_k, y_k)
             si (np.ndarray_like(norm_k)): scattering intensity of the data on the wave vectors (x_k, y_k)
         """
 
-        max_wave = np.floor(max_k * L / (2 * np.pi * np.sqrt(2)))
+        max_k = np.floor(max_k * L / (2 * np.pi * np.sqrt(2)))
         if n_k is None:
-            wave_vectors = np.zeros((int(max_wave), self.d))
-            wave_vectors[:, 0] = np.linspace(1, max_wave, int(max_wave))
-            wave_vectors[:, 1] = wave_vectors[:, 0]
+            x = np.linspace(1, max_k, int(max_k))
+            wave_vectors = np.column_stack((x, x))
         else:
-            x_grid = np.linspace(0, max_wave, int(n_k))
+            x_grid = np.linspace(0, max_k, int(n_k))
             xx, yy = np.meshgrid(x_grid, x_grid)
-            wave_vectors = np.vstack((xx.ravel(), yy.ravel())).T
+            wave_vectors = np.column_stack((xx.ravel(), yy.ravel()))
 
+        # todo attributes self.norm_wave_vectors and self.scattering_intensity are not defined in __init__ nor used later in code, do ze need to instantiate them ?
         self.norm_wave_vectors = np.linalg.norm(wave_vectors, axis=1)
         self.scattering_intensity = estimate_scattering_intensity(
             wave_vectors, self.data
@@ -254,7 +255,7 @@ class StructureFactor(SymmetricFourierTransform):
                 "arg should be one of the following str: 'all', 'plot' and 'color_level'.  "
             )
 
-    def get_pcf_estimate(
+    def estimate_pcf(
         self, radius, args, correction_=None, r_vec=None, r_max=None, spar_=None
     ):
         """compute the pair correlation function of data using the R package spatstat pcf.ppp, and pcf. fv.
@@ -349,7 +350,7 @@ class StructureFactor(SymmetricFourierTransform):
         return self.pcf_estimation_pd
 
     def plot_pcf_estimate(self, args):
-        """plot the pair correlation function estimation approximated by get_pcf_estimate.
+        """plot the pair correlation function estimation approximated by estimate_pcf.
 
         Args:
             args (str): ('pcf', 'trans', 'iso' or 'un'), type of pcf already approximated.
@@ -382,7 +383,7 @@ class StructureFactor(SymmetricFourierTransform):
                  'pcf' if pcf.fv is used.
                  'trans', 'iso' or 'un': if pcf.ppp is used, and it specifies which edge correction is used. Defaults to None.
             arg_2 (str): [description]. Defaults to None.
-            g (func):  the pair correlation function if it is known and we need to evaluate the structure factor directly. Else approximated by get_pcf_estimate. Defaults to None.
+            g (func):  the pair correlation function if it is known and we need to evaluate the structure factor directly. Else approximated by estimate_pcf. Defaults to None.
             N (int): see the class SymmetricFourierTransform. Defaults to None.
             h (float): see the class SymmetricFourierTransform. Defaults to 0.1.
             k (np.array): see the class SymmetricFourierTransform. Defaults to None.
@@ -405,7 +406,7 @@ class StructureFactor(SymmetricFourierTransform):
                 "g should be of type function representing the pair correlation function."
             )
 
-        if g == None and g_key.count(args) == 0:
+        if g is None and g_key.count(args) == 0:
             raise ValueError(
                 "The data frame does not contains the chosen args. Check pcf_estimation_pd.keys() to plot one of them. "
             )
@@ -442,11 +443,12 @@ class StructureFactor(SymmetricFourierTransform):
             ax[1].set_ylabel("S(k)")
             ax[1].title.set_text("structure factor of data")
             plt.show()
-            return (norm_k, sf_estimation)
+            return norm_k, sf_estimation
 
         if arg_2 == "estimation_2":
-            if N == None:
+            if N is None:
                 N = 1000
+
             super().__init__(d=self.d, N=N, h=h)
 
             sf, self.k_min = super().transform(
@@ -477,4 +479,4 @@ class StructureFactor(SymmetricFourierTransform):
             ax[1].set_ylabel("S(k)")
             ax[1].title.set_text("structure factor of data")
             plt.show()
-            return (sf_estimation_2, self.k_min)
+            return sf_estimation_2, self.k_min
