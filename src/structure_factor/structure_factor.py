@@ -24,7 +24,8 @@ rpy2.robjects.numpy2ri.activate()
 rpy2.robjects.numpy2ri.activate()
 pandas2ri.activate()
 
-# todo change `is None` to `is None`
+
+# todo give explicit names to "args, arg1, arg2" arguments
 
 
 class SymmetricFourierTransform:
@@ -146,6 +147,9 @@ class StructureFactor(SymmetricFourierTransform):
         self.x_data = data[:, 0]
         self.y_data = data[:, 1]
 
+        self.norm_wave_vector = None
+        self.scattering_intensity = None
+
     def estimate_scattering_intensity(self, L, maximum_wave, meshgrid_size=None):
         # todo modifier la docstring
         # todo replace the link bellow to the link of our future paper :).
@@ -179,15 +183,16 @@ class StructureFactor(SymmetricFourierTransform):
             X, Y = np.meshgrid(x_grid, x_grid)
             wave_vector = np.column_stack((X.ravel(), Y.ravel()))
 
-        # todo attributes self.norm_wave_vector and self.scattering_intensity are not defined in __init__ nor used later in code, do ze need to instantiate them ?
-        self.norm_wave_vector = np.linalg.norm(wave_vector, axis=1)
-        self.scattering_intensity = estimate_scattering_intensity(
-            wave_vector, self.data
-        )
+        norm_wave_vector = np.linalg.norm(wave_vector, axis=1)
+        scattering_intensity = estimate_scattering_intensity(wave_vector, self.data)
         if meshgrid_size is not None:
-            self.norm_wave_vector = self.norm_wave_vector.reshape(X.shape)
-            self.scattering_intensity = self.scattering_intensity.reshape(X.shape)
-        return self.norm_wave_vector, self.scattering_intensity
+            norm_wave_vector = norm_wave_vector.reshape(X.shape)
+            scattering_intensity = scattering_intensity.reshape(X.shape)
+
+        self.norm_wave_vector = norm_wave_vector
+        self.scattering_intensity = scattering_intensity
+
+        return norm_wave_vector, scattering_intensity
 
     def plot_scattering_intensity_estimate(self, arg):
         """2D and  1D plot of the scattering intensity
@@ -212,14 +217,11 @@ class StructureFactor(SymmetricFourierTransform):
                 ax[1].set_xlabel("norm wave vector")
                 ax[1].set_ylabel("scattering intensity")
                 ax[1].title.set_text("loglog plot")
+                log_scattering_intensity = np.log10(scattering_intensity)
+                m, n = log_scattering_intensity.shape / 2
                 f_0 = ax[2].imshow(
-                    np.log10(scattering_intensity),
-                    extent=[
-                        -np.log10(scattering_intensity).shape[1] / 2.0,
-                        np.log10(scattering_intensity).shape[1] / 2.0,
-                        -np.log10(scattering_intensity).shape[0] / 2.0,
-                        np.log10(scattering_intensity).shape[0] / 2.0,
-                    ],
+                    log_scattering_intensity,
+                    extent=[-n, n, -m, m],
                     cmap="PRGn",
                 )
                 fig.colorbar(f_0, ax=ax[2])
@@ -235,7 +237,6 @@ class StructureFactor(SymmetricFourierTransform):
             plt.show()
         elif arg == "color_level":
             if np.min(norm_wave_vector.shape) == 1:
-
                 raise ValueError(
                     "the scattering intensity should be evaluated on a meshgrid or choose arg = 'plot'. "
                 )
@@ -376,9 +377,8 @@ class StructureFactor(SymmetricFourierTransform):
         plt.ylabel("g(r)")
         plt.title("Pair correlation function ")
 
-    def get_fourier_estimate(
-        self, args=None, arg_2=None, g=None, N=None, h=0.1, k=None
-    ):
+    # todo add a plot_fourier function should not plot anything
+    def estimate_fourier(self, args=None, arg_2=None, g=None, N=None, h=0.1, k=None):
         """compute an approximation of the structure factor by evaluating the Symmetric Fourier transform of the approximated pair correlation function or the exact if it's known.
 
         Args:
@@ -446,12 +446,13 @@ class StructureFactor(SymmetricFourierTransform):
             ax[1].set_ylabel("S(k)")
             ax[1].title.set_text("structure factor of data")
             plt.show()
-            return (norm_wave_vector, sf_estimation)
+            return norm_wave_vector, sf_estimation
 
         if arg_2 == "estimation_2":
             if N is None:
                 N = 1000
 
+            # todo: fix call to super(). which should invoked at initialization in __init__
             super().__init__(d=self.d, N=N, h=h)
 
             sf, self.k_min = super().transform(
