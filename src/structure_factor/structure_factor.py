@@ -148,41 +148,44 @@ class StructureFactor(SymmetricFourierTransform):
 
     def get_scattering_intensity_estimate(self, L, maximum_wave, meshgrid_size=None):
         # todo modifier la docstring
-        # todo à changer les nom pour les rendrent plus facile
-        """compute the ensemble estimator described in http://www.scoste.fr/survey_hyperuniformity.pdf.(equation 4.5)
-        which converges to the structure factor as n_data and the volume of the space goes to infinity.
-        Notes:  The data should be simulated in a square.
-                The allowed valued of wave vectors are 2*pi/n_data*k with k in Z*d
+        # todo replace the link bellow to the link of our future paper :).
+        """compute the ensemble estimator described in http://www.scoste.fr/survey_hyperuniformity.pdf.(equation 4.5).
+        This estimation converges to the structure factor in the thermodynamic limits.
+
+        Notes:  The data should be simulated inside a cube.
+                The allowed values of wave vectors are the points of the dual of the lattice having fundamental cell the cubic window .
+                This is represented inside wave_vectors which we defines as:
+                wave_vectors = 2*pi*k_vector/L
+                where, k_vector is a vector of integer from 1 into maximum_k, and L in the length side of the cubic window.
 
         Args:
             L (int): length of the square that contains the data.
             maximum_wave (int): maximum of wave vector
-            meshgrid_size (int): if the evaluation is on a meshgrid then meshgrid_size is the number of wave vector in each row of the meshgrid. Defaults to None.
+            meshgrid_size (int): if the requested evaluation is on a meshgrid,  then meshgrid_size is the number of wave vector in each row of the meshgrid. Defaults to None.
 
         Returns:
-            norm_k (np.ndarray): wavelength of the wave vectors (x_k, y_k)
-            si (np.ndarray_like(norm_k)): scattering intensity of the data on the wave vectors (x_k, y_k)
+            norm_wave_vector (np.ndarray): wavelength of the wave vectors (x_k, y_k)
+            scattering_intensity (np.ndarray_like(norm_wave_vector)): scattering intensity of the data on the wave vectors (x_k, y_k)
 
-        Note that: wave_vectors = 2*pi*k_vector/L where k_vector is a vector of integer from 1 into maximum_k
         """
 
         maximum_k = np.floor(maximum_wave * L / (2 * np.pi))
         if meshgrid_size is None:
-            wave_vectors = np.zeros((int(maximum_k), self.d))
-            wave_vectors[:, 0] = (2 * np.pi / L) * np.linspace(
+            wave_vector = np.zeros((int(maximum_k), self.d))
+            wave_vector[:, 0] = (2 * np.pi / L) * np.linspace(
                 1, maximum_k, int(maximum_k)
             )
-            wave_vectors[:, 1] = wave_vectors[:, 0]
+            wave_vector[:, 1] = wave_vector[:, 0]
         else:
             x_grid = np.linspace(0, maximum_k, int(meshgrid_size))
             xx, yy = np.meshgrid(x_grid, x_grid)
-            wave_vectors = np.vstack((xx.ravel(), yy.ravel())).T
+            wave_vector = np.vstack((xx.ravel(), yy.ravel())).T
 
-        self.norm_wave_vectors = np.linalg.norm(wave_vectors, axis=1)
+        self.norm_wave_vector = np.linalg.norm(wave_vector, axis=1)
         self.scattering_intensity = estimate_scattering_intensity(
-            wave_vectors, self.data
+            wave_vector, self.data
         )
-        return self.norm_wave_vectors, self.scattering_intensity
+        return self.norm_wave_vector, self.scattering_intensity
 
     def plot_scattering_intensity_estimate(self, arg):
         """2D and  1D plot of the scattering intensity
