@@ -9,6 +9,7 @@ from structure_factor.utils import (
     get_x,
     weight,
     estimate_scattering_intensity,
+    SymmetricFourierTransform,
 )
 import numpy as np
 import numpy.random as npr
@@ -28,100 +29,7 @@ pandas2ri.activate()
 # todo give explicit names to "args, arg1, arg2" arguments
 
 
-class SymmetricFourierTransform:
-    """
-    implement Symmetric Fourier transform based on OGATA paper "Integration Based On Bessel Function", with a change of variable allowing to
-    approximate the Symmetric Fourier transform, needed to approximate the structure factor of a set of data, by first approximating the pair
-    correlation function (of just having the exact function), and taking the Fourier transform of the total pair correlation function .
-    self....
-    """
-
-    # todo give more explicit names to attributes: ex zeros -> quadrature_nodes
-    def __init__(self, N, d=2, h=0.1):
-        """
-        Args:
-            d (int): dimension of the space. Defaults to 2.
-            N (int): number of sample points used to approximate the integral by a sum.
-            h (float): step size in the sum. Defaults to 0.1.
-            à ajouter les methods
-        """
-        if not isinstance(N, int):
-            raise TypeError("N should be an integer.")
-        self.N = N
-        self.d = d
-        self.step = h
-
-        self.k_min = 0.0
-        self._zeros = roots(d, N)  # Xi
-        self.x = get_x(h, self._zeros)  # pi*psi(h*ksi/pi)/h
-        self.kernel = jv(d / 2 - 1, self.x)  # J_(d/2-1)(pi*psi(h*ksi))
-        self.w = weight(d, self._zeros)  # (Y_0(pi*zeros)/J_1(pi*zeros))
-        self.dpsi = d_psi(h * self._zeros)  # dpsi(h*ksi)
-        # pi*w*J_(d/2-1)(x)*dpsi(h*zeros)
-        self._factor = np.pi * self.w * self.kernel * self.dpsi
-
-    # todo rename function eg interpolate_correlation_function, interpolate
-    def interpolate_correlation_function(self, r_vector, data_g):
-        """given evaluations of the pair correlation function (g), it returns an interpolation of the total correlation function (h=g-1)
-
-        Args:
-            r_vector (np.array): vector containing the radius on which the pair correlation function is evaluated.
-            data_g (np.array_like(r_vector)): vector containing the evaluations of the pair correlation function on r_vec.
-        """
-
-        return interpolate.interp1d(
-            r_vector, data_g - 1.0, axis=0, fill_value="extrapolate", kind="cubic"
-        )
-
-    def _get_series(self, f, k, alpha):
-        with np.errstate(divide="ignore"):  # numpy safely divides by 0
-            args = np.divide.outer(self.x, k).T  # x/k
-        # pi*w*J_(d/2-1)(x)*dpsi(h*zeros)f(x/k)J_(d/2-1)(x)*x**(d/2)
-        return self._factor * (f(args) - 1 * alpha) * (self.x ** (self.d / 2))
-
-    # todo give more explicit names to arguments k -> wave_lengths, g -> pcf (pair correlation function)
-    def transform(
-        self,
-        k,
-        g=None,
-        r_vector=None,
-        data_g=None,
-    ):
-        """Return an approximation of the symmetric Fourier transform of the total correlation function (h = g-1), and an estimation of the minimum confidence wave length.
-
-        Args:
-            k (np.array): vector containing the wavelength on which we want to approximate the structure factor.
-            g (func): Pair correlation function if it's  known, else it will be approximated using data_g and r_vector. Defaults to None ( in this case r_vector and data_g should be provided).
-            r_vector (np.array): vector containing the radius on which the pair correlation function is evaluated . Defaults to None.
-            data_g (np.array_like(r_vector)): vector containing the evaluations of the pair correlation function on r_vec. Defaults to None.
-
-
-        Returns:
-            ret (np.array_like(k)): estimation of the fourier transform of the total correlation function.
-            k_min (float): minimum confidence value of wavelength.
-        """
-        k = np.array(k)
-        # todo naming is confusing between f, g and h = (g - 1)
-        if g is None:
-            f = self.interpolate_correlation_function(r_vector, data_g)
-            self.k_min = (np.pi * 3.2) / (self.step * np.max(r_vector))
-            summation = self._get_series(f, k, alpha=0)  # pi*w*J0(x)
-        else:
-            self.k_min = np.min(k)
-            summation = self._get_series(g, k, alpha=1)  # pi*w*J0(x)
-
-        # 2pi/k**2*sum(pi*w*f(x/k)J_0(x)*dpsi(h*ksi)*x)
-        ret = (
-            (2 * np.pi) ** (self.d / 2)
-            * np.sum(summation, axis=-1)
-            / np.array(k ** self.d)
-        )
-
-        return ret, self.k_min
-
-
-class StructureFactor(SymmetricFourierTransform):
-    # todo. clarify the inheritance from SymmetricFourierTransform. it is necessary ? Init from super is not used in __init__ but later and parent' methods don't seem to be used as intended.
+class StructureFactor:
     """implement various estimators of the structure factor of a point process.
 
     Args:
@@ -217,7 +125,10 @@ class StructureFactor(SymmetricFourierTransform):
                 ax[1].set_ylabel("scattering intensity")
                 ax[1].title.set_text("loglog plot")
                 log_scattering_intensity = np.log10(scattering_intensity)
-                m, n = log_scattering_intensity.shape / 2
+                m, n = log_scattering_intensity.shape
+                m /= 2
+                n /= 2
+
                 f_0 = ax[2].imshow(
                     log_scattering_intensity,
                     extent=[-n, n, -m, m],
@@ -240,6 +151,7 @@ class StructureFactor(SymmetricFourierTransform):
                     "the scattering intensity should be evaluated on a meshgrid or choose arg = 'plot'. "
                 )
             else:
+                # todo changer les log10 comme en haut ligne 220
                 f_0 = plt.imshow(
                     np.log10(scattering_intensity),
                     extent=[
@@ -451,10 +363,10 @@ class StructureFactor(SymmetricFourierTransform):
             if N is None:
                 N = 1000
 
-            # todo: fix call to super(). which should invoked at initialization in __init__
-            super().__init__(d=self.d, N=N, h=h)
+            # todo mettre les nom par order
 
-            sf, self.k_min = super().transform(
+            transformer = SymmetricFourierTransform(d=self.d, N=N, h=h)
+            sf, self.k_min = transformer.transform(
                 k=k, g=g, data_g=g_to_plot, r_vector=r_vec
             )
             print("The reliable minimum wavelength is :", self.k_min)
