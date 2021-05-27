@@ -165,8 +165,8 @@ class StructureFactor(SymmetricFourierTransform):
 
 
         Returns:
-            norm_wave_vector (np.ndarray): wavelength of the wave vectors (x_k, y_k)
-            scattering_intensity (np.ndarray_like(norm_wave_vector)): scattering intensity of the data on the wave vectors (x_k, y_k)
+            norm_wave_vector (np.ndarray): wavelength of the wave vectors.
+            scattering_intensity (np.ndarray_like(norm_wave_vector)): scattering intensity of the data evaluated on the wave vectors.
 
         """
 
@@ -176,50 +176,49 @@ class StructureFactor(SymmetricFourierTransform):
             wave_vector = np.column_stack((x, x))
         else:
             x_grid = np.linspace(0, maximum_k, int(meshgrid_size))
-            xx, yy = np.meshgrid(x_grid, x_grid)
-            wave_vector = np.column_stack((xx.ravel(), yy.ravel()))
+            X, Y = np.meshgrid(x_grid, x_grid)
+            wave_vector = np.column_stack((X.ravel(), Y.ravel()))
 
         # todo attributes self.norm_wave_vector and self.scattering_intensity are not defined in __init__ nor used later in code, do ze need to instantiate them ?
         self.norm_wave_vector = np.linalg.norm(wave_vector, axis=1)
         self.scattering_intensity = estimate_scattering_intensity(
             wave_vector, self.data
         )
+        if meshgrid_size is not None:
+            self.norm_wave_vector = self.norm_wave_vector.reshape(X.shape)
+            self.scattering_intensity = self.scattering_intensity.reshape(X.shape)
         return self.norm_wave_vector, self.scattering_intensity
 
     def plot_scattering_intensity_estimate(self, arg):
         """2D and  1D plot of the scattering intensity
 
         Args:
-            arg (str): ("all","color_level" or "plot), is the plot visualization type.
+            arg (str): ("all","color_level" or "plot), is the type of the requested plot.
         """
-        x_k = self.x_k
-        y_k = self.y_k
-        si = self.si
-        norm_k = np.sqrt(np.abs(x_k) ** 2 + np.abs(y_k) ** 2)
-        ones_ = np.ones_like(x_k).T
-        x_ones_ = np.linspace(np.min(norm_k), np.max(norm_k), np.max(x_k.shape))
+        norm_wave_vector = self.norm_wave_vector
+        scattering_intensity = self.scattering_intensity
         if arg == "all":
-            if np.min(x_k.shape) == 1 or np.min(y_k.shape) == 1:
+            if np.min(norm_wave_vector.shape) == 1:
                 raise ValueError(
-                    "X_k, Y_k should be meshgrids or choose arg = 'plot'. "
+                    "the scattering intensity should be evaluated on a meshgrid or choose arg = 'plot'. "
                 )
             else:
                 fig, ax = plt.subplots(1, 3, figsize=(24, 7))
                 ax[0].plot(self.x_data, self.y_data, "b.")
                 ax[0].title.set_text("data")
-                ax[1].loglog(norm_k, si, "k,")
-                ax[1].loglog(x_ones_, ones_, "r--")
+                ax[1].loglog(norm_wave_vector, scattering_intensity, "k,")
+                ax[1].loglog(norm_wave_vector, np.ones_like(norm_wave_vector), "r--")
                 ax[1].legend(["Scattering intensity", "y=1"], shadow=True, loc=1)
-                ax[1].set_xlabel("wave length (k)")
-                ax[1].set_ylabel("scattering intensity (SI(k))")
+                ax[1].set_xlabel("norm wave vector")
+                ax[1].set_ylabel("scattering intensity")
                 ax[1].title.set_text("loglog plot")
                 f_0 = ax[2].imshow(
-                    np.log10(si),
+                    np.log10(scattering_intensity),
                     extent=[
-                        -np.log10(si).shape[1] / 2.0,
-                        np.log10(si).shape[1] / 2.0,
-                        -np.log10(si).shape[0] / 2.0,
-                        np.log10(si).shape[0] / 2.0,
+                        -np.log10(scattering_intensity).shape[1] / 2.0,
+                        np.log10(scattering_intensity).shape[1] / 2.0,
+                        -np.log10(scattering_intensity).shape[0] / 2.0,
+                        np.log10(scattering_intensity).shape[0] / 2.0,
                     ],
                     cmap="PRGn",
                 )
@@ -227,27 +226,27 @@ class StructureFactor(SymmetricFourierTransform):
                 ax[2].title.set_text("scattering intensity")
                 plt.show()
         elif arg == "plot":
-            plt.loglog(norm_k, si, "k,")
-            plt.loglog(x_ones_, ones_, "r--")
+            plt.loglog(norm_wave_vector, scattering_intensity, "k,")
+            plt.loglog(norm_wave_vector, np.ones_like(norm_wave_vector), "r--")
             plt.legend(["Scattering intensity", "y=1"], loc=1)
             plt.xlabel("wave length (k)")
             plt.ylabel("Scattering intensity (SI(k))")
             plt.title("loglog plot")
             plt.show()
         elif arg == "color_level":
-            if np.min(x_k.shape) == 1 or np.min(y_k.shape) == 1:
+            if np.min(norm_wave_vector.shape) == 1:
 
                 raise ValueError(
-                    "X_k, Y_k should be meshgrids or choose arg = 'plot'. "
+                    "the scattering intensity should be evaluated on a meshgrid or choose arg = 'plot'. "
                 )
             else:
                 f_0 = plt.imshow(
-                    np.log10(si),
+                    np.log10(scattering_intensity),
                     extent=[
-                        -np.log10(si).shape[1] / 2.0,
-                        np.log10(si).shape[1] / 2.0,
-                        -np.log10(si).shape[0] / 2.0,
-                        np.log10(si).shape[0] / 2.0,
+                        -np.log10(scattering_intensity).shape[1] / 2.0,
+                        np.log10(scattering_intensity).shape[1] / 2.0,
+                        -np.log10(scattering_intensity).shape[0] / 2.0,
+                        np.log10(scattering_intensity).shape[0] / 2.0,
                     ],
                     cmap="PRGn",
                 )
@@ -394,8 +393,8 @@ class StructureFactor(SymmetricFourierTransform):
 
         Returns:
              if arg_2 = estimation_1:
-                norm_k (np.array): array containing the norms of the elements of the wave vector on which the structure facture is approximated.
-                sf_estimation (np.array_like(norm_k)): array containing the estimation of the structure factor.
+                norm_wave_vector (np.array): array containing the norms of the elements of the wave vector on which the structure facture is approximated.
+                sf_estimation (np.array_like(norm_wave_vector)): array containing the estimation of the structure factor.
             if arg_2 = estimation_2:
                 sf_estimation_2 (np.array): array containing th estimation of the structure factor.
                 self.k_min (float): approximation of the reliable minimum wavelength.
@@ -428,7 +427,7 @@ class StructureFactor(SymmetricFourierTransform):
                 n_points=pcf_estimation_pd["r"].shape[0],
             )
             sf_estimation = 1 + intensity * transformer.qdht(h_estimation)
-            norm_k = transformer.kr
+            norm_wave_vector = transformer.kr
             ones_ = np.ones_like(sf_estimation)
 
             fig, ax = plt.subplots(1, 2, figsize=(24, 7))
@@ -439,15 +438,15 @@ class StructureFactor(SymmetricFourierTransform):
             ax[0].legend()
             ax[0].set_xlabel("r")
             ax[0].set_ylabel("g(r)")
-            ax[1].plot(norm_k[1:], sf_estimation[1:], "b")
-            ax[1].scatter(norm_k, sf_estimation, c="k", s=1, label="sf")
-            ax[1].plot(norm_k, ones_, "r--", label="y=1")
+            ax[1].plot(norm_wave_vector[1:], sf_estimation[1:], "b")
+            ax[1].scatter(norm_wave_vector, sf_estimation, c="k", s=1, label="sf")
+            ax[1].plot(norm_wave_vector, ones_, "r--", label="y=1")
             ax[1].legend()
             ax[1].set_xlabel("k")
             ax[1].set_ylabel("S(k)")
             ax[1].title.set_text("structure factor of data")
             plt.show()
-            return norm_k, sf_estimation
+            return (norm_wave_vector, sf_estimation)
 
         if arg_2 == "estimation_2":
             if N is None:
