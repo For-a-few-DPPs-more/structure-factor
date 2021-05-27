@@ -146,9 +146,10 @@ class StructureFactor(SymmetricFourierTransform):
         self.x_data = data[:, 0]
         self.y_data = data[:, 1]
 
-    def get_scattering_intensity_estimate(self, L, max_wave, n_k=None, arg="1D"):
+    def get_scattering_intensity_estimate(self, L, maximum_wave, n_k=None, arg="1D"):
         # todo modifier la docstring
-        # todo renommer max_k et explicité dans le docsting
+        # todo à changer les nom pour les rendrent plus facile
+        # todo renommer maximum_wave et expliquer plus dans le docsting
         """compute the ensemble estimator described in http://www.scoste.fr/survey_hyperuniformity.pdf.(equation 4.5)
         which converges to the structure factor as n_data and the volume of the space goes to infinity.
         Notes:  The data should be simulated in a square.
@@ -156,22 +157,26 @@ class StructureFactor(SymmetricFourierTransform):
 
         Args:
             L (int): length of the square that contains the data.
-            max_k (int): maximum k
+            maximum_wave (int): maximum of wave vector
             n_k (int): if arg=2D then n_k is the number of wave vector in each row. Defaults to None.
             arg (str): (1D or 2D), chose of evaluation of the structure factor on vector(1D), or meshgrid(2D). Defaults to "1D".
 
         Returns:
             norm_k (np.ndarray): wavelength of the wave vectors (x_k, y_k)
             si (np.ndarray_like(norm_k)): scattering intensity of the data on the wave vectors (x_k, y_k)
+
+        Note that: wave_vectors = 2*pi*k_vector/L where k_vector is a vector of integer from 1 into maximum_k
         """
 
-        max_wave = np.floor(max_k * L / (2 * np.pi * np.sqrt(2)))
+        maximum_k = np.floor(maximum_wave * L / (2 * np.pi))
         if n_k is None:
-            wave_vectors = np.zeros((int(max_wave), self.d))
-            wave_vectors[:, 0] = np.linspace(1, max_wave, int(max_wave))
+            wave_vectors = np.zeros((int(maximum_k), self.d))
+            wave_vectors[:, 0] = (2 * np.pi / L) * np.linspace(
+                1, maximum_k, int(maximum_k)
+            )
             wave_vectors[:, 1] = wave_vectors[:, 0]
         else:
-            x_grid = np.linspace(0, max_wave, int(n_k))
+            x_grid = np.linspace(0, maximum_k, int(n_k))
             xx, yy = np.meshgrid(x_grid, x_grid)
             wave_vectors = np.vstack((xx.ravel(), yy.ravel())).T
 
