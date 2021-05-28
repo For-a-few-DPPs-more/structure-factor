@@ -56,6 +56,7 @@ def estimate_scattering_intensity(wave_vectors, points):
 
 
 class SymmetricFourierTransform:
+    # todo renommer utils pars Ogata... car tout le mode est pour symmetric...  mettre le lien du papier Ogata, explicité les formule derier les fonction et variable, ajouter un test pour verifier que c'est bon
     """
     implement Symmetric Fourier transform based on OGATA paper "Integration Based On Bessel Function", with a change of variable allowing to
     approximate the Symmetric Fourier transform, needed to approximate the structure factor of a set of data, by first approximating the pair
@@ -81,11 +82,11 @@ class SymmetricFourierTransform:
         self.k_min = 0.0
         self._zeros = roots(d, N)  # Xi
         self.x = get_x(h, self._zeros)  # pi*psi(h*ksi/pi)/h
-        self.kernel = jv(d / 2 - 1, self.x)  # J_(d/2-1)(pi*psi(h*ksi))
-        self.w = weight(d, self._zeros)  # (Y_0(pi*zeros)/J_1(pi*zeros))
+        kernel = jv(d / 2 - 1, self.x)  # J_(d/2-1)(pi*psi(h*ksi))
+        w = weight(d, self._zeros)  # (Y_0(pi*zeros)/J_1(pi*zeros))
         self.dpsi = d_psi(h * self._zeros)  # dpsi(h*ksi)
         # pi*w*J_(d/2-1)(x)*dpsi(h*zeros)
-        self._factor = np.pi * self.w * self.kernel * self.dpsi
+        self._factor = np.pi * w * kernel * self.dpsi
 
     # todo rename function eg interpolate_correlation_function, interpolate
     def interpolate_correlation_function(self, r_vector, data_g):
@@ -138,10 +139,6 @@ class SymmetricFourierTransform:
             summation = self._get_series(g, k, alpha=1)  # pi*w*J0(x)
 
         # 2pi/k**2*sum(pi*w*f(x/k)J_0(x)*dpsi(h*ksi)*x)
-        ret = (
-            (2 * np.pi) ** (self.d / 2)
-            * np.sum(summation, axis=-1)
-            / np.array(k ** self.d)
-        )
+        ret = (2 * np.pi) ** (self.d / 2) * np.sum(summation, axis=-1) / k ** self.d
 
         return ret, self.k_min

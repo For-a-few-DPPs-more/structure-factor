@@ -3,11 +3,6 @@ import rpy2.robjects.packages as rpackages
 import rpy2.robjects as robjects
 from rpy2.robjects import r, pandas2ri
 from structure_factor.utils import (
-    roots,
-    psi,
-    d_psi,
-    get_x,
-    weight,
     estimate_scattering_intensity,
     SymmetricFourierTransform,
 )
@@ -59,7 +54,7 @@ class StructureFactor:
         self.scattering_intensity = None
 
     def estimate_scattering_intensity(self, L, maximum_wave, meshgrid_size=None):
-        # todo replace the link bellow to the link of our future paper :).
+        # todo replace the link below to the link of our future paper :).
         """compute the ensemble estimator described in http://www.scoste.fr/survey_hyperuniformity.pdf.(equation 4.5).
         This estimation converges to the structure factor in the thermodynamic limits.
 
@@ -288,7 +283,7 @@ class StructureFactor:
         plt.ylabel("g(r)")
         plt.title("Pair correlation function ")
 
-    # todo add a plot_fourier function should not plot anything
+    # todo add a plot_fourier function should not plot anything, add a plot_estimate_fourier and delete all plots from this function
     def estimate_fourier(self, args=None, arg_2=None, g=None, N=None, h=0.1, k=None):
         """compute an approximation of the structure factor by evaluating the Symmetric Fourier transform of the approximated pair correlation function or the exact if it's known.
 
@@ -363,7 +358,7 @@ class StructureFactor:
             if N is None:
                 N = 1000
 
-            # todo mettre les nom par order
+            # todo mettre les noms par order
 
             transformer = SymmetricFourierTransform(d=self.d, N=N, h=h)
             sf, self.k_min = transformer.transform(
