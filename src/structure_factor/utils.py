@@ -2,8 +2,9 @@
 # coding=utf-8
 
 import numpy as np
+
 from mpmath import fp as mpm
-from scipy.special import yv, jv
+from scipy.special import yv, jv, jn_zeros
 from scipy import interpolate
 
 
@@ -24,10 +25,6 @@ def roots(d, N):
     return np.array([mpm.besseljzero(d / 2 - 1, i + 1) for i in range(N)]) / np.pi
 
 
-def psi(t):
-    return t * np.tanh(np.pi * np.sinh(t) / 2)
-
-
 def get_x(h, zeros):
     return np.pi * psi(h * zeros) / h
 
@@ -36,23 +33,48 @@ def weight(d, zeros):
     return yv(d / 2 - 1, np.pi * zeros) / jv(d / 2, np.pi * zeros)
 
 
+def psi(t):
+    # equation 5.1 Ogata https://www.kurims.kyoto-u.ac.jp/~okamoto/paper/Publ_RIMS_DE/41-4-40.pdf
+    return t * np.tanh((np.pi / 2) * np.sinh(t))
+
+
 def d_psi(t):
-    t = np.array(t, dtype=float)
-    d_psi = np.ones_like(t)
-    exact_t = t < 6
-    t = t[exact_t]
-    d_psi[exact_t] = (np.pi * t * np.cosh(t) + np.sinh(np.pi * np.sinh(t))) / (
-        1.0 + np.cosh(np.pi * np.sinh(t))
-    )
-    return d_psi
+    # equation 5.1 Ogata https://www.kurims.kyoto-u.ac.jp/~okamoto/paper/Publ_RIMS_DE/41-4-40.pdf
+    threshold = 3.5  # threshold outside of which psi' plateaus to -1, 1
+    out = np.sign(t)
+    mask = np.abs(t) < threshold
+    x = t[mask]
+    out[mask] = np.pi * x * np.cosh(x) + np.sinh(np.pi * np.sinh(x))
+    out[mask] /= 1.0 + np.cosh(np.pi * np.sinh(x))
+    return out
 
 
-def estimate_scattering_intensity(wave_vectors, points):
-    scattering_intensity = (
-        np.abs(np.sum(np.exp(-1j * np.dot(wave_vectors, points.T)), axis=1)) ** 2
-    )
-    scattering_intensity /= points.shape[0]
-    return scattering_intensity
+def integrate_with_abs_odd_monomial(f, nu=0, h=0.1, n=100, f_even=False):
+    # Section 1 Ogata https://www.kurims.kyoto-u.ac.jp/~okamoto/paper/Publ_RIMS_DE/41-4-40.pdf
+    x = jn_zeros(nu, n)
+    weights = yv(nu, x) / jv(nu + 1, x)  # equation 1.2
+    x *= h / np.pi  # equivalent of xi variable
+    # equation 1.1
+    if f_even:
+        return 2.0 * h * np.sum(weights * np.power(x, 2 * nu + 1) * f(x))
+    return h * np.sum(weights * np.power(x, 2 * nu + 1) * (f(x) + f(-x)))
+
+
+def integrate_with_bessel_function_half_line(f, nu=0, h=0.01, n=1000):
+    # Section 5 Ogata https://www.kurims.kyoto-u.ac.jp/~okamoto/paper/Publ_RIMS_DE/41-4-40.pdf
+    t = jn_zeros(nu, n)
+    weights = yv(nu, t) / jv(nu + 1, t)  # equation 1.2
+    t *= h / np.pi  # equivalent of xi variable
+    # Change of variable equation 5.2
+    x = (np.pi / h) * psi(t)
+    return np.pi * np.sum(weights * f(x) * jv(nu, x) * d_psi(t))
+
+
+def estimate_scattering_intensity(k, x):
+    n = x.shape[0]
+    si = np.square(np.abs(np.sum(np.exp(-1j * np.dot(k, x.T)), axis=1)))
+    si /= n
+    return si
 
 
 class SymmetricFourierTransform:
