@@ -1,5 +1,5 @@
 import numpy as np
-import matplotlib.pyplot as plt
+import scipy.interpolate as interpolate
 
 from rpy2.robjects import numpy2ri
 
@@ -142,6 +142,20 @@ class StructureFactor:
         - :math:`\rho` is the intensity of the point process ``self.intensity``
         - :math:`g` is the corresponding radially symmetric pair correlation function ``pcf``.
 
+        Args:
+            k (np.ndarray): norm of the wave vectors where the structure factor is to be evaluated.
+            pcf ([type]): callable radially symmetric pair correlation function :math:`g`.
+            method (str, optional): select the method to compute the `Radially Symmetric Fourier transform <https://en.wikipedia.org/wiki/Hankel_transform#Fourier_transform_in_d_dimensions_(radially_symmetric_case)>`_ of :math:`g` as a Hankel transform.
+            Choose between "Ogata" or "BaddourChouinard". Defaults to "Ogata".
+            params: parameters passed to the corresponding Hankel transform :py:meth:`HankelTransFormOgata.transform` or :py:meth:`HankelTransFormBaddourChouinard.transform`.
+
+        Returns:
+            np.ndarray: :math:`SF(k)` evaluation of the structure factor at ``k``.
+
+        .. important::
+
+            The `Radially Symmetric Fourier transform <https://en.wikipedia.org/wiki/Hankel_transform#Fourier_transform_in_d_dimensions_(radially_symmetric_case)>`_ of :math:`g` is computed via
+
         .. note::
 
             Typical usage: ``pcf`` is estimated using :py:meth:`StructureFactor.compute_pcf` and then interpolated using :py:meth:`StructureFactor.interpolate_pair_correlation_function`.
@@ -149,8 +163,6 @@ class StructureFactor:
         # todo clarify whether is it F[g] or F[g-1]
         """
         assert callable(pcf)
-        d = self.dimension
-        rho = self.intensity
-        ft = RadiallySymmetricFourierTransform(dimension=d)
+        ft = RadiallySymmetricFourierTransform(dimension=self.dimension)
         ft_k = ft.transform(pcf, k, method=method, **params)
-        return 1.0 + rho * ft_k
+        return 1.0 + self.intensity * ft_k
