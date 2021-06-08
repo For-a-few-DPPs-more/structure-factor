@@ -3,7 +3,7 @@ import rpy2.robjects.packages as rpackages
 import rpy2.robjects as robjects
 from rpy2.robjects import r, pandas2ri
 from structure_factor.utils import (
-    estimate_scattering_intensity,
+    compute_scattering_intensity,
     SymmetricFourierTransform,
 )
 import numpy as np
@@ -86,7 +86,7 @@ class StructureFactor:
             wave_vector = np.column_stack((X.ravel(), Y.ravel()))
 
         norm_wave_vector = np.linalg.norm(wave_vector, axis=1)
-        scattering_intensity = estimate_scattering_intensity(wave_vector, self.data)
+        scattering_intensity = compute_scattering_intensity(wave_vector, self.data)
         if meshgrid_size is not None:
             norm_wave_vector = norm_wave_vector.reshape(X.shape)
             scattering_intensity = scattering_intensity.reshape(X.shape)

@@ -4,7 +4,7 @@
 import numpy as np
 
 from mpmath import fp as mpm
-from scipy.special import yv, jv, jn_zeros
+from scipy.special import j0, j1, jv, jn_zeros, y0, y1, yv
 from scipy import interpolate
 
 
@@ -20,6 +20,26 @@ def get_random_number_generator(seed):
     return np.random.default_rng(seed)
 
 
+def bessel1(order, x):
+    if order == 0:
+        return j0(x)
+    if order == 1:
+        return j1(x)
+    return jv(order, x)
+
+
+def bessel1_zeros(order, nb_zeros):
+    return jn_zeros(order, nb_zeros)
+
+
+def bessel2(order, x):
+    if order == 0:
+        return y0(x)
+    if order == 1:
+        return y1(x)
+    return yv(order, x)
+
+
 def roots(d, N):
     # first N Roots of the Bessel J_(d/2-1) functions divided by pi.
     return np.array([mpm.besseljzero(d / 2 - 1, i + 1) for i in range(N)]) / np.pi
@@ -30,12 +50,12 @@ def get_x(h, zeros):
 
 
 def weight(d, zeros):
-    return yv(d / 2 - 1, np.pi * zeros) / jv(d / 2, np.pi * zeros)
+    return bessel2(d / 2 - 1, np.pi * zeros) / bessel1(d / 2, np.pi * zeros)
 
 
 def psi(t):
     # equation 5.1 Ogata https://www.kurims.kyoto-u.ac.jp/~okamoto/paper/Publ_RIMS_DE/41-4-40.pdf
-    return t * np.tanh((np.pi / 2) * np.sinh(t))
+    return t * np.tanh((0.5 * np.pi) * np.sinh(t))
 
 
 def d_psi(t):
@@ -51,8 +71,8 @@ def d_psi(t):
 
 def integrate_with_abs_odd_monomial(f, nu=0, h=0.1, n=100, f_even=False):
     # Section 1 Ogata https://www.kurims.kyoto-u.ac.jp/~okamoto/paper/Publ_RIMS_DE/41-4-40.pdf
-    x = jn_zeros(nu, n)
-    weights = yv(nu, x) / jv(nu + 1, x)  # equation 1.2
+    x = bessel1_zeros(nu, n)
+    weights = bessel2(nu, x) / bessel1(nu + 1, x)  # equation 1.2
     x *= h / np.pi  # equivalent of xi variable
     # equation 1.1
     if f_even:
@@ -62,17 +82,18 @@ def integrate_with_abs_odd_monomial(f, nu=0, h=0.1, n=100, f_even=False):
 
 def integrate_with_bessel_function_half_line(f, nu=0, h=0.01, n=1000):
     # Section 5 Ogata https://www.kurims.kyoto-u.ac.jp/~okamoto/paper/Publ_RIMS_DE/41-4-40.pdf
-    t = jn_zeros(nu, n)
-    weights = yv(nu, t) / jv(nu + 1, t)  # equation 1.2
+    t = bessel1_zeros(nu, n)
+    weights = bessel2(nu, t) / bessel1(nu + 1, t)  # equation 1.2
     t *= h / np.pi  # equivalent of xi variable
     # Change of variable equation 5.2
     x = (np.pi / h) * psi(t)
-    return np.pi * np.sum(weights * f(x) * jv(nu, x) * d_psi(t))
+    return np.pi * np.sum(weights * f(x) * bessel1(nu, x) * d_psi(t))
 
 
-def estimate_scattering_intensity(k, x):
-    n = x.shape[0]
-    si = np.square(np.abs(np.sum(np.exp(-1j * np.dot(k, x.T)), axis=1)))
+def compute_scattering_intensity(k, data):
+    X = data
+    n = X.shape[0]
+    si = np.square(np.abs(np.sum(np.exp(-1j * np.dot(k, X.T)), axis=1)))
     si /= n
     return si
 
@@ -104,7 +125,7 @@ class SymmetricFourierTransform:
         self.k_min = 0.0
         self._zeros = roots(d, N)  # Xi
         self.x = get_x(h, self._zeros)  # pi*psi(h*ksi/pi)/h
-        kernel = jv(d / 2 - 1, self.x)  # J_(d/2-1)(pi*psi(h*ksi))
+        kernel = bessel1(d / 2 - 1, self.x)  # J_(d/2-1)(pi*psi(h*ksi))
         w = weight(d, self._zeros)  # (Y_0(pi*zeros)/J_1(pi*zeros))
         self.dpsi = d_psi(h * self._zeros)  # dpsi(h*ksi)
         # pi*w*J_(d/2-1)(x)*dpsi(h*zeros)
