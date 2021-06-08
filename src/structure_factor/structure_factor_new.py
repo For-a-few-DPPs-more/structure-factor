@@ -106,7 +106,7 @@ class StructureFactor:
         spatstat = SpatstatInterface(update=install_spatstat)
         spatstat.import_package("core", "geom", update=False)
 
-        window = spatstat.geom.disc(radius)
+        window = spatstat.geom.disc(radius=radius)
 
         numpy2ri.activate()
         data = spatstat.geom.ppp(*self.points.T, window=window)
@@ -158,7 +158,7 @@ class StructureFactor:
                 params = dict(
                     r_max=...,
                     nb_points=...,
-                    interpolotation_params=dict(:py:func:`scipy.integrate.interp1d` parameters)
+                    interpolation_params=dict(:py:func:`scipy.integrate.interp1d` parameters)
                 )
         Returns:
             np.ndarray: :math:`SF(k)` evaluation of the structure factor at ``k``.
