@@ -1,6 +1,6 @@
 import numpy as np
 import scipy.interpolate as interpolate
-
+import pandas as pd
 from rpy2.robjects import numpy2ri
 
 from structure_factor.utils import compute_scattering_intensity
@@ -20,7 +20,8 @@ class StructureFactor:
             intensity: intensity of the underlying point process.
 
         # todo treat the case where the intensity is not provided
-        # todo consider passing the window where the points were observed to avoid raidus in compute_pcf(self, radius...
+        # todo consider passing the window where the points were observed to avoid radius in compute_pcf(self, radius...
+        # todo est ce qu'on fait une class pointPatern  qui contient le window et les data et on le coupe pour que scattering intensitymarche?
         """
         dimension = points.shape[1]
         assert points.ndim == 2 and dimension == 2
@@ -43,6 +44,7 @@ class StructureFactor:
         Note: This estimation converges to the structure factor in the thermodynamic limits.
 
         Notes:  The data should be simulated inside a cube. # todo what is data ?
+        # todo self.data expliquer qui est data
                 The allowed values of wave vectors are the points of the dual of the lattice having fundamental cell the cubic window .
                 This is represented inside wave_vectors defined as :
                 wave_vectors = 2*pi*k_vector/L where, k_vector is a vector of integer from 1 into maximum_k, and L in the length side of the cubic window.
@@ -77,6 +79,8 @@ class StructureFactor:
         """Estimate the pair correlation function of ``self.points`` observed in a disk window centered at the origin with radius ``radius`` using spatstat ``spastat.core.pcf_ppp`` or ``spastat.core.pcf_fv`` functions according to ``method`` with the corresponding parameters ``params``.
 
         # todo consider adding the window where points were observed at __init__ to avoid radius argument.
+        # todo expliciter le radius fais quoi
+
         radius:
         method: "ppp" or "fv" referring to ``spastat.core.pcf.ppp`` or ``spastat.core.pcf.fv`` functions for estimating the pair correlation function.
         install_spatstat: [description], defaults to False
@@ -116,10 +120,10 @@ class StructureFactor:
             k_ripley = spatstat.core.Kest(data, **params_Kest)
             params_fv = params.get("fv", dict())
             pcf = spatstat.core.pcf_fv(k_ripley, **params_fv)
+        return pd.DataFrame(dict(zip(pcf.names, np.asarray(pcf))))
 
-        return dict(zip(pcf.names, np.asarray(pcf)))
-
-    def interpolate_pair_correlation_function(self, r, pcf_r, **params):
+    # todo faire une méthod pour cleaner les data "import pandas as pd approx_pcf_gin.replace([np.inf, -np.inf], np.nan, inplace=True) cleaned_pd_pcf = pd.DataFrame.from_records(approx_pcf_gin).fillna(0) "
+    def interpolate_pcf(self, r, pcf_r, **params):
         """Interpole given evaluations of the pair correlation function (g)Returns an interpolation of the total correlation function (h=g-1)
 
         Args:
@@ -130,17 +134,17 @@ class StructureFactor:
         # todo clarify whether is it F[g] or F[g-1]
         """
 
-        return interpolate.interp1d(r, pcf_r - 1.0, **params)
+        return interpolate.interp1d(r, pcf_r, **params)
 
     def compute_structure_factor(self, k, pcf, method="Ogata", **params):
         r"""Compute the structure factor of the underlying point process
         .. math::
 
-            SF(k) = 1 + \rho F[g](k)
+            SF(k) = 1 + \rho F[g-1](k)
 
         where
         - :math:`\rho` is the intensity of the point process ``self.intensity``
-        - :math:`g` is the corresponding radially symmetric pair correlation function ``pcf``.
+        - :math:`g` is the corresponding radially symmetric pair correlation function ``pcf``. Note that g-1 is also called total pair correlation function.
 
         Args:
             k (np.ndarray): norm of the wave vectors where the structure factor is to be evaluated.
@@ -161,8 +165,10 @@ class StructureFactor:
             Typical usage: ``pcf`` is estimated using :py:meth:`StructureFactor.compute_pcf` and then interpolated using :py:meth:`StructureFactor.interpolate_pair_correlation_function`.
 
         # todo clarify whether is it F[g] or F[g-1]
+        # todo
         """
         assert callable(pcf)
         ft = RadiallySymmetricFourierTransform(dimension=self.dimension)
-        ft_k = ft.transform(pcf, k, method=method, **params)
+        total_pcf = lambda r: pcf(r) - 1.0
+        ft_k = ft.transform(total_pcf, k, method=method, **params)
         return 1.0 + self.intensity * ft_k
