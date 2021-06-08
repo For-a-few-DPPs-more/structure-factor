@@ -1,7 +1,7 @@
 import numpy as np
 import scipy.interpolate as interpolate
 import pandas as pd
-from rpy2.robjects import numpy2ri
+import rpy2.robjects as robjects
 
 from structure_factor.utils import compute_scattering_intensity
 from structure_factor.transforms import RadiallySymmetricFourierTransform
@@ -108,9 +108,9 @@ class StructureFactor:
 
         window = spatstat.geom.disc(radius=radius)
 
-        numpy2ri.activate()
-        data = spatstat.geom.ppp(*self.points.T, window=window)
-        numpy2ri.deactivate()
+        x = robjects.vectors.FloatVector(self.points[:, 0])
+        y = robjects.vectors.FloatVector(self.points[:, 1])
+        data = spatstat.geom.ppp(x, y, window=window)
 
         if method == "ppp":
             pcf = spatstat.core.pcf_ppp(data, **params)
@@ -120,7 +120,8 @@ class StructureFactor:
             k_ripley = spatstat.core.Kest(data, **params_Kest)
             params_fv = params.get("fv", dict())
             pcf = spatstat.core.pcf_fv(k_ripley, **params_fv)
-        return pd.DataFrame(dict(zip(pcf.names, np.asarray(pcf))))
+
+        return pd.DataFrame(np.array(pcf).T, columns=pcf.names)
 
     # todo faire une méthod pour cleaner les data "import pandas as pd approx_pcf_gin.replace([np.inf, -np.inf], np.nan, inplace=True) cleaned_pd_pcf = pd.DataFrame.from_records(approx_pcf_gin).fillna(0) "
     def interpolate_pcf(self, r, pcf_r, **params):
