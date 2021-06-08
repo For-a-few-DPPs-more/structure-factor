@@ -4,43 +4,46 @@
 import unittest
 import numpy as np
 from scipy.special import k0
-from structure_factor.utils import (
-    integrate_with_abs_odd_monomial,
-    integrate_with_bessel_function_half_line,
+
+from structure_factor.transforms import (
+    ogata_integrate_with_abs_monomial,
+    HankelTransformOgata,
 )
 
 
-class TestIntegrateWithAbsoluteValueOfOddMonomial(unittest.TestCase):
+class TestOgataIntegrationAgainstAbsoluteValueOddMonomial(unittest.TestCase):
     # See Section 4 in Ogata
-    def test_f1(self):
+    def test_example1_section4(self):
         # See Section 4 "Example 1" in Ogata
-        f1 = lambda x: np.exp(-np.cosh(x)) / (1 + np.square(x))
-        nu = 0
-        actual = integrate_with_abs_odd_monomial(f1, nu)
+        f = lambda x: np.exp(-np.cosh(x)) / (1 + np.square(x))
+        order = 0
+        actual = ogata_integrate_with_abs_monomial(f, order)
         desired = 0.306354694925705
         np.testing.assert_almost_equal(actual, desired)
 
-    def test_f2(self):
+    def test_example2_section4(self):
         # See Section 4 "Example 2" in Ogata
-        f2 = lambda x: np.exp(-np.square(x))
-        nu = 0
-        actual = integrate_with_abs_odd_monomial(f2, nu)
+        f = lambda x: np.exp(-np.square(x))
+        order = 0
+        actual = ogata_integrate_with_abs_monomial(f, order)
         desired = 1.0
         np.testing.assert_almost_equal(actual, desired)
 
 
-class TestIntegrateWithBesselFunctionHalfLine(unittest.TestCase):
+class TestOgataHankelTransformEvaluatedAtOne(unittest.TestCase):
     # See Section 5 paragraph "Numerical Examples" in Ogata
-    def test_f3(self):
-        f3 = lambda x: np.ones_like(x)
-        nu = 0
-        actual = integrate_with_bessel_function_half_line(f3, nu)
+    order = 0
+    ht = HankelTransformOgata(order)
+    ht.compute_transformation_parameters(0.01, 300)
+
+    def test_numerical_example1_section5(self):
+        f = lambda r: 1.0 / r
+        _, actual = self.ht.transform(f, 1)
         desired = 1.0
         np.testing.assert_almost_equal(actual, desired)
 
-    def test_f4(self):
-        f4 = lambda x: x / (1 + np.square(x))
-        nu = 0
-        actual = integrate_with_bessel_function_half_line(f4, nu)
+    def test_numerical_example2_section5(self):
+        f = lambda r: 1.0 / (1.0 + r ** 2)
+        _, actual = self.ht.transform(f, 1)
         desired = k0(1)
         np.testing.assert_almost_equal(actual, desired)
