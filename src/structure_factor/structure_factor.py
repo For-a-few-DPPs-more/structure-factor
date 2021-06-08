@@ -7,12 +7,9 @@ from structure_factor.utils import (
     SymmetricFourierTransform,
 )
 import numpy as np
-import numpy.random as npr
 import matplotlib.pyplot as plt
 from pyhank import HankelTransform
-from scipy.integrate import quad
 from scipy import interpolate
-from scipy.special import jv
 import pandas as pd
 import rpy2.robjects.numpy2ri
 
@@ -42,6 +39,8 @@ class StructureFactor:
             IndexError: [description]
             ValueError: [description]
         """
+        # todo mettre tous les atttribus ici comme k_min
+        # todo enlever la dependence en x_data, y_data et garder que data
         if data.ndim != 2 and data.shape[1] != 2:
             raise ValueError("data must be nx2 array")
         self.n_data, self.d = data.shape
@@ -66,7 +65,7 @@ class StructureFactor:
 
         Args:
             L (int): length of the square that contains the data.
-            maximum_wave (int): maximum of wave vector
+            maximum_wave (int): maximum norm of the wave vector
             meshgrid_size (int): if the requested evaluation is on a meshgrid,  then meshgrid_size is the number of wave vector in each row of the meshgrid. Defaults to None.
 
 
@@ -76,12 +75,12 @@ class StructureFactor:
 
         """
 
-        maximum_k = np.floor(maximum_wave * L / (2 * np.pi * np.sqrt(2)))
+        maximum_k = np.floor(maximum_wave * L / (2 * np.pi))
         if meshgrid_size is None:
-            x = np.linspace(1, maximum_k, int(maximum_k))
+            x = 2 * np.pi / L * np.linspace(1, maximum_k, int(maximum_k))
             wave_vector = np.column_stack((x, x))
         else:
-            x_grid = np.linspace(0, maximum_k, int(meshgrid_size))
+            x_grid = np.linspace(0, maximum_wave, int(meshgrid_size))
             X, Y = np.meshgrid(x_grid, x_grid)
             wave_vector = np.column_stack((X.ravel(), Y.ravel()))
 
@@ -361,6 +360,7 @@ class StructureFactor:
             # todo mettre les noms par order
 
             transformer = SymmetricFourierTransform(d=self.d, N=N, h=h)
+            # todo il faut sortir de transform kmin car il n'est plus un atribu
             sf, self.k_min = transformer.transform(
                 k=k, g=g, data_g=g_to_plot, r_vector=r_vec
             )
