@@ -40,16 +40,19 @@ class HankelTransform(object):
 
 
 class HankelTransformBaddourChouinard(HankelTransform):
+    """Computation of the forward Hankel transform using the method of :cite:`BaCh15` considering that the input function is space-limited, i.e., :math:`f(r)=0` for :math:`r>r_{max}`"""
+
     def __init__(self, order=0):
         super(HankelTransformBaddourChouinard, self).__init__(order=order)
         self.bessel_zeros = None
-        self.r_max = None
-        self.transformation_matrix = None
+        self.r_max = None  # R in Section 4.B Space-Limited Function
+        self.transformation_matrix = None  # Y in Section 6.A
 
     def compute_transformation_parameters(self, r_max, nb_points):
         n = self.order
         bessel_zeros = bessel1_zeros(n, nb_points)
         jk, jN = bessel_zeros[:-1], bessel_zeros[-1]
+        # Section 6.A Transformation matrix
         Y = bessel1(n, np.outer(jk / jN, jk)) / np.square(bessel1(n + 1, jk))
         Y *= 2 / jN
 
@@ -57,13 +60,24 @@ class HankelTransformBaddourChouinard(HankelTransform):
         self.r_max = r_max
         self.transformation_matrix = Y
 
-    def transform(self, f, k=None, **interp1d_params):
+    def transform(self, f, k=None, **interpolotation_params):
+        """Compute Hankel transform :math:`HT[f](k)` of ``f`` evaluated at ``k``.
+        If ``k`` is None, values considered are ``k = self.bessel_zeros[:-1] / self.r_max`` derived from :py:meth:`HankelTransformBaddourChouinard.compute_transformation_parameters`.
+        If ``k`` is provided, the Hankel transform is first computed for the above k values (case k is None), then interpolated using :py:func:`scipy.interpolate.interp1d` with ``interpolotation_params`` and finally evaluated at the provided ``k`` values.
+
+        Args:
+            f (callable): function to be Hankel transformed
+            k (np.ndarray, optional): points of evaluation of the Hankel transform. Defaults to None.
+
+        Returns:
+            tuple(np.ndarray): :math:`k, HT[f](k)`
+        """
         assert callable(f)
         r_max = self.r_max
         Y = self.transformation_matrix
         jk, jN = self.bessel_zeros[:-1], self.bessel_zeros[-1]
         r = jk * (r_max / jN)
-        ht_k = (r_max ** 2 / jN) * Y.dot(f(r))
+        ht_k = (r_max ** 2 / jN) * Y.dot(f(r))  # Equation (23)
         _k = jk / r_max
         if k is not None:
             interp1d_params["assume_sorted"] = True
@@ -73,26 +87,47 @@ class HankelTransformBaddourChouinard(HankelTransform):
 
 
 class HankelTransformOgata(HankelTransform):
+    """Computation of the forward Hankel transform using the method of :cite:`Oga05` Section 5.
+
+    https://www.kurims.kyoto-u.ac.jp/~okamoto/paper/Publ_RIMS_DE/41-4-40.pdf"""
+
     def __init__(self, order=0):
         super(HankelTransformOgata, self).__init__(order=order)
         self.nodes, self.weights = None, None
 
     def compute_transformation_parameters(self, step_size=0.01, nb_points=300):
+        """Compute the quadrature nodes and weights used by :cite:`Oga05` Equation (5.2) to evaluate the Hankel-type transform.
+
+        Args:
+            step_size (float, optional): Step size of the discretization scheme. Defaults to 0.01.
+            nb_points (int, optional): Number of quadrature nodes. Defaults to 300.
+
+        Returns:
+            tuple(np.ndarray): quadrature nodes and weights
+        """
         n = self.order
         h = step_size
         N = nb_points
 
         t = bessel1_zeros(n, N)
-        weights = bessel2(n, t) / bessel1(n + 1, t)  # Eq 1.2
-        t *= h / np.pi  # equivalent of xi variable
+        weights = bessel2(n, t) / bessel1(n + 1, t)  # Equation (1.2)
+        t *= h / np.pi  # Equivalent of xi variable
         weights *= self.d_psi(t)
-        nodes = (np.pi / h) * self.psi(t)  # Change of variable Eq 5.2
+        nodes = (np.pi / h) * self.psi(t)  # Change of variable Equation (5.1)
         self.nodes, self.weights = nodes, weights
         return nodes, weights
 
     def transform(self, f, k):
+        """Compute Hankel transform :math:`HT[f](k)` of ``f`` evaluated at ``k``, following the work of :cite:`Oga05` Section 5.
+
+        Args:
+            f (callable): function to be Hankel transformed
+            k (np.ndarray, optional): points of evaluation of the Hankel transform. Defaults to None.
+
+        Returns:
+            tuple(np.ndarray): :math:`k, HT[f](k)`
+        """
         assert callable(f)
-        # Section 5 Ogata
         k_ = k[:, None] if isinstance(k, np.ndarray) else k
         g = lambda r: f(r / k_) * (r / np.square(k_))
         n = self.order
@@ -102,12 +137,12 @@ class HankelTransformOgata(HankelTransform):
 
     @staticmethod
     def psi(t):
-        # equation 5.1 Ogata https://www.kurims.kyoto-u.ac.jp/~okamoto/paper/Publ_RIMS_DE/41-4-40.pdf
+        """Function involved in the change of variable used by :cite:`Oga05` Equation (5.1)"""
         return t * np.tanh((0.5 * np.pi) * np.sinh(t))
 
     @staticmethod
     def d_psi(t):
-        # equation 5.1 Ogata https://www.kurims.kyoto-u.ac.jp/~okamoto/paper/Publ_RIMS_DE/41-4-40.pdf
+        """Function involved in the change of variable used by :cite:`Oga05` Equation (5.1)"""
         threshold = 3.5  # threshold outside of which psi' plateaus to -1, 1
         out = np.sign(t)
         mask = np.abs(t) < threshold

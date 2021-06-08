@@ -149,10 +149,17 @@ class StructureFactor:
         Args:
             k (np.ndarray): norm of the wave vectors where the structure factor is to be evaluated.
             pcf ([type]): callable radially symmetric pair correlation function :math:`g`.
-            method (str, optional): select the method to compute the `Radially Symmetric Fourier transform <https://en.wikipedia.org/wiki/Hankel_transform#Fourier_transform_in_d_dimensions_(radially_symmetric_case)>`_ of :math:`g` as a Hankel transform.
+            method (str, optional): select the method to compute the `Radially Symmetric Fourier transform <https://en.wikipedia.org/wiki/Hankel_transform#Fourier_transform_in_d_dimensions_(radially_symmetric_case)>`_ of :math:`g` as a Hankel transform :py:class:`HankelTransFormOgata` or :py:class:`HankelTransFormBaddourChouinard`.
             Choose between "Ogata" or "BaddourChouinard". Defaults to "Ogata".
-            params: parameters passed to the corresponding Hankel transform :py:meth:`HankelTransFormOgata.transform` or :py:meth:`HankelTransFormBaddourChouinard.transform`.
-
+            params: parameters passed to the corresponding Hankel transform
+            - ``method == "Ogata"``
+                params = dict(step_size=..., nb_points=...)
+            - ``method == "BaddourChouinard"``
+                params = dict(
+                    r_max=...,
+                    nb_points=...,
+                    interpolotation_params=dict(:py:func:`scipy.integrate.interp1d` parameters)
+                )
         Returns:
             np.ndarray: :math:`SF(k)` evaluation of the structure factor at ``k``.
 
