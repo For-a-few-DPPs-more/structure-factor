@@ -125,7 +125,7 @@ class StructureFactor:
 
     # todo faire une méthod pour cleaner les data "import pandas as pd approx_pcf_gin.replace([np.inf, -np.inf], np.nan, inplace=True) cleaned_pd_pcf = pd.DataFrame.from_records(approx_pcf_gin).fillna(0) "
     def interpolate_pcf(self, r, pcf_r, **params):
-        """Interpole given evaluations of the pair correlation function (g)Returns an interpolation of the total correlation function (h=g-1)
+        """Interpolate the pair correlation function (pcf) from evaluations ``(r, pcf_r)``.
 
         Args:
             r: vector containing the radius on which the pair correlation function is evaluated.
@@ -138,14 +138,15 @@ class StructureFactor:
         return interpolate.interp1d(r, pcf_r, **params)
 
     def compute_structure_factor(self, k, pcf, method="Ogata", **params):
-        r"""Compute the structure factor of the underlying point process
+        r"""Compute the `structure factor <https://en.wikipedia.org/wiki/Radial_distribution_function#The_structure_factor>`_ of the underlying point process at ``k`` from its pair correlation function ``pcf`` (assumed to be radially symmetric).
+
         .. math::
 
             SF(k) = 1 + \rho F[g-1](k)
 
         where
         - :math:`\rho` is the intensity of the point process ``self.intensity``
-        - :math:`g` is the corresponding radially symmetric pair correlation function ``pcf``. Note that g-1 is also called total pair correlation function.
+        - :math:`g` is the corresponding radially symmetric pair correlation function ``pcf``. Note that :math:`g-1` is also called total pair correlation function.
 
         Args:
             k (np.ndarray): norm of the wave vectors where the structure factor is to be evaluated.
@@ -159,14 +160,14 @@ class StructureFactor:
                 params = dict(
                     r_max=...,
                     nb_points=...,
-                    interpolotation_params=dict(:py:func:`scipy.integrate.interp1d` parameters)
+                    interpolotation=dict(:py:func:`scipy.integrate.interp1d` parameters)
                 )
         Returns:
             np.ndarray: :math:`SF(k)` evaluation of the structure factor at ``k``.
 
         .. important::
 
-            The `Radially Symmetric Fourier transform <https://en.wikipedia.org/wiki/Hankel_transform#Fourier_transform_in_d_dimensions_(radially_symmetric_case)>`_ of :math:`g` is computed via
+            The Fourier transform involved <https://en.wikipedia.org/wiki/Hankel_transform#Fourier_transform_in_d_dimensions_(radially_symmetric_case)>`_ of :math:`g` is computed via
 
         .. note::
 

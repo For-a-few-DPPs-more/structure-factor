@@ -8,7 +8,7 @@ from scipy import interpolate
 
 
 class RadiallySymmetricFourierTransform:
-    # https://en.wikipedia.org/wiki/Hankel_transform#Fourier_transform_in_d_dimensions_(radially_symmetric_case)
+    """Compute the Fourier transform of a radially symmetric function  using the `correspondance with the Hankel transform <https://en.wikipedia.org/wiki/Hankel_transform#Fourier_transform_in_d_dimensions_(radially_symmetric_case)>`_"""
 
     def __init__(self, dimension=0):
         assert isinstance(dimension, int)
@@ -20,9 +20,10 @@ class RadiallySymmetricFourierTransform:
         d = self.d
         order = d // 2 - 1
         ht = self._get_hankel_transformer(order, method)
+        interp_params = params.pop("interpolation", dict())
         ht.compute_transformation_parameters(**params)
         g = lambda r: f(r) * r ** order
-        return (2 * np.pi) ** (d / 2) * ht.transform(g, k)
+        return (2 * np.pi) ** (d / 2) * ht.transform(g, k, **interp_params)
 
     @staticmethod
     def _get_hankel_transformer(self, order, method):
@@ -40,7 +41,13 @@ class HankelTransform(object):
 
 
 class HankelTransformBaddourChouinard(HankelTransform):
-    """Computation of the forward Hankel transform using the method of :cite:`BaCh15` considering that the input function is space-limited, i.e., :math:`f(r)=0` for :math:`r>r_{max}`"""
+    """Computation of the forward Hankel transform using the method of :cite:`BaCh15` considering that the input function is space-limited, i.e., :math:`f(r)=0` for :math:`r>r_{max}`.
+
+    .. seealso::
+
+        - MatLab code of Baddour Chouinard https://openresearchsoftware.metajnl.com/articles/10.5334/jors.82/
+        - pyhank https://pypi.org/project/pyhank/
+    """
 
     def __init__(self, order=0):
         super(HankelTransformBaddourChouinard, self).__init__(order=order)
@@ -60,10 +67,10 @@ class HankelTransformBaddourChouinard(HankelTransform):
         self.r_max = r_max
         self.transformation_matrix = Y
 
-    def transform(self, f, k=None, **interpolotation_params):
+    def transform(self, f, k=None, **interpolation_params):
         """Compute Hankel transform :math:`HT[f](k)` of ``f`` evaluated at ``k``.
         If ``k`` is None, values considered are ``k = self.bessel_zeros[:-1] / self.r_max`` derived from :py:meth:`HankelTransformBaddourChouinard.compute_transformation_parameters`.
-        If ``k`` is provided, the Hankel transform is first computed for the above k values (case k is None), then interpolated using :py:func:`scipy.interpolate.interp1d` with ``interpolotation_params`` and finally evaluated at the provided ``k`` values.
+        If ``k`` is provided, the Hankel transform is first computed for the above k values (case k is None), then interpolated using :py:func:`scipy.interpolate.interp1d` with ``interpolation_params`` and finally evaluated at the provided ``k`` values.
 
         Args:
             f (callable): function to be Hankel transformed
@@ -80,8 +87,8 @@ class HankelTransformBaddourChouinard(HankelTransform):
         ht_k = (r_max ** 2 / jN) * Y.dot(f(r))  # Equation (23)
         _k = jk / r_max
         if k is not None:
-            interp1d_params["assume_sorted"] = True
-            ht = interpolate.interp1d(_k, ht_k, **interp1d_params)
+            interpolation_params["assume_sorted"] = True
+            ht = interpolate.interp1d(_k, ht_k, **interpolation_params)
             return k, ht(k)
         return _k, ht_k
 
@@ -89,7 +96,10 @@ class HankelTransformBaddourChouinard(HankelTransform):
 class HankelTransformOgata(HankelTransform):
     """Computation of the forward Hankel transform using the method of :cite:`Oga05` Section 5.
 
-    https://www.kurims.kyoto-u.ac.jp/~okamoto/paper/Publ_RIMS_DE/41-4-40.pdf"""
+    .. seealso::
+
+        hankel https://joss.theoj.org/papers/10.21105/joss.01397
+    """
 
     def __init__(self, order=0):
         super(HankelTransformOgata, self).__init__(order=order)
