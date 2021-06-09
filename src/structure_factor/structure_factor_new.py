@@ -106,7 +106,7 @@ class StructureFactor:
         spatstat = SpatstatInterface(update=install_spatstat)
         spatstat.import_package("core", "geom", update=False)
 
-        window = spatstat.geom.disc(radius)
+        window = spatstat.geom.disc(radius=radius)
 
         x = robjects.vectors.FloatVector(self.points[:, 0])
         y = robjects.vectors.FloatVector(self.points[:, 1])
