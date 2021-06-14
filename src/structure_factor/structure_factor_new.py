@@ -35,6 +35,7 @@ class StructureFactor:
 
     def compute_scattering_intensity(self, L, maximum_wave, meshgrid_size=None):
         # todo replace the link below to the link of our future paper.
+        # todo si should be binned then a line should be fitted representing si
         r"""Compute the ensemble estimator of the scattering intensity described in http://www.scoste.fr/survey_hyperuniformity.pdf.(equation 4.5).
 
         .. math::
