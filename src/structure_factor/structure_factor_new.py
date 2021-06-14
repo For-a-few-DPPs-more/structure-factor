@@ -9,7 +9,13 @@ from structure_factor.spatstat_interface import SpatstatInterface
 
 
 class StructureFactor:
-    """Implementation of various estimators of the structure factor of a 2 dimensional point process of intensity math:`\rho`, defined as :math: `S(|\mathbf{k}|) = 1 + \rho \mathcal{F}( g-1)(\mathbf{k})`, where :math:`\mathcal{F}`is the Fourier transform and :math: `g` is the pair correlation function (also known as radial distribution function). see http://chemlabs.princeton.edu/torquato/wp-content/uploads/sites/12/2018/06/paper-401.pdf page: 8"""
+    """Implementation of various estimators of the structure factor of a 2 dimensional point process of intensity math:`\rho`, defined as
+    :math:
+    `S(\mathbf{k}) = 1 + \rho \mathcal{F}( g-1)(\mathbf{k})`,
+    where :math: `\mathcal{F}`is the Fourier transform
+          :math: `g` is the pair correlation function (also known as radial distribution function).
+          :math: `\mathbf{k}`is a wave in :math: `\mathhb{R}^2`
+    see http://chemlabs.princeton.edu/torquato/wp-content/uploads/sites/12/2018/06/paper-401.pdf page: 8"""
 
     def __init__(self, points, intensity):
         r"""
@@ -134,23 +140,25 @@ class StructureFactor:
 
         return interpolate.interp1d(r, pcf_r, **params)
 
+    # todo à voir pourquoi ``r`` n'est pas en entrée pcf n'est pas tout le temps une fonction . to see in detail in the second check
     def compute_structure_factor(self, k, pcf, method="Ogata", **params):
         r"""Compute the `structure factor <https://en.wikipedia.org/wiki/Radial_distribution_function#The_structure_factor>`_ of the underlying point process at ``k`` from its pair correlation function ``pcf`` (assumed to be radially symmetric).
 
         .. math::
 
-            SF(k) = 1 + \rho F[g-1](k)
+            S(\mathbf{k}) = 1 + \rho \mathcal{F}( g-1)(\mathbf{k})
 
         where
         - :math:`\rho` is the intensity of the point process ``self.intensity``
         - :math:`g` is the corresponding radially symmetric pair correlation function ``pcf``. Note that :math:`g-1` is also called total pair correlation function.
 
         Args:
-            k (np.ndarray): norm of the wave vectors where the structure factor is to be evaluated.
+            k (np.ndarray): vector containing the norms of the waves where the structure factor is to be evaluated.
             pcf ([type]): callable radially symmetric pair correlation function :math:`g`.
             method (str, optional): select the method to compute the `Radially Symmetric Fourier transform <https://en.wikipedia.org/wiki/Hankel_transform#Fourier_transform_in_d_dimensions_(radially_symmetric_case)>`_ of :math:`g` as a Hankel transform :py:class:`HankelTransFormOgata` or :py:class:`HankelTransFormBaddourChouinard`.
             Choose between "Ogata" or "BaddourChouinard". Defaults to "Ogata".
             params: parameters passed to the corresponding Hankel transform
+            # todo à la place de faire une méthod d'interpolation puis passé la fonction intérpolé à "Ogata" on peut la faire à l'interieur de "Ogata" comme "BaddourChouinard". to see in detail in the second check...
             - ``method == "Ogata"``
                 params = dict(step_size=..., nb_points=...)
             - ``method == "BaddourChouinard"``
@@ -163,15 +171,12 @@ class StructureFactor:
             np.ndarray: :math:`SF(k)` evaluation of the structure factor at ``k``.
 
         .. important::
-
+            # todo ``pcf`` could be a function ... to see in detail ....
             The Fourier transform involved <https://en.wikipedia.org/wiki/Hankel_transform#Fourier_transform_in_d_dimensions_(radially_symmetric_case)>`_ of :math:`g` is computed via
 
         .. note::
 
             Typical usage: ``pcf`` is estimated using :py:meth:`StructureFactor.compute_pcf` and then interpolated using :py:meth:`StructureFactor.interpolate_pair_correlation_function`.
-
-        # todo clarify whether is it F[g] or F[g-1]
-        # todo
         """
         assert callable(pcf)
         ft = RadiallySymmetricFourierTransform(dimension=self.dimension)
