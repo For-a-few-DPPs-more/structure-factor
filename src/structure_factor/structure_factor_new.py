@@ -59,23 +59,33 @@ class StructureFactor:
         Returns:
             :math:`\left\lVert k \right\rVert, SI(K)`, the norm of the wave vectors :math:`k` and the estimation of the scattering intensity evaluated at :math:`k`.
         """
-        maximum_k = np.floor(maximum_wave * L / (2 * np.pi * np.sqrt(2)))
+        maximum_k = np.floor(
+            maximum_wave * L / (2 * np.pi * np.sqrt(2))
+        )  # maximum of ``k_vector``
         if meshgrid_size is None:
-            x = np.linspace(1, maximum_k, int(maximum_k))
-            k_ = np.column_stack((x, x))
+            k_vector = np.linspace(1, maximum_k, int(maximum_k))  # k_vector
+            wave_vector = (
+                2 * np.pi * np.column_stack((k_vector, k_vector)) / L
+            )  # 2-dimensional vector of allowed waves
         else:
             x_grid = np.linspace(0, maximum_k, int(meshgrid_size))
             X, Y = np.meshgrid(x_grid, x_grid)
-            k_ = np.column_stack((X.ravel(), Y.ravel()))
+            wave_vector = np.column_stack((X.ravel(), Y.ravel()))
 
-        k_norm = np.linalg.norm(k_, axis=1)
-        si = compute_scattering_intensity(k_, self.points)
+        si = compute_scattering_intensity(
+            wave_vector, self.points
+        )  # scattering intensity of ``self.points`` evaluated on the allowed waves ``wave_vector``
+        wave_length = np.linalg.norm(wave_vector, axis=1)  # norm of the ``wave_vector``
 
         if meshgrid_size is not None:
-            k_norm = k_norm.reshape(X.shape)
-            si = si.reshape(X.shape)
+            wave_length = wave_length.reshape(
+                X.shape
+            )  # reshape the ``wave_vector`` to the correct shape
+            si = si.reshape(
+                X.shape
+            )  # reshape the scattering intensity ``si`` to the correct shape
 
-        return k_norm, si
+        return wave_length, si
 
     def compute_pcf(self, radius, method, install_spatstat=False, **params):
         # todo consider choosing a different window shape
