@@ -9,19 +9,17 @@ from structure_factor.spatstat_interface import SpatstatInterface
 
 
 class StructureFactor:
-    """Implementation of various estimators of the structure factor of a 2 dimensional point process.
-    # todo add link to definition
-    """
+    """Implementation of various estimators of the structure factor of a 2 dimensional point process of intensity math:`\rho`, defined as :math: `S(|\mathbf{k}|) = 1 + \rho \mathcal{F}( g-1)(\mathbf{k})`, where :math:`\mathcal{F}`is the Fourier transform and :math: `g` is the pair correlation function (also known as radial distribution function). see http://chemlabs.princeton.edu/torquato/wp-content/uploads/sites/12/2018/06/paper-401.pdf page: 8"""
 
     def __init__(self, points, intensity):
         r"""
         Args:
             points: :math:`n \times 2` np.array representing a realization of a 2 dimensional point process.
-            intensity: intensity of the underlying point process.
-
+            intensity: intensity of the underlying point process represented by `points`.
+        # todo a distcuter les following todo avec Rémi le jeudi
         # todo treat the case where the intensity is not provided
         # todo consider passing the window where the points were observed to avoid radius in compute_pcf(self, radius...
-        # todo est ce qu'on fait une class pointPatern  qui contient le window et les data et on le coupe pour que scattering intensitymarche?
+        # todo est ce qu'on fait une class pointPatern  qui contient le window et les data et on le coupe pour que scattering intensity marche?
         """
         dimension = points.shape[1]
         assert points.ndim == 2 and dimension == 2
@@ -43,16 +41,14 @@ class StructureFactor:
 
         Note: This estimation converges to the structure factor in the thermodynamic limits.
 
-        Notes:  The data should be simulated inside a cube. # todo what is data ?
-        # todo self.data expliquer qui est data
-                The allowed values of wave vectors are the points of the dual of the lattice having fundamental cell the cubic window .
-                This is represented inside wave_vectors defined as :
-                wave_vectors = 2*pi*k_vector/L where, k_vector is a vector of integer from 1 into maximum_k, and L in the length side of the cubic window.
+        Notes:  The points should be simulated inside a cube.
+                The allowed values of wave vectors are the points of the dual lattice of the lattice having fundamental cell the cubic window.
+                This is represented inside wave_vectors defined as, math: `wave_vectors = 2 \pi k_vector /L`, where k_vector is a vector of integer from 1 into maximum_k, and L in the length side of the cubic window that contains `points`. see # todo put the link of our paper
 
         Args:
-            L (int): length of the square that contains the data.
-            maximum_wave (int): maximum of wave vector
-            meshgrid_size (int): if the requested evaluation is on a meshgrid,  then meshgrid_size is the number of wave vector in each row of the meshgrid. Defaults to None.
+            L (int): side length of the cubic window that contains ``points``.
+            maximum_wave (int): maximum norm of ``wave_vector``. The user can't chose the ``wave_vector`` (defined above) since there's only a specific allowed values of ``wave_vector`` used in the estimation of the structure factor by the scattering intensity, but the user can  specify in ``maximum_wave`` the maximum norm of ``wave_vector``.
+            meshgrid_size (int): if the requested evaluation is on a meshgrid,  then ``meshgrid_size`` is the number of waves in each row of the meshgrid. Defaults to None.
 
         Returns:
             :math:`\left\lVert k \right\rVert, SI(K)`, the norm of the wave vectors :math:`k` and the estimation of the scattering intensity evaluated at :math:`k`.
@@ -76,6 +72,7 @@ class StructureFactor:
         return k_norm, si
 
     def compute_pcf(self, radius, method, install_spatstat=False, **params):
+        # todo consider choosing a different window shape
         """Estimate the pair correlation function of ``self.points`` observed in a disk window centered at the origin with radius ``radius`` using spatstat ``spastat.core.pcf_ppp`` or ``spastat.core.pcf_fv`` functions according to ``method`` with the corresponding parameters ``params``.
 
         # todo consider adding the window where points were observed at __init__ to avoid radius argument.
@@ -126,13 +123,13 @@ class StructureFactor:
     # todo faire une méthod pour cleaner les data "import pandas as pd approx_pcf_gin.replace([np.inf, -np.inf], np.nan, inplace=True) cleaned_pd_pcf = pd.DataFrame.from_records(approx_pcf_gin).fillna(0) "
     def interpolate_pcf(self, r, pcf_r, **params):
         """Interpolate the pair correlation function (pcf) from evaluations ``(r, pcf_r)``.
+        Note : if ``pcf_r``contains "Inf", you can clean the ``pcf_r``using the method ``cleaning_data``.
 
         Args:
             r: vector containing the radius on which the pair correlation function is evaluated.
-            pcf_r: vector containing the evaluations of the pair correlation function on r_vec.
+            pcf_r: vector containing the evaluations of the pair correlation function on ``r``.
             params: dict of the parameters of :py:func:`scipy.interpolate.interp1d` function.
 
-        # todo clarify whether is it F[g] or F[g-1]
         """
 
         return interpolate.interp1d(r, pcf_r, **params)
