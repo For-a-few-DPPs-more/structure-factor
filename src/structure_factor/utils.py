@@ -7,6 +7,25 @@ from mpmath import fp as mpm
 from scipy.special import j0, j1, jv, jn_zeros, y0, y1, yv
 from scipy import interpolate
 
+# todo bien renomer les variables
+
+
+def binning_function(r_vector, data, bins_number):
+    r"""
+    binning function for ploting the scattering intensity
+    """
+    step = (np.max(r_vector) - np.min(r_vector)) / bins_number
+    binned_data = []
+    binned_r = []
+    for i in range(1, bins_number + 1):
+        index = (r_vector <= np.min(r_vector) + i * step) & (
+            r_vector >= np.min(r_vector + (i - 1) * step)
+        )
+        binned_r.append(np.mean(r_vector[index]))
+        binned_data.append(np.mean(data[index]))
+    print(np.min(r_vector) + i * step, np.max(r_vector))
+    return (binned_r, binned_data)
+
 
 def get_random_number_generator(seed):
     """Turn seed into a np.random.Generator instance"""
