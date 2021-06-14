@@ -34,7 +34,7 @@ class StructureFactor:
         self.intensity = intensity
 
     def compute_scattering_intensity(self, L, maximum_wave, meshgrid_size=None):
-        # todo replace the link below to the link of our future paper :).
+        # todo replace the link below to the link of our future paper.
         r"""Compute the ensemble estimator of the scattering intensity described in http://www.scoste.fr/survey_hyperuniformity.pdf.(equation 4.5).
 
         .. math::
@@ -49,7 +49,7 @@ class StructureFactor:
 
         Notes:  The points should be simulated inside a cube.
                 The allowed values of wave vectors are the points of the dual lattice of the lattice having fundamental cell the cubic window.
-                This is represented inside wave_vectors defined as, math: `wave_vectors = 2 \pi k_vector /L`, where k_vector is a vector of integer from 1 into maximum_k, and L in the length side of the cubic window that contains `points`. see # todo put the link of our paper
+                This is represented inside wave_vectors defined as, math: `wave_vectors = (2 \pi k_vector) /L`, where k_vector is a vector of integer from 1 into maximum_k, and L in the length side of the cubic window that contains `points`. see # todo put the link of our paper
 
         Args:
             L (int): side length of the cubic window that contains ``points``.
@@ -68,7 +68,7 @@ class StructureFactor:
                 2 * np.pi * np.column_stack((k_vector, k_vector)) / L
             )  # 2-dimensional vector of allowed waves
         else:
-            x_grid = np.linspace(0, maximum_k, int(meshgrid_size))
+            x_grid = np.linspace(-maximum_wave, maximum_wave, int(meshgrid_size))
             X, Y = np.meshgrid(x_grid, x_grid)
             wave_vector = np.column_stack((X.ravel(), Y.ravel()))
 
