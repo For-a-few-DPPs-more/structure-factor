@@ -11,10 +11,18 @@ from scipy import interpolate
 # todo clean up the file: remove unused utility functions like get_x, roots etc
 
 def binning_function(x_vector, y_vector, bins_number):
-    """this function divids ``r_vector`` into ``bins_number`` subinterval, and find the associated mean of r_vector,  ,
     #todo please detail what the function is doing and why print is used
     #todo consider changing the name binning_function is indeed a function, there's no need to have a "function" in its name
-    binning function for ploting the scattering intensity
+    """this function divids ``x_vector`` into ``bins_number`` subinterval, and find the associated mean of ``x_vector`` and ``y_vector`` over the subintervals.
+
+    Args:
+        x_vector (np.array): vector of x coordinates
+        y_vector (np.array): vector of y coordinates
+        bins_number (int): number of required bins
+
+    Returns:
+        binned_x: list of the average values of ``x_vector``over the bins
+        binned_y: list of the average values of ``y_vector``over the bins
     """
     step = (np.max(x_vector) - np.min(x_vector)) / bins_number
     binned_y = []
@@ -26,7 +34,7 @@ def binning_function(x_vector, y_vector, bins_number):
         binned_x.append(np.mean(x_vector[index]))
         binned_y.append(np.mean(y_vector[index]))
     print(np.min(x_vector) + i * step, np.max(x_vector))
-    return (binned_r, binned_y)
+    return (binned_x, binned_y)
 
 
 def get_random_number_generator(seed):
