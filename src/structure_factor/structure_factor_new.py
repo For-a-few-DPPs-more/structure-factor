@@ -3,7 +3,10 @@ import scipy.interpolate as interpolate
 import pandas as pd
 import rpy2.robjects as robjects
 
-from structure_factor.utils import compute_scattering_intensity
+from structure_factor.utils import (
+    compute_scattering_intensity,
+    plot_scattering_intensity_estimate,
+)
 from structure_factor.transforms import RadiallySymmetricFourierTransform
 from structure_factor.spatstat_interface import SpatstatInterface
 
@@ -33,7 +36,15 @@ class StructureFactor:
         self.points = points
         self.intensity = intensity
 
-    def compute_scattering_intensity(self, L, maximum_wave, meshgrid_size=None):
+    def compute_scattering_intensity(
+        self,
+        L,
+        maximum_wave,
+        meshgrid_size=None,
+        plot_param="true",
+        bins_number=20,
+        plot_type="plot",
+    ):
         # todo replace the link below to the link of our future paper.
         # todo si should be binned then a line should be fitted representing si
         r"""Compute the ensemble estimator of the scattering intensity described in http://www.scoste.fr/survey_hyperuniformity.pdf.(equation 4.5).
@@ -56,6 +67,9 @@ class StructureFactor:
             L (int): side length of the cubic window that contains ``points``.
             maximum_wave (int): maximum norm of ``wave_vector``. The user can't chose the ``wave_vector`` (defined above) since there's only a specific allowed values of ``wave_vector`` used in the estimation of the structure factor by the scattering intensity, but the user can  specify in ``maximum_wave`` the maximum norm of ``wave_vector``.
             meshgrid_size (int): if the requested evaluation is on a meshgrid,  then ``meshgrid_size`` is the number of waves in each row of the meshgrid. Defaults to None.
+            plot_param (str): "true" or "false", parameter to precise whether to show the plot of to hide it. Defaults to "true"
+            plot_type (str): ("plot", "color_level" and "all"), specify the type of the plot to be shown. Defaults to "plot".
+            bins_number (int): number of bins used by binning_function to find the mean of ``self.scattering_intensity`` over subintervals. For more details see the function ``binning_function`` in ``utils``. Defaults to 20.
 
         Returns:
             :math:`\left\lVert k \right\rVert, SI(K)`, the norm of the wave vectors :math:`k` and the estimation of the scattering intensity evaluated at :math:`k`.
@@ -85,7 +99,8 @@ class StructureFactor:
             si = si.reshape(
                 X.shape
             )  # reshape the scattering intensity ``si`` to the correct shape
-
+        if plot_param == "true":
+            plot_scattering_intensity_estimate(wave_length, si, plot_type, bins_number)
         return wave_length, si
 
     def compute_pcf(self, radius, method, install_spatstat=False, **params):

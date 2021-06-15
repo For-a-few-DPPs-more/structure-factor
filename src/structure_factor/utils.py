@@ -9,22 +9,28 @@ from scipy import interpolate
 
 # todo bien renomer les variables
 
+def binning_function(x_vector, y_vector, bins_number):
+    """this function divids ``r_vector`` into ``bins_number`` subinterval, and find the associated mean of r_vector,  ,
 
-def binning_function(r_vector, data, bins_number):
-    r"""
-    binning function for ploting the scattering intensity
+    Args:
+        x_vector ([type]): [description]
+        y_vector ([type]): [description]
+        bins_number ([type]): [description]
+
+    Returns:
+        [type]: [description]
     """
-    step = (np.max(r_vector) - np.min(r_vector)) / bins_number
-    binned_data = []
-    binned_r = []
+    step = (np.max(x_vector) - np.min(x_vector)) / bins_number
+    binned_y = []
+    binned_x = []
     for i in range(1, bins_number + 1):
-        index = (r_vector <= np.min(r_vector) + i * step) & (
-            r_vector >= np.min(r_vector + (i - 1) * step)
+        index = (x_vector <= np.min(x_vector) + i * step) & (
+            x_vector >= np.min(x_vector + (i - 1) * step)
         )
-        binned_r.append(np.mean(r_vector[index]))
-        binned_data.append(np.mean(data[index]))
-    print(np.min(r_vector) + i * step, np.max(r_vector))
-    return (binned_r, binned_data)
+        binned_x.append(np.mean(x_vector[index]))
+        binned_y.append(np.mean(y_vector[index]))
+    print(np.min(x_vector) + i * step, np.max(x_vector))
+    return (binned_r, binned_y)
 
 
 def get_random_number_generator(seed):
@@ -204,3 +210,72 @@ class SymmetricFourierTransform:
         ret = (2 * np.pi) ** (self.d / 2) * np.sum(summation, axis=-1) / k ** self.d
 
         return ret, self.k_min
+
+def plot_scattering_intensity_estimate(wave_length, si, plot_type, bins_number=20):
+    r"""[summary]
+
+    Args:
+        wave_length ([type]): [description]
+        si ([type]): [description]
+        plot_type  (str): ("plot", "color_level" and "all"), specify the type of the plot to be shown. Defaults to "plot".
+            bins_number (int): number of bins used by binning_function to find the mean of ``self.scattering_intensity`` over subintervals. For more details see the function ``binning_function`` in ``utils``. Defaults to 20.
+    """
+
+    binned_wave_length, binned_si = binning_function(wave_length, si, bins_number)
+    log_si = np.log10(si)
+    m, n = log_si.shape
+    m /= 2
+    n /= 2
+    if plot_type == "all":
+        if np.min(wave_length.shape) == 1:
+            raise ValueError(
+                "the scattering intensity should be evaluated on a meshgrid or choose plot_type='plot'. "
+            )
+        else:
+            fig, ax = plt.subplots(1, 3, figsize=(24, 7))
+            ax[0].plot(self.x_data, self.y_data, "b,")
+            ax[0].title.set_text("data")
+            ax[1].loglog(wave_length, si, "k,")
+            ax[1].loglog(binned_wave_length, binned_si, 'b.')
+            ax[1].loglog(wave_length, np.ones_like(wave_length), "r--")
+            ax[1].legend(["SI", "Mean(SI)", "y=1"], shadow=True, loc=1)
+            ax[1].set_xlabel("Wave length")
+            ax[1].set_ylabel("Scattering intensity")
+            ax[1].title.set_text("loglog plot")
+
+            f_0 = ax[2].imshow(
+                log_si,
+                extent=[-n, n, -m, m],
+                cmap="PRGn",
+            )
+            fig.colorbar(f_0, ax=ax[2])
+            ax[2].title.set_text("scattering intensity")
+            plt.show()
+    elif plot_type == "plot":
+        plt.loglog(wave_length, si, "k,")
+        plt..loglog(binned_wave_length, binned_si, "b.")
+        plt.loglog(wave_length, np.ones_like(wave_length), "r--")
+        plt.legend(["SI", "Mean(SI)", "y=1"], loc=1)
+        plt.xlabel("Wave length ")
+        plt.ylabel("Scattering intensity")
+        plt.title("loglog plot")
+        plt.show()
+    elif plot_type == "color_level":
+        if np.min(wave_length.shape) == 1:
+            raise ValueError(
+                "the scattering intensity should be evaluated on a meshgrid or choose plot_type = 'plot'. "
+            )
+        else:
+            # todo changer les log10 comme en haut ligne 220
+            f_0 = plt.imshow(
+                log_si,
+                extent=[-n, n, -m, m],
+                cmap="PRGn",
+            )
+            plt.colorbar(f_0)
+            plt.title("Scattering intensity")
+            plt.show()
+    else:
+        raise ValueError(
+            "plot_type should be one of the following str: 'all', 'plot' and 'color_level'.  "
+        )

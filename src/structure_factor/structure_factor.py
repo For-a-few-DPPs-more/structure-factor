@@ -74,7 +74,7 @@ class StructureFactor:
             scattering_intensity (np.ndarray_like(norm_wave_vector)): scattering intensity of the data evaluated on the wave vectors.
 
         """
-
+        # todo dans le cas de meshgrid pour acceleré le calcule on peut (à verifié) utiliser le fais que pour une même norm du vecteur wave on va avoir meme scattering intensity donc pas besoin de recalculer
         maximum_k = np.floor(maximum_wave * L / (2 * np.pi))
         if meshgrid_size is None:
             x = 2 * np.pi / L * np.linspace(1, maximum_k, int(maximum_k))
