@@ -9,13 +9,20 @@ from structure_factor.spatstat_interface import SpatstatInterface
 
 
 class StructureFactor:
-    """Implementation of various estimators of the structure factor of a 2 dimensional point process of intensity math:`\rho`, defined as
-    :math:
-    `S(\mathbf{k}) = 1 + \rho \mathcal{F}( g-1)(\mathbf{k})`,
-    where :math: `\mathcal{F}`is the Fourier transform
-          :math: `g` is the pair correlation function (also known as radial distribution function).
-          :math: `\mathbf{k}`is a wave in :math: `\mathhb{R}^2`
-    see http://chemlabs.princeton.edu/torquato/wp-content/uploads/sites/12/2018/06/paper-401.pdf page: 8"""
+    r"""Implementation of various estimators of the structure factor of a 2 dimensional point process of intensity :math:`\rho`, defined as
+
+    .. math::
+
+        S(\mathbf{k}) = 1 + \rho \mathcal{F}(g-1)(\mathbf{k}),
+
+    where :math:`\mathcal{F}` denotes the Fourier transform
+          :math:`g` corresponds to the pair correlation function (also known as radial distribution function) # add link
+          :math:`\mathbf{k}` is a wave in :math:`\mathhb{R}^2`
+
+    .. seealso::
+
+        page 8 http://chemlabs.princeton.edu/torquato/wp-content/uploads/sites/12/2018/06/paper-401.pdf
+    """
 
     def __init__(self, points, intensity):
         r"""
@@ -48,13 +55,16 @@ class StructureFactor:
 
         Note: This estimation converges to the structure factor in the thermodynamic limits.
 
-        Notes:  The points should be simulated inside a cube.
+        Notes:  The points should be simulated inside a cube. # todo see L arg
                 The allowed values of wave vectors are the points of the dual lattice of the lattice having fundamental cell the cubic window.
                 This is represented inside wave_vectors defined as, math: `wave_vectors = (2 \pi k_vector) /L`, where k_vector is a vector of integer from 1 into maximum_k, and L in the length side of the cubic window that contains `points`. see # todo put the link of our paper
 
         Args:
             L (int): side length of the cubic window that contains ``points``.
+            # todo What if the window is not cubic?
+            # todo Consider passing a PointPattern at initialization with .points and .window attributes
             maximum_wave (int): maximum norm of ``wave_vector``. The user can't chose the ``wave_vector`` (defined above) since there's only a specific allowed values of ``wave_vector`` used in the estimation of the structure factor by the scattering intensity, but the user can  specify in ``maximum_wave`` the maximum norm of ``wave_vector``.
+            # todo clarify the description, wave_vector exists only in the code not in the docstring, the argument name is not clear
             meshgrid_size (int): if the requested evaluation is on a meshgrid,  then ``meshgrid_size`` is the number of waves in each row of the meshgrid. Defaults to None.
 
         Returns:
@@ -64,38 +74,28 @@ class StructureFactor:
             maximum_wave * L / (2 * np.pi * np.sqrt(2))
         )  # maximum of ``k_vector``
         if meshgrid_size is None:
-            k_vector = np.linspace(1, maximum_k, int(maximum_k))  # k_vector
-            wave_vector = (
-                2 * np.pi * np.column_stack((k_vector, k_vector)) / L
-            )  # 2-dimensional vector of allowed waves
+            k_vector = np.linspace(1, maximum_k, int(maximum_k))
+            wave_vector = 2 * np.pi * np.column_stack((k_vector, k_vector)) / L
         else:
             x_grid = np.linspace(-maximum_wave, maximum_wave, int(meshgrid_size))
             X, Y = np.meshgrid(x_grid, x_grid)
             wave_vector = np.column_stack((X.ravel(), Y.ravel()))
 
-        si = compute_scattering_intensity(
-            wave_vector, self.points
-        )  # scattering intensity of ``self.points`` evaluated on the allowed waves ``wave_vector``
-        wave_length = np.linalg.norm(wave_vector, axis=1)  # norm of the ``wave_vector``
+        si = compute_scattering_intensity(wave_vector, self.points)
+        wave_length = np.linalg.norm(wave_vector, axis=1)
 
         if meshgrid_size is not None:
-            wave_length = wave_length.reshape(
-                X.shape
-            )  # reshape the ``wave_vector`` to the correct shape
-            si = si.reshape(
-                X.shape
-            )  # reshape the scattering intensity ``si`` to the correct shape
+            wave_length = wave_length.reshape(X.shape)
+            si = si.reshape(X.shape)
 
         return wave_length, si
 
     def compute_pcf(self, radius, method, install_spatstat=False, **params):
         # todo consider choosing a different window shape
-        """Estimate the pair correlation function of ``self.points`` observed in a disk window centered at the origin with radius ``radius`` using spatstat ``spastat.core.pcf_ppp`` or ``spastat.core.pcf_fv`` functions according to ``method`` with the corresponding parameters ``params``.
+        """Estimate the pair correlation function (pcf) of ``self.points`` observed in a disk window centered at the origin with radius ``radius`` using spatstat ``spastat.core.pcf_ppp`` or ``spastat.core.pcf_fv`` functions according to ``method`` called with the corresponding parameters ``params``.
 
         # todo consider adding the window where points were observed at __init__ to avoid radius argument.
-        # todo expliciter le radius fais quoi
-
-        radius:
+        radius: # todo expliciter le radius fais quoi
         method: "ppp" or "fv" referring to ``spastat.core.pcf.ppp`` or ``spastat.core.pcf.fv`` functions for estimating the pair correlation function.
         install_spatstat: [description], defaults to False
         params:
@@ -138,6 +138,8 @@ class StructureFactor:
         return pd.DataFrame(np.array(pcf).T, columns=pcf.names)
 
     # todo faire une méthod pour cleaner les data "import pandas as pd approx_pcf_gin.replace([np.inf, -np.inf], np.nan, inplace=True) cleaned_pd_pcf = pd.DataFrame.from_records(approx_pcf_gin).fillna(0) "
+    # ! no need to call pandas for this, have a look at np.nan_to_num https://numpy.org/doc/stable/reference/generated/numpy.nan_to_num.html
+
     def interpolate_pcf(self, r, pcf_r, **params):
         """Interpolate the pair correlation function (pcf) from evaluations ``(r, pcf_r)``.
         Note : if ``pcf_r``contains "Inf", you can clean the ``pcf_r``using the method ``cleaning_data``.
@@ -148,7 +150,6 @@ class StructureFactor:
             params: dict of the parameters of :py:func:`scipy.interpolate.interp1d` function.
 
         """
-
         return interpolate.interp1d(r, pcf_r, **params)
 
     # todo à voir pourquoi ``r`` n'est pas en entrée pcf n'est pas tout le temps une fonction . to see in detail in the second check

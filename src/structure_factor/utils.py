@@ -8,10 +8,13 @@ from scipy.special import j0, j1, jv, jn_zeros, y0, y1, yv
 from scipy import interpolate
 
 # todo bien renomer les variables
+# todo clean up the file: remove unused utility functions like get_x, roots etc
 
 
 def binning_function(r_vector, data, bins_number):
-    r"""
+    """
+    #todo please detail what the function is doing and why print is used
+    #todo consider changing the name binning_function is indeed a function, there's no need to have a "function" in its name
     binning function for ploting the scattering intensity
     """
     step = (np.max(r_vector) - np.min(r_vector)) / bins_number
