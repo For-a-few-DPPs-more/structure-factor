@@ -106,7 +106,9 @@ class StructureFactor:
                 X.shape
             )  # reshape the scattering intensity ``si`` to the correct shape
         if plot_param == "true":
-            plot_scattering_intensity_estimate(wave_length, si, plot_type, bins_number)
+            plot_scattering_intensity_estimate(
+                self.points, wave_length, si, plot_type, bins_number
+            )
         return wave_length, si
 
     def compute_pcf(self, radius, method, install_spatstat=False, **params):

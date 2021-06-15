@@ -6,13 +6,15 @@ import numpy as np
 from mpmath import fp as mpm
 from scipy.special import j0, j1, jv, jn_zeros, y0, y1, yv
 from scipy import interpolate
+import matplotlib.pyplot as plt
 
 # todo bien renomer les variables
 # todo clean up the file: remove unused utility functions like get_x, roots etc
 
+
 def binning_function(x_vector, y_vector, bins_number):
-    #todo please detail what the function is doing and why print is used
-    #todo consider changing the name binning_function is indeed a function, there's no need to have a "function" in its name
+    # todo please detail what the function is doing and why print is used
+    # todo consider changing the name binning_function is indeed a function, there's no need to have a "function" in its name
     """this function divids ``x_vector`` into ``bins_number`` subinterval, and find the associated mean of ``x_vector`` and ``y_vector`` over the subintervals.
 
     Args:
@@ -33,7 +35,6 @@ def binning_function(x_vector, y_vector, bins_number):
         )
         binned_x.append(np.mean(x_vector[index]))
         binned_y.append(np.mean(y_vector[index]))
-    print(np.min(x_vector) + i * step, np.max(x_vector))
     return (binned_x, binned_y)
 
 
@@ -215,7 +216,10 @@ class SymmetricFourierTransform:
 
         return ret, self.k_min
 
-def plot_scattering_intensity_estimate(wave_length, si, plot_type, bins_number=20):
+
+def plot_scattering_intensity_estimate(
+    data, wave_length, si, plot_type, bins_number=20
+):
     r"""[summary]
 
     Args:
@@ -226,23 +230,24 @@ def plot_scattering_intensity_estimate(wave_length, si, plot_type, bins_number=2
     """
 
     binned_wave_length, binned_si = binning_function(wave_length, si, bins_number)
-    log_si = np.log10(si)
-    m, n = log_si.shape
-    m /= 2
-    n /= 2
     if plot_type == "all":
-        if np.min(wave_length.shape) == 1:
+        if len(wave_length.shape) < 2:
             raise ValueError(
                 "the scattering intensity should be evaluated on a meshgrid or choose plot_type='plot'. "
             )
         else:
+            log_si = np.log10(si)
+            m, n = log_si.shape
+            m /= 2
+            n /= 2
+
             fig, ax = plt.subplots(1, 3, figsize=(24, 7))
-            ax[0].plot(self.x_data, self.y_data, "b,")
+            ax[0].plot(data[:, 0], data[:, 1], "b,")
             ax[0].title.set_text("data")
             ax[1].loglog(wave_length, si, "k,")
-            ax[1].loglog(binned_wave_length, binned_si, 'b.')
+            ax[1].loglog(binned_wave_length, binned_si, "b.")
             ax[1].loglog(wave_length, np.ones_like(wave_length), "r--")
-            ax[1].legend(["SI", "Mean(SI)", "y=1"], shadow=True, loc=1)
+            ax[1].legend(["SI", "Mean(SI)", "y=1"], shadow=True, loc="lower right")
             ax[1].set_xlabel("Wave length")
             ax[1].set_ylabel("Scattering intensity")
             ax[1].title.set_text("loglog plot")
@@ -257,20 +262,25 @@ def plot_scattering_intensity_estimate(wave_length, si, plot_type, bins_number=2
             plt.show()
     elif plot_type == "plot":
         plt.loglog(wave_length, si, "k,")
-        plt..loglog(binned_wave_length, binned_si, "b.")
+        plt.loglog(binned_wave_length, binned_si, "b.")
         plt.loglog(wave_length, np.ones_like(wave_length), "r--")
-        plt.legend(["SI", "Mean(SI)", "y=1"], loc=1)
+        plt.legend(["SI", "Mean(SI)", "y=1"], loc="lower right")
         plt.xlabel("Wave length ")
         plt.ylabel("Scattering intensity")
         plt.title("loglog plot")
         plt.show()
     elif plot_type == "color_level":
-        if np.min(wave_length.shape) == 1:
+        print(len(wave_length.shape))
+        if len(wave_length.shape) < 2:
             raise ValueError(
                 "the scattering intensity should be evaluated on a meshgrid or choose plot_type = 'plot'. "
             )
         else:
             # todo changer les log10 comme en haut ligne 220
+            log_si = np.log10(si)
+            m, n = log_si.shape
+            m /= 2
+            n /= 2
             f_0 = plt.imshow(
                 log_si,
                 extent=[-n, n, -m, m],
