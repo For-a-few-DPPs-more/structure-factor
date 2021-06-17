@@ -206,8 +206,9 @@ def plot_scattering_intensity_estimate(
         plot_type  (str): ("plot", "color_level" and "all"), specify the type of the plot to be shown. Defaults to "plot".
         **binning_params: binning parameters used by ``stats.binned_statistic``, to find the mean of ``si``over subinternals of ``wave_length``for more details see <https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.binned_statistic.html>. Note that the parameter ``statistic``is fixed to ``mean``.
     """
+    # todo add confidence interval over the bins
     bin_means, bin_edges, binnumber = stats.binned_statistic(
-        wave_length, si, statistic="mean", **binning_params
+        wave_length.ravel(), si.ravel(), statistic="mean", **binning_params
     )
     bin_width = bin_edges[1] - bin_edges[0]
     bin_centers = bin_edges[1:] - bin_width / 2
