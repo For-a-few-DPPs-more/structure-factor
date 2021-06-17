@@ -7,6 +7,7 @@ from structure_factor.utils import (
     compute_scattering_intensity,
     plot_scattering_intensity_estimate,
 )
+
 from structure_factor.transforms import RadiallySymmetricFourierTransform
 from structure_factor.spatstat_interface import SpatstatInterface
 
@@ -26,16 +27,17 @@ class StructureFactor:
 
         page 8 http://chemlabs.princeton.edu/torquato/wp-content/uploads/sites/12/2018/06/paper-401.pdf
     """
-
+    # ! Mettre un warning que scattering_intensity marche seulement dans les cubic windows, pcf pour dimension 2 et 3 seulement, hankel pour isotropic en dimension 2, en dimension 3 faire un MC pour approximer l'integral
     def __init__(self, points, intensity):
         r"""
         Args:
             points: :math:`n \times 2` np.array representing a realization of a 2 dimensional point process.
-            intensity: intensity of the underlying point process represented by `points`.
+            intensity(float): intensity of the underlying point process represented by `points`.
         # todo a distcuter les following todo avec Rémi le jeudi
         # todo treat the case where the intensity is not provided
         # todo consider passing the window where the points were observed to avoid radius in compute_pcf(self, radius...
-        # todo est ce qu'on fait une class pointPatern  qui contient le window et les data et on le coupe pour que scattering intensity marche?
+        # todo ajouter en entré un parametre qui prend le window dans le quel les data sont obtenu et le passer à spatstat en pcf
+        # todo ajouter une methode pour approximer l'intensité pour des stationnaire ergodic si elle n'est pas provided
         """
         dimension = points.shape[1]
         assert points.ndim == 2 and dimension == 2
@@ -48,12 +50,12 @@ class StructureFactor:
         L,
         maximum_wave,
         meshgrid_size=None,
-        plot_param="true",
-        bins_number=20,
-        plot_type="plot",
     ):
         # todo replace the link below to the link of our future paper.
         # todo fit a line to the binned si
+        # todo ajouter des interval de confiance sur les binned values après faire un binning
+        # todo ajouter la possibilité d'entré  plusieur echantillion
+        # todo utuliser l'intensité et le volume au lieu de N dans la formule i.e. remplacer N pas intensité*volume de la fenetre
         r"""Compute the ensemble estimator of the scattering intensity described in http://www.scoste.fr/survey_hyperuniformity.pdf.(equation 4.5).
 
         .. math::
@@ -76,7 +78,6 @@ class StructureFactor:
 
         Args:
             L (int): side length of the cubic window that contains ``points``.
-            # todo What if the window is not cubic?
             # todo Consider passing a PointPattern at initialization with .points and .window attributes
             maximum_wave (int): maximum norm of ``wave_vector``. The user can't chose the ``wave_vector`` (defined above) since there's only a specific allowed values of ``wave_vector`` used in the estimation of the structure factor by the scattering intensity, but the user can  specify in ``maximum_wave`` the maximum norm of ``wave_vector``.
             # todo clarify the description, wave_vector exists only in the code not in the docstring, the argument name is not clear
@@ -86,7 +87,7 @@ class StructureFactor:
             bins_number (int): number of bins used by binning_function to find the mean of ``self.scattering_intensity`` over subintervals. For more details see the function ``binning_function`` in ``utils``. Defaults to 20.
 
         Returns:
-            :math:`\left\lVert k \right\rVert, SI(K)`, the norm of ``wave_vector`` and the estimation of the scattering intensity ``si`` evaluated at ``wave_vector``.
+            :math:`\left\lVert |\mathbf{k}| \right\rVert, SI(\mathbf{k})`, the norm of ``wave_vector`` represented by ``wave_length`` and the estimation of the scattering intensity ``si`` evaluated at ``wave_vector``.
         """
         maximum_k = np.floor(
             maximum_wave * L / (2 * np.pi * np.sqrt(2))
@@ -109,11 +110,15 @@ class StructureFactor:
             si = si.reshape(
                 X.shape
             )  # reshape the scattering intensity ``si`` to the correct shape
-        if plot_param == "true":
-            plot_scattering_intensity_estimate(
-                self.points, wave_length, si, plot_type, bins_number
-            )
         return wave_length, si
+
+    def plot_scattering_intensity(
+        self, wave_length, si, plot_type="plot", **binning_params
+    ):
+        points = self.points
+        return plot_scattering_intensity_estimate(
+            points, wave_length, si, plot_type, **binning_params
+        )
 
     def compute_pcf(self, radius, method, install_spatstat=False, **params):
         # todo consider choosing a different window shape

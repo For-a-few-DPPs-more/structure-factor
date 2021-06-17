@@ -5,40 +5,14 @@ import numpy as np
 
 from mpmath import fp as mpm
 from scipy.special import j0, j1, jv, jn_zeros, y0, y1, yv
-from scipy import interpolate
+from scipy import interpolate, stats
 import matplotlib.pyplot as plt
-import
 
 # todo bien renomer les variables
 # todo clean up the file: remove unused utility functions like get_x, roots etc
 def cleaning_data(data):
     data_clean = np.nan_to_num(data, nan=0, posinf=0, neginf=0)
     return data_clean
-
-
-def binning(x_vector, y_vector, bins_number):
-    # todo please detail what the function is doing and why print is used
-    """this function divids ``x_vector`` into ``bins_number`` subinterval, and find the associated mean of ``x_vector`` and ``y_vector`` over the subintervals.
-
-    Args:
-        x_vector (np.array): vector of x coordinates
-        y_vector (np.array): vector of y coordinates
-        bins_number (int): number of required bins
-
-    Returns:
-        binned_x: list of the average values of ``x_vector``over the bins
-        binned_y: list of the average values of ``y_vector``over the bins
-    """
-    step = (np.max(x_vector) - np.min(x_vector)) / bins_number
-    binned_y = []
-    binned_x = []
-    for i in range(1, bins_number + 1):
-        index = (x_vector <= np.min(x_vector) + i * step) & (
-            x_vector >= np.min(x_vector + (i - 1) * step)
-        )
-        binned_x.append(np.mean(x_vector[index]))
-        binned_y.append(np.mean(y_vector[index]))
-    return (binned_x, binned_y)
 
 
 def get_random_number_generator(seed):
@@ -221,18 +195,22 @@ class SymmetricFourierTransform:
 
 
 def plot_scattering_intensity_estimate(
-    data, wave_length, si, plot_type, bins_number=20
+    points, wave_length, si, plot_type, **binning_params
 ):
     r"""[summary]
 
     Args:
-        wave_length ([type]): [description]
-        si ([type]): [description]
+        points :math:`n \times 2` np.array representing a realization of a 2 dimensional point process.
+        wave_length (np.array): output vector of the function ``compute_scattering_intensity``.
+        si (n.array): output vector of the function ``compute_scattering_intensity``.
         plot_type  (str): ("plot", "color_level" and "all"), specify the type of the plot to be shown. Defaults to "plot".
-            bins_number (int): number of bins used by binning to find the mean of ``self.scattering_intensity`` over subintervals. For more details see the function ``binning`` in ``utils``. Defaults to 20.
+        **binning_params: binning parameters used by ``stats.binned_statistic``, to find the mean of ``si``over subinternals of ``wave_length``for more details see <https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.binned_statistic.html>. Note that the parameter ``statistic``is fixed to ``mean``.
     """
-
-    binned_wave_length, binned_si = binning(wave_length, si, bins_number)
+    bin_means, bin_edges, binnumber = stats.binned_statistic(
+        wave_length, si, statistic="mean", **binning_params
+    )
+    bin_width = bin_edges[1] - bin_edges[0]
+    bin_centers = bin_edges[1:] - bin_width / 2
     if plot_type == "all":
         if len(wave_length.shape) < 2:
             raise ValueError(
@@ -245,10 +223,10 @@ def plot_scattering_intensity_estimate(
             n /= 2
 
             fig, ax = plt.subplots(1, 3, figsize=(24, 7))
-            ax[0].plot(data[:, 0], data[:, 1], "b,")
-            ax[0].title.set_text("data")
+            ax[0].plot(points[:, 0], points[:, 1], "b,")
+            ax[0].title.set_text("Points configuration")
             ax[1].loglog(wave_length, si, "k,")
-            ax[1].loglog(binned_wave_length, binned_si, "b.")
+            ax[1].loglog(bin_centers, bin_means, "b.")
             ax[1].loglog(wave_length, np.ones_like(wave_length), "r--")
             ax[1].legend(["SI", "Mean(SI)", "y=1"], shadow=True, loc="lower right")
             ax[1].set_xlabel("Wave length")
@@ -265,7 +243,7 @@ def plot_scattering_intensity_estimate(
             plt.show()
     elif plot_type == "plot":
         plt.loglog(wave_length, si, "k,")
-        plt.loglog(binned_wave_length, binned_si, "b.")
+        plt.loglog(bin_centers, bin_means, "b.")
         plt.loglog(wave_length, np.ones_like(wave_length), "r--")
         plt.legend(["SI", "Mean(SI)", "y=1"], loc="lower right")
         plt.xlabel("Wave length ")
@@ -279,7 +257,6 @@ def plot_scattering_intensity_estimate(
                 "the scattering intensity should be evaluated on a meshgrid or choose plot_type = 'plot'. "
             )
         else:
-            # todo changer les log10 comme en haut ligne 220
             log_si = np.log10(si)
             m, n = log_si.shape
             m /= 2
