@@ -53,7 +53,7 @@ class StructureFactor:
         plot_type="plot",
     ):
         # todo replace the link below to the link of our future paper.
-        # todo si should be binned then a line should be fitted representing si
+        # todo fit a line to the binned si
         r"""Compute the ensemble estimator of the scattering intensity described in http://www.scoste.fr/survey_hyperuniformity.pdf.(equation 4.5).
 
         .. math::
@@ -68,7 +68,11 @@ class StructureFactor:
 
         Notes:  The points should be simulated inside a cube. # todo see L arg
                 The allowed values of wave vectors are the points of the dual lattice of the lattice having fundamental cell the cubic window.
-                This is represented inside wave_vectors defined as, math: `wave_vectors = (2 \pi k_vector) /L`, where k_vector is a vector of integer from 1 into maximum_k, and L in the length side of the cubic window that contains `points`. see # todo put the link of our paper
+                This is represented inside wave_vectors defined as,
+                :math:
+                    `wave_vectors = (2 \pi k_vector) /L`
+
+                where, ``k_vector`` is a vector of integer from 1 into maximum_k, and ``L`` is the length side of the cubic window that contains ``points``. see # todo put the link of our paper
 
         Args:
             L (int): side length of the cubic window that contains ``points``.
@@ -82,7 +86,7 @@ class StructureFactor:
             bins_number (int): number of bins used by binning_function to find the mean of ``self.scattering_intensity`` over subintervals. For more details see the function ``binning_function`` in ``utils``. Defaults to 20.
 
         Returns:
-            :math:`\left\lVert k \right\rVert, SI(K)`, the norm of the wave vectors :math:`k` and the estimation of the scattering intensity evaluated at :math:`k`.
+            :math:`\left\lVert k \right\rVert, SI(K)`, the norm of ``wave_vector`` and the estimation of the scattering intensity ``si`` evaluated at ``wave_vector``.
         """
         maximum_k = np.floor(
             maximum_wave * L / (2 * np.pi * np.sqrt(2))
@@ -116,7 +120,7 @@ class StructureFactor:
         """Estimate the pair correlation function (pcf) of ``self.points`` observed in a disk window centered at the origin with radius ``radius`` using spatstat ``spastat.core.pcf_ppp`` or ``spastat.core.pcf_fv`` functions according to ``method`` called with the corresponding parameters ``params``.
 
         # todo consider adding the window where points were observed at __init__ to avoid radius argument.
-        radius: # todo expliciter le radius fais quoi
+        radius: is the radius of the ball containing the points on which the pair correlation function will be approximated
         method: "ppp" or "fv" referring to ``spastat.core.pcf.ppp`` or ``spastat.core.pcf.fv`` functions for estimating the pair correlation function.
         install_spatstat: [description], defaults to False
         params:

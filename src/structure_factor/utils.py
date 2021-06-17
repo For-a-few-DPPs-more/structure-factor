@@ -7,14 +7,17 @@ from mpmath import fp as mpm
 from scipy.special import j0, j1, jv, jn_zeros, y0, y1, yv
 from scipy import interpolate
 import matplotlib.pyplot as plt
+import
 
 # todo bien renomer les variables
 # todo clean up the file: remove unused utility functions like get_x, roots etc
+def cleaning_data(data):
+    data_clean = np.nan_to_num(data, nan=0, posinf=0, neginf=0)
+    return data_clean
 
 
-def binning_function(x_vector, y_vector, bins_number):
+def binning(x_vector, y_vector, bins_number):
     # todo please detail what the function is doing and why print is used
-    # todo consider changing the name binning_function is indeed a function, there's no need to have a "function" in its name
     """this function divids ``x_vector`` into ``bins_number`` subinterval, and find the associated mean of ``x_vector`` and ``y_vector`` over the subintervals.
 
     Args:
@@ -226,10 +229,10 @@ def plot_scattering_intensity_estimate(
         wave_length ([type]): [description]
         si ([type]): [description]
         plot_type  (str): ("plot", "color_level" and "all"), specify the type of the plot to be shown. Defaults to "plot".
-            bins_number (int): number of bins used by binning_function to find the mean of ``self.scattering_intensity`` over subintervals. For more details see the function ``binning_function`` in ``utils``. Defaults to 20.
+            bins_number (int): number of bins used by binning to find the mean of ``self.scattering_intensity`` over subintervals. For more details see the function ``binning`` in ``utils``. Defaults to 20.
     """
 
-    binned_wave_length, binned_si = binning_function(wave_length, si, bins_number)
+    binned_wave_length, binned_si = binning(wave_length, si, bins_number)
     if plot_type == "all":
         if len(wave_length.shape) < 2:
             raise ValueError(
