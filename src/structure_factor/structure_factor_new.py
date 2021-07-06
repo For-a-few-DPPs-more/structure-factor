@@ -48,8 +48,9 @@ class StructureFactor:
     def compute_scattering_intensity(
         self,
         L,
-        maximum_wave,
+        maximum_k,
         meshgrid_size=None,
+        max_add_n=10,
     ):
         # todo replace the link below to the link of our future paper.
         # todo fit a line to the binned si
@@ -70,47 +71,65 @@ class StructureFactor:
 
         Notes:  The points should be simulated inside a cube. # todo see L arg
                 The allowed values of wave vectors are the points of the dual lattice of the lattice having fundamental cell the cubic window.
-                This is represented inside wave_vectors defined as,
+                This is represented inside k_vectors defined as,
                 :math:
-                    `wave_vectors = (2 \pi k_vector) /L`
+                    `k_vectors = (2 \pi n_vector) /L`
 
-                where, ``k_vector`` is a vector of integer from 1 into maximum_k, and ``L`` is the length side of the cubic window that contains ``points``. see # todo put the link of our paper
+                where, ``n_vector`` is a vector of integer from 1 into maximum_n, and ``L`` is the length side of the cubic window that contains ``points``. see # todo put the link of our paper
 
         Args:
             L (int): side length of the cubic window that contains ``points``.
             # todo Consider passing a PointPattern at initialization with .points and .window attributes
-            maximum_wave (int): maximum norm of ``wave_vector``. The user can't chose the ``wave_vector`` (defined above) since there's only a specific allowed values of ``wave_vector`` used in the estimation of the structure factor by the scattering intensity, but the user can  specify in ``maximum_wave`` the maximum norm of ``wave_vector``.
-            # todo clarify the description, wave_vector exists only in the code not in the docstring, the argument name is not clear
+            maximum_k (int): maximum norm of ``k_vector``. The user can't chose the ``k_vector`` (defined above) since there's only a specific allowed values of ``k_vector`` used in the estimation of the structure factor by the scattering intensity, but the user can  specify in ``maximum_k`` the maximum norm of ``k_vector``.
+            # todo clarify the description, k_vector exists only in the code not in the docstring, the argument name is not clear
             meshgrid_size (int): if the requested evaluation is on a meshgrid,  then ``meshgrid_size`` is the number of waves in each row of the meshgrid. Defaults to None.
             plot_param (str): "true" or "false", parameter to precise whether to show the plot of to hide it. Defaults to "true"
             plot_type (str): ("plot", "color_level" and "all"), specify the type of the plot to be shown. Defaults to "plot".
             bins_number (int): number of bins used by binning_function to find the mean of ``self.scattering_intensity`` over subintervals. For more details see the function ``binning_function`` in ``utils``. Defaults to 20.
 
         Returns:
-            :math:`\left\lVert |\mathbf{k}| \right\rVert, SI(\mathbf{k})`, the norm of ``wave_vector`` represented by ``wave_length`` and the estimation of the scattering intensity ``si`` evaluated at ``wave_vector``.
+            :math:`\left\lVert |\mathbf{k}| \right\rVert, SI(\mathbf{k})`, the norm of ``k_vector`` represented by ``norm_k_vector`` and the estimation of the scattering intensity ``si`` evaluated at ``k_vector``.
         """
-        maximum_k = np.floor(
-            maximum_wave * L / (2 * np.pi * np.sqrt(2))
-        )  # maximum of ``k_vector``
+        maximum_n = np.floor(maximum_k * L / (2 * np.pi))  # maximum of ``k_vector``
         if meshgrid_size is None:
-            k_vector = np.linspace(1, maximum_k, int(maximum_k))
-            wave_vector = 2 * np.pi * np.column_stack((k_vector, k_vector)) / L
+            n_vector = np.linspace(1, maximum_n, int(maximum_n))
+            k_vector = 2 * np.pi * np.column_stack((n_vector, n_vector)) / L
+            add_n_vector = np.linspace(1, np.int(max_add_n), np.int(max_add_n))
+            add_n_grid, add_n_grid = np.meshgrid(add_n_vector, add_n_vector)
+            add_k_vector = (
+                2
+                * np.pi
+                * np.column_stack((add_n_grid.ravel(), add_n_grid.ravel()))
+                / L  # adding allowed values near zero
+            )
         else:
-            x_grid = np.linspace(-maximum_wave, maximum_wave, int(meshgrid_size))
+            x_grid = np.linspace(-maximum_k, maximum_k, int(meshgrid_size))
             X, Y = np.meshgrid(x_grid, x_grid)
-            wave_vector = np.column_stack((X.ravel(), Y.ravel()))
+            k_vector = np.column_stack((X.ravel(), Y.ravel()))
 
-        si = compute_scattering_intensity(wave_vector, self.points)
-        wave_length = np.linalg.norm(wave_vector, axis=1)
+        si = compute_scattering_intensity(k_vector, self.points)
+        norm_k_vector = np.linalg.norm(k_vector, axis=1)
+
+        if meshgrid_size is None:
+            add_si = compute_scattering_intensity(add_k_vector, self.points)
+            norm_add_k_vector = np.linalg.norm(add_k_vector, axis=1)
+            si = np.concatenate((add_si, si), axis=None)
+
+            norm_k_vector = np.concatenate(
+                (norm_add_k_vector, norm_k_vector), axis=None
+            )
 
         if meshgrid_size is not None:
-            wave_length = wave_length.reshape(
+            norm_k_vector = norm_k_vector.reshape(
                 X.shape
-            )  # reshape the ``wave_vector`` to the correct shape
+            )  # reshape the ``norm_k_vector`` to the correct shape
             si = si.reshape(
                 X.shape
             )  # reshape the scattering intensity ``si`` to the correct shape
-        return wave_length, si
+
+        return norm_k_vector, si
+
+    # todo faire une fonction qui calcule les allowed values
 
     def plot_scattering_intensity(
         self, wave_length, si, plot_type="plot", **binning_params
@@ -151,7 +170,7 @@ class StructureFactor:
         spatstat.import_package("core", "geom", update=False)
 
         window = spatstat.geom.disc(radius=radius)
-
+        # todo à Diala a voir si le window peut être sur tous les data est ce que raduis est nécessaire.
         x = robjects.vectors.FloatVector(self.points[:, 0])
         y = robjects.vectors.FloatVector(self.points[:, 1])
         data = spatstat.geom.ppp(x, y, window=window)
@@ -182,7 +201,7 @@ class StructureFactor:
         """
         return interpolate.interp1d(r, pcf_r, **params)
 
-    # todo à voir pourquoi ``r`` n'est pas en entrée pcf n'est pas tout le temps une fonction . to see in detail in the second check
+    # todo à voir pourquoi ``r`` n'est pas en entrée pcf n'est pas tout le temps une fonction . to see in detail in the second check (pour Diala)
     def compute_structure_factor(self, k, pcf, method="Ogata", **params):
         r"""Compute the `structure factor <https://en.wikipedia.org/wiki/Radial_distribution_function#The_structure_factor>`_ of the underlying point process at ``k`` from its pair correlation function ``pcf`` (assumed to be radially symmetric).
 
@@ -200,7 +219,7 @@ class StructureFactor:
             method (str, optional): select the method to compute the `Radially Symmetric Fourier transform <https://en.wikipedia.org/wiki/Hankel_transform#Fourier_transform_in_d_dimensions_(radially_symmetric_case)>`_ of :math:`g` as a Hankel transform :py:class:`HankelTransFormOgata` or :py:class:`HankelTransFormBaddourChouinard`.
             Choose between "Ogata" or "BaddourChouinard". Defaults to "Ogata".
             params: parameters passed to the corresponding Hankel transform
-            # todo à la place de faire une méthod d'interpolation puis passé la fonction intérpolé à "Ogata" on peut la faire à l'interieur de "Ogata" comme "BaddourChouinard". to see in detail in the second check...
+            # todo à la place de faire une méthod d'interpolation puis passé la fonction intérpolé à "Ogata" on peut la faire à l'interieur de "Ogata" comme "BaddourChouinard". to see in detail in the second check Diala...
             - ``method == "Ogata"``
                 params = dict(step_size=..., nb_points=...)
             - ``method == "BaddourChouinard"``
@@ -213,7 +232,7 @@ class StructureFactor:
             np.ndarray: :math:`SF(k)` evaluation of the structure factor at ``k``.
 
         .. important::
-            # todo ``pcf`` could be a function ... to see in detail ....
+            # todo ``pcf`` could be a function ... to see in detail .... diala
             The Fourier transform involved <https://en.wikipedia.org/wiki/Hankel_transform#Fourier_transform_in_d_dimensions_(radially_symmetric_case)>`_ of :math:`g` is computed via
 
         .. note::

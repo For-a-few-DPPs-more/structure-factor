@@ -195,7 +195,7 @@ class SymmetricFourierTransform:
 
 
 def plot_scattering_intensity_estimate(
-    points, wave_length, si, plot_type, **binning_params
+    points, wave_length, si, plot_type, exact_sf=None, **binning_params
 ):
     r"""[summary]
 
@@ -229,7 +229,15 @@ def plot_scattering_intensity_estimate(
             ax[1].loglog(wave_length, si, "k,")
             ax[1].loglog(bin_centers, bin_means, "b.")
             ax[1].loglog(wave_length, np.ones_like(wave_length), "r--")
-            ax[1].legend(["SI", "Mean(SI)", "y=1"], shadow=True, loc="lower right")
+            if exact_sf is not None:
+                ax[1].loglog(wave_length, exact_sf(wave_length), "r", label="exact sf")
+                ax[1].legend(
+                    ["SI", "Mean(SI)", "y=1", "Exact sf"],
+                    shadow=True,
+                    loc="lower right",
+                )
+            else:
+                ax[1].legend(["SI", "Mean(SI)", "y=1"], shadow=True, loc="lower right")
             ax[1].set_xlabel("Wave length")
             ax[1].set_ylabel("Scattering intensity")
             ax[1].title.set_text("loglog plot")
@@ -246,7 +254,11 @@ def plot_scattering_intensity_estimate(
         plt.loglog(wave_length, si, "k,")
         plt.loglog(bin_centers, bin_means, "b.")
         plt.loglog(wave_length, np.ones_like(wave_length), "r--")
-        plt.legend(["SI", "Mean(SI)", "y=1"], loc="lower right")
+        if exact_sf is not None:
+            plt.loglog(wave_length, exact_sf(wave_length), "r")
+            plt.legend(["SI", "Mean(SI)", "y=1", "exact sf"], loc="lower right")
+        else:
+            plt.legend(["SI", "Mean(SI)", "y=1"], loc="lower right")
         plt.xlabel("Wave length ")
         plt.ylabel("Scattering intensity")
         plt.title("loglog plot")
