@@ -52,6 +52,7 @@ class StructureFactor:
         meshgrid_size=None,
         max_add_n=10,
     ):
+        # todo je peux à la place de max_add_n mettre max_k_add plus compréhensible et changer en bas comme pour k_vector
         # todo replace the link below to the link of our future paper.
         # todo fit a line to the binned si
         # todo ajouter des interval de confiance sur les binned values après faire un binning
@@ -202,7 +203,7 @@ class StructureFactor:
         return interpolate.interp1d(r, pcf_r, **params)
 
     # todo à voir pourquoi ``r`` n'est pas en entrée pcf n'est pas tout le temps une fonction . to see in detail in the second check (pour Diala)
-    def compute_structure_factor(self, k, pcf, method="Ogata", **params):
+    def compute_structure_factor_via_hankel(self, k, pcf, method="Ogata", **params):
         r"""Compute the `structure factor <https://en.wikipedia.org/wiki/Radial_distribution_function#The_structure_factor>`_ of the underlying point process at ``k`` from its pair correlation function ``pcf`` (assumed to be radially symmetric).
 
         .. math::
