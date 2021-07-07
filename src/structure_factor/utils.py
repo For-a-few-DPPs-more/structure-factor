@@ -10,7 +10,8 @@ import matplotlib.pyplot as plt
 
 # todo bien renomer les variables
 # todo clean up the file: remove unused utility functions like get_x, roots etc
-# todo should we put it in the principle class StructurFactor?
+
+
 def cleaning_data(data):
     data_clean = np.nan_to_num(data, nan=0, posinf=0, neginf=0)
     return data_clean
@@ -195,7 +196,7 @@ class SymmetricFourierTransform:
         return ret, self.k_min
 
 
-def plot_scattering_intensity_estimate(
+def plot_scattering_intensity_(
     points, wave_length, si, plot_type, exact_sf=None, **binning_params
 ):
     r"""[summary]
@@ -287,3 +288,18 @@ def plot_scattering_intensity_estimate(
         raise ValueError(
             "plot_type should be one of the following str: 'all', 'plot' and 'color_level'.  "
         )
+
+
+def plot_pcf_(pcf_DataFrame, exact_pcf=None, **kwargs):
+    ax = pcf_DataFrame.plot.line(x="r", **kwargs)
+    if exact_pcf is not None:
+        ax.plot(
+            pcf_DataFrame["r"],
+            exact_pcf(pcf_DataFrame["r"]),
+            "r",
+            label="exact pcf",
+        )
+        ax.legend()
+    ax.set_xlabel("r")
+    ax.set_ylabel("pcf")
+    plt.show()
