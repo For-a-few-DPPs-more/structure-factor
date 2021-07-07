@@ -6,6 +6,7 @@ import rpy2.robjects as robjects
 from structure_factor.utils import (
     compute_scattering_intensity,
     plot_scattering_intensity_estimate,
+    cleaning_data,
 )
 
 from structure_factor.transforms import RadiallySymmetricFourierTransform
@@ -133,11 +134,11 @@ class StructureFactor:
     # todo faire une fonction qui calcule les allowed values
 
     def plot_scattering_intensity(
-        self, wave_length, si, plot_type="plot", **binning_params
+        self, wave_length, si, exact_sf=None, plot_type="plot", **binning_params
     ):
         points = self.points
         return plot_scattering_intensity_estimate(
-            points, wave_length, si, plot_type, **binning_params
+            points, wave_length, si, exact_sf, plot_type, **binning_params
         )
 
     def compute_pcf(self, radius, method, install_spatstat=False, **params):
@@ -187,7 +188,7 @@ class StructureFactor:
 
         return pd.DataFrame(np.array(pcf).T, columns=pcf.names)
 
-    def interpolate_pcf(self, r, pcf_r, **params):
+    def interpolate_pcf(self, r, pcf_r, clean="false", **params):
         """Interpolate the pair correlation function (pcf) from evaluations ``(r, pcf_r)``.
         Note : if ``pcf_r``contains "Inf", you can clean the ``pcf_r``using the method ``cleaning_data``.
 
@@ -195,8 +196,11 @@ class StructureFactor:
             r: vector containing the radius on which the pair correlation function is evaluated.
             pcf_r: vector containing the evaluations of the pair correlation function on ``r``.
             params: dict of the parameters of :py:func:`scipy.interpolate.interp1d` function.
+            clean: f ``pcf_r``contains "Inf", you can clean the ``pcf_r``using the method ``cleaning_data`` by setting clean="true".
 
         """
+        if clean == "true":
+            cleaning_data(pcf_r)
         return interpolate.interp1d(r, pcf_r, **params)
 
     # todo à voir pourquoi ``r`` n'est pas en entrée pcf n'est pas tout le temps une fonction . to see in detail in the second check (pour Diala)
