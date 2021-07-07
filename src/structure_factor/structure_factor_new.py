@@ -187,9 +187,6 @@ class StructureFactor:
 
         return pd.DataFrame(np.array(pcf).T, columns=pcf.names)
 
-    # todo faire une méthod pour cleaner les data "import pandas as pd approx_pcf_gin.replace([np.inf, -np.inf], np.nan, inplace=True) cleaned_pd_pcf = pd.DataFrame.from_records(approx_pcf_gin).fillna(0) "
-    # ! no need to call pandas for this, have a look at np.nan_to_num https://numpy.org/doc/stable/reference/generated/numpy.nan_to_num.html
-
     def interpolate_pcf(self, r, pcf_r, **params):
         """Interpolate the pair correlation function (pcf) from evaluations ``(r, pcf_r)``.
         Note : if ``pcf_r``contains "Inf", you can clean the ``pcf_r``using the method ``cleaning_data``.
