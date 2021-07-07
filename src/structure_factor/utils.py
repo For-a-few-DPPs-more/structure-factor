@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 
 # todo bien renomer les variables
 # todo clean up the file: remove unused utility functions like get_x, roots etc
+# todo should we put it in the principle class StructurFactor?
 def cleaning_data(data):
     data_clean = np.nan_to_num(data, nan=0, posinf=0, neginf=0)
     return data_clean
