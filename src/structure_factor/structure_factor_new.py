@@ -5,7 +5,8 @@ import rpy2.robjects as robjects
 
 from structure_factor.utils import (
     compute_scattering_intensity,
-    plot_scattering_intensity_estimate,
+    plot_scattering_intensity_,
+    plot_pcf_,
     cleaning_data,
 )
 
@@ -137,7 +138,7 @@ class StructureFactor:
         self, wave_length, si, exact_sf=None, plot_type="plot", **binning_params
     ):
         points = self.points
-        return plot_scattering_intensity_estimate(
+        return plot_scattering_intensity_(
             points, wave_length, si, exact_sf, plot_type, **binning_params
         )
 
@@ -187,6 +188,10 @@ class StructureFactor:
             pcf = spatstat.core.pcf_fv(k_ripley, **params_fv)
 
         return pd.DataFrame(np.array(pcf).T, columns=pcf.names)
+
+    def plot_pcf(self, pcf_DataFrame, exact_pcf=None, **kwargs):
+        # kwargs : parameter of pandas.DataFrame.plot.line https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.plot.line.html
+        return plot_pcf_(pcf_DataFrame, exact_pcf, **kwargs)
 
     def interpolate_pcf(self, r, pcf_r, clean="false", **params):
         """Interpolate the pair correlation function (pcf) from evaluations ``(r, pcf_r)``.
