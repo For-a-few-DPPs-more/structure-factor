@@ -180,9 +180,13 @@ class StructureFactor:
 
         if method == "ppp":
             pcf = spatstat.core.pcf_ppp(data, **params)
+        # todo resuodre le problem avec l'utilisation de r comme vecteur dans kest ( soit créer une fonction qui converti un np.array to an rvector soit activer rpyé mais elle risk de ne pas marcher apres)
 
         if method == "fv":
             params_Kest = params.get("Kest", dict())
+            Kest_r = params_Kest.get("r", None)
+            if Kest_r is not None and isinstance(Kest_r, np.ndarray):
+                params_Kest["r"] = robjects.vectors.FloatVector(Kest_r)
             k_ripley = spatstat.core.Kest(data, **params_Kest)
             params_fv = params.get("fv", dict())
             pcf = spatstat.core.pcf_fv(k_ripley, **params_fv)

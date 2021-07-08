@@ -212,14 +212,14 @@ def ht_baddour_chouinard(function, order, r_max, nb_points, mode="Y"):
     r = jk * (r_max / jN)
     k = jk / r_max
 
-    if mode == "Y":
+    if mode == "Y":  # for space limited function
         H = bessel1(n, np.outer(jk / jN, jk)) / np.square(bessel1(n + 1, jk))
         H *= 2 / jN
         ht_k = H.dot(function(r))
         ht_k *= r_max ** 2 / jN
         return k, ht_k
 
-    elif mode == "T":
+    elif mode == "T":  # for band limited function
         H = bessel1(n, np.outer(jk / jN, jk))
         Jn1 = bessel1(n + 1, jk)
         H /= np.outer(Jn1, Jn1)
