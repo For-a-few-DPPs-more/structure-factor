@@ -24,11 +24,10 @@ class RadiallySymmetricFourierTransform:
         interp_params = params.pop("interpolation", dict())
         ht.compute_transformation_parameters(**params)
         g = lambda r: f(r) * r ** order
-        F_k = (2 * np.pi) ** (d / 2) * ht.transform(g, k, **interp_params)
+        _, F_k = ht.transform(g, k, **interp_params)
+        F_k *= (2 * np.pi) ** (d / 2)
         if order != 0:  # F_k /= k^(d/2-1)
-            k_ = k[:, None] if isinstance(k, np.ndarray) else k
-            np.power(k_, order, out=k_)
-            F_k /= k_
+            F_k /= k ** order
         return F_k
 
     # @staticmethod
@@ -150,11 +149,8 @@ class HankelTransformOgata(HankelTransform):
         k_ = k[:, None] if isinstance(k, np.ndarray) else k
         g = lambda r: f(r / k_) * r  # or f(r / k_) * (r / k**2)
         H_k = np.pi * np.sum(w * g(x) * bessel1(n, x), axis=-1)
-        # H_k /= k^2
-        np.square(k, out=k)
-        print(H_k.shape, k_.shape)
-        H_k /= k
-        return H_k
+        H_k /= k ** 2
+        return k, H_k
 
     @staticmethod
     def psi(t):
