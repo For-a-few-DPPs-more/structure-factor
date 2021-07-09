@@ -19,16 +19,15 @@ class RadiallySymmetricFourierTransform:
     def transform(self, f, k, method="Ogata", **params):
         d = self.d
         order = d // 2 - 1
-        print(method)
         ht = self._get_hankel_transformer(order, method)
         interp_params = params.pop("interpolation", dict())
         ht.compute_transformation_parameters(**params)
         g = lambda r: f(r) * r ** order
-        _, F_k = ht.transform(g, k, **interp_params)
+        k, F_k = ht.transform(g, k, **interp_params)
         F_k *= (2 * np.pi) ** (d / 2)
         if order != 0:  # F_k /= k^(d/2-1)
             F_k /= k ** order
-        return F_k
+        return k, F_k
 
     # @staticmethod
     def _get_hankel_transformer(self, order, method):
@@ -72,7 +71,9 @@ class HankelTransformBaddourChouinard(HankelTransform):
         self.r_max = r_max
         self.transformation_matrix = Y
 
-    def transform(self, f, k=None, **interpolation_params):
+    def transform(
+        self, f, k=None, fill_value="extrapolate", kind="cubic", **interpolation_params
+    ):
         """Compute Hankel transform :math:`HT[f](k)` of ``f`` evaluated at ``k``.
         If ``k`` is None, values considered are ``k = self.bessel_zeros[:-1] / self.r_max`` derived from :py:meth:`HankelTransformBaddourChouinard.compute_transformation_parameters`.
         If ``k`` is provided, the Hankel transform is first computed for the above k values (case k is None), then interpolated using :py:func:`scipy.interpolate.interp1d` with ``interpolation_params`` and finally evaluated at the provided ``k`` values.
@@ -93,7 +94,9 @@ class HankelTransformBaddourChouinard(HankelTransform):
         _k = jk / r_max
         if k is not None:
             interpolation_params["assume_sorted"] = True
-            ht = interpolate.interp1d(_k, ht_k, **interpolation_params)
+            ht = interpolate.interp1d(
+                _k, ht_k, fill_value=fill_value, kind=kind, **interpolation_params
+            )
             return k, ht(k)
         return _k, ht_k
 
