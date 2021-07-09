@@ -5,8 +5,10 @@ from abc import ABCMeta, abstractmethod
 
 import numpy as np
 import scipy as sp
+from rpy2 import robjects
 
 from structure_factor.utils import get_random_number_generator
+from structure_factor.spatstat_interface import SpatstatInterface
 
 
 class AbstractSpatialWindow(metaclass=ABCMeta):
@@ -80,11 +82,13 @@ class BallWindow(AbstractSpatialWindow):
         points /= np.linalg.norm(points, axis=1)[:, None]
         return self.center + self.radius * points[:, :d]
 
-    def convert_to_spatstat_owin(self, mask=False, npoly=128, delta=None):
+    def convert_to_spatstat_owin(self, **params):
         # https://rdocumentation.org/packages/spatstat.geom/versions/2.2-0/topics/disc
+        spatstat = SpatstatInterface(update=False)
+        spatstat.import_package("geom", update=False)
         r = self.radius
-        center = robjects.vectors.FloatVector(self.center)
-        spatstat.geom.disc(radius=1, centre=cce, mask=mask, npoly=npoly, delta=delta)
+        c = robjects.vectors.FloatVector(self.center)
+        return spatstat.geom.disc(radius=r, centre=c, **params)
 
 
 class UnitBallWindow(BallWindow):
