@@ -180,7 +180,6 @@ class StructureFactor:
 
         if method == "ppp":
             pcf = spatstat.core.pcf_ppp(data, **params)
-        # todo resuodre le problem avec l'utilisation de r comme vecteur dans kest ( soit créer une fonction qui converti un np.array to an rvector soit activer rpyé mais elle risk de ne pas marcher apres)
 
         if method == "fv":
             params_Kest = params.get("Kest", dict())
@@ -197,9 +196,7 @@ class StructureFactor:
         # kwargs : parameter of pandas.DataFrame.plot.line https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.plot.line.html
         return plot_pcf_(pcf_DataFrame, exact_pcf, **kwargs)
 
-    def interpolate_pcf(
-        self, r, pcf_r, clean=False, fill_value="extrapolate", kind="cubic", **params
-    ):
+    def interpolate_pcf(self, r, pcf_r, clean=False, **params):
         """Interpolate the pair correlation function (pcf) from evaluations ``(r, pcf_r)``.
         Note : if ``pcf_r``contains "Inf", you can clean the ``pcf_r``using the method ``cleaning_data``.
 
@@ -210,11 +207,11 @@ class StructureFactor:
             clean: f ``pcf_r``contains "Inf", you can clean the ``pcf_r``using the method ``cleaning_data`` by setting clean="true".
 
         """
+        params.setdefault("fill_value", "extrapolate")
+        params.setdefault("kind", "cubic")
         if clean:
-            cleaning_data(pcf_r)
-        return interpolate.interp1d(
-            r, pcf_r, fill_value=fill_value, kind=kind, **params
-        )
+            pcf_r = cleaning_data(pcf_r)
+        return interpolate.interp1d(r, pcf_r, **params)
 
     # todo à voir pourquoi ``r`` n'est pas en entrée pcf n'est pas tout le temps une fonction . to see in detail in the second check (pour Diala)
     def compute_structure_factor_via_hankel(
@@ -259,5 +256,5 @@ class StructureFactor:
         assert callable(pcf)
         ft = RadiallySymmetricFourierTransform(dimension=self.dimension)
         total_pcf = lambda r: pcf(r) - 1.0
-        ft_k = ft.transform(total_pcf, k, method=method, **params)
-        return 1.0 + self.intensity * ft_k
+        k_, ft_k = ft.transform(total_pcf, k, method=method, **params)
+        return k_, 1.0 + self.intensity * ft_k

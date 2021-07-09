@@ -47,6 +47,7 @@ class AbstractSpatialWindow(metaclass=ABCMeta):
 
 class BallWindow(AbstractSpatialWindow):
     def __init__(self, center, radius=1.0):
+        np.array()
         if not center.ndim == 1:
             raise ValueError("center must be 1D np.ndarray")
         if not radius > 0:
@@ -81,6 +82,15 @@ class BallWindow(AbstractSpatialWindow):
         points /= np.linalg.norm(points, axis=1)[:, None]
         return self.center + self.radius * points[:, :d]
 
+<<<<<<< HEAD
+    def convert_to_spatstat_owin(self, mask=False, npoly=128, delta=None):
+        # https://rdocumentation.org/packages/spatstat.geom/versions/2.2-0/topics/disc
+        r = self.radius
+        c = robjects.vectors.FloatVector(self.center)
+        return spatstat.geom.disc(
+            radius=r, centre=c, mask=mask, npoly=npoly, delta=delta
+        )
+=======
     def convert_to_spatstat_owin(self, **params):
         # https://rdocumentation.org/packages/spatstat.geom/versions/2.2-0/topics/disc
         spatstat = SpatstatInterface(update=False)
@@ -88,6 +98,7 @@ class BallWindow(AbstractSpatialWindow):
         r = self.radius
         c = robjects.vectors.FloatVector(self.center)
         return spatstat.geom.disc(radius=r, centre=c, **params)
+>>>>>>> f65c3021a43236718c91c4c5cb37ad4767ac4c11
 
 
 class UnitBallWindow(BallWindow):
