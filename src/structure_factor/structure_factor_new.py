@@ -209,9 +209,11 @@ class StructureFactor:
         """
         params.setdefault("fill_value", "extrapolate")
         params.setdefault("kind", "cubic")
+        r_min = np.min(r)
+        r_max = np.max(r)
         if clean:
             pcf_r = cleaning_data(pcf_r)
-        return interpolate.interp1d(r, pcf_r, **params)
+        return dict(r_min=r_min, r_max=r_max), interpolate.interp1d(r, pcf_r, **params)
 
     # todo à voir pourquoi ``r`` n'est pas en entrée pcf n'est pas tout le temps une fonction . to see in detail in the second check (pour Diala)
     def compute_structure_factor_via_hankel(
@@ -257,4 +259,7 @@ class StructureFactor:
         ft = RadiallySymmetricFourierTransform(dimension=self.dimension)
         total_pcf = lambda r: pcf(r) - 1.0
         k_, ft_k = ft.transform(total_pcf, k, method=method, **params)
+        if method == "Ogata" and r_max is not None:
+            params.setdefault("step_size", 0.1)
+            self.k_min = ft.compute_k_min(params["r_max"], params["step_size"])
         return k_, 1.0 + self.intensity * ft_k

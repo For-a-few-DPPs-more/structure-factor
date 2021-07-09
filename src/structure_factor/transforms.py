@@ -37,6 +37,9 @@ class RadiallySymmetricFourierTransform:
         if method == "BaddourChouinard":
             return HankelTransformBaddourChouinard(order=order)
 
+    def compute_k_min(r_max, step_size):
+        return (4 * np.pi) / (r_max * step_size)
+
 
 class HankelTransform(object):
     def __init__(self, order):
