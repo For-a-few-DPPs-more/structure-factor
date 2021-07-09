@@ -1,6 +1,8 @@
 from rpy2 import robjects
 from structure_factor.spatial_windows import AbstractSpatialWindow
 from structure_factor.spatstat_interface import SpatstatInterface
+from structure_factor.spatial_windows import BoxWindow
+import numpy as np
 
 
 class PointPattern(object):
@@ -24,11 +26,25 @@ class PointPattern(object):
         Returns:
             [type]: spatstat point pattern
         """
+
         spatstat = SpatstatInterface(update=False)
         spatstat.import_package("geom", update=False)
         x = robjects.vectors.FloatVector(self.points[:, 0])
         y = robjects.vectors.FloatVector(self.points[:, 1])
-        window = params.setdefault("window", self.window)
-        if isinstance(window, AbstractSpatialWindow):
+        window = params.get("window", self.window)
+        if window is not None and isinstance(window, AbstractSpatialWindow):
             params["window"] = window.convert_to_spatstat_owin()
         return spatstat.geom.ppp(x, y, **params)
+
+    def cut_to_cubic_window(self, x_min, y_min, L):
+        points = self.points
+        index_x_in_cube = np.logical_and(
+            x_min < points[:, 0],
+            points[:, 0] < x_min + L,
+        )
+        bounds = np.array([[x_min, y_min], [x_min + L, y_min + L]])
+        index_y_in_cube = np.logical_and(y_min < points[:, 1], points[:, 1] < y_min + L)
+        index_points_in_cube = np.logical_and(index_x_in_cube, index_y_in_cube)
+        points_in_cube = points[index_points_in_cube]
+        window = BoxWindow(bounds)
+        return PointPattern(points_in_cube, window)
