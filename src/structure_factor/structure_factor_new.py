@@ -210,7 +210,7 @@ class StructureFactor:
 
         """
         if clean:
-            cleaning_data(pcf_r)
+            pcf_r = cleaning_data(pcf_r)
         return interpolate.interp1d(
             r, pcf_r, fill_value=fill_value, kind=kind, **params
         )
@@ -258,5 +258,8 @@ class StructureFactor:
         assert callable(pcf)
         ft = RadiallySymmetricFourierTransform(dimension=self.dimension)
         total_pcf = lambda r: pcf(r) - 1.0
-        ft_k = ft.transform(total_pcf, k, method=method, **params)
-        return 1.0 + self.intensity * ft_k
+        k_, ft_k = ft.transform(total_pcf, k, method=method, **params)
+        if k is None:
+            return k_, 1.0 + self.intensity * ft_k
+        else:
+            return 1.0 + self.intensity * ft_k
