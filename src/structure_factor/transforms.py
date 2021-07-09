@@ -151,9 +151,10 @@ class HankelTransformOgata(HankelTransform):
         g = lambda r: f(r / k_) * r  # or f(r / k_) * (r / k**2)
         H_k = np.pi * np.sum(w * g(x) * bessel1(n, x), axis=-1)
         # H_k /= k^2
-        np.square(k_, out=k_)
-        H_k /= k_
-        return k, H_k
+        np.square(k, out=k)
+        print(H_k.shape, k_.shape)
+        H_k /= k
+        return H_k
 
     @staticmethod
     def psi(t):

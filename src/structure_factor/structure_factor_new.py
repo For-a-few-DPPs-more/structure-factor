@@ -198,7 +198,7 @@ class StructureFactor:
         return plot_pcf_(pcf_DataFrame, exact_pcf, **kwargs)
 
     def interpolate_pcf(
-        self, r, pcf_r, clean="false", fill_value="extrapolate", kind="cubic", **params
+        self, r, pcf_r, clean=False, fill_value="extrapolate", kind="cubic", **params
     ):
         """Interpolate the pair correlation function (pcf) from evaluations ``(r, pcf_r)``.
         Note : if ``pcf_r``contains "Inf", you can clean the ``pcf_r``using the method ``cleaning_data``.
@@ -210,7 +210,7 @@ class StructureFactor:
             clean: f ``pcf_r``contains "Inf", you can clean the ``pcf_r``using the method ``cleaning_data`` by setting clean="true".
 
         """
-        if clean == "true":
+        if clean:
             cleaning_data(pcf_r)
         return interpolate.interp1d(
             r, pcf_r, fill_value=fill_value, kind=kind, **params
