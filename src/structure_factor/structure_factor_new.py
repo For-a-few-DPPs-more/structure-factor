@@ -30,7 +30,7 @@ class StructureFactor:
         page 8 http://chemlabs.princeton.edu/torquato/wp-content/uploads/sites/12/2018/06/paper-401.pdf
     """
     # ! Mettre un warning que scattering_intensity marche seulement dans les cubic windows, pcf pour dimension 2 et 3 seulement, hankel pour isotropic en dimension 2, en dimension 3 faire un MC pour approximer l'integral
-    def __init__(self, points, intensity):
+    def __init__(self, point_pattern, intensity):
         r"""
         Args:
             points: :math:`n \times 2` np.array representing a realization of a 2 dimensional point process.
@@ -41,10 +41,10 @@ class StructureFactor:
         # todo ajouter en entré un parametre qui prend le window dans le quel les data sont obtenu et le passer à spatstat en pcf
         # todo ajouter une methode pour approximer l'intensité pour des stationnaire ergodic si elle n'est pas provided
         """
-        dimension = points.shape[1]
-        assert points.ndim == 2 and dimension == 2
+        dimension = point_pattern.points.shape[1]
+        assert point_pattern.points.ndim == 2 and dimension == 2
         self.dimension = dimension
-        self.points = points
+        self.point_pattern = point_pattern
         self.intensity = intensity
 
     def compute_scattering_intensity(
@@ -106,15 +106,19 @@ class StructureFactor:
                 / L  # adding allowed values near zero
             )
         else:
-            x_grid = np.linspace(-maximum_k, maximum_k, int(meshgrid_size))
-            X, Y = np.meshgrid(x_grid, x_grid)
-            k_vector = np.column_stack((X.ravel(), Y.ravel()))
+            n_vector = np.arange(1, maximum_n, int(maximum_n / meshgrid_size))
+            print(n_vector.shape)
+            print(n_vector)
+            X, Y = np.meshgrid(n_vector, n_vector)
+            k_vector = 2 * np.pi * np.column_stack((X.ravel(), Y.ravel())) / L
 
-        si = compute_scattering_intensity(k_vector, self.points)
+        si = compute_scattering_intensity(k_vector, self.point_pattern.points)
         norm_k_vector = np.linalg.norm(k_vector, axis=1)
 
         if meshgrid_size is None:
-            add_si = compute_scattering_intensity(add_k_vector, self.points)
+            add_si = compute_scattering_intensity(
+                add_k_vector, self.point_pattern.points
+            )
             norm_add_k_vector = np.linalg.norm(add_k_vector, axis=1)
             si = np.concatenate((add_si, si), axis=None)
 
@@ -123,6 +127,7 @@ class StructureFactor:
             )
 
         if meshgrid_size is not None:
+
             norm_k_vector = norm_k_vector.reshape(
                 X.shape
             )  # reshape the ``norm_k_vector`` to the correct shape
@@ -137,12 +142,12 @@ class StructureFactor:
     def plot_scattering_intensity(
         self, wave_length, si, plot_type="plot", exact_sf=None, **binning_params
     ):
-        points = self.points
+        points = self.point_pattern.points
         return plot_scattering_intensity_(
             points, wave_length, si, plot_type, exact_sf, **binning_params
         )
 
-    def compute_pcf(self, radius, method, install_spatstat=False, **params):
+    def compute_pcf(self, method="fv", install_spatstat=False, **params):
         # todo consider choosing a different window shape
         """Estimate the pair correlation function (pcf) of ``self.points`` observed in a disk window centered at the origin with radius ``radius`` using spatstat ``spastat.core.pcf_ppp`` or ``spastat.core.pcf_fv`` functions according to ``method`` called with the corresponding parameters ``params``.
 
@@ -172,11 +177,7 @@ class StructureFactor:
         spatstat = SpatstatInterface(update=install_spatstat)
         spatstat.import_package("core", "geom", update=False)
 
-        window = spatstat.geom.disc(radius=radius)
-        # todo à Diala a voir si le window peut être sur tous les data est ce que raduis est nécessaire.
-        x = robjects.vectors.FloatVector(self.points[:, 0])
-        y = robjects.vectors.FloatVector(self.points[:, 1])
-        data = spatstat.geom.ppp(x, y, window=window)
+        data = self.point_pattern.convert_to_spatstat_ppp()
 
         if method == "ppp":
             pcf = spatstat.core.pcf_ppp(data, **params)
