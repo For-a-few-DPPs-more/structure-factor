@@ -75,7 +75,10 @@ class HankelTransformBaddourChouinard(HankelTransform):
         self.transformation_matrix = Y
 
     def transform(self, f, k=None, **interpolation_params):
-        """Compute Hankel transform :math:`HT[f](k)` of ``f`` evaluated at ``k``.
+        """Compute the Hankel transform :math:`HT[f](k)` of ``f`` evaluated at ``k``.
+
+        Please call :py:meth:`HankelTransformBaddourChouinard.compute_transformation_parameters` before :py:meth:`HankelTransformBaddourChouinard.compute_transformation_parameters`.
+
         If ``k`` is None, values considered are ``k = self.bessel_zeros[:-1] / self.r_max`` derived from :py:meth:`HankelTransformBaddourChouinard.compute_transformation_parameters`.
         If ``k`` is provided, the Hankel transform is first computed for the above k values (case k is None), then interpolated using :py:func:`scipy.interpolate.interp1d` with ``interpolation_params`` and finally evaluated at the provided ``k`` values.
 
@@ -138,6 +141,7 @@ class HankelTransformOgata(HankelTransform):
 
     def transform(self, f, k):
         """Compute Hankel transform :math:`HT[f](k)` of ``f`` evaluated at ``k``, following the work of :cite:`Oga05` Section 5.
+        Please call :py:meth:`HankelTransformOgata.compute_transformation_parameters` before :py:meth:`HankelTransformOgata.compute_transformation_parameters`.
 
         Args:
             f (callable): function to be Hankel transformed

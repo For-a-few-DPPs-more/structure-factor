@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # coding=utf-8
 
-from structure_factor.spatial_windows import AbstractSpatialWindow
+from structure_factor.spatial_windows import AbstractSpatialWindow, UnitBoxWindow
 from structure_factor.utils import get_random_number_generator
 
 
@@ -18,7 +18,7 @@ class HomogeneousPoissonPointProcess(object):
             raise TypeError("intensity argument must be positive")
         self.intensity = intensity
 
-    def generate_sample(self, window, random_state=None):
+    def generate_sample(self, window=UnitBoxWindow(2), random_state=None):
         """Generate an exact sample from the corresponding :py:class:`HomogeneousPoissonPointProcess` restricted to `window`."""
         if not isinstance(window, AbstractSpatialWindow):
             raise TypeError("window argument must be an AbstractSpatialWindow")

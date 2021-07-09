@@ -13,20 +13,34 @@ class AbstractSpatialWindow(metaclass=ABCMeta):
     @property
     @abstractmethod
     def dimension(self):
-        """Return the dimension of the corresponding :py:class:`AbstractSpatialWindow`"""
+        """Return the ambient dimension of the corresponding window."""
 
     @property
     @abstractmethod
     def volume(self):
-        """Compute the volume of the corresponding :py:class:`AbstractSpatialWindow`"""
+        """Compute the volume of the corresponding window."""
 
     @abstractmethod
     def indicator_function(self, points):
-        """Return a boolean or 1D boolean array indicating which points lie in the corresponding :py:class:`AbstractSpatialWindow."""
+        """Indicator function returning a boolean or boolean array indicating which points lie in the corresponding :py:class:`AbstractSpatialWindow.
+
+        Args:
+            points (np.ndarray): Points to be tested.
+        """
 
     @abstractmethod
     def rand(self, n=1, random_state=None):
-        """Generate `n` points uniformly at random in the corresponding :py:class:`AbstractSpatialWindow`"""
+        r"""Generate `n` points uniformly at random in the corresponding spatial window
+
+        Args:
+            n (int, optional): Number of points. Defaults to 1.
+            random_state (optional): Defaults to None.
+
+        Returns:
+            points (np.ndarray):
+            If :math:`n=1`, :math:`d` dimensional vector
+            If :math:`n>1`, :math:`n \times d` array containing the points
+        """
 
 
 class BallWindow(AbstractSpatialWindow):
@@ -110,6 +124,15 @@ class BoxWindow(AbstractSpatialWindow):
         if n == 1:
             return rng.uniform(*self.bounds)
         return rng.uniform(*self.bounds, size=(n, self.dimension))
+
+    def convert_to_spatstat_owin(self, **params):
+        # https://rdocumentation.org/packages/spatstat.geom/versions/2.2-0/topics/owin
+        assert self.dimension == 2
+        spatstat = SpatstatInterface(update=False)
+        spatstat.import_package("geom", update=False)
+        x = robjects.vectors.FloatVector(self.bounds[:, 0])
+        y = robjects.vectors.FloatVector(self.bounds[:, 1])
+        return spatstat.geom.owin(xrange=x, yrange=y, **params)
 
 
 class UnitBoxWindow(BoxWindow):
