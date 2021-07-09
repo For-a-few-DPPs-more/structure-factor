@@ -5,8 +5,10 @@ from abc import ABCMeta, abstractmethod
 
 import numpy as np
 import scipy as sp
+from rpy2 import robjects
 
 from structure_factor.utils import get_random_number_generator
+from structure_factor.spatstat_interface import SpatstatInterface
 
 
 class AbstractSpatialWindow(metaclass=ABCMeta):
@@ -66,6 +68,7 @@ class BallWindow(AbstractSpatialWindow):
         points /= np.linalg.norm(points, axis=1)[:, None]
         return self.center + self.radius * points[:, :d]
 
+<<<<<<< HEAD
     def convert_to_spatstat_owin(self, mask=False, npoly=128, delta=None):
         # https://rdocumentation.org/packages/spatstat.geom/versions/2.2-0/topics/disc
         r = self.radius
@@ -73,6 +76,15 @@ class BallWindow(AbstractSpatialWindow):
         return spatstat.geom.disc(
             radius=r, centre=c, mask=mask, npoly=npoly, delta=delta
         )
+=======
+    def convert_to_spatstat_owin(self, **params):
+        # https://rdocumentation.org/packages/spatstat.geom/versions/2.2-0/topics/disc
+        spatstat = SpatstatInterface(update=False)
+        spatstat.import_package("geom", update=False)
+        r = self.radius
+        c = robjects.vectors.FloatVector(self.center)
+        return spatstat.geom.disc(radius=r, centre=c, **params)
+>>>>>>> f65c3021a43236718c91c4c5cb37ad4767ac4c11
 
 
 class UnitBallWindow(BallWindow):
@@ -112,6 +124,14 @@ class BoxWindow(AbstractSpatialWindow):
         if n == 1:
             return rng.uniform(*self.bounds)
         return rng.uniform(*self.bounds, size=(n, self.dimension))
+
+    def convert_to_spatstat_owin(self, **params):
+        # https://rdocumentation.org/packages/spatstat.geom/versions/2.2-0/topics/owin
+        spatstat = SpatstatInterface(update=False)
+        spatstat.import_package("geom", update=False)
+        x = robjects.vectors.FloatVector(self.bounds[:, 0])
+        y = robjects.vectors.FloatVector(self.bounds[:, 1])
+        return spatstat.geom.owin(xrange=x, yrange=y, **params)
 
 
 class UnitBoxWindow(BoxWindow):
