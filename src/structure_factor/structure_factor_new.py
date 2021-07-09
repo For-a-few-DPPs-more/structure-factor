@@ -196,9 +196,7 @@ class StructureFactor:
         # kwargs : parameter of pandas.DataFrame.plot.line https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.plot.line.html
         return plot_pcf_(pcf_DataFrame, exact_pcf, **kwargs)
 
-    def interpolate_pcf(
-        self, r, pcf_r, clean=False, fill_value="extrapolate", kind="cubic", **params
-    ):
+    def interpolate_pcf(self, r, pcf_r, clean=False, **params):
         """Interpolate the pair correlation function (pcf) from evaluations ``(r, pcf_r)``.
         Note : if ``pcf_r``contains "Inf", you can clean the ``pcf_r``using the method ``cleaning_data``.
 
@@ -209,11 +207,11 @@ class StructureFactor:
             clean: f ``pcf_r``contains "Inf", you can clean the ``pcf_r``using the method ``cleaning_data`` by setting clean="true".
 
         """
+        params.setdefault("fill_value", "extrapolate")
+        params.setdefault("kind", "cubic")
         if clean:
             pcf_r = cleaning_data(pcf_r)
-        return interpolate.interp1d(
-            r, pcf_r, fill_value=fill_value, kind=kind, **params
-        )
+        return interpolate.interp1d(r, pcf_r, **params)
 
     # todo à voir pourquoi ``r`` n'est pas en entrée pcf n'est pas tout le temps une fonction . to see in detail in the second check (pour Diala)
     def compute_structure_factor_via_hankel(
@@ -259,7 +257,4 @@ class StructureFactor:
         ft = RadiallySymmetricFourierTransform(dimension=self.dimension)
         total_pcf = lambda r: pcf(r) - 1.0
         k_, ft_k = ft.transform(total_pcf, k, method=method, **params)
-        if k is None:
-            return k_, 1.0 + self.intensity * ft_k
-        else:
-            return 1.0 + self.intensity * ft_k
+        return k_, 1.0 + self.intensity * ft_k

@@ -71,9 +71,7 @@ class HankelTransformBaddourChouinard(HankelTransform):
         self.r_max = r_max
         self.transformation_matrix = Y
 
-    def transform(
-        self, f, k=None, fill_value="extrapolate", kind="cubic", **interpolation_params
-    ):
+    def transform(self, f, k=None, **interpolation_params):
         """Compute Hankel transform :math:`HT[f](k)` of ``f`` evaluated at ``k``.
         If ``k`` is None, values considered are ``k = self.bessel_zeros[:-1] / self.r_max`` derived from :py:meth:`HankelTransformBaddourChouinard.compute_transformation_parameters`.
         If ``k`` is provided, the Hankel transform is first computed for the above k values (case k is None), then interpolated using :py:func:`scipy.interpolate.interp1d` with ``interpolation_params`` and finally evaluated at the provided ``k`` values.
@@ -94,9 +92,9 @@ class HankelTransformBaddourChouinard(HankelTransform):
         _k = jk / r_max
         if k is not None:
             interpolation_params["assume_sorted"] = True
-            ht = interpolate.interp1d(
-                _k, ht_k, fill_value=fill_value, kind=kind, **interpolation_params
-            )
+            interpolation_params.setdefault("fill_value", "extrapolate")
+            interpolation_params.setdefault("kind", "cubic")
+            ht = interpolate.interp1d(_k, ht_k, **interpolation_params)
             return k, ht(k)
         return _k, ht_k
 
