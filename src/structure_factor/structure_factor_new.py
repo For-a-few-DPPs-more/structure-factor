@@ -135,11 +135,11 @@ class StructureFactor:
     # todo faire une fonction qui calcule les allowed values
 
     def plot_scattering_intensity(
-        self, wave_length, si, exact_sf=None, plot_type="plot", **binning_params
+        self, wave_length, si, plot_type="plot", exact_sf=None, **binning_params
     ):
         points = self.points
         return plot_scattering_intensity_(
-            points, wave_length, si, exact_sf, plot_type, **binning_params
+            points, wave_length, si, plot_type, exact_sf, **binning_params
         )
 
     def compute_pcf(self, radius, method, install_spatstat=False, **params):
@@ -197,7 +197,9 @@ class StructureFactor:
         # kwargs : parameter of pandas.DataFrame.plot.line https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.plot.line.html
         return plot_pcf_(pcf_DataFrame, exact_pcf, **kwargs)
 
-    def interpolate_pcf(self, r, pcf_r, clean="false", **params):
+    def interpolate_pcf(
+        self, r, pcf_r, clean="false", fill_value="extrapolate", kind="cubic", **params
+    ):
         """Interpolate the pair correlation function (pcf) from evaluations ``(r, pcf_r)``.
         Note : if ``pcf_r``contains "Inf", you can clean the ``pcf_r``using the method ``cleaning_data``.
 
@@ -210,10 +212,14 @@ class StructureFactor:
         """
         if clean == "true":
             cleaning_data(pcf_r)
-        return interpolate.interp1d(r, pcf_r, **params)
+        return interpolate.interp1d(
+            r, pcf_r, fill_value=fill_value, kind=kind, **params
+        )
 
     # todo à voir pourquoi ``r`` n'est pas en entrée pcf n'est pas tout le temps une fonction . to see in detail in the second check (pour Diala)
-    def compute_structure_factor_via_hankel(self, k, pcf, method="Ogata", **params):
+    def compute_structure_factor_via_hankel(
+        self, pcf, k=None, method="Ogata", **params
+    ):
         r"""Compute the `structure factor <https://en.wikipedia.org/wiki/Radial_distribution_function#The_structure_factor>`_ of the underlying point process at ``k`` from its pair correlation function ``pcf`` (assumed to be radially symmetric).
 
         .. math::
@@ -245,7 +251,7 @@ class StructureFactor:
         .. important::
             # todo ``pcf`` could be a function ... to see in detail .... diala
             The Fourier transform involved <https://en.wikipedia.org/wiki/Hankel_transform#Fourier_transform_in_d_dimensions_(radially_symmetric_case)>`_ of :math:`g` is computed via
-
+            # todo via what???
         .. note::
 
             Typical usage: ``pcf`` is estimated using :py:meth:`StructureFactor.compute_pcf` and then interpolated using :py:meth:`StructureFactor.interpolate_pair_correlation_function`.

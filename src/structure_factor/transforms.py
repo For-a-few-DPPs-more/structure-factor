@@ -19,6 +19,7 @@ class RadiallySymmetricFourierTransform:
     def transform(self, f, k, method="Ogata", **params):
         d = self.d
         order = d // 2 - 1
+        print(method)
         ht = self._get_hankel_transformer(order, method)
         interp_params = params.pop("interpolation", dict())
         ht.compute_transformation_parameters(**params)
@@ -30,7 +31,7 @@ class RadiallySymmetricFourierTransform:
             F_k /= k_
         return F_k
 
-    @staticmethod
+    # @staticmethod
     def _get_hankel_transformer(self, order, method):
         assert method in self._hankel_transform_methods
         if method == "Ogata":
