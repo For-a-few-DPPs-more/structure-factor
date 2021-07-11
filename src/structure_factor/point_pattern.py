@@ -48,4 +48,4 @@ class PointPattern(object):
         index_points_in_cube = np.logical_and(index_x_in_cube, index_y_in_cube)
         points_in_cube = points[index_points_in_cube]
         window = BoxWindow(bounds)
-        return PointPattern(points_in_cube, window)
+        return PointPattern(points_in_cube, window, self.intensity)
