@@ -270,7 +270,9 @@ class StructureFactor:
         ft = RadiallySymmetricFourierTransform(dimension=self.dimension)
         total_pcf = lambda r: pcf(r) - 1.0
         k_, ft_k = ft.transform(total_pcf, k, method=method, **params)
-        if method == "Ogata" and r_max is not None:
+        params.setdefault("r_max", None)
+        if method == "Ogata" and params["r_max"] is not None:
             params.setdefault("step_size", 0.1)
-            self.k_min = ft.compute_k_min(params["r_max"], params["step_size"])
+            step_size = params["step_size"]
+            self.k_min = (4 * np.pi) / (params["r_max"] * step_size)
         return k_, 1.0 + self.intensity * ft_k

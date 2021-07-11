@@ -37,7 +37,9 @@ class RadiallySymmetricFourierTransform:
         if method == "BaddourChouinard":
             return HankelTransformBaddourChouinard(order=order)
 
-    def compute_k_min(r_max, step_size):
+    @property
+    def compute_k_min(self, step_size):
+        r_max = self.r_max
         return (4 * np.pi) / (r_max * step_size)
 
 
@@ -117,7 +119,9 @@ class HankelTransformOgata(HankelTransform):
         super(HankelTransformOgata, self).__init__(order=order)
         self.nodes, self.weights = None, None
 
-    def compute_transformation_parameters(self, step_size=0.01, nb_points=300):
+    def compute_transformation_parameters(
+        self, r_max=None, step_size=0.01, nb_points=300
+    ):
         """Compute the quadrature nodes and weights used by :cite:`Oga05` Equation (5.2) to evaluate the Hankel-type transform.
 
         Args:
@@ -130,7 +134,7 @@ class HankelTransformOgata(HankelTransform):
         n = self.order
         h = step_size
         N = nb_points
-
+        self.r_max = r_max
         t = bessel1_zeros(n, N)
         weights = bessel2(n, t) / bessel1(n + 1, t)  # Equation (1.2)
         t *= h / np.pi  # Equivalent of xi variable
