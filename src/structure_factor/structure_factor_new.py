@@ -49,9 +49,9 @@ class StructureFactor:
 
     def compute_sf_via_scattering_intensity(
         self,
-        maximum_k,
+        max_k,
         meshgrid_size=None,
-        max_add_n=10,
+        max_add_k=1,
     ):
         # todo je peux à la place de max_add_n mettre max_k_add plus compréhensible et changer en bas comme pour k_vector
         # todo replace the link below to the link of our future paper.
@@ -77,12 +77,12 @@ class StructureFactor:
                 :math:
                     `k_vectors = (2 \pi n_vector) /L`
 
-                where, ``n_vector`` is a vector of integer from 1 into maximum_n, and ``L`` is the length side of the cubic window that contains ``points``. see # todo put the link of our paper
+                where, ``n_vector`` is a vector of integer from 1 into max_n, and ``L`` is the length side of the cubic window that contains ``points``. see # todo put the link of our paper
 
         Args:
             L (int): side length of the cubic window that contains ``points``.
             # todo Consider passing a PointPattern at initialization with .points and .window attributes
-            maximum_k (int): maximum norm of ``k_vector``. The user can't chose the ``k_vector`` (defined above) since there's only a specific allowed values of ``k_vector`` used in the estimation of the structure factor by the scattering intensity, but the user can  specify in ``maximum_k`` the maximum norm of ``k_vector``.
+            max_k (int): maximum norm of ``k_vector``. The user can't chose the ``k_vector`` (defined above) since there's only a specific allowed values of ``k_vector`` used in the estimation of the structure factor by the scattering intensity, but the user can  specify in ``max_k`` the maximum norm of ``k_vector``.
             # todo clarify the description, k_vector exists only in the code not in the docstring, the argument name is not clear
             meshgrid_size (int): if the requested evaluation is on a meshgrid,  then ``meshgrid_size`` is the number of waves in each row of the meshgrid. Defaults to None.
             plot_param (str): "true" or "false", parameter to precise whether to show the plot of to hide it. Defaults to "true"
@@ -92,13 +92,15 @@ class StructureFactor:
         Returns:
             :math:`\left\lVert |\mathbf{k}| \right\rVert, SI(\mathbf{k})`, the norm of ``k_vector`` represented by ``norm_k_vector`` and the estimation of the scattering intensity ``si`` evaluated at ``k_vector``.
         """
+        point_pattern = self.point_pattern
         L = np.abs(
             point_pattern.window.bounds[0, 0] - point_pattern.window.bounds[1, 0]
         )
-        maximum_n = np.floor(maximum_k * L / (2 * np.pi))  # maximum of ``k_vector``
+        max_n = np.floor(max_k * L / (2 * np.pi))  # maximum of ``k_vector``
         if meshgrid_size is None:
-            n_vector = np.linspace(1, maximum_n, int(maximum_n))
+            n_vector = np.linspace(1, max_n, int(max_n))
             k_vector = 2 * np.pi * np.column_stack((n_vector, n_vector)) / L
+            max_add_n = np.floor(max_add_k * L / (2 * np.pi))
             add_n_vector = np.linspace(1, np.int(max_add_n), np.int(max_add_n))
             add_n_grid, add_n_grid = np.meshgrid(add_n_vector, add_n_vector)
             add_k_vector = (
@@ -108,9 +110,12 @@ class StructureFactor:
                 / L  # adding allowed values near zero
             )
         else:
-            n_vector = np.arange(1, maximum_n, int(maximum_n / meshgrid_size))
-            print(n_vector.shape)
-            print(n_vector)
+            step_size = int(max_n / meshgrid_size)
+            if meshgrid_size > max_n:
+                step_size = 1
+                # todo raise warning : meshgrid_size should be less than the total allowed number of points
+
+            n_vector = np.arange(1, max_n, step_size)
             X, Y = np.meshgrid(n_vector, n_vector)
             k_vector = 2 * np.pi * np.column_stack((X.ravel(), Y.ravel())) / L
 
