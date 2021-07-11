@@ -136,14 +136,14 @@ def plot_scattering_intensity_(
             m /= 2
             n /= 2
 
-            fig, ax = plt.subplots(1, 3, figsize=(24, 7))
+            fig, ax = plt.subplots(1, 3, figsize=(24, 6))
             ax[0].plot(points[:, 0], points[:, 1], "b,")
             ax[0].title.set_text("Points configuration")
             ax[1].loglog(wave_length, si, "k,")
             ax[1].loglog(bin_centers, bin_means, "b.")
             ax[1].loglog(wave_length, np.ones_like(wave_length), "r--")
             if exact_sf is not None:
-                ax[1].loglog(wave_length, exact_sf(wave_length), "r", label="exact sf")
+                ax[1].loglog(wave_length, exact_sf(wave_length), "g", label="exact sf")
                 ax[1].legend(
                     ["SI", "Mean(SI)", "y=1", "Exact sf"],
                     shadow=True,
