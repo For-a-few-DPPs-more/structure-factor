@@ -47,7 +47,7 @@ class AbstractSpatialWindow(metaclass=ABCMeta):
 
 class BallWindow(AbstractSpatialWindow):
     def __init__(self, center, radius=1.0):
-        np.array()
+        center = np.array(center)
         if not center.ndim == 1:
             raise ValueError("center must be 1D np.ndarray")
         if not radius > 0:
