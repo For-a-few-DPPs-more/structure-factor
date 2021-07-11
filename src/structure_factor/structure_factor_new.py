@@ -110,12 +110,17 @@ class StructureFactor:
                 / L  # adding allowed values near zero
             )
         else:
-            step_size = int(max_n / meshgrid_size)
-            if meshgrid_size > max_n:
+
+            step_size = int((2 * max_n + 1) / meshgrid_size)
+            if meshgrid_size > (2 * max_n + 1):
                 step_size = 1
                 # todo raise warning : meshgrid_size should be less than the total allowed number of points
 
-            n_vector = np.arange(1, max_n, step_size)
+            n_vector = np.arange(-max_n, max_n, step_size)
+            index_zero = np.argwhere(n_vector == 0)  # care about zero
+            mask = np.ones(len(n_vector), dtype=bool)
+            mask[index_zero] = False
+            n_vector = n_vector[mask, ...]
             X, Y = np.meshgrid(n_vector, n_vector)
             k_vector = 2 * np.pi * np.column_stack((X.ravel(), Y.ravel())) / L
 
