@@ -6,7 +6,7 @@ import numpy as np
 
 
 class PointPattern(object):
-    def __init__(self, points, window=None):
+    def __init__(self, points, window=None, intensity=None):
         r"""[summary]
 
         Args:
@@ -15,6 +15,7 @@ class PointPattern(object):
         """
         self.points = points
         self.window = window
+        self.intensity = intensity
 
     def dimension(self):
         """Ambient dimension where the points live"""
@@ -36,7 +37,7 @@ class PointPattern(object):
             params["window"] = window.convert_to_spatstat_owin()
         return spatstat.geom.ppp(x, y, **params)
 
-    def cut_to_cubic_window(self, x_min, y_min, L):
+    def restrict_to_cubic_window(self, x_min, y_min, L):
         points = self.points
         index_x_in_cube = np.logical_and(
             x_min < points[:, 0],
