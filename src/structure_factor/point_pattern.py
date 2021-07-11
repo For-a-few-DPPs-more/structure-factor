@@ -1,7 +1,7 @@
 from rpy2 import robjects
 from structure_factor.spatial_windows import AbstractSpatialWindow
 from structure_factor.spatstat_interface import SpatstatInterface
-from structure_factor.spatial_windows import BoxWindow
+from structure_factor.spatial_windows import BoxWindow, BallWindow
 import numpy as np
 
 
@@ -37,7 +37,7 @@ class PointPattern(object):
             params["window"] = window.convert_to_spatstat_owin()
         return spatstat.geom.ppp(x, y, **params)
 
-    def restrict_to_cubic_window(self, x_min, y_min, L):
+    """def restrict_to_cubic_window(self, x_min, y_min, L):
         points = self.points
         index_x_in_cube = np.logical_and(
             x_min < points[:, 0],
@@ -48,4 +48,14 @@ class PointPattern(object):
         index_points_in_cube = np.logical_and(index_x_in_cube, index_y_in_cube)
         points_in_cube = points[index_points_in_cube]
         window = BoxWindow(bounds)
-        return PointPattern(points_in_cube, window, self.intensity)
+        return PointPattern(points_in_cube, window, self.intensity)"""
+
+    def restrict_to_window(self, bounds=None, center=None, radius=None):
+        points = self.points
+        if bounds is not None:
+            to_window = BoxWindow(bounds)
+        else:
+            to_window = BallWindow(center, radius)
+        index_points_restricted = to_window.indicator_function(points)
+        points_restricted = points[index_points_restricted]
+        return PointPattern(points_restricted, to_window, self.intensity)
