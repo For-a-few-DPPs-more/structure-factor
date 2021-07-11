@@ -47,7 +47,7 @@ class StructureFactor:
         self.point_pattern = point_pattern
         self.intensity = point_pattern.intensity
 
-    def compute_scattering_intensity(
+    def compute_sf_via_scattering_intensity(
         self,
         maximum_k,
         meshgrid_size=None,
@@ -219,9 +219,7 @@ class StructureFactor:
         return dict(r_min=r_min, r_max=r_max), interpolate.interp1d(r, pcf_r, **params)
 
     # todo à voir pourquoi ``r`` n'est pas en entrée pcf n'est pas tout le temps une fonction . to see in detail in the second check (pour Diala)
-    def compute_structure_factor_via_hankel(
-        self, pcf, k=None, method="Ogata", **params
-    ):
+    def compute_sf_via_hankel(self, pcf, k=None, method="Ogata", **params):
         r"""Compute the `structure factor <https://en.wikipedia.org/wiki/Radial_distribution_function#The_structure_factor>`_ of the underlying point process at ``k`` from its pair correlation function ``pcf`` (assumed to be radially symmetric).
 
         .. math::
