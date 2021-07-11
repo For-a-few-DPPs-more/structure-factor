@@ -30,7 +30,7 @@ class StructureFactor:
         page 8 http://chemlabs.princeton.edu/torquato/wp-content/uploads/sites/12/2018/06/paper-401.pdf
     """
     # ! Mettre un warning que scattering_intensity marche seulement dans les cubic windows, pcf pour dimension 2 et 3 seulement, hankel pour isotropic en dimension 2, en dimension 3 faire un MC pour approximer l'integral
-    def __init__(self, point_pattern, intensity):
+    def __init__(self, point_pattern):
         r"""
         Args:
             points: :math:`n \times 2` np.array representing a realization of a 2 dimensional point process.
@@ -45,11 +45,10 @@ class StructureFactor:
         assert point_pattern.points.ndim == 2 and dimension == 2
         self.dimension = dimension
         self.point_pattern = point_pattern
-        self.intensity = intensity
+        self.intensity = point_pattern.intensity
 
     def compute_scattering_intensity(
         self,
-        L,
         maximum_k,
         meshgrid_size=None,
         max_add_n=10,
@@ -93,6 +92,9 @@ class StructureFactor:
         Returns:
             :math:`\left\lVert |\mathbf{k}| \right\rVert, SI(\mathbf{k})`, the norm of ``k_vector`` represented by ``norm_k_vector`` and the estimation of the scattering intensity ``si`` evaluated at ``k_vector``.
         """
+        L = np.abs(
+            point_pattern.window.bounds[0, 0] - point_pattern.window.bounds[1, 0]
+        )
         maximum_n = np.floor(maximum_k * L / (2 * np.pi))  # maximum of ``k_vector``
         if meshgrid_size is None:
             n_vector = np.linspace(1, maximum_n, int(maximum_n))
