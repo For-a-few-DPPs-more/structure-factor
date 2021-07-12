@@ -8,6 +8,7 @@ from structure_factor.utils import (
     plot_scattering_intensity_,
     plot_pcf_,
     cleaning_data,
+    plot_sf_via_hankel_,
 )
 
 from structure_factor.transforms import RadiallySymmetricFourierTransform
@@ -267,6 +268,10 @@ class StructureFactor:
             Typical usage: ``pcf`` is estimated using :py:meth:`StructureFactor.compute_pcf` and then interpolated using :py:meth:`StructureFactor.interpolate_pair_correlation_function`.
         """
         assert callable(pcf)
+        if (method == "Ogata") and (k.all() == None):
+            raise TypeError(
+                "k is non optional while using method='Ogata'. Please provide a vector k. "
+            )
         ft = RadiallySymmetricFourierTransform(dimension=self.dimension)
         total_pcf = lambda r: pcf(r) - 1.0
         k_, ft_k = ft.transform(total_pcf, k, method=method, **params)
@@ -274,5 +279,9 @@ class StructureFactor:
         if method == "Ogata" and params["r_max"] is not None:
             params.setdefault("step_size", 0.1)
             step_size = params["step_size"]
-            self.k_min = (4 * np.pi) / (params["r_max"] * step_size)
+            self.k_min = (2.7 * np.pi) / (params["r_max"] * step_size)
         return k_, 1.0 + self.intensity * ft_k
+
+    def plot_sf_via_hankel(self, k, sf, k_min=None, exact_sf=None):
+        # kwargs : parameter of pandas.DataFrame.plot.line https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.plot.line.html
+        return plot_sf_via_hankel_(k, sf, k_min=k_min, exact_sf=exact_sf)

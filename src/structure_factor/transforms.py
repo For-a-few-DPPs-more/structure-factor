@@ -40,7 +40,7 @@ class RadiallySymmetricFourierTransform:
     @property
     def compute_k_min(self, step_size):
         r_max = self.r_max
-        return (4 * np.pi) / (r_max * step_size)
+        return (2.7 * np.pi) / (r_max * step_size)
 
 
 class HankelTransform(object):

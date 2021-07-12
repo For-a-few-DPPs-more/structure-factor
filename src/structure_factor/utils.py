@@ -214,3 +214,56 @@ def plot_pcf_(pcf_DataFrame, exact_pcf=None, **kwargs):
     ax.set_xlabel("r")
     ax.set_ylabel("pcf")
     plt.show()
+
+
+def plot_sf_via_hankel_(k, sf, k_min, exact_sf=None):
+    fig, ax = plt.subplots(1, 2, figsize=(20, 5))
+    ax[0].plot(k, sf, "b.", label="approx sf")
+    ax[0].plot(k, sf, "b")
+    if exact_sf is not None:
+        ax[0].plot(
+            k,
+            exact_sf(k),
+            "r",
+            label="exact sf",
+        )
+    if k_min is not None:
+        sf_interpolate = interpolate.interp1d(
+            k, sf, axis=0, fill_value="extrapolate", kind="cubic"
+        )
+        ax[0].plot(
+            k_min,
+            sf_interpolate(k_min),
+            "ko",
+            label="k_min",
+        )
+    ax[0].plot(k, np.ones_like(k), "r--", label="theo")
+    ax[0].legend()
+    ax[0].set_xlabel("r")
+    ax[0].set_ylabel("pcf")
+    ax[0].title.set_text("plot")
+
+    ax[1].loglog(k, sf, "b.", label="approx sf")
+    if exact_sf is not None:
+        ax[1].loglog(
+            k,
+            exact_sf(k),
+            "r",
+            label="exact sf",
+        )
+    if k_min is not None:
+        sf_interpolate = interpolate.interp1d(
+            k, sf, axis=0, fill_value="extrapolate", kind="cubic"
+        )
+        ax[1].loglog(
+            k_min,
+            sf_interpolate(k_min),
+            "ko",
+            label="k_min",
+        )
+    ax[1].loglog(k, np.ones_like(k), "r--", label="theo")
+    ax[1].legend()
+    ax[1].set_xlabel("r")
+    ax[1].set_ylabel("pcf")
+    ax[1].title.set_text("loglog plot")
+    plt.show()
