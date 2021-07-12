@@ -36,10 +36,6 @@ class StructureFactor:
         Args:
             points: :math:`n \times 2` np.array representing a realization of a 2 dimensional point process.
             intensity(float): intensity of the underlying point process represented by `points`.
-        # todo a distcuter les following todo avec Rémi le jeudi
-        # todo treat the case where the intensity is not provided
-        # todo consider passing the window where the points were observed to avoid radius in compute_pcf(self, radius...
-        # todo ajouter en entré un parametre qui prend le window dans le quel les data sont obtenu et le passer à spatstat en pcf
         # todo ajouter une methode pour approximer l'intensité pour des stationnaire ergodic si elle n'est pas provided
         """
         dimension = point_pattern.points.shape[1]
@@ -54,7 +50,7 @@ class StructureFactor:
         meshgrid_size=None,
         max_add_k=1,
     ):
-        # todo je peux à la place de max_add_n mettre max_k_add plus compréhensible et changer en bas comme pour k_vector
+
         # todo replace the link below to the link of our future paper.
         # todo fit a line to the binned si
         # todo ajouter des interval de confiance sur les binned values après faire un binning
@@ -82,7 +78,7 @@ class StructureFactor:
 
         Args:
             L (int): side length of the cubic window that contains ``points``.
-            # todo Consider passing a PointPattern at initialization with .points and .window attributes
+
             max_k (int): maximum norm of ``k_vector``. The user can't chose the ``k_vector`` (defined above) since there's only a specific allowed values of ``k_vector`` used in the estimation of the structure factor by the scattering intensity, but the user can  specify in ``max_k`` the maximum norm of ``k_vector``.
             # todo clarify the description, k_vector exists only in the code not in the docstring, the argument name is not clear
             meshgrid_size (int): if the requested evaluation is on a meshgrid,  then ``meshgrid_size`` is the number of waves in each row of the meshgrid. Defaults to None.
@@ -150,8 +146,6 @@ class StructureFactor:
 
         return norm_k_vector, si
 
-    # todo faire une fonction qui calcule les allowed values
-
     def plot_scattering_intensity(
         self, wave_length, si, plot_type="plot", exact_sf=None, **binning_params
     ):
@@ -161,10 +155,9 @@ class StructureFactor:
         )
 
     def compute_pcf(self, method="fv", install_spatstat=False, **params):
-        # todo consider choosing a different window shape
+
         """Estimate the pair correlation function (pcf) of ``self.points`` observed in a disk window centered at the origin with radius ``radius`` using spatstat ``spastat.core.pcf_ppp`` or ``spastat.core.pcf_fv`` functions according to ``method`` called with the corresponding parameters ``params``.
 
-        # todo consider adding the window where points were observed at __init__ to avoid radius argument.
         radius: is the radius of the ball containing the points on which the pair correlation function will be approximated
         method: "ppp" or "fv" referring to ``spastat.core.pcf.ppp`` or ``spastat.core.pcf.fv`` functions for estimating the pair correlation function.
         install_spatstat: [description], defaults to False
@@ -229,7 +222,6 @@ class StructureFactor:
             pcf_r = cleaning_data(pcf_r)
         return dict(r_min=r_min, r_max=r_max), interpolate.interp1d(r, pcf_r, **params)
 
-    # todo à voir pourquoi ``r`` n'est pas en entrée pcf n'est pas tout le temps une fonction . to see in detail in the second check (pour Diala)
     def compute_sf_via_hankel(self, pcf, k=None, method="Ogata", **params):
         r"""Compute the `structure factor <https://en.wikipedia.org/wiki/Radial_distribution_function#The_structure_factor>`_ of the underlying point process at ``k`` from its pair correlation function ``pcf`` (assumed to be radially symmetric).
 
@@ -247,7 +239,7 @@ class StructureFactor:
             method (str, optional): select the method to compute the `Radially Symmetric Fourier transform <https://en.wikipedia.org/wiki/Hankel_transform#Fourier_transform_in_d_dimensions_(radially_symmetric_case)>`_ of :math:`g` as a Hankel transform :py:class:`HankelTransFormOgata` or :py:class:`HankelTransFormBaddourChouinard`.
             Choose between "Ogata" or "BaddourChouinard". Defaults to "Ogata".
             params: parameters passed to the corresponding Hankel transform
-            # todo à la place de faire une méthod d'interpolation puis passé la fonction intérpolé à "Ogata" on peut la faire à l'interieur de "Ogata" comme "BaddourChouinard". to see in detail in the second check Diala...
+
             - ``method == "Ogata"``
                 params = dict(step_size=..., nb_points=...)
             - ``method == "BaddourChouinard"``
@@ -260,7 +252,7 @@ class StructureFactor:
             np.ndarray: :math:`SF(k)` evaluation of the structure factor at ``k``.
 
         .. important::
-            # todo ``pcf`` could be a function ... to see in detail .... diala
+
             The Fourier transform involved <https://en.wikipedia.org/wiki/Hankel_transform#Fourier_transform_in_d_dimensions_(radially_symmetric_case)>`_ of :math:`g` is computed via
             # todo via what???
         .. note::
