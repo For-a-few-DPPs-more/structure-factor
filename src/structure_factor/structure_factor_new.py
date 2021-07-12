@@ -52,8 +52,6 @@ class StructureFactor:
     ):
 
         # todo replace the link below to the link of our future paper.
-        # todo fit a line to the binned si
-        # todo ajouter des interval de confiance sur les binned values après faire un binning
         # todo ajouter la possibilité d'entré  plusieur echantillion
         # todo utuliser l'intensité et le volume au lieu de N dans la formule i.e. remplacer N pas intensité*volume de la fenetre
         r"""Compute the ensemble estimator of the scattering intensity described in http://www.scoste.fr/survey_hyperuniformity.pdf.(equation 4.5).
