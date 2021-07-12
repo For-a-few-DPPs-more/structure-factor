@@ -147,11 +147,11 @@ class StructureFactor:
         return norm_k_vector, si
 
     def plot_scattering_intensity(
-        self, wave_length, si, plot_type="plot", exact_sf=None, **binning_params
+        self, norm_k, si, plot_type="plot", exact_sf=None, **binning_params
     ):
         points = self.point_pattern.points
         return plot_scattering_intensity_(
-            points, wave_length, si, plot_type, exact_sf, **binning_params
+            points, norm_k, si, plot_type, exact_sf, **binning_params
         )
 
     def compute_pcf(self, method="fv", install_spatstat=False, **params):
