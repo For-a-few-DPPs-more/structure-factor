@@ -107,26 +107,50 @@ def compute_scattering_intensity(k, data):
     return si
 
 
+def _binning_function(norm_k, si, **binning_params):
+    Xs = norm_k.ravel()
+    Ys = si.ravel()
+    x2listy = {}
+    for x, y in zip(Xs, Ys):
+        try:
+            x2listy[x].append(y)
+        except KeyError:
+            x2listy[x] = [y]
+
+    x2meanY = {x: np.mean(x2listy[x]) for x in x2listy}
+    x_meanY = sorted(x2meanY.items())
+    mean_k, mean_si = zip(*x_meanY)
+    bin_mean, bin_edges, binnumber = stats.binned_statistic(
+        mean_k, mean_si, statistic="mean", **binning_params
+    )
+    bin_width = bin_edges[1] - bin_edges[0]
+    bin_centers = bin_edges[1:] - bin_width / 2
+
+    bin_std, bin_edges, misc = stats.binned_statistic(
+        mean_k, mean_si, statistic=np.std, **binning_params
+    )
+    return (bin_centers, bin_mean, bin_std)
+
+
 def plot_scattering_intensity_(
-    points, wave_length, si, plot_type="plot", exact_sf=None, **binning_params
+    points, norm_k, si, plot_type="plot", exact_sf=None, **binning_params
 ):
     r"""[summary]
 
     Args:
         points :math:`n \times 2` np.array representing a realization of a 2 dimensional point process.
-        wave_length (np.array): output vector of the function ``compute_scattering_intensity``.
+        norm_k (np.array): output vector of the function ``compute_scattering_intensity``.
         si (n.array): output vector of the function ``compute_scattering_intensity``.
         plot_type  (str): ("plot", "color_level" and "all"), specify the type of the plot to be shown. Defaults to "plot".
-        **binning_params: binning parameters used by ``stats.binned_statistic``, to find the mean of ``si``over subinternals of ``wave_length``for more details see <https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.binned_statistic.html>. Note that the parameter ``statistic``is fixed to ``mean``.
+        **binning_params: binning parameters used by ``stats.binned_statistic``, to find the mean of ``si``over subinternals of ``norm_k``for more details see <https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.binned_statistic.html>. Note that the parameter ``statistic``is fixed to ``mean``.
     """
-    # todo add confidence interval over the bins
-    bin_means, bin_edges, binnumber = stats.binned_statistic(
-        wave_length.ravel(), si.ravel(), statistic="mean", **binning_params
+
+    bin_centers, bin_mean, bin_std = _binning_function(
+        norm_k.ravel(), si.ravel(), **binning_params
     )
-    bin_width = bin_edges[1] - bin_edges[0]
-    bin_centers = bin_edges[1:] - bin_width / 2
+
     if plot_type == "all":
-        if len(wave_length.shape) < 2:
+        if len(norm_k.shape) < 2:
             raise ValueError(
                 "the scattering intensity should be evaluated on a meshgrid or choose plot_type='plot'. "
             )
@@ -139,11 +163,11 @@ def plot_scattering_intensity_(
             fig, ax = plt.subplots(1, 3, figsize=(24, 6))
             ax[0].plot(points[:, 0], points[:, 1], "b,")
             ax[0].title.set_text("Points configuration")
-            ax[1].loglog(wave_length, si, "k,")
-            ax[1].loglog(bin_centers, bin_means, "b.")
-            ax[1].loglog(wave_length, np.ones_like(wave_length), "r--")
+            ax[1].loglog(norm_k, si, "k,")
+            ax[1].loglog(bin_centers, bin_mean, "b.")
+            ax[1].loglog(norm_k, np.ones_like(norm_k), "r--")
             if exact_sf is not None:
-                ax[1].loglog(wave_length, exact_sf(wave_length), "g", label="exact sf")
+                ax[1].loglog(norm_k, exact_sf(norm_k), "g", zorder=5)
                 ax[1].legend(
                     ["SI", "Mean(SI)", "y=1", "Exact sf"],
                     shadow=True,
@@ -151,6 +175,17 @@ def plot_scattering_intensity_(
                 )
             else:
                 ax[1].legend(["SI", "Mean(SI)", "y=1"], shadow=True, loc="lower right")
+            ax[1].errorbar(
+                bin_centers,
+                bin_mean,
+                yerr=bin_std,
+                fmt="b",
+                elinewidth=2,
+                ecolor="r",
+                capsize=3,
+                capthick=1,
+                zorder=4,
+            )
             ax[1].set_xlabel("Wave length")
             ax[1].set_ylabel("Scattering intensity")
             ax[1].title.set_text("loglog plot")
@@ -164,21 +199,46 @@ def plot_scattering_intensity_(
             ax[2].title.set_text("scattering intensity")
             plt.show()
     elif plot_type == "plot":
-        plt.loglog(wave_length, si, "k,")
-        plt.loglog(bin_centers, bin_means, "b.")
-        plt.loglog(wave_length, np.ones_like(wave_length), "r--")
+        plt.figure(figsize=(16, 8))
+        plt.loglog(norm_k, si, "k,", zorder=1)
+        plt.loglog(bin_centers, bin_mean, "b.", zorder=3)
+        plt.loglog(norm_k, np.ones_like(norm_k), "r--", zorder=2)
+        plt.errorbar(
+            bin_centers,
+            bin_mean,
+            yerr=bin_std,
+            fmt="b",
+            elinewidth=2,
+            ecolor="r",
+            capsize=3,
+            capthick=1,
+            zorder=4,
+        )
         if exact_sf is not None:
-            plt.loglog(wave_length, exact_sf(wave_length), "r")
-            plt.legend(["SI", "Mean(SI)", "y=1", "exact sf"], loc="lower right")
+            plt.loglog(norm_k, exact_sf(norm_k), "g", zorder=5)
+            plt.legend(
+                ["SI", "Mean(SI)", "y=1", "error bar", "Exact sf"], loc="lower right"
+            )
         else:
-            plt.legend(["SI", "Mean(SI)", "y=1"], loc="lower right")
+            plt.legend(["SI", "Mean(SI)", "y=1", "error bar"], loc="lower right")
+        plt.errorbar(
+            bin_centers,
+            bin_mean,
+            yerr=bin_std,
+            fmt="b",
+            elinewidth=2,
+            ecolor="r",
+            capsize=3,
+            capthick=1,
+            zorder=5,
+        )
         plt.xlabel("Wave length ")
         plt.ylabel("Scattering intensity")
         plt.title("loglog plot")
         plt.show()
     elif plot_type == "color_level":
-        print(len(wave_length.shape))
-        if len(wave_length.shape) < 2:
+        print(len(norm_k.shape))
+        if len(norm_k.shape) < 2:
             raise ValueError(
                 "the scattering intensity should be evaluated on a meshgrid or choose plot_type = 'plot'. "
             )
