@@ -133,7 +133,7 @@ def _binning_function(norm_k, si, **binning_params):
 
 
 def plot_scattering_intensity_(
-    points, norm_k, si, plot_type="plot", exact_sf=None, **binning_params
+    points, norm_k, si, plot_type, exact_sf, error_bar, **binning_params
 ):
     r"""[summary]
 
@@ -203,17 +203,18 @@ def plot_scattering_intensity_(
         plt.loglog(norm_k, si, "k,", zorder=1)
         plt.loglog(bin_centers, bin_mean, "b.", zorder=3)
         plt.loglog(norm_k, np.ones_like(norm_k), "r--", zorder=2)
-        plt.errorbar(
-            bin_centers,
-            bin_mean,
-            yerr=bin_std,
-            fmt="b",
-            elinewidth=2,
-            ecolor="r",
-            capsize=3,
-            capthick=1,
-            zorder=4,
-        )
+        if error_bar:
+            plt.errorbar(
+                bin_centers,
+                bin_mean,
+                yerr=bin_std,
+                fmt="b",
+                elinewidth=2,
+                ecolor="r",
+                capsize=3,
+                capthick=1,
+                zorder=4,
+            )
         if exact_sf is not None:
             plt.loglog(norm_k, exact_sf(norm_k), "g", zorder=5)
             plt.legend(
@@ -221,17 +222,6 @@ def plot_scattering_intensity_(
             )
         else:
             plt.legend(["SI", "Mean(SI)", "y=1", "error bar"], loc="lower right")
-        plt.errorbar(
-            bin_centers,
-            bin_mean,
-            yerr=bin_std,
-            fmt="b",
-            elinewidth=2,
-            ecolor="r",
-            capsize=3,
-            capthick=1,
-            zorder=5,
-        )
         plt.xlabel("Wave length ")
         plt.ylabel("Scattering intensity")
         plt.title("loglog plot")
