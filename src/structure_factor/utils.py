@@ -163,18 +163,18 @@ def plot_scattering_intensity_(
             fig, ax = plt.subplots(1, 3, figsize=(24, 6))
             ax[0].plot(points[:, 0], points[:, 1], "b,")
             ax[0].title.set_text("Points configuration")
-            ax[1].loglog(norm_k, si, "k,")
+            ax[1].loglog(norm_k.ravel(), si.ravel(), "k,", marker=",")
             ax[1].loglog(bin_centers, bin_mean, "b.")
-            ax[1].loglog(norm_k, np.ones_like(norm_k), "r--")
+            ax[1].loglog(norm_k.ravel(), np.ones_like(norm_k).ravel(), "r--")
             if exact_sf is not None:
-                ax[1].loglog(norm_k, exact_sf(norm_k), "g", zorder=5)
+                ax[1].loglog(norm_k.ravel(), exact_sf(norm_k).ravel(), "g", zorder=5)
                 ax[1].legend(
-                    ["SI", "Mean(SI)", "y=1", "Exact sf"],
+                    ["SI", "Mean(SI)", "theo", "Exact sf"],
                     shadow=True,
                     loc="lower right",
                 )
             else:
-                ax[1].legend(["SI", "Mean(SI)", "y=1"], shadow=True, loc="lower right")
+                ax[1].legend(["SI", "Mean(SI)", "theo"], shadow=True, loc="lower right")
             ax[1].errorbar(
                 bin_centers,
                 bin_mean,
@@ -200,9 +200,9 @@ def plot_scattering_intensity_(
             plt.show()
     elif plot_type == "plot":
         plt.figure(figsize=(16, 8))
-        plt.loglog(norm_k, si, "k,", zorder=1)
+        plt.loglog(norm_k.ravel(), si.ravel(), "k,", zorder=1)
         plt.loglog(bin_centers, bin_mean, "b.", zorder=3)
-        plt.loglog(norm_k, np.ones_like(norm_k), "r--", zorder=2)
+        plt.loglog(norm_k.ravel(), np.ones_like(norm_k.ravel()), "r--", zorder=2)
         if error_bar:
             plt.errorbar(
                 bin_centers,
@@ -216,12 +216,12 @@ def plot_scattering_intensity_(
                 zorder=4,
             )
         if exact_sf is not None:
-            plt.loglog(norm_k, exact_sf(norm_k), "g", zorder=5)
+            plt.loglog(norm_k.ravel(), exact_sf(norm_k.ravel()), "g", zorder=5)
             plt.legend(
-                ["SI", "Mean(SI)", "y=1", "error bar", "Exact sf"], loc="lower right"
+                ["SI", "Mean(SI)", "theo", "error bar", "Exact sf"], loc="lower right"
             )
         else:
-            plt.legend(["SI", "Mean(SI)", "y=1", "error bar"], loc="lower right")
+            plt.legend(["SI", "Mean(SI)", "theo", "error bar"], loc="lower right")
         plt.xlabel("Wave length ")
         plt.ylabel("Scattering intensity")
         plt.title("loglog plot")
