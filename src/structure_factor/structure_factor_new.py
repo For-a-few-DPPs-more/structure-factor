@@ -160,7 +160,7 @@ class StructureFactor:
 
     def compute_pcf(self, method="fv", install_spatstat=False, **params):
 
-        """Estimate the pair correlation function (pcf) of ``self.points`` observed in a disk window centered at the origin with radius ``radius`` using spatstat ``spastat.core.pcf_ppp`` or ``spastat.core.pcf_fv`` functions according to ``method`` called with the corresponding parameters ``params``.
+        """Estimate the pair correlation function (pcf) of ``self.point_pattern`` using spatstat ``spastat.core.pcf_ppp`` or ``spastat.core.pcf_fv`` functions according to ``method`` called with the corresponding parameters ``params``.
 
         radius: is the radius of the ball containing the points on which the pair correlation function will be approximated
         method: "ppp" or "fv" referring to ``spastat.core.pcf.ppp`` or ``spastat.core.pcf.fv`` functions for estimating the pair correlation function.
@@ -190,6 +190,9 @@ class StructureFactor:
         data = self.point_pattern.convert_to_spatstat_ppp()
 
         if method == "ppp":
+            r = params.get("r", None)
+            if r is not None and isinstance(r, np.ndarray):
+                params["r"] = robjects.vectors.FloatVector(r)
             pcf = spatstat.core.pcf_ppp(data, **params)
 
         if method == "fv":
