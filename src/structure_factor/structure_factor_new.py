@@ -151,11 +151,12 @@ class StructureFactor:
         plot_type="plot",
         exact_sf=None,
         error_bar=False,
+        save=False,
         **binning_params
     ):
         points = self.point_pattern.points
         return plot_scattering_intensity_(
-            points, norm_k, si, plot_type, exact_sf, error_bar, **binning_params
+            points, norm_k, si, plot_type, exact_sf, error_bar, save, **binning_params
         )
 
     def compute_pcf(self, method="fv", install_spatstat=False, **params):
@@ -206,9 +207,9 @@ class StructureFactor:
 
         return pd.DataFrame(np.array(pcf).T, columns=pcf.names)
 
-    def plot_pcf(self, pcf_DataFrame, exact_pcf=None, **kwargs):
+    def plot_pcf(self, pcf_DataFrame, exact_pcf=None, save=False, **kwargs):
         # kwargs : parameter of pandas.DataFrame.plot.line https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.plot.line.html
-        return plot_pcf_(pcf_DataFrame, exact_pcf, **kwargs)
+        return plot_pcf_(pcf_DataFrame, exact_pcf, save, **kwargs)
 
     def interpolate_pcf(self, r, pcf_r, clean=False, **params):
         """Interpolate the pair correlation function (pcf) from evaluations ``(r, pcf_r)``.
@@ -281,6 +282,6 @@ class StructureFactor:
             self.k_min = (2.7 * np.pi) / (params["r_max"] * step_size)
         return k_, 1.0 + self.intensity * ft_k
 
-    def plot_sf_via_hankel(self, k, sf, k_min=None, exact_sf=None):
+    def plot_sf_via_hankel(self, k, sf, k_min=None, exact_sf=None, save=False):
         # kwargs : parameter of pandas.DataFrame.plot.line https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.plot.line.html
-        return plot_sf_via_hankel_(k, sf, k_min=k_min, exact_sf=exact_sf)
+        return plot_sf_via_hankel_(k, sf, k_min, exact_sf, save)

@@ -133,7 +133,7 @@ def _binning_function(norm_k, si, **binning_params):
 
 
 def plot_scattering_intensity_(
-    points, norm_k, si, plot_type, exact_sf, error_bar, **binning_params
+    points, norm_k, si, plot_type, exact_sf, error_bar, save, **binning_params
 ):
     r"""[summary]
 
@@ -198,8 +198,10 @@ def plot_scattering_intensity_(
             fig.colorbar(f_0, ax=ax[2])
             ax[2].title.set_text("scattering intensity")
             plt.show()
+            if save:
+                fig.savefig("si.pdf", bbox_inches="tight")
     elif plot_type == "plot":
-        plt.figure(figsize=(16, 8))
+        fig = plt.figure(figsize=(10, 7))
         plt.loglog(norm_k.ravel(), si.ravel(), "k,", zorder=1)
         plt.loglog(bin_centers, bin_mean, "b.", zorder=3)
         plt.loglog(norm_k.ravel(), np.ones_like(norm_k.ravel()), "r--", zorder=2)
@@ -226,6 +228,9 @@ def plot_scattering_intensity_(
         plt.ylabel("Scattering intensity")
         plt.title("loglog plot")
         plt.show()
+        if save:
+            fig.savefig("si_figure.pdf", bbox_inches="tight")
+
     elif plot_type == "color_level":
         print(len(norm_k.shape))
         if len(norm_k.shape) < 2:
@@ -245,13 +250,16 @@ def plot_scattering_intensity_(
             plt.colorbar(f_0)
             plt.title("Scattering intensity")
             plt.show()
+        if save:
+            fig = f_0.get_figure()
+            fig.savefig("si_figure.pdf", bbox_inches="tight")
     else:
         raise ValueError(
             "plot_type should be one of the following str: 'all', 'plot' and 'color_level'.  "
         )
 
 
-def plot_pcf_(pcf_DataFrame, exact_pcf=None, **kwargs):
+def plot_pcf_(pcf_DataFrame, exact_pcf, save, **kwargs):
     ax = pcf_DataFrame.plot.line(x="r", **kwargs)
     if exact_pcf is not None:
         ax.plot(
@@ -264,9 +272,12 @@ def plot_pcf_(pcf_DataFrame, exact_pcf=None, **kwargs):
     ax.set_xlabel("r")
     ax.set_ylabel("pcf")
     plt.show()
+    if save:
+        fig = ax.get_figure()
+        fig.savefig("pcf_figure.pdf", bbox_inches="tight")
 
 
-def plot_sf_via_hankel_(k, sf, k_min, exact_sf=None):
+def plot_sf_via_hankel_(k, sf, k_min, exact_sf, save):
     fig, ax = plt.subplots(1, 2, figsize=(20, 5))
     ax[0].plot(k, sf, "b.", label="approx sf")
     ax[0].plot(k, sf, "b")
@@ -317,3 +328,5 @@ def plot_sf_via_hankel_(k, sf, k_min, exact_sf=None):
     ax[1].set_ylabel("pcf")
     ax[1].title.set_text("loglog plot")
     plt.show()
+    if save:
+        fig.savefig("sf_via_hankel_figure.pdf", bbox_inches="tight")
