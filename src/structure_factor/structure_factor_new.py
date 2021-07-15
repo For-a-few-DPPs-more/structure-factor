@@ -269,13 +269,17 @@ class StructureFactor:
         """
         assert callable(pcf)
         if (method == "Ogata") and (k.all() == None):
-            raise TypeError(
-                "k is non optional while using method='Ogata'. Please provide a vector k. "
+            raise ValueError(
+                "k is not optional while using method='Ogata'. Please provide a vector k in the input. "
+            )
+        params.setdefault("r_max", None)
+        if (method == "BaddourChouinard") and params["r_max"] == None:
+            raise ValueError(
+                "r_max is not optional while using method='BaddourChouinard'. Please provide r_max in the input. "
             )
         ft = RadiallySymmetricFourierTransform(dimension=self.dimension)
         total_pcf = lambda r: pcf(r) - 1.0
         k_, ft_k = ft.transform(total_pcf, k, method=method, **params)
-        params.setdefault("r_max", None)
         if method == "Ogata" and params["r_max"] is not None:
             params.setdefault("step_size", 0.1)
             step_size = params["step_size"]
