@@ -286,6 +286,17 @@ class StructureFactor:
             self.k_min = (2.7 * np.pi) / (params["r_max"] * step_size)
         return k_, 1.0 + self.intensity * ft_k
 
-    def plot_sf_via_hankel(self, k, sf, k_min=None, exact_sf=None, save=False):
+    def plot_sf_via_hankel(
+        self,
+        k,
+        sf,
+        k_min=None,
+        exact_sf=None,
+        error_bar=False,
+        save=False,
+        **binning_params
+    ):
         # kwargs : parameter of pandas.DataFrame.plot.line https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.plot.line.html
-        return plot_sf_via_hankel_(k, sf, k_min, exact_sf, save)
+        return plot_sf_via_hankel_(
+            k, sf, k_min, exact_sf, error_bar, save, **binning_params
+        )

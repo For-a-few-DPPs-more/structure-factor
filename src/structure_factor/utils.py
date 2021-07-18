@@ -107,9 +107,9 @@ def compute_scattering_intensity(k, data):
     return si
 
 
-def _binning_function(norm_k, si, **binning_params):
-    Xs = norm_k.ravel()
-    Ys = si.ravel()
+def _binning_function(x_data, y_data, **binning_params):
+    Xs = x_data.ravel()
+    Ys = y_data.ravel()
     x2listy = {}
     for x, y in zip(Xs, Ys):
         try:
@@ -119,17 +119,42 @@ def _binning_function(norm_k, si, **binning_params):
 
     x2meanY = {x: np.mean(x2listy[x]) for x in x2listy}
     x_meanY = sorted(x2meanY.items())
-    mean_k, mean_si = zip(*x_meanY)
+    mean_x, mean_y = zip(*x_meanY)
     bin_mean, bin_edges, binnumber = stats.binned_statistic(
-        mean_k, mean_si, statistic="mean", **binning_params
+        mean_x, mean_y, statistic="mean", **binning_params
     )
     bin_width = bin_edges[1] - bin_edges[0]
     bin_centers = bin_edges[1:] - bin_width / 2
 
     bin_std, bin_edges, misc = stats.binned_statistic(
-        mean_k, mean_si, statistic=np.std, **binning_params
+        mean_x, mean_y, statistic=np.std, **binning_params
     )
     return (bin_centers, bin_mean, bin_std)
+
+
+def _lsf(x_data, y_data, stop=None):
+    if stop is not None:
+        x = x_data[:stop]
+        y = y_data[:stop]
+    else:
+        x = x_data
+        y = y_data
+
+    N = x.shape[0]
+    x_square = x ** 2
+    xy = x * y
+    sum_x = np.sum(x)
+    sum_y = np.sum(y)
+    slope = (N * np.sum(xy) - sum_x * sum_y) / (N * np.sum(x_square) - sum_x ** 2)
+    y_intercept = (sum_y - slope * sum_x) / N
+    fitted_line = lambda t: slope * t + y_intercept
+    return fitted_line
+
+
+def plot_fitted_line(x_data, y_data, stop=None, **binning_params):
+    bin_centers, bin_mean, bin_std = _binning_function(x_data, y_data, **binning_params)
+    fitted_line = _lsf(bin_centers, bin_mean, stop)
+    return
 
 
 def plot_scattering_intensity_(
@@ -277,15 +302,15 @@ def plot_pcf_(pcf_DataFrame, exact_pcf, save, **kwargs):
         fig.savefig("pcf_figure.pdf", bbox_inches="tight")
 
 
-def plot_sf_via_hankel_(k, sf, k_min, exact_sf, save):
+def plot_sf_via_hankel_(k, sf, k_min, exact_sf, error_bar, save, **binning_params):
     fig, ax = plt.subplots(1, 2, figsize=(20, 5))
-    ax[0].plot(k, sf, "b.", label="approx sf")
-    ax[0].plot(k, sf, "b")
+    ax[0].plot(k, sf, "k.", label="approx sf")
+    ax[0].plot(k, sf, "k")
     if exact_sf is not None:
         ax[0].plot(
             k,
             exact_sf(k),
-            "r",
+            "g",
             label="exact sf",
         )
     if k_min is not None:
@@ -298,18 +323,34 @@ def plot_sf_via_hankel_(k, sf, k_min, exact_sf, save):
             "ko",
             label="k_min",
         )
+    if error_bar:
+        bin_centers, bin_mean, bin_std = _binning_function(
+            k.ravel(), sf.ravel(), **binning_params
+        )
+        ax[0].errorbar(
+            bin_centers,
+            bin_mean,
+            yerr=bin_std,
+            fmt="b",
+            elinewidth=2,
+            ecolor="r",
+            capsize=3,
+            capthick=1,
+            zorder=4,
+        )
+
     ax[0].plot(k, np.ones_like(k), "r--", label="theo")
     ax[0].legend()
     ax[0].set_xlabel("r")
     ax[0].set_ylabel("pcf")
     ax[0].title.set_text("plot")
 
-    ax[1].loglog(k, sf, "b.", label="approx sf")
+    ax[1].loglog(k, sf, "k.", label="approx sf")
     if exact_sf is not None:
         ax[1].loglog(
             k,
             exact_sf(k),
-            "r",
+            "g",
             label="exact sf",
         )
     if k_min is not None:
@@ -319,10 +360,26 @@ def plot_sf_via_hankel_(k, sf, k_min, exact_sf, save):
         ax[1].loglog(
             k_min,
             sf_interpolate(k_min),
-            "ko",
+            "bo",
             label="k_min",
         )
     ax[1].loglog(k, np.ones_like(k), "r--", label="theo")
+    if error_bar:
+        bin_centers, bin_mean, bin_std = _binning_function(
+            k.ravel(), sf.ravel(), **binning_params
+        )
+        ax[1].errorbar(
+            bin_centers,
+            bin_mean,
+            yerr=bin_std,
+            fmt="b",
+            elinewidth=2,
+            ecolor="r",
+            capsize=3,
+            capthick=1,
+            zorder=4,
+        )
+
     ax[1].legend()
     ax[1].set_xlabel("r")
     ax[1].set_ylabel("pcf")
