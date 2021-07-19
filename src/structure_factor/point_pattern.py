@@ -1,8 +1,7 @@
 from rpy2 import robjects
-from structure_factor.spatial_windows import AbstractSpatialWindow
+
 from structure_factor.spatstat_interface import SpatstatInterface
-from structure_factor.spatial_windows import BoxWindow, BallWindow
-import numpy as np
+from structure_factor.spatial_windows import AbstractSpatialWindow
 
 
 class PointPattern(object):
@@ -13,19 +12,32 @@ class PointPattern(object):
             points (np.ndarray): :math:`N \times d` array collecting :math:`N` points in dimension :math:`d`.
             window (AbstractSpatialWindow, optional): Observation window containing the ``points``. Defaults to None.
         """
+        assert points.ndim == 2
         self.points = points
+
+        if window is not None:
+            assert isinstance(window, AbstractSpatialWindow)
         self.window = window
+
+        if intensity is not None:
+            assert intensity > 0
         self.intensity = intensity
 
     def dimension(self):
         """Ambient dimension where the points live"""
         return self.points.shape[1]
 
+    def restrict_to_window(self, window):
+        assert isinstance(window, AbstractSpatialWindow)
+        points = self.points[window.indicator_function(self.points)]
+        return PointPattern(points, window, self.intensity)
+
     def convert_to_spatstat_ppp(self, **params):
-        """Convert Python :py:class:`PointPattern` object to ``spatstat`` point pattern R object, using ``spatstat.geom.ppp``
+        """Convert Python :py:class:`PointPattern` object to ``spatstat`` point pattern R object, using ``spatstat.geom.ppp``.
+        This method converts the first two dimensions of the ``PointPattern.points`` into a ``spatstat.geom.ppp`` object.
 
         Returns:
-            [type]: spatstat point pattern
+            [type]: ``spatstat.geom.ppp`` point pattern
         """
 
         spatstat = SpatstatInterface(update=False)
@@ -36,26 +48,3 @@ class PointPattern(object):
         if window is not None and isinstance(window, AbstractSpatialWindow):
             params["window"] = window.convert_to_spatstat_owin()
         return spatstat.geom.ppp(x, y, **params)
-
-    """def restrict_to_cubic_window(self, x_min, y_min, L):
-        points = self.points
-        index_x_in_cube = np.logical_and(
-            x_min < points[:, 0],
-            points[:, 0] < x_min + L,
-        )
-        bounds = np.array([[x_min, y_min], [x_min + L, y_min + L]])
-        index_y_in_cube = np.logical_and(y_min < points[:, 1], points[:, 1] < y_min + L)
-        index_points_in_cube = np.logical_and(index_x_in_cube, index_y_in_cube)
-        points_in_cube = points[index_points_in_cube]
-        window = BoxWindow(bounds)
-        return PointPattern(points_in_cube, window, self.intensity)"""
-
-    def restrict_to_window(self, bounds=None, center=None, radius=None):
-        points = self.points
-        if bounds is not None:
-            to_window = BoxWindow(bounds)
-        else:
-            to_window = BallWindow(center, radius)
-        index_points_restricted = to_window.indicator_function(points)
-        points_restricted = points[index_points_restricted]
-        return PointPattern(points_restricted, to_window, self.intensity)
