@@ -13,9 +13,9 @@ class EffectiveHyperuniform:
         norm_k = self.norm_k
         sf = self.sf
         bin_centers, bin_mean, bin_std = _binning_function(norm_k, sf, **binning_params)
-        return bin_centers, bin_mean
+        return bin_centers, bin_mean, bin_std
 
-    def H(self, norm_k, sf, stop=None):
+    def index_H(self, norm_k, sf, stop=None):
         fitted_line = _lsf(norm_k, sf, stop)
         self.fitted_line = fitted_line
         sf_0 = fitted_line(0)

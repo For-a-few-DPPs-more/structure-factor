@@ -151,12 +151,6 @@ def _lsf(x_data, y_data, stop=None):
     return fitted_line
 
 
-def plot_fitted_line(x_data, y_data, stop=None, **binning_params):
-    bin_centers, bin_mean, bin_std = _binning_function(x_data, y_data, **binning_params)
-    fitted_line = _lsf(bin_centers, bin_mean, stop)
-    return
-
-
 def plot_scattering_intensity_(
     points, norm_k, si, plot_type, exact_sf, error_bar, save, **binning_params
 ):
@@ -320,7 +314,7 @@ def plot_sf_via_hankel_(k, sf, k_min, exact_sf, error_bar, save, **binning_param
         ax[0].plot(
             k_min,
             sf_interpolate(k_min),
-            "ko",
+            "ro",
             label="k_min",
         )
     if error_bar:
@@ -341,8 +335,8 @@ def plot_sf_via_hankel_(k, sf, k_min, exact_sf, error_bar, save, **binning_param
 
     ax[0].plot(k, np.ones_like(k), "r--", label="theo")
     ax[0].legend()
-    ax[0].set_xlabel("r")
-    ax[0].set_ylabel("pcf")
+    ax[0].set_xlabel("wave length")
+    ax[0].set_ylabel("sf")
     ax[0].title.set_text("plot")
 
     ax[1].loglog(k, sf, "k.", label="approx sf")
@@ -360,7 +354,7 @@ def plot_sf_via_hankel_(k, sf, k_min, exact_sf, error_bar, save, **binning_param
         ax[1].loglog(
             k_min,
             sf_interpolate(k_min),
-            "bo",
+            "ro",
             label="k_min",
         )
     ax[1].loglog(k, np.ones_like(k), "r--", label="theo")
@@ -381,8 +375,8 @@ def plot_sf_via_hankel_(k, sf, k_min, exact_sf, error_bar, save, **binning_param
         )
 
     ax[1].legend()
-    ax[1].set_xlabel("r")
-    ax[1].set_ylabel("pcf")
+    ax[1].set_xlabel("wave length")
+    ax[1].set_ylabel("sf")
     ax[1].title.set_text("loglog plot")
     plt.show()
     if save:
