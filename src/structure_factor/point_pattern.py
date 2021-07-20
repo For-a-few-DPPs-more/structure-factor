@@ -2,10 +2,11 @@ from rpy2 import robjects
 
 from structure_factor.spatstat_interface import SpatstatInterface
 from structure_factor.spatial_windows import AbstractSpatialWindow
+import structure_factor.utils as utils
 
 
 class PointPattern(object):
-    def __init__(self, points, window=None, intensity=None):
+    def __init__(self, points, window=None, intensity=None, axis=None):
         r"""[summary]
 
         Args:
@@ -48,3 +49,7 @@ class PointPattern(object):
         if window is not None and isinstance(window, AbstractSpatialWindow):
             params["window"] = window.convert_to_spatstat_owin()
         return spatstat.geom.ppp(x, y, **params)
+
+    def plot_point_pattern(self, axis):
+        points = self.points
+        return utils.plot_point_pattern(points, axis)
