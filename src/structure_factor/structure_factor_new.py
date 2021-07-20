@@ -3,15 +3,19 @@ import scipy.interpolate as interpolate
 import pandas as pd
 import rpy2.robjects as robjects
 
+import structure_factor.utils as utils
+
+from structure_factor.transforms import RadiallySymmetricFourierTransform
+from structure_factor.spatial_windows import BoxWindow
+
 from structure_factor.utils import (
     compute_scattering_intensity,
-    plot_scattering_intensity_,
+    plot_si_showcase,
     plot_pcf_,
     cleaning_data,
     plot_sf_via_hankel_,
 )
 
-from structure_factor.transforms import RadiallySymmetricFourierTransform
 from structure_factor.spatstat_interface import SpatstatInterface
 
 
@@ -88,59 +92,39 @@ class StructureFactor:
             :math:`\left\lVert |\mathbf{k}| \right\rVert, SI(\mathbf{k})`, the norm of ``k_vector`` represented by ``norm_k_vector`` and the estimation of the scattering intensity ``si`` evaluated at ``k_vector``.
         """
         point_pattern = self.point_pattern
+        assert isinstance(point_pattern.window, BoxWindow)
         L = np.abs(
             point_pattern.window.bounds[0, 0] - point_pattern.window.bounds[1, 0]
         )
         max_n = np.floor(max_k * L / (2 * np.pi))  # maximum of ``k_vector``
-        if meshgrid_size is None:
+        if meshgrid_size is None:  # Add extra allowed values near zero
             n_vector = np.linspace(1, max_n, int(max_n))
             k_vector = 2 * np.pi * np.column_stack((n_vector, n_vector)) / L
+
             max_add_n = np.floor(max_add_k * L / (2 * np.pi))
             add_n_vector = np.linspace(1, np.int(max_add_n), np.int(max_add_n))
-            add_n_grid, add_n_grid = np.meshgrid(add_n_vector, add_n_vector)
-            add_k_vector = (
-                2
-                * np.pi
-                * np.column_stack((add_n_grid.ravel(), add_n_grid.ravel()))
-                / L  # adding allowed values near zero
-            )
+            X, Y = np.meshgrid(add_n_vector, add_n_vector)
+            add_k_vector = 2 * np.pi * np.column_stack((X.ravel(), Y.ravel())) / L
+            print(add_k_vector.shape)
+            print(k_vector.shape)
+            k_vector = np.concatenate((add_k_vector, k_vector))
+            print(k_vector.shape)
         else:
-
             step_size = int((2 * max_n + 1) / meshgrid_size)
             if meshgrid_size > (2 * max_n + 1):
                 step_size = 1
                 # todo raise warning : meshgrid_size should be less than the total allowed number of points
-
             n_vector = np.arange(-max_n, max_n, step_size)
-            index_zero = np.argwhere(n_vector == 0)  # care about zero
-            mask = np.ones(len(n_vector), dtype=bool)
-            mask[index_zero] = False
-            n_vector = n_vector[mask, ...]
+            n_vector = n_vector[n_vector != 0]
             X, Y = np.meshgrid(n_vector, n_vector)
             k_vector = 2 * np.pi * np.column_stack((X.ravel(), Y.ravel())) / L
 
         si = compute_scattering_intensity(k_vector, self.point_pattern.points)
         norm_k_vector = np.linalg.norm(k_vector, axis=1)
 
-        if meshgrid_size is None:
-            add_si = compute_scattering_intensity(
-                add_k_vector, self.point_pattern.points
-            )
-            norm_add_k_vector = np.linalg.norm(add_k_vector, axis=1)
-            si = np.concatenate((add_si, si), axis=None)
-
-            norm_k_vector = np.concatenate(
-                (norm_add_k_vector, norm_k_vector), axis=None
-            )
-
         if meshgrid_size is not None:
-
-            norm_k_vector = norm_k_vector.reshape(
-                X.shape
-            )  # reshape the ``norm_k_vector`` to the correct shape
-            si = si.reshape(
-                X.shape
-            )  # reshape the scattering intensity ``si`` to the correct shape
+            norm_k_vector = norm_k_vector.reshape(X.shape)
+            si = si.reshape(X.shape)
 
         return norm_k_vector, si
 
@@ -149,15 +133,24 @@ class StructureFactor:
         norm_k,
         si,
         plot_type="plot",
+        axis=None,
         exact_sf=None,
         error_bar=False,
-        save=False,
+        file_name="",
         **binning_params
     ):
         points = self.point_pattern.points
-        return plot_scattering_intensity_(
-            points, norm_k, si, plot_type, exact_sf, error_bar, save, **binning_params
-        )
+        if plot_type == "plot":
+            return utils.plot_si_showcase(
+                norm_k, si, axis, exact_sf, error_bar, file_name, **binning_params
+            )
+        elif plot_type == "imshow":
+            return utils.plot_si_imshow(norm_k, si, axis, file_name)
+
+        elif plot_type == "all":
+            return utils.plot_si_all(
+                points, norm_k, si, exact_sf, error_bar, file_name, **binning_params
+            )
 
     def compute_pcf(self, method="fv", install_spatstat=False, **params):
 
