@@ -45,7 +45,7 @@ class StructureFactor:
         self.point_pattern = point_pattern
         self.intensity = point_pattern.intensity
 
-    def compute_sf_via_scattering_intensity(
+    def compute_sf_scattering_intensity(
         self,
         max_k,
         meshgrid_size=None,
