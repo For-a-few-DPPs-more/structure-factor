@@ -10,10 +10,7 @@ from structure_factor.spatial_windows import BoxWindow
 
 from structure_factor.utils import (
     compute_scattering_intensity,
-    plot_si_showcase,
-    plot_pcf_,
     cleaning_data,
-    plot_sf_via_hankel_,
 )
 
 from structure_factor.spatstat_interface import SpatstatInterface
@@ -139,6 +136,10 @@ class StructureFactor:
         file_name="",
         **binning_params
     ):
+        if plot_type not in ["plot", "imshow", "all"]:
+            raise ValueError(
+                "plot_type should be one of the following str: 'all', 'plot' and 'imshow'."
+            )
         points = self.point_pattern.points
         if plot_type == "plot":
             return utils.plot_si_showcase(
@@ -200,9 +201,9 @@ class StructureFactor:
 
         return pd.DataFrame(np.array(pcf).T, columns=pcf.names)
 
-    def plot_pcf(self, pcf_DataFrame, exact_pcf=None, save=False, **kwargs):
+    def plot_pcf(self, pcf_DataFrame, exact_pcf=None, file_name="", **kwargs):
         # kwargs : parameter of pandas.DataFrame.plot.line https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.plot.line.html
-        return plot_pcf_(pcf_DataFrame, exact_pcf, save, **kwargs)
+        return utils.plot_pcf(pcf_DataFrame, exact_pcf, file_name, **kwargs)
 
     def interpolate_pcf(self, r, pcf_r, clean=False, **params):
         """Interpolate the pair correlation function (pcf) from evaluations ``(r, pcf_r)``.
@@ -223,7 +224,7 @@ class StructureFactor:
             pcf_r = cleaning_data(pcf_r)
         return dict(r_min=r_min, r_max=r_max), interpolate.interp1d(r, pcf_r, **params)
 
-    def compute_sf_via_hankel(self, pcf, k=None, method="Ogata", **params):
+    def compute_sf_hankel_quadrature(self, pcf, k=None, method="Ogata", **params):
         r"""Compute the `structure factor <https://en.wikipedia.org/wiki/Radial_distribution_function#The_structure_factor>`_ of the underlying point process at ``k`` from its pair correlation function ``pcf`` (assumed to be radially symmetric).
 
         .. math::
@@ -279,17 +280,18 @@ class StructureFactor:
             self.k_min = (2.7 * np.pi) / (params["r_max"] * step_size)
         return k_, 1.0 + self.intensity * ft_k
 
-    def plot_sf_via_hankel(
+    def plot_sf_hankel_quadrature(
         self,
-        k,
+        norm_k,
         sf,
+        axis=None,
         k_min=None,
         exact_sf=None,
         error_bar=False,
-        save=False,
+        file_name="",
         **binning_params
     ):
-        # kwargs : parameter of pandas.DataFrame.plot.line https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.plot.line.html
-        return plot_sf_via_hankel_(
-            k, sf, k_min, exact_sf, error_bar, save, **binning_params
+
+        return utils.plot_sf_hankel_quadrature(
+            norm_k, sf, axis, k_min, exact_sf, error_bar, file_name, **binning_params
         )
