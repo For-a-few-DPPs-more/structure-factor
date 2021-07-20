@@ -107,6 +107,7 @@ def compute_scattering_intensity(k, data):
     return si
 
 
+# touver un nom
 def _binning_function(x_data, y_data, **binning_params):
     Xs = x_data.ravel()
     Ys = y_data.ravel()
@@ -120,13 +121,14 @@ def _binning_function(x_data, y_data, **binning_params):
     x2meanY = {x: np.mean(x2listy[x]) for x in x2listy}
     x_meanY = sorted(x2meanY.items())
     mean_x, mean_y = zip(*x_meanY)
-    bin_mean, bin_edges, binnumber = stats.binned_statistic(
+    bin_mean, bin_edges, _ = stats.binned_statistic(
         mean_x, mean_y, statistic="mean", **binning_params
     )
-    bin_width = bin_edges[1] - bin_edges[0]
-    bin_centers = bin_edges[1:] - bin_width / 2
+    # bin_width = bin_edges[1] - bin_edges[0]
+    # bin_centers = bin_edges[1:] - bin_width / 2
+    bin_centers = bin_edges[:-1] + np.diff(bin_edges) / 2
 
-    bin_std, bin_edges, misc = stats.binned_statistic(
+    bin_std, bin_edges, _ = stats.binned_statistic(
         mean_x, mean_y, statistic=np.std, **binning_params
     )
     return (bin_centers, bin_mean, bin_std)
@@ -149,6 +151,122 @@ def _lsf(x_data, y_data, stop=None):
     y_intercept = (sum_y - slope * sum_x) / N
     fitted_line = lambda t: slope * t + y_intercept
     return fitted_line
+
+
+def plot_point_pattern(points, axis):
+    if axis is None:
+        _, axis = plt.subplots(figsize=(8, 6))
+
+    axis.plot(points[:, 0], points[:, 1], "k,")
+    axis.title.set_text("Points")
+    return axis
+
+
+def plot_si_summary(norm_k, si, axis, error_bar=True, **binning_params):
+    bin_centers, bin_mean, bin_std = _binning_function(norm_k, si, **binning_params)
+    axis.loglog(bin_centers, bin_mean, "b.", label="Mean(SI)")
+    if error_bar:
+        axis.errorbar(
+            bin_centers,
+            bin_mean,
+            yerr=bin_std,
+            fmt="b",
+            elinewidth=2,
+            ecolor="r",
+            capsize=3,
+            capthick=1,
+            label="error bar",
+            zorder=4,
+        )
+    return axis
+
+
+def plot_si_theoretical(norm_k, si_theo, axis, label="Exact sf"):
+    axis.loglog(norm_k.ravel(), si_theo(norm_k.ravel()), "g", label=label)
+    return axis
+
+
+def plot_si_empirical(norm_k, si, label="SI(k)", axis=None):
+    axis.loglog(norm_k, si, "k,", label=label)
+    return axis
+
+
+def plot_si_showcase(
+    norm_k,
+    si,
+    axis=None,
+    exact_sf=None,
+    error_bar=False,
+    file_name="",
+    **binning_params
+):
+    norm_k = norm_k.ravel()
+    si = si.ravel()
+    if axis is None:
+        _, axis = plt.subplots(figsize=(8, 6))
+
+    axis.loglog(norm_k, np.ones_like(norm_k), "r--", label="theo")
+
+    plot_si_empirical(norm_k, si, axis=axis)
+    if exact_sf is not None:
+        plot_si_theoretical(norm_k, exact_sf, axis=axis)
+    plot_si_summary(norm_k, si, axis=axis, error_bar=error_bar, **binning_params)
+    axis.title.set_text("loglog plot")
+    axis.set_xlabel("wave_length")
+    axis.set_ylabel("scattering intensity")
+    axis.legend()
+    if file_name:
+        fig = axis.get_figure()
+        fig.savefig(file_name, bbox_inches="tight")
+    return axis
+
+
+def plot_si_imshow(norm_k, si, axis=None, file_name=""):
+    if axis is None:
+        _, axis = plt.subplots(figsize=(6, 6))
+    if len(norm_k.shape) < 2:
+        raise ValueError(
+            "the scattering intensity should be evaluated on a meshgrid or choose plot_type = 'plot'. "
+        )
+    else:
+        log_si = np.log10(si)
+        m, n = log_si.shape
+        m /= 2
+        n /= 2
+        f_0 = axis.imshow(
+            log_si,
+            extent=[-n, n, -m, m],
+            cmap="PRGn",
+        )
+        plt.colorbar(f_0, ax=axis)
+        axis.title.set_text("scattering intensity")
+        plt.show()
+        if file_name:
+            fig = axis.get_figure()
+            fig.savefig(file_name, bbox_inches="tight")
+    return axis
+
+
+def plot_si_all(
+    points, norm_k, si, exact_sf=None, error_bar=False, file_name="", **binning_params
+):
+
+    figure, axis = plt.subplots(1, 3, figsize=(24, 6))
+    plot_point_pattern(points, axis=axis[0])
+
+    plot_si_showcase(
+        norm_k,
+        si,
+        axis[1],
+        exact_sf,
+        error_bar,
+        file_name="",
+        **binning_params,
+    )
+    plot_si_imshow(norm_k, si, axis[2], file_name="")
+    if file_name:
+        figure.savefig(file_name, bbox_inches="tight")
+    plt.show()
 
 
 def plot_scattering_intensity_(
@@ -331,6 +449,7 @@ def plot_sf_via_hankel_(k, sf, k_min, exact_sf, error_bar, save, **binning_param
             capsize=3,
             capthick=1,
             zorder=4,
+            label="error bar",
         )
 
     ax[0].plot(k, np.ones_like(k), "r--", label="theo")
@@ -372,6 +491,7 @@ def plot_sf_via_hankel_(k, sf, k_min, exact_sf, error_bar, save, **binning_param
             capsize=3,
             capthick=1,
             zorder=4,
+            label="error bar",
         )
 
     ax[1].legend()
