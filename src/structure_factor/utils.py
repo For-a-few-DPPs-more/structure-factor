@@ -162,32 +162,31 @@ def plot_point_pattern(points, axis):
     return axis
 
 
-def plot_si_summary(norm_k, si, axis, error_bar=True, **binning_params):
-    bin_centers, bin_mean, bin_std = _binning_function(norm_k, si, **binning_params)
-    axis.loglog(bin_centers, bin_mean, "b.", label="Mean(SI)")
-    if error_bar:
-        axis.errorbar(
-            bin_centers,
-            bin_mean,
-            yerr=bin_std,
-            fmt="b",
-            elinewidth=2,
-            ecolor="r",
-            capsize=3,
-            capthick=1,
-            label="error bar",
-            zorder=4,
-        )
+def plot_summary(x, y, axis, label="Mean", **binning_params):
+    bin_centers, bin_mean, bin_std = _binning_function(x, y, **binning_params)
+    axis.loglog(bin_centers, bin_mean, "b.", label=label)
+    axis.errorbar(
+        bin_centers,
+        bin_mean,
+        yerr=bin_std,
+        fmt="b",
+        elinewidth=2,
+        ecolor="r",
+        capsize=3,
+        capthick=1,
+        label="Error bar",
+        zorder=4,
+    )
     return axis
 
 
-def plot_si_theoretical(norm_k, si_theo, axis, label="Exact sf"):
-    axis.loglog(norm_k.ravel(), si_theo(norm_k.ravel()), "g", label=label)
+def plot_exact(x, y, axis, label="Exact sf"):
+    axis.loglog(x, y(x), "g", label=label)
     return axis
 
 
-def plot_si_empirical(norm_k, si, label="SI(k)", axis=None):
-    axis.loglog(norm_k, si, "k,", label=label)
+def plot_approximation(x, y, label="si(k)", axis=None, c="k,"):
+    axis.loglog(x, y, c, label=label)
     return axis
 
 
@@ -205,15 +204,16 @@ def plot_si_showcase(
     if axis is None:
         _, axis = plt.subplots(figsize=(8, 6))
 
-    axis.loglog(norm_k, np.ones_like(norm_k), "r--", label="theo")
+    axis.loglog(norm_k, np.ones_like(norm_k), "r--", label="Theo")
 
-    plot_si_empirical(norm_k, si, axis=axis)
+    plot_approximation(norm_k, si, axis=axis)
     if exact_sf is not None:
-        plot_si_theoretical(norm_k, exact_sf, axis=axis)
-    plot_si_summary(norm_k, si, axis=axis, error_bar=error_bar, **binning_params)
+        plot_exact(norm_k, exact_sf, axis=axis)
+    if error_bar:
+        plot_summary(norm_k, si, axis=axis, **binning_params)
     axis.title.set_text("loglog plot")
-    axis.set_xlabel("wave_length")
-    axis.set_ylabel("scattering intensity")
+    axis.set_xlabel("Wave length")
+    axis.set_ylabel("Scattering intensity")
     axis.legend()
     if file_name:
         fig = axis.get_figure()
@@ -221,7 +221,11 @@ def plot_si_showcase(
     return axis
 
 
-def plot_si_imshow(norm_k, si, axis=None, file_name=""):
+def plot_si_imshow(norm_k, si, axis, file_name):
+    if len(norm_k.shape) < 2:
+        raise ValueError(
+            "the scattering intensity should be evaluated on a meshgrid or choose plot_type = 'plot'. "
+        )
     if axis is None:
         _, axis = plt.subplots(figsize=(6, 6))
     if len(norm_k.shape) < 2:
@@ -239,7 +243,7 @@ def plot_si_imshow(norm_k, si, axis=None, file_name=""):
             cmap="PRGn",
         )
         plt.colorbar(f_0, ax=axis)
-        axis.title.set_text("scattering intensity")
+        axis.title.set_text("Scattering intensity")
         plt.show()
         if file_name:
             fig = axis.get_figure()
@@ -269,134 +273,7 @@ def plot_si_all(
     plt.show()
 
 
-def plot_scattering_intensity_(
-    points, norm_k, si, plot_type, exact_sf, error_bar, save, **binning_params
-):
-    r"""[summary]
-
-    Args:
-        points :math:`n \times 2` np.array representing a realization of a 2 dimensional point process.
-        norm_k (np.array): output vector of the function ``compute_scattering_intensity``.
-        si (n.array): output vector of the function ``compute_scattering_intensity``.
-        plot_type  (str): ("plot", "color_level" and "all"), specify the type of the plot to be shown. Defaults to "plot".
-        **binning_params: binning parameters used by ``stats.binned_statistic``, to find the mean of ``si``over subinternals of ``norm_k``for more details see <https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.binned_statistic.html>. Note that the parameter ``statistic``is fixed to ``mean``.
-    """
-
-    bin_centers, bin_mean, bin_std = _binning_function(
-        norm_k.ravel(), si.ravel(), **binning_params
-    )
-
-    if plot_type == "all":
-        if len(norm_k.shape) < 2:
-            raise ValueError(
-                "the scattering intensity should be evaluated on a meshgrid or choose plot_type='plot'. "
-            )
-        else:
-            log_si = np.log10(si)
-            m, n = log_si.shape
-            m /= 2
-            n /= 2
-
-            fig, ax = plt.subplots(1, 3, figsize=(24, 6))
-            ax[0].plot(points[:, 0], points[:, 1], "b,")
-            ax[0].title.set_text("Points configuration")
-            ax[1].loglog(norm_k.ravel(), si.ravel(), "k,", marker=",")
-            ax[1].loglog(bin_centers, bin_mean, "b.")
-            ax[1].loglog(norm_k.ravel(), np.ones_like(norm_k).ravel(), "r--")
-            if exact_sf is not None:
-                ax[1].loglog(norm_k.ravel(), exact_sf(norm_k).ravel(), "g", zorder=5)
-                ax[1].legend(
-                    ["SI", "Mean(SI)", "theo", "Exact sf"],
-                    shadow=True,
-                    loc="lower right",
-                )
-            else:
-                ax[1].legend(["SI", "Mean(SI)", "theo"], shadow=True, loc="lower right")
-            ax[1].errorbar(
-                bin_centers,
-                bin_mean,
-                yerr=bin_std,
-                fmt="b",
-                elinewidth=2,
-                ecolor="r",
-                capsize=3,
-                capthick=1,
-                zorder=4,
-            )
-            ax[1].set_xlabel("Wave length")
-            ax[1].set_ylabel("Scattering intensity")
-            ax[1].title.set_text("loglog plot")
-
-            f_0 = ax[2].imshow(
-                log_si,
-                extent=[-n, n, -m, m],
-                cmap="PRGn",
-            )
-            fig.colorbar(f_0, ax=ax[2])
-            ax[2].title.set_text("scattering intensity")
-            plt.show()
-            if save:
-                fig.savefig("si.pdf", bbox_inches="tight")
-    elif plot_type == "plot":
-        fig = plt.figure(figsize=(10, 7))
-        plt.loglog(norm_k.ravel(), si.ravel(), "k,", zorder=1)
-        plt.loglog(bin_centers, bin_mean, "b.", zorder=3)
-        plt.loglog(norm_k.ravel(), np.ones_like(norm_k.ravel()), "r--", zorder=2)
-        if error_bar:
-            plt.errorbar(
-                bin_centers,
-                bin_mean,
-                yerr=bin_std,
-                fmt="b",
-                elinewidth=2,
-                ecolor="r",
-                capsize=3,
-                capthick=1,
-                zorder=4,
-            )
-        if exact_sf is not None:
-            plt.loglog(norm_k.ravel(), exact_sf(norm_k.ravel()), "g", zorder=5)
-            plt.legend(
-                ["SI", "Mean(SI)", "theo", "error bar", "Exact sf"], loc="lower right"
-            )
-        else:
-            plt.legend(["SI", "Mean(SI)", "theo", "error bar"], loc="lower right")
-        plt.xlabel("Wave length ")
-        plt.ylabel("Scattering intensity")
-        plt.title("loglog plot")
-        plt.show()
-        if save:
-            fig.savefig("si_figure.pdf", bbox_inches="tight")
-
-    elif plot_type == "color_level":
-        print(len(norm_k.shape))
-        if len(norm_k.shape) < 2:
-            raise ValueError(
-                "the scattering intensity should be evaluated on a meshgrid or choose plot_type = 'plot'. "
-            )
-        else:
-            log_si = np.log10(si)
-            m, n = log_si.shape
-            m /= 2
-            n /= 2
-            f_0 = plt.imshow(
-                log_si,
-                extent=[-n, n, -m, m],
-                cmap="PRGn",
-            )
-            plt.colorbar(f_0)
-            plt.title("Scattering intensity")
-            plt.show()
-        if save:
-            fig = f_0.get_figure()
-            fig.savefig("si_figure.pdf", bbox_inches="tight")
-    else:
-        raise ValueError(
-            "plot_type should be one of the following str: 'all', 'plot' and 'color_level'.  "
-        )
-
-
-def plot_pcf_(pcf_DataFrame, exact_pcf, save, **kwargs):
+def plot_pcf(pcf_DataFrame, exact_pcf, file_name, **kwargs):
     ax = pcf_DataFrame.plot.line(x="r", **kwargs)
     if exact_pcf is not None:
         ax.plot(
@@ -405,99 +282,44 @@ def plot_pcf_(pcf_DataFrame, exact_pcf, save, **kwargs):
             "r",
             label="exact pcf",
         )
-        ax.legend()
+    ax.legend()
     ax.set_xlabel("r")
     ax.set_ylabel("pcf")
     plt.show()
-    if save:
+    if file_name:
         fig = ax.get_figure()
-        fig.savefig("pcf_figure.pdf", bbox_inches="tight")
+        fig.savefig(file_name, bbox_inches="tight")
+    return ax
 
 
-def plot_sf_via_hankel_(k, sf, k_min, exact_sf, error_bar, save, **binning_params):
-    fig, ax = plt.subplots(1, 2, figsize=(20, 5))
-    ax[0].plot(k, sf, "k.", label="approx sf")
-    ax[0].plot(k, sf, "k")
+def plot_sf_hankel_quadrature(
+    norm_k, sf, axis, k_min, exact_sf, error_bar, file_name, **binning_params
+):
+    if axis is None:
+        fig, axis = plt.subplots(figsize=(8, 5))
+
+    plot_approximation(norm_k, sf, axis=axis, label="approx sf", c="k.")
     if exact_sf is not None:
-        ax[0].plot(
-            k,
-            exact_sf(k),
-            "g",
-            label="exact sf",
-        )
+        plot_exact(norm_k, exact_sf, axis=axis, label="exact sf")
+    if error_bar:
+        plot_summary(norm_k, sf, axis=axis, **binning_params)
+    axis.plot(norm_k, np.ones_like(norm_k), "r--", label="Theo")
     if k_min is not None:
         sf_interpolate = interpolate.interp1d(
-            k, sf, axis=0, fill_value="extrapolate", kind="cubic"
+            norm_k, sf, axis=0, fill_value="extrapolate", kind="cubic"
         )
-        ax[0].plot(
+        axis.loglog(
             k_min,
             sf_interpolate(k_min),
             "ro",
             label="k_min",
         )
-    if error_bar:
-        bin_centers, bin_mean, bin_std = _binning_function(
-            k.ravel(), sf.ravel(), **binning_params
-        )
-        ax[0].errorbar(
-            bin_centers,
-            bin_mean,
-            yerr=bin_std,
-            fmt="b",
-            elinewidth=2,
-            ecolor="r",
-            capsize=3,
-            capthick=1,
-            zorder=4,
-            label="error bar",
-        )
-
-    ax[0].plot(k, np.ones_like(k), "r--", label="theo")
-    ax[0].legend()
-    ax[0].set_xlabel("wave length")
-    ax[0].set_ylabel("sf")
-    ax[0].title.set_text("plot")
-
-    ax[1].loglog(k, sf, "k.", label="approx sf")
-    if exact_sf is not None:
-        ax[1].loglog(
-            k,
-            exact_sf(k),
-            "g",
-            label="exact sf",
-        )
-    if k_min is not None:
-        sf_interpolate = interpolate.interp1d(
-            k, sf, axis=0, fill_value="extrapolate", kind="cubic"
-        )
-        ax[1].loglog(
-            k_min,
-            sf_interpolate(k_min),
-            "ro",
-            label="k_min",
-        )
-    ax[1].loglog(k, np.ones_like(k), "r--", label="theo")
-    if error_bar:
-        bin_centers, bin_mean, bin_std = _binning_function(
-            k.ravel(), sf.ravel(), **binning_params
-        )
-        ax[1].errorbar(
-            bin_centers,
-            bin_mean,
-            yerr=bin_std,
-            fmt="b",
-            elinewidth=2,
-            ecolor="r",
-            capsize=3,
-            capthick=1,
-            zorder=4,
-            label="error bar",
-        )
-
-    ax[1].legend()
-    ax[1].set_xlabel("wave length")
-    ax[1].set_ylabel("sf")
-    ax[1].title.set_text("loglog plot")
+    axis.legend()
+    axis.set_xlabel("wave length")
+    axis.set_ylabel("sf")
+    axis.title.set_text("loglog plot")
     plt.show()
-    if save:
-        fig.savefig("sf_via_hankel_figure.pdf", bbox_inches="tight")
+
+    if file_name:
+        fig.savefig(file_name, bbox_inches="tight")
+    return axis
