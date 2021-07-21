@@ -130,27 +130,32 @@ class StructureFactor:
         norm_k,
         si,
         plot_type="plot",
-        axis=None,
+        axes=None,
         exact_sf=None,
         error_bar=False,
         file_name="",
         **binning_params
     ):
-        if plot_type not in ["plot", "imshow", "all"]:
-            raise ValueError(
-                "plot_type should be one of the following str: 'all', 'plot' and 'imshow'."
-            )
-        points = self.point_pattern.points
         if plot_type == "plot":
             return utils.plot_si_showcase(
-                norm_k, si, axis, exact_sf, error_bar, file_name, **binning_params
+                norm_k, si, axes, exact_sf, error_bar, file_name, **binning_params
             )
         elif plot_type == "imshow":
-            return utils.plot_si_imshow(norm_k, si, axis, file_name)
+            return utils.plot_si_imshow(norm_k, si, axes, file_name)
 
         elif plot_type == "all":
             return utils.plot_si_all(
-                points, norm_k, si, exact_sf, error_bar, file_name, **binning_params
+                self.point_pattern,
+                norm_k,
+                si,
+                exact_sf,
+                error_bar,
+                file_name,
+                **binning_params
+            )
+        else:
+            raise ValueError(
+                "plot_type must be chosen among ('all', 'plot', 'imshow')."
             )
 
     def compute_pcf(self, method="fv", install_spatstat=False, **params):
@@ -201,9 +206,9 @@ class StructureFactor:
 
         return pd.DataFrame(np.array(pcf).T, columns=pcf.names)
 
-    def plot_pcf(self, pcf_DataFrame, exact_pcf=None, file_name="", **kwargs):
+    def plot_pcf(self, pcf_dataframe, exact_pcf=None, file_name="", **kwargs):
         # kwargs : parameter of pandas.DataFrame.plot.line https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.plot.line.html
-        return utils.plot_pcf(pcf_DataFrame, exact_pcf, file_name, **kwargs)
+        return utils.plot_pcf(pcf_dataframe, exact_pcf, file_name, **kwargs)
 
     def interpolate_pcf(self, r, pcf_r, clean=False, **params):
         """Interpolate the pair correlation function (pcf) from evaluations ``(r, pcf_r)``.

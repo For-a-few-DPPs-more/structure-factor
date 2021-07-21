@@ -144,15 +144,6 @@ def _lsf(x_data, y_data, stop=None):
     return fitted_line
 
 
-def plot_point_pattern(points, axis):
-    if axis is None:
-        _, axis = plt.subplots(figsize=(8, 6))
-
-    axis.plot(points[:, 0], points[:, 1], "k,")
-    axis.title.set_text("Points")
-    return axis
-
-
 def plot_summary(x, y, axis, label="Mean", **binning_params):
     bin_centers, bin_mean, bin_std = _binning_function(x, y, **binning_params)
     axis.loglog(bin_centers, bin_mean, "b.", label=label)
@@ -190,22 +181,24 @@ def plot_si_showcase(
     file_name="",
     **binning_params
 ):
+    # ? why .ravel()?
     norm_k = norm_k.ravel()
     si = si.ravel()
     if axis is None:
         _, axis = plt.subplots(figsize=(8, 6))
 
     axis.loglog(norm_k, np.ones_like(norm_k), "r--", label="Theo")
-
     plot_approximation(norm_k, si, axis=axis)
     if exact_sf is not None:
         plot_exact(norm_k, exact_sf, axis=axis)
     if error_bar:
         plot_summary(norm_k, si, axis=axis, **binning_params)
+
     axis.title.set_text("loglog plot")
     axis.set_xlabel("Wave length")
     axis.set_ylabel("Scattering intensity")
     axis.legend()
+
     if file_name:
         fig = axis.get_figure()
         fig.savefig(file_name, bbox_inches="tight")
@@ -235,7 +228,7 @@ def plot_si_imshow(norm_k, si, axis, file_name):
         )
         plt.colorbar(f_0, ax=axis)
         axis.title.set_text("Scattering intensity")
-        plt.show()
+
         if file_name:
             fig = axis.get_figure()
             fig.savefig(file_name, bbox_inches="tight")
@@ -243,44 +236,51 @@ def plot_si_imshow(norm_k, si, axis, file_name):
 
 
 def plot_si_all(
-    points, norm_k, si, exact_sf=None, error_bar=False, file_name="", **binning_params
+    point_pattern,
+    norm_k,
+    si,
+    exact_sf=None,
+    error_bar=False,
+    file_name="",
+    **binning_params
 ):
+    figure, axes = plt.subplots(1, 3, figsize=(24, 6))
 
-    figure, axis = plt.subplots(1, 3, figsize=(24, 6))
-    plot_point_pattern(points, axis=axis[0])
-
+    point_pattern.plot(axis=axes[0])
     plot_si_showcase(
         norm_k,
         si,
-        axis[1],
+        axes[1],
         exact_sf,
         error_bar,
         file_name="",
         **binning_params,
     )
-    plot_si_imshow(norm_k, si, axis[2], file_name="")
+    plot_si_imshow(norm_k, si, axes[2], file_name="")
+
     if file_name:
         figure.savefig(file_name, bbox_inches="tight")
-    plt.show()
+
+    return axes
 
 
-def plot_pcf(pcf_DataFrame, exact_pcf, file_name, **kwargs):
-    ax = pcf_DataFrame.plot.line(x="r", **kwargs)
+def plot_pcf(pcf_dataframe, exact_pcf, file_name, **kwargs):
+    axis = pcf_dataframe.plot.line(x="r", **kwargs)
     if exact_pcf is not None:
-        ax.plot(
-            pcf_DataFrame["r"],
-            exact_pcf(pcf_DataFrame["r"]),
+        axis.plot(
+            pcf_dataframe["r"],
+            exact_pcf(pcf_dataframe["r"]),
             "r",
             label="exact pcf",
         )
-    ax.legend()
-    ax.set_xlabel("r")
-    ax.set_ylabel("pcf")
-    plt.show()
+    axis.legend()
+    axis.set_xlabel("r")
+    axis.set_ylabel("pcf")
+
     if file_name:
-        fig = ax.get_figure()
+        fig = axis.get_figure()
         fig.savefig(file_name, bbox_inches="tight")
-    return ax
+    return axis
 
 
 def plot_sf_hankel_quadrature(
@@ -309,7 +309,6 @@ def plot_sf_hankel_quadrature(
     axis.set_xlabel("wave length")
     axis.set_ylabel("sf")
     axis.title.set_text("loglog plot")
-    plt.show()
 
     if file_name:
         fig.savefig(file_name, bbox_inches="tight")
