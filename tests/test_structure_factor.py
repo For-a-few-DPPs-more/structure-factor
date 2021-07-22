@@ -1,10 +1,9 @@
 import pytest
-import sys
 
-sys.path.append("structure-factor")
-import hypton
 import numpy as np
 import numpy.random as npr
+
+import hypton
 
 
 def test_validity_of_input():

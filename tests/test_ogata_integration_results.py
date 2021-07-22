@@ -34,7 +34,7 @@ class TestOgataHankelTransformEvaluatedAtOne(unittest.TestCase):
     # See Section 5 paragraph "Numerical Examples" in Ogata
     order = 0
     ht = HankelTransformOgata(order)
-    ht.compute_transformation_parameters(0.01, 300)
+    ht.compute_transformation_parameters(step_size=0.01, nb_points=300)
 
     def test_numerical_example1_section5(self):
         f = lambda r: 1.0 / r
