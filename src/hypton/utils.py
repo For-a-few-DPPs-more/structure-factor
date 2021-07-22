@@ -2,12 +2,9 @@
 # coding=utf-8
 
 import numpy as np
-import pandas as pd
-
-from mpmath import fp as mpm
+import matplotlib.pyplot as plt
 from scipy.special import j0, j1, jv, jn_zeros, y0, y1, yv
 from scipy import interpolate, stats
-import matplotlib.pyplot as plt
 
 
 def cleaning_data(data):
@@ -48,6 +45,7 @@ def compute_scattering_intensity(k, data):
     return si
 
 
+#! touver un nom
 def _binning_function(x_data, y_data, **binning_params):
     Xs = x_data.ravel()
     Ys = y_data.ravel()
@@ -71,14 +69,11 @@ def _binning_function(x_data, y_data, **binning_params):
     bin_std, bin_edges, _ = stats.binned_statistic(
         mean_x, mean_y, statistic=np.std, **binning_params
     )
-    return (bin_centers, bin_mean, bin_std)
+    return bin_centers, bin_mean, bin_std
 
 
 """
-#! touver un nom
 #! this function doesn't give the needed result
-
-
 def _binning_function(x, y, **params):
     df = pd.DataFrame({"x": x, "y": x})
     df = df.groupby("x").mean()
