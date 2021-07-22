@@ -5,6 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.special import j0, j1, jv, jn_zeros, y0, y1, yv
 from scipy import interpolate, stats
+import pandas as pd
 
 
 def cleaning_data(data):
