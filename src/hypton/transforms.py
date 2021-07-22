@@ -2,9 +2,9 @@
 # coding=utf-8
 
 import numpy as np
+from scipy import interpolate
 
 from hypton.utils import bessel1, bessel2, bessel1_zeros
-from scipy import interpolate
 
 
 class RadiallySymmetricFourierTransform:
@@ -29,7 +29,6 @@ class RadiallySymmetricFourierTransform:
             F_k /= k ** order
         return k, F_k
 
-    # @staticmethod
     def _get_hankel_transformer(self, order, method):
         assert method in self._hankel_transform_methods
         if method == "Ogata":
@@ -37,7 +36,7 @@ class RadiallySymmetricFourierTransform:
         if method == "BaddourChouinard":
             return HankelTransformBaddourChouinard(order=order)
 
-    @property
+    #! self.rmax is not defined
     def compute_k_min(self, step_size):
         rmax = self.rmax
         return (2.7 * np.pi) / (rmax * step_size)
@@ -140,6 +139,7 @@ class HankelTransformOgata(HankelTransform):
         n = self.order
         h = step_size
         N = nb_points
+        #! self.rmax is not defined
         self.rmax = rmax
         t = bessel1_zeros(n, N)
         weights = bessel2(n, t) / bessel1(n + 1, t)  # Equation (1.2)
