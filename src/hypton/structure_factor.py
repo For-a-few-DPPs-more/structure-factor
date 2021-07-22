@@ -4,8 +4,15 @@ import pandas as pd
 import rpy2.robjects as robjects
 
 import hypton.utils as utils
+
 from hypton.transforms import RadiallySymmetricFourierTransform
 from hypton.spatial_windows import BoxWindow
+
+from hypton.utils import (
+    compute_scattering_intensity,
+    cleaning_data,
+)
+
 from hypton.spatstat_interface import SpatstatInterface
 
 
@@ -109,7 +116,7 @@ class StructureFactor:
             X, Y = np.meshgrid(n_vector, n_vector)
             k_vector = 2 * np.pi * np.column_stack((X.ravel(), Y.ravel())) / L
 
-        si = utils.compute_scattering_intensity(k_vector, self.point_pattern.points)
+        si = compute_scattering_intensity(k_vector, self.point_pattern.points)
         norm_k_vector = np.linalg.norm(k_vector, axis=1)
 
         if meshgrid_size is not None:
@@ -216,14 +223,14 @@ class StructureFactor:
         """
         params.setdefault("fill_value", "extrapolate")
         params.setdefault("kind", "cubic")
-        r_min = np.min(r)
-        r_max = np.max(r)
+        rmin = np.min(r)
+        rmax = np.max(r)
         if clean:
-            pcf_r = utils.cleaning_data(pcf_r)
-        return dict(r_min=r_min, r_max=r_max), interpolate.interp1d(r, pcf_r, **params)
+            pcf_r = cleaning_data(pcf_r)
+        return dict(rmin=rmin, rmax=rmax), interpolate.interp1d(r, pcf_r, **params)
 
-    def compute_sf_hankel_quadrature(self, pcf, k=None, method="Ogata", **params):
-        r"""Compute the `structure factor <https://en.wikipedia.org/wiki/Radial_distribution_function#The_hypton>`_ of the underlying point process at ``k`` from its pair correlation function ``pcf`` (assumed to be radially symmetric).
+    def compute_sf_hankel_quadrature(self, pcf, norm_k=None, method="Ogata", **params):
+        r"""Compute the `structure factor <https://en.wikipedia.org/wiki/Radial_distribution_function#The_structure_factor>`_ of the underlying point process at ``k`` from its pair correlation function ``pcf`` (assumed to be radially symmetric).
 
         .. math::
 
@@ -234,7 +241,7 @@ class StructureFactor:
         - :math:`g` is the corresponding radially symmetric pair correlation function ``pcf``. Note that :math:`g-1` is also called total pair correlation function.
 
         Args:
-            k (np.ndarray): vector containing the norms of the waves where the structure factor is to be evaluated.
+            nom_k (np.ndarray): vector containing the norms of the waves where the structure factor is to be evaluated.
             pcf ([type]): callable radially symmetric pair correlation function :math:`g`.
             method (str, optional): select the method to compute the `Radially Symmetric Fourier transform <https://en.wikipedia.org/wiki/Hankel_transform#Fourier_transform_in_d_dimensions_(radially_symmetric_case)>`_ of :math:`g` as a Hankel transform :py:class:`HankelTransFormOgata` or :py:class:`HankelTransFormBaddourChouinard`.
             Choose between "Ogata" or "BaddourChouinard". Defaults to "Ogata".
@@ -244,7 +251,7 @@ class StructureFactor:
                 params = dict(step_size=..., nb_points=...)
             - ``method == "BaddourChouinard"``
                 params = dict(
-                    r_max=...,
+                    rmax=...,
                     nb_points=...,
                     interpolotation=dict(:py:func:`scipy.integrate.interp1d` parameters)
                 )
@@ -260,30 +267,30 @@ class StructureFactor:
             Typical usage: ``pcf`` is estimated using :py:meth:`StructureFactor.compute_pcf` and then interpolated using :py:meth:`StructureFactor.interpolate_pair_correlation_function`.
         """
         assert callable(pcf)
-        if (method == "Ogata") and (k.all() == None):
+        if (method == "Ogata") and (norm_k.all() == None):
             raise ValueError(
-                "k is not optional while using method='Ogata'. Please provide a vector k in the input. "
+                "norm_k is not optional while using method='Ogata'. Please provide a vector norm_k in the input. "
             )
-        params.setdefault("r_max", None)
-        if (method == "BaddourChouinard") and params["r_max"] == None:
+        params.setdefault("rmax", None)
+        if (method == "BaddourChouinard") and params["rmax"] == None:
             raise ValueError(
-                "r_max is not optional while using method='BaddourChouinard'. Please provide r_max in the input. "
+                "rmax is not optional while using method='BaddourChouinard'. Please provide rmax in the input. "
             )
         ft = RadiallySymmetricFourierTransform(dimension=self.dimension)
         total_pcf = lambda r: pcf(r) - 1.0
-        k_, ft_k = ft.transform(total_pcf, k, method=method, **params)
-        if method == "Ogata" and params["r_max"] is not None:
+        norm_k, ft_k = ft.transform(total_pcf, norm_k, method=method, **params)
+        if method == "Ogata" and params["rmax"] is not None:
             params.setdefault("step_size", 0.1)
             step_size = params["step_size"]
-            self.k_min = (2.7 * np.pi) / (params["r_max"] * step_size)
-        return k_, 1.0 + self.intensity * ft_k
+            self.norm_k_min = (2.7 * np.pi) / (params["rmax"] * step_size)
+        return norm_k, 1.0 + self.intensity * ft_k
 
     def plot_sf_hankel_quadrature(
         self,
         norm_k,
         sf,
         axis=None,
-        k_min=None,
+        norm_k_min=None,
         exact_sf=None,
         error_bar=False,
         file_name="",
@@ -291,5 +298,12 @@ class StructureFactor:
     ):
 
         return utils.plot_sf_hankel_quadrature(
-            norm_k, sf, axis, k_min, exact_sf, error_bar, file_name, **binning_params
+            norm_k,
+            sf,
+            axis,
+            norm_k_min,
+            exact_sf,
+            error_bar,
+            file_name,
+            **binning_params
         )
