@@ -6,6 +6,7 @@ from hypton.utils import (
 
 
 class EffectiveHyperuniform:
+    # todo docstring
     # ! What is the purpose of this class ?
     # ! Can't it be reduced to simple function calls to _binning_function and index_H?
 
@@ -19,10 +20,10 @@ class EffectiveHyperuniform:
         return _binning_function(self.norm_k.ravel(), self.sf.ravel(), **params)
 
     def index_H(self, norm_k, sf, i_max=None):
+        # todo docstring
         i = len(norm_k) if i_max is None else i_max
-        fitting_param = np.polyfit(norm_k[:i], sf[:i], deg=1)
-        S_0 = fitting_param[-1]
+        slope, S_0 = np.polyfit(norm_k[:i], sf[:i], deg=1)
         thresh = 1
         S_first_peak = max(thresh, sf[np.argmax(sf > thresh)])
-        self.fitted_line = lambda x: fitting_param[0] * x + S_0
+        self.fitted_line = lambda x: slope * x + S_0
         return S_0 / S_first_peak
