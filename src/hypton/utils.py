@@ -3,9 +3,11 @@
 
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-from scipy import interpolate, stats
+
+from mpmath import fp as mpm
 from scipy.special import j0, j1, jv, jn_zeros, y0, y1, yv
+from scipy import interpolate, stats
+import matplotlib.pyplot as plt
 
 
 def cleaning_data(data):
@@ -46,7 +48,37 @@ def compute_scattering_intensity(k, data):
     return si
 
 
+def _binning_function(x_data, y_data, **binning_params):
+    Xs = x_data.ravel()
+    Ys = y_data.ravel()
+    x2listy = {}
+    for x, y in zip(Xs, Ys):
+        try:
+            x2listy[x].append(y)
+        except KeyError:
+            x2listy[x] = [y]
+
+    x2meanY = {x: np.mean(x2listy[x]) for x in x2listy}
+    x_meanY = sorted(x2meanY.items())
+    mean_x, mean_y = zip(*x_meanY)
+    bin_mean, bin_edges, _ = stats.binned_statistic(
+        mean_x, mean_y, statistic="mean", **binning_params
+    )
+    # bin_width = bin_edges[1] - bin_edges[0]
+    # bin_centers = bin_edges[1:] - bin_width / 2
+    bin_centers = bin_edges[:-1] + np.diff(bin_edges) / 2
+
+    bin_std, bin_edges, _ = stats.binned_statistic(
+        mean_x, mean_y, statistic=np.std, **binning_params
+    )
+    return (bin_centers, bin_mean, bin_std)
+
+
+"""
 #! touver un nom
+#! this function doesn't give the needed result
+
+
 def _binning_function(x, y, **params):
     df = pd.DataFrame({"x": x, "y": x})
     df = df.groupby("x").mean()
@@ -60,6 +92,7 @@ def _binning_function(x, y, **params):
     bin_centers = bin_edges[:-1] + np.diff(bin_edges) / 2
 
     return bin_centers, bin_mean, bin_std
+"""
 
 
 def plot_summary(x, y, axis, label="Mean", **binning_params):
