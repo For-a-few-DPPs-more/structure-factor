@@ -2,9 +2,9 @@
 # coding=utf-8
 
 import numpy as np
-
-from structure_factor.utils import bessel1, bessel2, bessel1_zeros
 from scipy import interpolate
+
+from hypton.utils import bessel1, bessel2, bessel1_zeros
 
 
 class RadiallySymmetricFourierTransform:

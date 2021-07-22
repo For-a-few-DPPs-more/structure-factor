@@ -2,7 +2,7 @@ import unittest
 import numpy as np
 from scipy.special import k0
 
-from structure_factor.transforms import HankelTransformBaddourChouinard
+from hypton.transforms import HankelTransformBaddourChouinard
 
 
 def modified_gaussian(x, a, n):

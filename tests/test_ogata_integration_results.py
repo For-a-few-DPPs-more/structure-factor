@@ -5,7 +5,7 @@ import unittest
 import numpy as np
 from scipy.special import k0
 
-from structure_factor.transforms import (
+from hypton.transforms import (
     ogata_integrate_with_abs_monomial,
     HankelTransformOgata,
 )

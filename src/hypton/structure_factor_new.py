@@ -3,17 +3,10 @@ import scipy.interpolate as interpolate
 import pandas as pd
 import rpy2.robjects as robjects
 
-import structure_factor.utils as utils
-
-from structure_factor.transforms import RadiallySymmetricFourierTransform
-from structure_factor.spatial_windows import BoxWindow
-
-from structure_factor.utils import (
-    compute_scattering_intensity,
-    cleaning_data,
-)
-
-from structure_factor.spatstat_interface import SpatstatInterface
+import hypton.utils as utils
+from hypton.transforms import RadiallySymmetricFourierTransform
+from hypton.spatial_windows import BoxWindow
+from hypton.spatstat_interface import SpatstatInterface
 
 
 class StructureFactor:
@@ -116,7 +109,7 @@ class StructureFactor:
             X, Y = np.meshgrid(n_vector, n_vector)
             k_vector = 2 * np.pi * np.column_stack((X.ravel(), Y.ravel())) / L
 
-        si = compute_scattering_intensity(k_vector, self.point_pattern.points)
+        si = utils.compute_scattering_intensity(k_vector, self.point_pattern.points)
         norm_k_vector = np.linalg.norm(k_vector, axis=1)
 
         if meshgrid_size is not None:
@@ -226,11 +219,11 @@ class StructureFactor:
         r_min = np.min(r)
         r_max = np.max(r)
         if clean:
-            pcf_r = cleaning_data(pcf_r)
+            pcf_r = utils.cleaning_data(pcf_r)
         return dict(r_min=r_min, r_max=r_max), interpolate.interp1d(r, pcf_r, **params)
 
     def compute_sf_hankel_quadrature(self, pcf, k=None, method="Ogata", **params):
-        r"""Compute the `structure factor <https://en.wikipedia.org/wiki/Radial_distribution_function#The_structure_factor>`_ of the underlying point process at ``k`` from its pair correlation function ``pcf`` (assumed to be radially symmetric).
+        r"""Compute the `structure factor <https://en.wikipedia.org/wiki/Radial_distribution_function#The_hypton>`_ of the underlying point process at ``k`` from its pair correlation function ``pcf`` (assumed to be radially symmetric).
 
         .. math::
 

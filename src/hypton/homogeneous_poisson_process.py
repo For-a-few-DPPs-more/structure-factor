@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # coding=utf-8
 
-from structure_factor.spatial_windows import AbstractSpatialWindow, UnitBoxWindow
-from structure_factor.utils import get_random_number_generator
+from hypton.spatial_windows import AbstractSpatialWindow, UnitBoxWindow
+from hypton.utils import get_random_number_generator
 
 
 class HomogeneousPoissonPointProcess(object):

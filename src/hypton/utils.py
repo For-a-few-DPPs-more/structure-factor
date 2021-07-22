@@ -3,11 +3,9 @@
 
 import numpy as np
 import pandas as pd
-
-from mpmath import fp as mpm
-from scipy.special import j0, j1, jv, jn_zeros, y0, y1, yv
-from scipy import interpolate, stats
 import matplotlib.pyplot as plt
+from scipy import interpolate, stats
+from scipy.special import j0, j1, jv, jn_zeros, y0, y1, yv
 
 
 def cleaning_data(data):

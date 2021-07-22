@@ -1,6 +1,6 @@
 import numpy as np
 
-from structure_factor.utils import (
+from hypton.utils import (
     _binning_function,
 )
 
