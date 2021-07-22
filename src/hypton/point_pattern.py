@@ -22,6 +22,9 @@ class PointPattern(object):
 
         if intensity is not None:
             assert intensity > 0
+        elif window is not None:
+            intensity = points.shape[0] / window.volume
+
         self.intensity = intensity
 
     def dimension(self):
