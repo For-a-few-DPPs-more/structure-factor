@@ -4,6 +4,7 @@ import pandas as pd
 import rpy2.robjects as robjects
 
 import hypton.utils as utils
+from hypton.point_pattern import PointPattern
 from hypton.transforms import RadiallySymmetricFourierTransform
 from hypton.spatial_windows import BoxWindow
 from hypton.spatstat_interface import SpatstatInterface
@@ -26,17 +27,20 @@ class StructureFactor:
     """
     # ! Mettre un warning que scattering_intensity marche seulement dans les cubic windows, pcf pour dimension 2 et 3 seulement, hankel pour isotropic en dimension 2, en dimension 3 faire un MC pour approximer l'integral
     def __init__(self, point_pattern):
-        r"""
+        r"""#todo write docsting
         Args:
             points: :math:`n \times 2` np.array representing a realization of a 2 dimensional point process.
             intensity(float): intensity of the underlying point process represented by `points`.
         # todo ajouter une methode pour approximer l'intensité pour des stationnaire ergodic si elle n'est pas provided
         """
-        dimension = point_pattern.points.shape[1]
-        assert point_pattern.points.ndim == 2 and dimension == 2
-        self.dimension = dimension
+        assert isinstance(point_pattern, PointPattern)
+        assert point_pattern.dimension == 2
         self.point_pattern = point_pattern
         self.intensity = point_pattern.intensity
+
+    @property
+    def dimension(self):
+        return self.point_pattern.dimension
 
     def compute_sf_scattering_intensity(
         self,
@@ -260,12 +264,12 @@ class StructureFactor:
             Typical usage: ``pcf`` is estimated using :py:meth:`StructureFactor.compute_pcf` and then interpolated using :py:meth:`StructureFactor.interpolate_pair_correlation_function`.
         """
         assert callable(pcf)
-        if (method == "Ogata") and (k.all() == None):
+        if method == "Ogata" and k.all() == None:
             raise ValueError(
                 "k is not optional while using method='Ogata'. Please provide a vector k in the input. "
             )
         params.setdefault("r_max", None)
-        if (method == "BaddourChouinard") and params["r_max"] == None:
+        if method == "BaddourChouinard" and params["r_max"] == None:
             raise ValueError(
                 "r_max is not optional while using method='BaddourChouinard'. Please provide r_max in the input. "
             )
