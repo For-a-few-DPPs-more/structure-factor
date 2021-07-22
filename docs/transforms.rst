@@ -5,4 +5,4 @@ Transforms
 
     from numpy import random
 
-.. autoclass:: structure_factor.transforms.RadiallySymmetricFourierTransform
+.. autoclass:: hypton.transforms.RadiallySymmetricFourierTransform

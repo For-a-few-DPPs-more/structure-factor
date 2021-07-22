@@ -1,9 +1,9 @@
 structure factor
 ################
 
-.. autoclass:: structure_factor.transforms.HankelTransform
+.. autoclass:: hypton.transforms.HankelTransform
 
-.. automodule:: structure_factor.structure_factor_new
+.. automodule:: hypton.structure_factor
     :members:
     :inherited-members:
     :show-inheritance:
