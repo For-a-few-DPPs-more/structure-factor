@@ -27,6 +27,7 @@ class PointPattern(object):
 
         self.intensity = intensity
 
+    @property
     def dimension(self):
         """Ambient dimension where the points live"""
         return self.points.shape[1]
