@@ -2,9 +2,9 @@
 # coding=utf-8
 
 import numpy as np
-from scipy import interpolate
 
 from hypton.utils import bessel1, bessel2, bessel1_zeros
+from scipy import interpolate
 
 
 class RadiallySymmetricFourierTransform:
@@ -39,11 +39,17 @@ class RadiallySymmetricFourierTransform:
 
     @property
     def compute_k_min(self, step_size):
-        r_max = self.r_max
-        return (2.7 * np.pi) / (r_max * step_size)
+        rmax = self.rmax
+        return (2.7 * np.pi) / (rmax * step_size)
 
 
 class HankelTransform(object):
+    """
+    .. seealso::
+
+        - :py:class:`RadiallySymmetricFourierTransform`
+    """
+
     def __init__(self, order):
         assert order == np.floor(order)
         self.order = order
@@ -61,10 +67,10 @@ class HankelTransformBaddourChouinard(HankelTransform):
     def __init__(self, order=0):
         super(HankelTransformBaddourChouinard, self).__init__(order=order)
         self.bessel_zeros = None
-        self.r_max = None  # R in Section 4.B Space-Limited Function
+        self.rmax = None  # R in Section 4.B Space-Limited Function
         self.transformation_matrix = None  # Y in Section 6.A
 
-    def compute_transformation_parameters(self, r_max, nb_points):
+    def compute_transformation_parameters(self, rmax, nb_points):
         n = self.order
         bessel_zeros = bessel1_zeros(n, nb_points)
         jk, jN = bessel_zeros[:-1], bessel_zeros[-1]
@@ -73,7 +79,7 @@ class HankelTransformBaddourChouinard(HankelTransform):
         Y *= 2 / jN
 
         self.bessel_zeros = bessel_zeros
-        self.r_max = r_max
+        self.rmax = rmax
         self.transformation_matrix = Y
 
     def transform(self, f, k=None, **interpolation_params):
@@ -81,7 +87,7 @@ class HankelTransformBaddourChouinard(HankelTransform):
 
         Please call :py:meth:`HankelTransformBaddourChouinard.compute_transformation_parameters` before :py:meth:`HankelTransformBaddourChouinard.compute_transformation_parameters`.
 
-        If ``k`` is None, values considered are ``k = self.bessel_zeros[:-1] / self.r_max`` derived from :py:meth:`HankelTransformBaddourChouinard.compute_transformation_parameters`.
+        If ``k`` is None, values considered are ``k = self.bessel_zeros[:-1] / self.rmax`` derived from :py:meth:`HankelTransformBaddourChouinard.compute_transformation_parameters`.
         If ``k`` is provided, the Hankel transform is first computed for the above k values (case k is None), then interpolated using :py:func:`scipy.interpolate.interp1d` with ``interpolation_params`` and finally evaluated at the provided ``k`` values.
 
         Args:
@@ -92,12 +98,12 @@ class HankelTransformBaddourChouinard(HankelTransform):
             tuple(np.ndarray): :math:`k, HT[f](k)`
         """
         assert callable(f)
-        r_max = self.r_max
+        rmax = self.rmax
         Y = self.transformation_matrix
         jk, jN = self.bessel_zeros[:-1], self.bessel_zeros[-1]
-        r = jk * (r_max / jN)
-        ht_k = (r_max ** 2 / jN) * Y.dot(f(r))  # Equation (23)
-        _k = jk / r_max
+        r = jk * (rmax / jN)
+        ht_k = (rmax ** 2 / jN) * Y.dot(f(r))  # Equation (23)
+        _k = jk / rmax
         if k is not None:
             interpolation_params["assume_sorted"] = True
             interpolation_params.setdefault("fill_value", "extrapolate")
@@ -120,7 +126,7 @@ class HankelTransformOgata(HankelTransform):
         self.nodes, self.weights = None, None
 
     def compute_transformation_parameters(
-        self, r_max=None, step_size=0.01, nb_points=300
+        self, rmax=None, step_size=0.01, nb_points=300
     ):
         """Compute the quadrature nodes and weights used by :cite:`Oga05` Equation (5.2) to evaluate the Hankel-type transform.
 
@@ -134,7 +140,7 @@ class HankelTransformOgata(HankelTransform):
         n = self.order
         h = step_size
         N = nb_points
-        self.r_max = r_max
+        self.rmax = rmax
         t = bessel1_zeros(n, N)
         weights = bessel2(n, t) / bessel1(n + 1, t)  # Equation (1.2)
         t *= h / np.pi  # Equivalent of xi variable
@@ -215,18 +221,18 @@ def hankel_transform_ogata(f, n=0, h=0.01, N=1000):
     return out
 
 
-def ht_baddour_chouinard(function, order, r_max, nb_points, mode="Y"):
+def ht_baddour_chouinard(function, order, rmax, nb_points, mode="Y"):
     n = order
     bessel1_zeros = bessel1_zeros(n, nb_points)
     jk, jN = bessel1_zeros[:-1], bessel1_zeros[-1]
-    r = jk * (r_max / jN)
-    k = jk / r_max
+    r = jk * (rmax / jN)
+    k = jk / rmax
 
     if mode == "Y":  # for space limited function
         H = bessel1(n, np.outer(jk / jN, jk)) / np.square(bessel1(n + 1, jk))
         H *= 2 / jN
         ht_k = H.dot(function(r))
-        ht_k *= r_max ** 2 / jN
+        ht_k *= rmax ** 2 / jN
         return k, ht_k
 
     elif mode == "T":  # for band limited function
@@ -235,5 +241,5 @@ def ht_baddour_chouinard(function, order, r_max, nb_points, mode="Y"):
         H /= np.outer(Jn1, Jn1)
         H *= 2 / jN
         ht_k = H.dot(function(r) / Jn1)
-        ht_k *= r_max ** 2 / jN
+        ht_k *= rmax ** 2 / jN
         return k, ht_k
