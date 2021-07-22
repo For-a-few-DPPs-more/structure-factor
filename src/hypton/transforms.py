@@ -15,6 +15,7 @@ class RadiallySymmetricFourierTransform:
         assert dimension % 2 == 0
         self.d = dimension
         self._hankel_transform_methods = ("Ogata", "BaddourChouinard")
+        self.rmax = None
 
     def transform(self, f, k, method="Ogata", **params):
         d = self.d

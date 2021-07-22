@@ -38,6 +38,7 @@ class StructureFactor:
         assert point_pattern.dimension == 2
         self.point_pattern = point_pattern
         self.intensity = point_pattern.intensity
+        self.norm_k_min = None
 
     @property
     def dimension(self):
@@ -269,8 +270,8 @@ class StructureFactor:
             raise ValueError(
                 "norm_k is not optional while using method='Ogata'. Please provide a vector norm_k in the input. "
             )
-        params.setdefault("r_max", None)
-        if method == "BaddourChouinard" and params["r_max"] is None:
+        params.setdefault("rmax", None)
+        if method == "BaddourChouinard" and params["rmax"] is None:
             raise ValueError(
                 "rmax is not optional while using method='BaddourChouinard'. Please provide rmax in the input. "
             )

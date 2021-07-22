@@ -12,10 +12,11 @@ class EffectiveHyperuniform:
     def __init__(self, norm_k, sf):
         self.norm_k = norm_k
         self.sf = sf
+        self.fitted_line = None
 
     def bin_data(self, **params):
         # ! what is the purpose of this method ?
-        return _binning_function(self.norm_k, self.sf, **params)
+        return _binning_function(self.norm_k.ravel(), self.sf.ravel(), **params)
 
     def index_H(self, norm_k, sf, i_max=None):
         i = len(norm_k) if i_max is None else i_max
