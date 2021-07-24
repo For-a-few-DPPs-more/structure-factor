@@ -133,6 +133,7 @@ class StructureFactor:
         exact_sf=None,
         error_bar=False,
         file_name="",
+        window_res=None,
         **binning_params
     ):
         if plot_type == "plot":
@@ -150,6 +151,7 @@ class StructureFactor:
                 exact_sf,
                 error_bar,
                 file_name,
+                window_res,
                 **binning_params
             )
         else:

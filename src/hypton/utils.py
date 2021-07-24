@@ -161,11 +161,12 @@ def plot_si_all(
     exact_sf=None,
     error_bar=False,
     file_name="",
+    window_res=None,
     **binning_params
 ):
     figure, axes = plt.subplots(1, 3, figsize=(24, 6))
 
-    point_pattern.plot(axis=axes[0])
+    point_pattern.plot(axis=axes[0], window_res=window_res)
     plot_si_showcase(
         norm_k,
         si,
