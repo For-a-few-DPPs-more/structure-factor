@@ -29,6 +29,5 @@ class EffectiveHyperuniform:
         S_0 = fitting_param[-1]
         thresh = 1
         S_first_peak = max(thresh, sf[np.argmax(sf > thresh)])
-        print(S_first_peak)
         self.fitted_line = lambda x: fitting_param[0] * x + S_0
         return S_0 / S_first_peak
