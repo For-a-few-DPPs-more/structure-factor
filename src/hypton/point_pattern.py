@@ -54,9 +54,13 @@ class PointPattern(object):
             params["window"] = window.convert_to_spatstat_owin()
         return spatstat.geom.ppp(x, y, **params)
 
-    def plot(self, axis=None):
+    def plot(self, axis=None, window_res=None):
+        points = self.points
         if axis is None:
             _, axis = plt.subplots(figsize=(5, 5))
-        axis.plot(self.points[:, 0], self.points[:, 1], "k,")
+        if window_res is not None:
+            reticted_pp = self.restrict_to_window(window=window_res)
+            points = reticted_pp.points
+        axis.plot(points[:, 0], points[:, 1], "k,")
         axis.set_aspect("equal", "box")
         return axis
