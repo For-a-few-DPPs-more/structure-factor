@@ -48,6 +48,7 @@ def compute_scattering_intensity(k, data):
 
 #! touver un nom
 def _binning_function(x, y, **params):
+    # todo docstring
     df = pd.DataFrame({"x": x, "y": y})
     df = df.groupby("x").mean()
     x_unique, y_mean = df.index.to_numpy(), df["y"].to_numpy()
