@@ -96,6 +96,7 @@ def plot_si_showcase(
     **binning_params
 ):
     # ? why .ravel()?
+    # ravel is needed in plot_summary and for all the labels
     norm_k = norm_k.ravel()
     si = si.ravel()
     if axis is None:
