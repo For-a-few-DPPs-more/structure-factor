@@ -76,7 +76,7 @@ def plot_summary(x, y, axis, label="Mean", **binning_params):
     return axis
 
 
-def plot_exact(x, y, axis, label="Exact sf"):
+def plot_exact(x, y, axis, label):
     axis.loglog(x, y(x), "g", label=label)
     return axis
 
@@ -104,16 +104,22 @@ def plot_si_showcase(
 
     axis.loglog(norm_k, np.ones_like(norm_k), "k--", label="Theo")
     plot_approximation(
-        norm_k, si, axis=axis, label="si(||k||)", color="grey", linestyle="", marker=","
+        norm_k,
+        si,
+        axis=axis,
+        label="$\mathsf{S}(\mathbf{k})$",
+        color="grey",
+        linestyle="",
+        marker=",",
     )
     if exact_sf is not None:
-        plot_exact(norm_k, exact_sf, axis=axis)
+        plot_exact(norm_k, exact_sf, axis=axis, label="Exact sf")
     if error_bar:
         plot_summary(norm_k, si, axis=axis, **binning_params)
 
     axis.title.set_text("loglog plot")
-    axis.set_xlabel("Wave length")
-    axis.set_ylabel("Scattering intensity")
+    axis.set_xlabel("Wave length ($||\mathbf{k}||$)")
+    axis.set_ylabel("Scattering intensity ($\mathsf{S}(\mathbf{k})$)")
     axis.legend()
 
     if file_name:
@@ -188,12 +194,12 @@ def plot_pcf(pcf_dataframe, exact_pcf, file_name, **kwargs):
         axis.plot(
             pcf_dataframe["r"],
             exact_pcf(pcf_dataframe["r"]),
-            "r",
             label="exact pcf",
         )
+
     axis.legend()
     axis.set_xlabel("r")
-    axis.set_ylabel("pcf")
+    axis.set_ylabel("Pair correlation function $g(r)$")
 
     if file_name:
         fig = axis.get_figure()
@@ -207,12 +213,20 @@ def plot_sf_hankel_quadrature(
     if axis is None:
         fig, axis = plt.subplots(figsize=(8, 5))
 
-    plot_approximation(norm_k, sf, axis=axis, label="approx sf", c="k.")
+    plot_approximation(
+        norm_k,
+        sf,
+        axis=axis,
+        label="$\mathcal{S}(k)$",
+        marker=".",
+        linestyle="",
+        color="grey",
+    )
     if exact_sf is not None:
-        plot_exact(norm_k, exact_sf, axis=axis, label="exact sf")
+        plot_exact(norm_k, exact_sf, axis=axis, label="Exact sf")
     if error_bar:
         plot_summary(norm_k, sf, axis=axis, **binning_params)
-    axis.plot(norm_k, np.ones_like(norm_k), "r--", label="Theo")
+    axis.plot(norm_k, np.ones_like(norm_k), "k--", label="Theo")
     if k_min is not None:
         sf_interpolate = interpolate.interp1d(
             norm_k, sf, axis=0, fill_value="extrapolate", kind="cubic"
@@ -224,8 +238,8 @@ def plot_sf_hankel_quadrature(
             label="k_min",
         )
     axis.legend()
-    axis.set_xlabel("wave length")
-    axis.set_ylabel("sf")
+    axis.set_xlabel("wave length k")
+    axis.set_ylabel("Aprroximated structure factor $\mathcal{S}(k)$")
     axis.title.set_text("loglog plot")
 
     if file_name:
