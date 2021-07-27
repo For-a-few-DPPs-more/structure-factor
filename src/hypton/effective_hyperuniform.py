@@ -1,5 +1,5 @@
 import numpy as np
-
+from scipy.signal import find_peaks
 from hypton.utils import (
     _binning_function,
 )
@@ -29,6 +29,10 @@ class EffectiveHyperuniform:
         fitting_param = np.polyfit(norm_k[:i], sf[:i], deg=1)
         S_0 = fitting_param[-1]
         thresh = 1
-        S_first_peak = max(thresh, sf[np.argmax(sf > thresh)])
+        peak, _ = find_peaks(sf, height=1)
+        if list(peak):
+            S_first_peak = max(peak[0], 1)
+        else:
+            S_first_peak = 1
         self.fitted_line = lambda x: fitting_param[0] * x + S_0
         return S_0 / S_first_peak
