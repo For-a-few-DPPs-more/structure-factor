@@ -49,16 +49,10 @@ def compute_scattering_intensity(k, data):
 #! touver un nom
 def _binning_function(x, y, **params):
     # todo docstring
-    df = pd.DataFrame({"x": x, "y": y})
-    df = df.groupby("x").mean()
-    x_unique, y_mean = df.index.to_numpy(), df["y"].to_numpy()
-
-    bin_mean, bin_edges, _ = stats.binned_statistic(
-        x_unique, y_mean, statistic="mean", **params
-    )
-    bin_std, bin_edges, _ = stats.binned_statistic(
-        x_unique, y_mean, statistic="std", **params
-    )
+    bin_mean, bin_edges, _ = stats.binned_statistic(x, y, statistic="mean", **params)
+    bin_std, _, _ = stats.binned_statistic(x, y, statistic="std", **params)
+    count, _, _ = stats.binned_statistic(x, y, statistic="count", **params)
+    bin_std = bin_std / np.sqrt(count)
     bin_centers = bin_edges[:-1] + np.diff(bin_edges) / 2
 
     return bin_centers, bin_mean, bin_std
@@ -87,7 +81,7 @@ def plot_exact(x, y, axis, label="Exact sf"):
     return axis
 
 
-def plot_approximation(x, y, label="si(k)", axis=None, c="k,"):
+def plot_approximation(x, y, label="si(||k||)", axis=None, c="k,"):
     axis.loglog(x, y, c, label=label)
     return axis
 
