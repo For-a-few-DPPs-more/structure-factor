@@ -81,8 +81,8 @@ def plot_exact(x, y, axis, label="Exact sf"):
     return axis
 
 
-def plot_approximation(x, y, label="si(||k||)", axis=None, c="k,"):
-    axis.loglog(x, y, c, label=label)
+def plot_approximation(x, y, label, axis, color, linestyle, marker):
+    axis.loglog(x, y, color=color, linestyle=linestyle, marker=marker, label=label)
     return axis
 
 
@@ -102,8 +102,10 @@ def plot_si_showcase(
     if axis is None:
         _, axis = plt.subplots(figsize=(8, 6))
 
-    axis.loglog(norm_k, np.ones_like(norm_k), "r--", label="Theo")
-    plot_approximation(norm_k, si, axis=axis)
+    axis.loglog(norm_k, np.ones_like(norm_k), "k--", label="Theo")
+    plot_approximation(
+        norm_k, si, axis=axis, label="si(||k||)", color="grey", linestyle="", marker=","
+    )
     if exact_sf is not None:
         plot_exact(norm_k, exact_sf, axis=axis)
     if error_bar:
