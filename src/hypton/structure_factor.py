@@ -46,7 +46,8 @@ class StructureFactor:
 
     def compute_sf_scattering_intensity(
         self,
-        max_k,
+        k_vector=None,
+        max_k=None,
         meshgrid_size=None,
         max_add_k=1,
     ):
@@ -75,6 +76,7 @@ class StructureFactor:
                 where, ``n_vector`` is a vector of integer from 1 into max_n, and ``L`` is the length side of the cubic window that contains ``points``. see # todo put the link of our paper
 
         Args:
+            k_vector (list): list containing x and y of the k vector
             L (int): side length of the cubic window that contains ``points``.
 
             max_k (int): maximum norm of ``k_vector``. The user can't chose the ``k_vector`` (defined above) since there's only a specific allowed values of ``k_vector`` used in the estimation of the structure factor by the scattering intensity, but the user can  specify in ``max_k`` the maximum norm of ``k_vector``.
@@ -92,35 +94,20 @@ class StructureFactor:
         L = np.abs(
             point_pattern.window.bounds[0, 0] - point_pattern.window.bounds[1, 0]
         )
-        max_n = np.floor(max_k * L / (2 * np.pi))  # maximum of ``k_vector``
-        if meshgrid_size is None:  # Add extra allowed values near zero
-            n_vector = np.linspace(1, max_n, int(max_n))
-            k_vector = 2 * np.pi * np.column_stack((n_vector, n_vector)) / L
-
-            max_add_n = np.floor(max_add_k * L / (2 * np.pi))
-            add_n_vector = np.linspace(1, np.int(max_add_n), np.int(max_add_n))
-            X, Y = np.meshgrid(add_n_vector, add_n_vector)
-            add_k_vector = 2 * np.pi * np.column_stack((X.ravel(), Y.ravel())) / L
-            print(add_k_vector.shape)
-            print(k_vector.shape)
-            k_vector = np.concatenate((add_k_vector, k_vector))
-            print(k_vector.shape)
+        if k_vector is None:
+            k_vector = utils.allowed_values(
+                L=L, max_k=max_k, meshgrid_size=meshgrid_size, max_add_k=max_add_k
+            )
         else:
-            step_size = int((2 * max_n + 1) / meshgrid_size)
-            if meshgrid_size > (2 * max_n + 1):
-                step_size = 1
-                # todo raise warning : meshgrid_size should be less than the total allowed number of points
-            n_vector = np.arange(-max_n, max_n, step_size)
-            n_vector = n_vector[n_vector != 0]
-            X, Y = np.meshgrid(n_vector, n_vector)
-            k_vector = 2 * np.pi * np.column_stack((X.ravel(), Y.ravel())) / L
-
+            shape_x_k_vector = k_vector[0].shape
+            k_vector = np.column_stack((k_vector[0].ravel(), k_vector[1].ravel()))
         si = utils.compute_scattering_intensity(k_vector, self.point_pattern.points)
         norm_k_vector = np.linalg.norm(k_vector, axis=1)
 
-        if meshgrid_size is not None:
-            norm_k_vector = norm_k_vector.reshape(X.shape)
-            si = si.reshape(X.shape)
+        if meshgrid_size is not None or len(shape_x_k_vector) == 2:
+            shape_mesh = int(np.sqrt(norm_k_vector.shape[0]))
+            norm_k_vector = norm_k_vector.reshape(shape_mesh, shape_mesh)
+            si = si.reshape(shape_mesh, shape_mesh)
 
         return norm_k_vector, si
 
