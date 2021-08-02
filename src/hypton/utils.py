@@ -38,6 +38,30 @@ def bessel2(order, x):
     return yv(order, x)
 
 
+def allowed_values(L, max_k, meshgrid_size, max_add_k):
+    max_n = np.floor(max_k * L / (2 * np.pi))  # maximum of ``k_vector``
+    if meshgrid_size is None:  # Add extra allowed values near zero
+        n_vector = np.linspace(1, max_n, int(max_n))
+        k_vector = 2 * np.pi * np.column_stack((n_vector, n_vector)) / L
+
+        max_add_n = np.floor(max_add_k * L / (2 * np.pi))
+        add_n_vector = np.linspace(1, np.int(max_add_n), np.int(max_add_n))
+        X, Y = np.meshgrid(add_n_vector, add_n_vector)
+        add_k_vector = 2 * np.pi * np.column_stack((X.ravel(), Y.ravel())) / L
+        k_vector = np.concatenate((add_k_vector, k_vector))
+
+    else:
+        step_size = int((2 * max_n + 1) / meshgrid_size)
+        if meshgrid_size > (2 * max_n + 1):
+            step_size = 1
+            # todo raise warning : meshgrid_size should be less than the total allowed number of points
+        n_vector = np.arange(-max_n, max_n, step_size)
+        n_vector = n_vector[n_vector != 0]
+        X, Y = np.meshgrid(n_vector, n_vector)
+        k_vector = 2 * np.pi * np.column_stack((X.ravel(), Y.ravel())) / L
+    return k_vector
+
+
 def compute_scattering_intensity(k, data):
     X = data
     n = X.shape[0]
@@ -77,7 +101,7 @@ def plot_summary(x, y, axis, label="Mean", **binning_params):
 
 
 def plot_exact(x, y, axis, label):
-    axis.loglog(x, y(x), "g", label=label)
+    axis.loglog(x, y(x), "g.", label=label)
     return axis
 
 
