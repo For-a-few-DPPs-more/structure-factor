@@ -144,7 +144,7 @@ def plot_si_showcase(
     axis.title.set_text("loglog plot")
     axis.set_xlabel("Wave length ($||\mathbf{k}||$)")
     axis.set_ylabel("Scattering intensity ($\mathsf{S}(\mathbf{k})$)")
-    axis.legend()
+    axis.legend(loc=4)
 
     if file_name:
         fig = axis.get_figure()
