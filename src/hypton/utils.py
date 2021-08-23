@@ -5,7 +5,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.special import j0, j1, jv, jn_zeros, y0, y1, yv
 from scipy import interpolate, stats
-import pandas as pd
+
+# import pandas as pd
+import warnings
 
 
 def cleaning_data(data):
@@ -43,7 +45,6 @@ def allowed_values(L, max_k, meshgrid_size, max_add_k):
     if meshgrid_size is None:  # Add extra allowed values near zero
         n_vector = np.linspace(1, max_n, int(max_n))
         k_vector = 2 * np.pi * np.column_stack((n_vector, n_vector)) / L
-
         max_add_n = np.floor(max_add_k * L / (2 * np.pi))
         add_n_vector = np.linspace(1, np.int(max_add_n), np.int(max_add_n))
         X, Y = np.meshgrid(add_n_vector, add_n_vector)
@@ -52,9 +53,13 @@ def allowed_values(L, max_k, meshgrid_size, max_add_k):
 
     else:
         step_size = int((2 * max_n + 1) / meshgrid_size)
+
         if meshgrid_size > (2 * max_n + 1):
             step_size = 1
-            # todo raise warning : meshgrid_size should be less than the total allowed number of points
+            warnings.warn(
+                message="meshgrid_size should be less than the total allowed number of points.",
+                category=DeprecationWarning,
+            )
         n_vector = np.arange(-max_n, max_n, step_size)
         n_vector = n_vector[n_vector != 0]
         X, Y = np.meshgrid(n_vector, n_vector)
@@ -77,6 +82,7 @@ def _binning_function(x, y, **params):
     bin_std, _, _ = stats.binned_statistic(x, y, statistic="std", **params)
     count, _, _ = stats.binned_statistic(x, y, statistic="count", **params)
     bin_std = bin_std / np.sqrt(count)
+    # bin_var = bin_std ** 2
     bin_centers = bin_edges[:-1] + np.diff(bin_edges) / 2
 
     return bin_centers, bin_mean, bin_std

@@ -51,8 +51,6 @@ class StructureFactor:
         meshgrid_size=None,
         max_add_k=1,
     ):
-
-        # todo replace the link below to the link of our future paper.
         # todo ajouter la possibilité d'entré  plusieur echantillion
         # todo utuliser l'intensité et le volume au lieu de N dans la formule i.e. remplacer N pas intensité*volume de la fenetre
         r"""Compute the ensemble estimator of the scattering intensity described in http://www.scoste.fr/survey_hyperuniformity.pdf.(equation 4.5).
@@ -90,18 +88,19 @@ class StructureFactor:
             :math:`\left\lVert |\mathbf{k}| \right\rVert, SI(\mathbf{k})`, the norm of ``k_vector`` represented by ``norm_k_vector`` and the estimation of the scattering intensity ``si`` evaluated at ``k_vector``.
         """
         point_pattern = self.point_pattern
-        assert isinstance(point_pattern.window, BoxWindow)
-        L = np.abs(
-            point_pattern.window.bounds[0, 0] - point_pattern.window.bounds[1, 0]
-        )
         if k_vector is None:
+            assert isinstance(point_pattern.window, BoxWindow)
+            L = np.abs(
+                point_pattern.window.bounds[0, 0] - point_pattern.window.bounds[1, 0]
+            )
             k_vector = utils.allowed_values(
                 L=L, max_k=max_k, meshgrid_size=meshgrid_size, max_add_k=max_add_k
             )
+
         else:
             shape_x_k_vector = k_vector[0].shape
             k_vector = np.column_stack((k_vector[0].ravel(), k_vector[1].ravel()))
-        si = utils.compute_scattering_intensity(k_vector, self.point_pattern.points)
+        si = utils.compute_scattering_intensity(k_vector, point_pattern.points)
         norm_k_vector = np.linalg.norm(k_vector, axis=1)
 
         if meshgrid_size is not None or len(shape_x_k_vector) == 2:
