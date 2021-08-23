@@ -41,7 +41,6 @@ class EffectiveHyperuniform:
             )
         std_intercept = np.sqrt(np.diag(fitting_cov))[0]
         S_0 = fitting_params[0]
-        print(fitting_params[1])
         self.fitted_line = lambda x: fitting_params[1] * x + S_0
         thresh = 1
         i_peak, _ = find_peaks(sf, height=thresh)
