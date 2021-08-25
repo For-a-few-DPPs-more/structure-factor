@@ -82,7 +82,6 @@ def _binning_function(x, y, **params):
     bin_std, _, _ = stats.binned_statistic(x, y, statistic="std", **params)
     count, _, _ = stats.binned_statistic(x, y, statistic="count", **params)
     bin_std = bin_std / np.sqrt(count)
-    # bin_var = bin_std ** 2
     bin_centers = bin_edges[:-1] + np.diff(bin_edges) / 2
 
     return bin_centers, bin_mean, bin_std
@@ -94,7 +93,7 @@ def plot_summary(x, y, axis, label="Mean", **binning_params):
     axis.errorbar(
         bin_centers,
         bin_mean,
-        yerr=bin_std,
+        yerr=3 * bin_std,  # 3 times the standard deviation
         fmt="b",
         elinewidth=2,
         ecolor="r",
