@@ -1,8 +1,7 @@
 Transforms
 ##########
 
-.. code-block:: python
-
-    from numpy import random
-
-.. autoclass:: hypton.transforms.RadiallySymmetricFourierTransform
+.. automodule:: hypton.transforms
+    :members:
+    :inherited-members:
+    :show-inheritance:
