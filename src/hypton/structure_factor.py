@@ -51,18 +51,20 @@ class StructureFactor:
         meshgrid_size=None,
         max_add_k=1,
     ):
-        r"""Compute the ensemble estimator of the scattering intensity described in `equation 4.5 <https://scoste.fr/assets/survey_hyperuniformity.pdf>`_.
+        r"""Compute the scattering intensity which is an ensemble estimator of the structure factor of an ergodic stationary point process :math:`\mathcal{X} \subset \mathbb{R}^2`, defined by
 
                 .. math::
 
-                    SI(k) =
+                    SI(\mathbf{k}) =
                     \left\lvert
                         \sum_{x \in \mathcal{X}}
-                            \exp(- i \left\langle k, x \right\rangle)
+                            \exp(- i \left\langle \mathbf{k}, \mathbf{x} \right\rangle)
                     \right\rvert^2
 
+        where :math:`\mathbf{k} \in \mathbb{R}^2` is a wave vector.
+
         This estimation converges to the structure factor in the thermodynamic limits.
-        the scattering intensity can be evaluated on any vector (np.array or meshgrid) of waves by precising the argument k_vector. Nevertheless, the estimation of the structure factor by the scattering intensity is valid for point process sampled in a cubic window (or restricted to a box window via the method restrict_to_window of the class :py:class:`.PointPattern` for more details see paper...) and on a specific vector of allowed values of waves corresponding to the dual of the lattice having as fundamental cell the sample of points. In other words, if the points are simulated in a cubic window :math:`W` of side length
+        The scattering intensity can be evaluated on any vector (np.array or meshgrid) of waves by precising the argument k_vector. Nevertheless, the estimation of the structure factor by the scattering intensity is valid for point process sampled in a cubic window (or restricted to a box window via the method restrict_to_window of the class :py:class:`.PointPattern` for more details see paper...) and on a specific vector of allowed values of waves corresponding to the dual of the lattice having as fundamental cell the sample of points. In other words, if the points are simulated in a cubic window :math:`W` of side length
         :math:`L`, then the vector of allowed is
 
                 .. math::
@@ -76,11 +78,11 @@ class StructureFactor:
 
             k_vector (list): list containing the 2 numpy.ndarray corresponding to the x and y components of the wave vector. As we mentioned before it recommended to keep the default k_vector and to specify max_k instead, so that the approximation will be evaluated on a list of allowed values. Defaults to None.
 
-            max_k (float, optional): The maximum component of the allowed wave vector. Defaults to None.
+            max_k (float, optional): Maximum component of the allowed wave vector. Defaults to None.
 
-            meshgrid_size (int, optional): the size of the meshgrid of allowed values if ``k_vector`` is set to None and ``max_k`` is specified. Warning: setting big value in ``meshgrid_size`` could be time consuming and harmful to your machine for large sample of points. Defaults to None.
+            meshgrid_size (int, optional): Size of the meshgrid of allowed values if ``k_vector`` is set to None and ``max_k`` is specified. Warning: setting big value in ``meshgrid_size`` could be time consuming and harmful to your machine for large sample of points. Defaults to None.
 
-            max_add_k (int, optional): it is the maximum component of the allowed wave vectors to be add. In other words, in the case of the evaluation on a vector of allowed values (without specifying ``meshgrid_size``),  ``max_add_k`` can be used to add allowed values in a certain region for better precision. Warning: setting big value in ``max_add_k`` could be time consuming and harmful to your machine for large sample of points. if Defaults to 1.
+            max_add_k (int, optional): Maximum component of the allowed wave vectors to be add. In other words, in the case of the evaluation on a vector of allowed values (without specifying ``meshgrid_size``),  ``max_add_k`` can be used to add allowed values in a certain region for better precision. Warning: setting big value in ``max_add_k`` could be time consuming and harmful to your machine for large sample of points. Defaults to 1.
 
         Returns:
             norm_k_vector (numpy.ndarray): The vector of wave length (i.e. the vector of norms of the wave vectors) on which the scattering intensity is evaluated.
