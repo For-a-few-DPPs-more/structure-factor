@@ -10,8 +10,14 @@ Welcome to structure-factor's documentation:
    :maxdepth: 2
    :caption: Contents:
 
+   effective_hyperuniform
+   point_pattern
+   spatial_windows
+   spatstat_interface
    structure_factor
    transforms
+   utils
+
 
 
 Indices and tables

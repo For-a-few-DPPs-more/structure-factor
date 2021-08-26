@@ -1,5 +1,5 @@
 Point pattern
-################
+##############
 
 .. automodule:: hypton.point_pattern
     :members:

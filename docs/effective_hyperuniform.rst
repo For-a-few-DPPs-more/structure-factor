@@ -1,5 +1,5 @@
 Effective hyperuniform
-################
+#######################
 
 .. automodule:: hypton.effective_hyperuniform
     :members:
