@@ -62,7 +62,7 @@ class StructureFactor:
                     \right\rvert^2
 
         This estimation converges to the structure factor in the thermodynamic limits.
-        the scattering intensity can be evaluated on any vector (np.array or meshgrid) of waves by precising the argument k_vector. Nevertheless, the estimation of the structure factor by the scattering intensity is valid for point process sampled in a cubic window (or restricted to a box window via the method restrict_to_window of the class :py:class:`PointPattern` for more details see paper...) and on a specific vector of allowed values of waves corresponding to the dual of the lattice having as fundamental cell the sample of points. In other words, if the points are simulated in a cubic window :math:`W` of side length
+        the scattering intensity can be evaluated on any vector (np.array or meshgrid) of waves by precising the argument k_vector. Nevertheless, the estimation of the structure factor by the scattering intensity is valid for point process sampled in a cubic window (or restricted to a box window via the method restrict_to_window of the class :py:class:`.PointPattern` for more details see paper...) and on a specific vector of allowed values of waves corresponding to the dual of the lattice having as fundamental cell the sample of points. In other words, if the points are simulated in a cubic window :math:`W` of side length
         :math:`L`, then the vector of allowed is
 
                 .. math::
@@ -143,7 +143,7 @@ class StructureFactor:
 
             file_name (str, optional): name used to save the figure. The available output formats depend on the backend being used. Defaults to "".
 
-            window_res (spatial_window, optional): Object of the class spatial_window. This could be used when the sample of points is large, so for time and visualization purpose it's better to restrict the plot of the sample of points to a smaller window.  Defaults to None.
+            window_res (spatial_window, optional): Object of the class :py:class:`.spatial_window`. This could be used when the sample of points is large, so for time and visualization purpose it's better to restrict the plot of the sample of points to a smaller window.  Defaults to None.
         """
 
         if plot_type == "plot":
@@ -274,8 +274,8 @@ class StructureFactor:
             norm_k (numpy.1darray, optional): vector of wave lengths (i.e. norm of waves) where the structure factor is to be evaluated. Defaults to None.
 
             method (str, optional): "Ogata" or "BaddourChouinard". Select the method to compute the `Radially Symmetric Fourier transform <https://en.wikipedia.org/wiki/Hankel_transform#Fourier_transform_in_d_dimensions_(radially_symmetric_case)>`_ of :math:`g` as a Hankel transform
-                :py:class:`HankelTransFormOgata`,
-                :py:class:`HankelTransFormBaddourChouinard`.
+                :py:class:`.HankelTransFormOgata`,
+                :py:class:`.HankelTransFormBaddourChouinard`.
             Defaults to "Ogata".
 
             params: parameters passed to the corresponding approximation of the Hankel transform specified by the argument ``method``
@@ -302,11 +302,11 @@ class StructureFactor:
 
                         \mathcal{F}_{s}(f)(k)= 2\pi \mathcal{H}_{0}(g)(k)
 
-                :py:class:`RadiallySymmetricFourierTransform`
+                :py:class:`.RadiallySymmetricFourierTransform`
 
             .. note::
 
-                Typical usage: ``pcf`` is estimated using :py:meth:`StructureFactor.compute_pcf` and then interpolated using :py:meth:`StructureFactor.interpolate_pair_correlation_function`.
+                Typical usage: ``pcf`` is estimated using :py:meth:`StructureFactor.compute_pcf` and then interpolated using :py:meth:`StructureFactor.interpolate_pcf`.
 
         """
         assert callable(pcf)
