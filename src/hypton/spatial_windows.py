@@ -12,6 +12,16 @@ from hypton.spatstat_interface import SpatstatInterface
 
 
 class AbstractSpatialWindow(metaclass=ABCMeta):
+    """Create Box and Ball windows
+
+    .. note::
+
+        Typical usage:
+
+        The class :py:class:`~.point_pattern.PointPattern` take a window argument of type ``AbstractSpatialWindow``, and the object of type ``PointPattern`` are used by the class :py:class:`~.structure_factor.StructureFactor`.
+
+    """
+
     @property
     @abstractmethod
     def dimension(self):
@@ -28,6 +38,7 @@ class AbstractSpatialWindow(metaclass=ABCMeta):
 
         Args:
             points (np.ndarray): Points to be tested.
+
         """
 
     @abstractmethod
@@ -41,12 +52,22 @@ class AbstractSpatialWindow(metaclass=ABCMeta):
         Returns:
             points (np.ndarray):
             If :math:`n=1`, :math:`d` dimensional vector
+
             If :math:`n>1`, :math:`n \times d` array containing the points
+
         """
 
 
 class BallWindow(AbstractSpatialWindow):
+    """Create a :math:`d` dimensional boll window."""
+
     def __init__(self, center, radius=1.0):
+        """
+        Args:
+            center (numpy.ndarray): center of the ball.
+            radius (float, optional): radius of the ball. Defaults to 1.0.
+
+        """
         center = np.array(center)
         if not center.ndim == 1:
             raise ValueError("center must be 1D np.ndarray")
@@ -92,16 +113,21 @@ class BallWindow(AbstractSpatialWindow):
 
 
 class UnitBallWindow(BallWindow):
+    r"""Create a ``d`` dimensional unit ball window .
+    Default unit ball is of center :math:`\mathbf{O}` and radius 1.
+    """
+
     def __init__(self, center):
         super().__init__(center, radius=1.0)
 
 
 class BoxWindow(AbstractSpatialWindow):
-    def __init__(self, bounds):
-        """Create a :math:`d` dimensional box window :math:`\prod_{i=1}^{d} [a_i, b_i]` from ``bounds[:, i]`` :math:`=[a_i, b_i]`.
+    """Create a :math:`d` dimensional box window :math:`\prod_{i=1}^{d} [a_i, b_i]` from ``bounds[:, i]`` :math:`=[a_i, b_i]`."""
 
-        :param bounds: 2 x d array describing the bounds of the box columnwise
-        :type bounds: np.ndarray
+    def __init__(self, bounds):
+        """
+        Args:
+            bounds (numpy.ndarray): 2 x d array describing the bounds of the box columnwise
         """
         if bounds.ndim != 2:
             raise ValueError("bounds must be 2d np.ndarray")
@@ -130,7 +156,11 @@ class BoxWindow(AbstractSpatialWindow):
         return rng.uniform(*self.bounds, size=(n, self.dimension))
 
     def convert_to_spatstat_owin(self, **params):
-        # https://rdocumentation.org/packages/spatstat.geom/versions/2.2-0/topics/owin
+        """Convert to R window of type `owin <https://www.rdocumentation.org/packages/spatstat/versions/1.64-1/topics/owin>`_ used by the package `spatstat <https://rdocumentation.org/packages/spatstat.geom/versions/2.2-0/topics/owin>`_
+
+        Returns:
+            Window of type owin.
+        """
         assert self.dimension == 2
         spatstat = SpatstatInterface(update=False)
         spatstat.import_package("geom", update=False)
@@ -140,14 +170,16 @@ class BoxWindow(AbstractSpatialWindow):
 
 
 class UnitBoxWindow(BoxWindow):
-    def __init__(self, d, center=None):
-        """Create a ``d`` dimensional unit box window :math:`\prod_{i=1}^{d} [c_i - \\frac{1}{2}, c_i + \\frac{1}{2}]` where :math:`c_i=` ``center[i]``.
-        Default unit box is :math:`[0, 1]^d` (when ``center=None``).
+    """Create a ``d`` dimensional unit box window :math:`\prod_{i=1}^{d} [c_i - \\frac{1}{2}, c_i + \\frac{1}{2}]` where :math:`c_i=` ``center[i]``.
+    Default unit box is :math:`[0, 1]^d` (when ``center=None``).
+    """
 
-        :param d: dimension of the box
-        :type d: int
-        :param center: center of the box, defaults to None.
-        :type center: np.ndarray, optional
+    def __init__(self, d, center=None):
+        """
+        Args:
+            d (int): dimension of the box
+            center (numpy.ndarray,, optional): center of the box. Defaults to None.
+
         """
         if center is None:
             center = np.full(d, 0.5)
