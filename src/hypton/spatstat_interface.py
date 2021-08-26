@@ -12,7 +12,19 @@ def install_r_package(*names, update=True):
 
 
 class SpatstatInterface:
-    """See also https://github.com/spatstat/spatstat"""
+    """Interface between Python and the package `spatstat <https://cran.r-project.org/web/packages/spatstat/index.html#:~:text=spatstat%3A%20Spatial%20Point%20Pattern%20Analysis,for%20analysing%20Spatial%20Point%20Patterns.&text=Contains%20over%202000%20functions%20for,model%20diagnostics%2C%20and%20formal%20inference>`_ of the program language R.
+
+    .. warning::
+            Before using this class you should have on your local machine the program language R (for installation `see <https://cran.r-project.org/>`_). Nevertheless is not required to have any knowledge of this program language. A hidden interface will be built between your Python and spatstat of R.
+
+    .. note::
+
+        Typical usage:
+
+        Use the package `spatstat <https://cran.r-project.org/web/packages/spatstat/index.html#:~:text=spatstat%3A%20Spatial%20Point%20Pattern%20Analysis,for%20analysing%20Spatial%20Point%20Patterns.&text=Contains%20over%202000%20functions%20for,model%20diagnostics%2C%20and%20formal%20inference>`_ of R in Python without further knowledge of R program language's.
+
+    .. seealso::
+            https://github.com/spatstat/spatstat"""
 
     SUBPACKAGES = ("core", "data", "geom", "linnet", "sparse", "spatstat", "utils")
     EXTENSIONS = ("gui", "Knet", "local", "sphere")
