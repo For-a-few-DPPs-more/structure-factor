@@ -18,7 +18,9 @@ class EffectiveHyperuniform:
 
     .. note::
 
-                Typical usage: the structure factor is estimated using one of the method provided by the class :py:class:`.StructureFactor`, this estimations are average over bins using :py:meth:`bin_data`.
+                Typical usage:
+
+                Estimating the structure factor of a point process by one of the method of the class :py:class:`~.structure_factor.StructureFactor`, then testing the effective hyperuniformity using :py:meth:`~EffectiveHyperuniform.index_H`.
 
     """
 
