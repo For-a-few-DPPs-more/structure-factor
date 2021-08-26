@@ -11,6 +11,7 @@ import warnings
 
 
 def cleaning_data(data):
+    """cleaning data from nan, posinf and neginf"""
     data_clean = np.nan_to_num(data, nan=0, posinf=0, neginf=0)
     return data_clean
 
@@ -21,6 +22,7 @@ def get_random_number_generator(seed):
 
 
 def bessel1(order, x):
+    """Firt kind bessel function"""
     if order == 0:
         return j0(x)
     if order == 1:
@@ -29,10 +31,12 @@ def bessel1(order, x):
 
 
 def bessel1_zeros(order, nb_zeros):
+    """Zeros of the first kind bessel function"""
     return jn_zeros(order, nb_zeros)
 
 
 def bessel2(order, x):
+    """Second kind bessel function"""
     if order == 0:
         return y0(x)
     if order == 1:
@@ -41,6 +45,24 @@ def bessel2(order, x):
 
 
 def allowed_values(L, max_k, meshgrid_size, max_add_k):
+    r"""Allowed wave vectors for estimating the structure factor by the scattering intensity of a realization of a point process in a cubic window :math:`W` of side length :math:`L`.
+    The vof allowed waves are
+
+     .. math::
+             \{\frac{2 \pi}{L} \mathbf{n}, \, \text{for} \; \mathbf{n} \in (\mathbb{Z}^d)^\ast \}
+
+    Args:
+        L (float): size of the window side.
+
+        max_k (float): Maximum component of the allowed wave vector.
+
+        meshgrid_size (float): Size of the meshgrid of allowed values if ``k_vector`` is set to None and ``max_k`` is specified. Warning: setting big value in ``meshgrid_size`` could be time consuming and harmful to your machine for large sample of points.
+
+        max_add_k (float): Maximum component of the allowed wave vectors to be add. In other words, in the case of the evaluation on a vector of allowed values (without specifying ``meshgrid_size``),  ``max_add_k`` can be used to add allowed values in a certain region for better precision. Warning: setting big value in ``max_add_k`` could be time consuming and harmful to your machine for large sample of points. Defaults to 1.
+
+    Returns:
+        vector of allowed values.
+    """
     max_n = np.floor(max_k * L / (2 * np.pi))  # maximum of ``k_vector``
     if meshgrid_size is None:  # Add extra allowed values near zero
         n_vector = np.linspace(1, max_n, int(max_n))
@@ -68,6 +90,19 @@ def allowed_values(L, max_k, meshgrid_size, max_add_k):
 
 
 def compute_scattering_intensity(k, data):
+    r"""Compute the scattering intensity which is an ensemble estimator of the structure factor of an ergodic stationary point process :math:`\mathcal{X} \subset \mathbb{R}^2`, defined by
+
+    .. math::
+            SI(\mathbf{k}) =\left \lvert \sum_{x \in \mathcal{X}} \exp(- i \left\langle \mathbf{k}, \mathbf{x} \right\rangle) \right\rvert^2
+
+    where :math:`\mathbf{k} \in \mathbb{R}^2` is a wave vector.
+    Args:
+        k (numpy.2darray): vector of wave vectors.
+        data (numpy.2darray): points of the point process.
+
+    Returns:
+        vector of evaluation of the scattering intensity on ``k``.
+    """
     X = data
     n = X.shape[0]
     si = np.square(np.abs(np.sum(np.exp(-1j * np.dot(k, X.T)), axis=1)))
@@ -77,7 +112,19 @@ def compute_scattering_intensity(k, data):
 
 #! touver un nom
 def _binning_function(x, y, **params):
-    # todo docstring
+    """Divide ``x`` into bins and evaluate the mean and the standard deviation of the corresponding element of ``y`` over the each bin.
+
+    Args:
+        x (numpy.1darray): vector of data.
+
+        y (numpy.1darray): vector of data associated to the vector ``x``.
+
+    Returns:
+        bin_centers: vector of centers of the bins associated to ``x``.
+        bin_mean: vector of means of ``y``over the bins.
+        std_mean: vector of standard deviation of ``y``over the bins.
+    """
+
     bin_mean, bin_edges, _ = stats.binned_statistic(x, y, statistic="mean", **params)
     bin_std, _, _ = stats.binned_statistic(x, y, statistic="std", **params)
     count, _, _ = stats.binned_statistic(x, y, statistic="count", **params)
@@ -88,6 +135,7 @@ def _binning_function(x, y, **params):
 
 
 def plot_summary(x, y, axis, label="Mean", **binning_params):
+    r"""Plot means and errors bars (3 \times standard deviation)."""
     bin_centers, bin_mean, bin_std = _binning_function(x, y, **binning_params)
     axis.loglog(bin_centers, bin_mean, "b.", label=label)
     axis.errorbar(
@@ -106,11 +154,13 @@ def plot_summary(x, y, axis, label="Mean", **binning_params):
 
 
 def plot_exact(x, y, axis, label):
+    """Plot a callable function evaluated on a vector"""
     axis.loglog(x, y(x), "g.", label=label)
     return axis
 
 
 def plot_approximation(x, y, label, axis, color, linestyle, marker):
+    """Plot a x and y"""
     axis.loglog(x, y, color=color, linestyle=linestyle, marker=marker, label=label)
     return axis
 
@@ -124,6 +174,7 @@ def plot_si_showcase(
     file_name="",
     **binning_params
 ):
+    """Plot result of scattering intensity with means and error bar over bins."""
     # ? why .ravel()?
     # ravel is needed in plot_summary and for all the labels
     norm_k = norm_k.ravel()
@@ -158,6 +209,7 @@ def plot_si_showcase(
 
 
 def plot_si_imshow(norm_k, si, axis, file_name):
+    """Color level plot, centered on zero."""
     if len(norm_k.shape) < 2:
         raise ValueError(
             "the scattering intensity should be evaluated on a meshgrid or choose plot_type = 'plot'. "
@@ -197,6 +249,7 @@ def plot_si_all(
     window_res=None,
     **binning_params
 ):
+    """3 Subplots: point pattern, associated scattering intensity plot, associated scattering intensity color level"""
     figure, axes = plt.subplots(1, 3, figsize=(24, 6))
 
     point_pattern.plot(axis=axes[0], window_res=window_res)
@@ -218,6 +271,7 @@ def plot_si_all(
 
 
 def plot_pcf(pcf_dataframe, exact_pcf, file_name, **kwargs):
+    """Plot DataFrame result"""
     axis = pcf_dataframe.plot.line(x="r", **kwargs)
     if exact_pcf is not None:
         axis.plot(
@@ -239,6 +293,7 @@ def plot_pcf(pcf_dataframe, exact_pcf, file_name, **kwargs):
 def plot_sf_hankel_quadrature(
     norm_k, sf, axis, k_min, exact_sf, error_bar, file_name, **binning_params
 ):
+    """Plot approximation of structure factor using :py:meth:`~.structure_factor.compute_sf_hankel_quadrature` with means and error bars over bins."""
     if axis is None:
         fig, axis = plt.subplots(figsize=(8, 5))
 
