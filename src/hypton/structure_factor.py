@@ -135,7 +135,7 @@ class StructureFactor:
 
             plot_type (str, optional): ("plot", "imshow", "all"). Precision of the type of the plot we want to visualize. If "plot" is used then the output is a loglog plot. If "imshow" is used then the output is a color level plot. if "all" is used the the results are 3 subplots: the point pattern (or a restriction to a specific window if ``window_res`` is set), the loglog plots, and the color level plot. Note that you can not use the option "imshow" or "all", if ``norm_k``is not a meshgrid. Defaults to "plot".
 
-            axes ([axe, optional): the support axis of the plots. Defaults to None.
+            axes ([axis, optional): the support axis of the plots. Defaults to None.
 
             exact_sf (function, optional): a callable function representing the theoretical structure factor of the point process. Defaults to None.
 
@@ -304,7 +304,7 @@ class StructureFactor:
 
                 :py:class:`.RadiallySymmetricFourierTransform`
 
-            .. note::
+        .. note::
 
                 Typical usage: ``pcf`` is estimated using :py:meth:`StructureFactor.compute_pcf` and then interpolated using :py:meth:`StructureFactor.interpolate_pcf`.
 
@@ -348,7 +348,7 @@ class StructureFactor:
             norm_k (numpy.1darray): vector of wave lengths (i.e. norms of waves) on which the structure factor is approximated.
             sf ([type]): [description]
 
-            axis (axe, optional): the support axis of the plots. Defaults to None.
+            axis (axis, optional): the support axis of the plots. Defaults to None.
 
             norm_k_min (float, optional): estimation of an upper bounds for the allowed wave lengths. Defaults to None.
 
