@@ -328,7 +328,7 @@ class StructureFactor:
             params.setdefault("step_size", 0.1)
             step_size = params["step_size"]
             self.norm_k_min = (2.7 * np.pi) / (params["rmax"] * step_size)
-            sf = 1.0 + self.intensity * ft_k
+        sf = 1.0 + self.intensity * ft_k
         return norm_k, sf
 
     def plot_sf_hankel_quadrature(

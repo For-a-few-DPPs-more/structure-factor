@@ -143,7 +143,7 @@ def plot_summary(x, y, axis, label="Mean", **binning_params):
         bin_mean,
         yerr=3 * bin_std,  # 3 times the standard deviation
         fmt="b",
-        elinewidth=2,
+        lw=1,
         ecolor="r",
         capsize=3,
         capthick=1,

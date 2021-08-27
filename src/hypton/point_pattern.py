@@ -87,11 +87,12 @@ class PointPattern(object):
         Returns:
             plot of ``PointPattern.points`` (in the restricted window window_res if specified).
         """
-        assert isinstance(window_res, AbstractSpatialWindow)
+
         points = self.points
         if axis is None:
             _, axis = plt.subplots(figsize=(5, 5))
         if window_res is not None:
+            assert isinstance(window_res, AbstractSpatialWindow)
             res_pp = self.restrict_to_window(window=window_res)
             points = res_pp.points
         axis.plot(points[:, 0], points[:, 1], "k,")

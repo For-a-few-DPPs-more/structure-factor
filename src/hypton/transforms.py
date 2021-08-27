@@ -8,7 +8,7 @@ from hypton.utils import bessel1, bessel2, bessel1_zeros
 
 
 class RadiallySymmetricFourierTransform:
-    """Compute the Fourier transform of a radially symmetric function  using the `correspondance with the Hankel transform <https://en.wikipedia.org/wiki/Hankel_transform#Fourier_transform_in_d_dimensions_(radially_symmetric_case)>`_"""
+    """Compute the Fourier transform of a radially symmetric function  using the correspondance with the `Hankel transform <https://en.wikipedia.org/wiki/Hankel_transform#Fourier_transform_in_d_dimensions_(radially_symmetric_case)>`_"""
 
     def __init__(self, dimension=0):
         assert isinstance(dimension, int)
