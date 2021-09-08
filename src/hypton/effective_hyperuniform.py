@@ -1,10 +1,8 @@
 import numpy as np
-from scipy.linalg.misc import norm
+from scipy.optimize import curve_fit
 from scipy.signal import find_peaks
-from hypton.utils import (
-    _binning_function,
-)
-import scipy.optimize as optimization
+
+from hypton.utils import _binning_function
 
 
 class EffectiveHyperuniform:
@@ -13,8 +11,11 @@ class EffectiveHyperuniform:
     .. math::
         H = \frac{\hat{S}(\mathbf{0})}{S(\mathbf{k}_{peak})},
 
-    where :math:`S` is the structure factor of :math:`\mathcal{X}`, :math:`\hat{S}(\mathbf{0})` is a linear extrapolation of the structure factor to :math:`\mathbf{k}=\mathbf{0}` and :math:`\mathbf{k}_{peak}` is the location of the first dominant peak value of the structure factor.
-    :math:`\mathcal{X}` is sad to be effectively hyperuniform if :math:`H \leq 10^{-3}`.
+    :math:`\mathcal{X}` is said to be effectively hyperuniform if :math:`H \leq 10^{-3}`.
+
+    - :math:`S` is the structure factor of :math:`\mathcal{X}`,
+    - :math:`\hat{S}(\mathbf{0})` is a linear extrapolation of the structure factor to :math:`\mathbf{k}=\mathbf{0}`
+    - :math:`\mathbf{k}_{peak}` is the location of the first dominant peak value of the structure factor.
 
     .. note::
 
@@ -23,16 +24,16 @@ class EffectiveHyperuniform:
         Estimating the structure factor of a point process by one of the method of the class :py:class:`~.structure_factor.StructureFactor`, then testing the effective hyperuniformity using :py:meth:`~EffectiveHyperuniform.index_H`.
 
     """
-
+    # ? How about EffectiveHyperuniformity instead of EffectiveHyperuniform.
+    # ? The later qualifies a class of point processes while former characterizes a property of a point process
     # ! Can't it be reduced to simple function calls to _binning_function and index_H?
 
     def __init__(self, norm_k, sf):
         """
-
         Args:
-            norm_k (numpy.ndarray): vector of wave lengths (i.e. norms of the waves) on which the structure factor is provided.
+            norm_k (numpy.ndarray): vector of wave lengths (i.e. norms of the waves).
 
-            sf (numpy.ndarray): vector of the scattering intensity associated to ``norm_k``.
+            sf (numpy.ndarray): Evalutation of the structure factor at ``norm_k``.
         """
         self.norm_k = norm_k
         self.sf = sf
@@ -63,8 +64,8 @@ class EffectiveHyperuniform:
 
         .. important::
 
-             To find the numerator :math:`\hat{S}(\mathbf{0})` of the index math:`H`, we fit a line using a linear regression with least square fit of the approximated structure factor associated to the values in ``norm_k`` less than ``nom_k_{stop}`` (which must be chosen before the stabilization of the structure factor around 1).
-             If the standard deviation of the approximated vector of structure factor ``sf`` is provided via the argument ``std`` then they will be considered while fitting the line.
+            To compute the numerator :math:`\hat{S}(\mathbf{0})` of the index :math:`H`, we fit a line using a linear regression with least square fit of the approximated structure factor associated to the values in ``norm_k`` less than ``nom_k_stop`` (which must be chosen before the stabilization of the structure factor around 1).
+            If the standard deviation of the approximated vector of structure factor ``sf`` is provided via the argument ``std`` then they will be considered while fitted the line.
 
 
         Args:
@@ -80,31 +81,32 @@ class EffectiveHyperuniform:
             the index :math:`H` and the standard deviations of numerator of :math:`H`.
         """
 
+        i = len(norm_k)
         if norm_k_stop is not None:
-            norm_k_list = list(norm_k.ravel())
-            index = min(
-                range(len(norm_k_list)), key=lambda i: abs(norm_k_list[i] - norm_k_stop)
-            )  # index of the closest value to k_stop in norm_k
-        i = len(norm_k) if norm_k_stop is None else index
-        poly = lambda x, a, b: a + b * x
-        if std is not None:
-            fitting_params, fitting_cov = optimization.curve_fit(
-                f=poly, xdata=norm_k[:i], ydata=sf[:i], sigma=std[:i]
-            )
-        else:
-            fitting_params, fitting_cov = optimization.curve_fit(
-                f=poly, xdata=norm_k[:i], ydata=sf[:i]
-            )
-        std_intercept = np.sqrt(np.diag(fitting_cov))[0]
-        S_0 = fitting_params[0]
-        self.fitted_line = lambda x: fitting_params[1] * x + S_0
-        thresh = 1
-        i_peak, _ = find_peaks(sf, height=thresh)
+            # index of the closest value to k_stop in norm_k
+            i = np.argmin(np.abs(norm_k.ravel() - norm_k_stop))
 
-        if list(i_peak):
-            self.i_first_peak = max(i_peak[0], 1)
+        # Fit line
+        line = lambda x, a, b: a + b * x
+
+        xdata = norm_k[:i]
+        ydata = sf[:i]
+        sigma = std[:i] if std is not None else None
+
+        (intercept, slope), cov = curve_fit(
+            f=line, xdata=xdata, ydata=ydata, sigma=sigma
+        )
+        # self.fitted_line = lambda x: line(x, intercept, slope)
+        self.fitted_line = lambda x: intercept + slope * x
+
+        # Find first peak in structure factor (sf)
+        S0 = intercept
+        S0_std = np.sqrt(cov[0, 0])
+
+        S_first_peak = 1
+        idx_peaks, _ = find_peaks(sf, height=S_first_peak)
+        if idx_peaks.size:
+            self.i_first_peak = max(idx_peaks[0], 1)
             S_first_peak = sf[self.i_first_peak]
-        else:
-            S_first_peak = 1
 
-        return S_0 / S_first_peak, std_intercept
+        return S0 / S_first_peak, S0_std
