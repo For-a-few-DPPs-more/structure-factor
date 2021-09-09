@@ -7,8 +7,8 @@ import numpy as np
 import scipy as sp
 from rpy2 import robjects
 
-from hypton.utils import get_random_number_generator
 from hypton.spatstat_interface import SpatstatInterface
+from hypton.utils import get_random_number_generator
 
 
 class AbstractSpatialWindow(metaclass=ABCMeta):
@@ -18,8 +18,12 @@ class AbstractSpatialWindow(metaclass=ABCMeta):
 
         Typical usage:
 
-        The class :py:class:`~.point_pattern.PointPattern` take a window argument of type ``AbstractSpatialWindow``, and the object of type ``PointPattern`` are used by the class :py:class:`~.structure_factor.StructureFactor`.
+        :py:class:`~.point_pattern.PointPattern` has a window argument/attribute.
 
+    .. seealso::
+
+        - :py:class:`BallWindow`, :py:class:`UnitBallWindow`
+        - :py:class:`BoxWindow`, :py:class:`UnitBoxWindow`
     """
 
     @property
@@ -34,7 +38,7 @@ class AbstractSpatialWindow(metaclass=ABCMeta):
 
     @abstractmethod
     def indicator_function(self, points):
-        """Indicator function returning a boolean or boolean array indicating which points lie in the corresponding :py:class:`AbstractSpatialWindow.
+        """Indicator function returning a boolean or boolean array indicating which points lie in the corresponding :py:class:`AbstractSpatialWindow`.
 
         Args:
             points (np.ndarray): Points to be tested.
@@ -59,7 +63,7 @@ class AbstractSpatialWindow(metaclass=ABCMeta):
 
 
 class BallWindow(AbstractSpatialWindow):
-    """Create a :math:`d` dimensional boll window."""
+    """Create a :math:`d` dimensional ball window."""
 
     def __init__(self, center, radius=1.0):
         """
@@ -104,7 +108,16 @@ class BallWindow(AbstractSpatialWindow):
         return self.center + self.radius * points[:, :d]
 
     def convert_to_spatstat_owin(self, **params):
-        # https://rdocumentation.org/packages/spatstat.geom/versions/2.2-0/topics/disc
+        """Convert the object to a ``spatstat.geom.disc`` R object of type ``disc``, which is a subtype of ``owin``.
+        ``params`` corresponds to optional keyword arguments passed to ``spatstat.geom.disc``.
+
+        .. seealso::
+
+            https://rdocumentation.org/packages/spatstat.geom/versions/2.2-0/topics/disc
+
+        Returns:
+            spatstat.geom.disc(radius=r, centre=c, **params): ``spatstat.geom.disc`` R object.
+        """
         spatstat = SpatstatInterface(update=False)
         spatstat.import_package("geom", update=False)
         r = self.radius
@@ -113,8 +126,8 @@ class BallWindow(AbstractSpatialWindow):
 
 
 class UnitBallWindow(BallWindow):
-    r"""Create a ``d`` dimensional unit ball window .
-    Default unit ball is of center :math:`\mathbf{O}` and radius 1.
+    r"""Create a :math:`d` dimensional unit ball window.
+    ``UnitBallWindow(center) = BallWindow(center, radius=1.0)``
     """
 
     def __init__(self, center):
@@ -156,10 +169,15 @@ class BoxWindow(AbstractSpatialWindow):
         return rng.uniform(*self.bounds, size=(n, self.dimension))
 
     def convert_to_spatstat_owin(self, **params):
-        """Convert to R window of type `owin <https://www.rdocumentation.org/packages/spatstat/versions/1.64-1/topics/owin>`_ used by the package `spatstat <https://rdocumentation.org/packages/spatstat.geom/versions/2.2-0/topics/owin>`_
+        """Convert the object to a ``spatstat.geom.owin`` R object of type  ``owin``.
+        ``params`` corresponds to optional keyword arguments passed to ``spatstat.geom.owin``.
+
+        .. seealso::
+
+            https://rdocumentation.org/packages/spatstat.geom/versions/2.2-0/topics/owin
 
         Returns:
-            Window of type owin.
+            spatstat.geom.owin(xrange=x, yrange=y, **params): ``spatstat.geom.owin`` R object.
         """
         assert self.dimension == 2
         spatstat = SpatstatInterface(update=False)
@@ -170,7 +188,7 @@ class BoxWindow(AbstractSpatialWindow):
 
 
 class UnitBoxWindow(BoxWindow):
-    """Create a ``d`` dimensional unit box window :math:`\prod_{i=1}^{d} [c_i - \\frac{1}{2}, c_i + \\frac{1}{2}]` where :math:`c_i=` ``center[i]``.
+    """Create a :math:`d` dimensional unit box window :math:`\prod_{i=1}^{d} [c_i - \\frac{1}{2}, c_i + \\frac{1}{2}]` where :math:`c_i=` ``center[i]``.
     Default unit box is :math:`[0, 1]^d` (when ``center=None``).
     """
 
@@ -178,7 +196,7 @@ class UnitBoxWindow(BoxWindow):
         """
         Args:
             d (int): dimension of the box
-            center (numpy.ndarray,, optional): center of the box. Defaults to None.
+            center (numpy.ndarray, optional): center of the box. Defaults to None, i.e., the output window is :math:`[0, 1]^d`.
 
         """
         if center is None:
