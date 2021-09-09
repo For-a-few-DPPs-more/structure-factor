@@ -1,8 +1,8 @@
-from rpy2 import robjects
 import matplotlib.pyplot as plt
+from rpy2 import robjects
 
-from hypton.spatstat_interface import SpatstatInterface
 from hypton.spatial_windows import AbstractSpatialWindow
+from hypton.spatstat_interface import SpatstatInterface
 
 
 class PointPattern(object):
@@ -60,11 +60,11 @@ class PointPattern(object):
         return PointPattern(points, window, self.intensity)
 
     def convert_to_spatstat_ppp(self, **params):
-        """Convert Python :py:class:`PointPattern` object to ``spatstat`` point pattern R object, using ``spatstat.geom.ppp``.
-        This method converts the first two dimensions of the ``PointPattern.points`` into a ``spatstat.geom.ppp`` object.
+        """Convert the object attributes :py:attr:`.points` and :py:attr:`.window` into a point pattern `spatstat.geom.ppp`` R object.
+        ``params`` corresponds to optional keyword arguments passed to ``spatstat.geom.ppp``.
 
         Returns:
-            ``spatstat.geom.ppp`` point pattern
+            Point pattern R object of type ``spatstat.geom.ppp``.
         """
 
         spatstat = SpatstatInterface(update=False)
@@ -87,14 +87,16 @@ class PointPattern(object):
         Returns:
             plot of ``PointPattern.points`` (in the restricted window window_res if specified).
         """
-
-        points = self.points
         if axis is None:
             _, axis = plt.subplots(figsize=(5, 5))
-        if window_res is not None:
+
+        if window_res is None:
+            points = self.points
+        else:
             assert isinstance(window_res, AbstractSpatialWindow)
             res_pp = self.restrict_to_window(window=window_res)
             points = res_pp.points
+
         axis.plot(points[:, 0], points[:, 1], "k,")
         axis.set_aspect("equal", "box")
         return axis

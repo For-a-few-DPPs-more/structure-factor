@@ -9,11 +9,10 @@ from scipy import interpolate, stats
 # import pandas as pd
 import warnings
 
-
-def cleaning_data(data):
-    """cleaning data from nan, posinf and neginf"""
-    data_clean = np.nan_to_num(data, nan=0, posinf=0, neginf=0)
-    return data_clean
+# todo consider a more specific name like set_nan_inf_to_zero
+def cleaning_data(array, nan=0, posinf=0, neginf=0):
+    """Set nan, posinf and neginf to 0"""
+    return np.nan_to_num(array, nan=nan, posinf=posinf, neginf=neginf)
 
 
 def get_random_number_generator(seed):
@@ -22,7 +21,7 @@ def get_random_number_generator(seed):
 
 
 def bessel1(order, x):
-    """Firt kind bessel function"""
+    """`First kind bessel function <https://en.wikipedia.org/wiki/Bessel_function>`_"""
     if order == 0:
         return j0(x)
     if order == 1:
@@ -31,12 +30,12 @@ def bessel1(order, x):
 
 
 def bessel1_zeros(order, nb_zeros):
-    """Zeros of the first kind bessel function"""
+    """Zeros of the first kind bessel function <https://en.wikipedia.org/wiki/Bessel_function>`_"""
     return jn_zeros(order, nb_zeros)
 
 
 def bessel2(order, x):
-    """Second kind bessel function"""
+    """`Second kind bessel function <https://en.wikipedia.org/wiki/Bessel_function>`_"""
     if order == 0:
         return y0(x)
     if order == 1:
@@ -45,23 +44,30 @@ def bessel2(order, x):
 
 
 def allowed_values(L, max_k, meshgrid_size, max_add_k):
-    r"""Allowed wave vectors for estimating the structure factor by the scattering intensity of a realization of a point process in a cubic window :math:`W` of side length :math:`L`.
-    The vof allowed waves are
+    r"""Given a realization of a point process in a cubic window with length :math:`L`, compute the 'allowed' wave vectors :math:`(k_i)` at which the structure factor :math:`S(k_i)` is consistently estimated by the scattering intensity
 
-     .. math::
-             \{\frac{2 \pi}{L} \mathbf{n}, \, \text{for} \; \mathbf{n} \in (\mathbb{Z}^d)^\ast \}
+    .. math::
+
+        \{\frac{2 \pi}{L} \mathbf{n} \; \mathbf{n} \in (\mathbb{Z}^d)^\ast, \left\lVert \mathbf{n} \right\rVert \leq \text{ max\_k}\}
+
+    # todo add bibliographic reference
 
     Args:
-        L (float): size of the window side.
+        L (float): Length of the cubic window.
 
-        max_k (float): Maximum component of the allowed wave vector.
+        max_k (float): Maximum norm of the wave vectors.
 
-        meshgrid_size (float): Size of the meshgrid of allowed values if ``k_vector`` is set to None and ``max_k`` is specified. Warning: setting big value in ``meshgrid_size`` could be time consuming and harmful to your machine for large sample of points.
+        # todo give clearer description of meshgrid_size
+        meshgrid_size (float): Size of the meshgrid of allowed values if ``k_vector`` is set to None and ``max_k`` is specified.
+        Warning: setting big value in ``meshgrid_size`` could be time consuming when the sample has a lot of points.
 
-        max_add_k (float): Maximum component of the allowed wave vectors to be add. In other words, in the case of the evaluation on a vector of allowed values (without specifying ``meshgrid_size``),  ``max_add_k`` can be used to add allowed values in a certain region for better precision. Warning: setting big value in ``max_add_k`` could be time consuming and harmful to your machine for large sample of points. Defaults to 1.
+        # todo give clearer description of max_add_k
+        max_add_k (float): Maximum component of the allowed wave vectors to be added.
+        In other words, in the case of the evaluation on a vector of allowed values (without specifying ``meshgrid_size``),  ``max_add_k`` can be used to add allowed values in a certain region for better precision.
+        Warning: setting big value in ``max_add_k`` could be time consuming when the sample has a lot of points. Defaults to 1.
 
     Returns:
-        vector of allowed values.
+        array of 'allowed' wave vectors :math:`N \times d`
     """
     max_n = np.floor(max_k * L / (2 * np.pi))  # maximum of ``k_vector``
     if meshgrid_size is None:  # Add extra allowed values near zero
@@ -82,41 +88,48 @@ def allowed_values(L, max_k, meshgrid_size, max_add_k):
                 message="meshgrid_size should be less than the total allowed number of points.",
                 category=DeprecationWarning,
             )
+
         n_vector = np.arange(-max_n, max_n, step_size)
         n_vector = n_vector[n_vector != 0]
         X, Y = np.meshgrid(n_vector, n_vector)
         k_vector = 2 * np.pi * np.column_stack((X.ravel(), Y.ravel())) / L
+
     return k_vector
 
 
-def compute_scattering_intensity(k, data):
+def compute_scattering_intensity(k, points):
     r"""Compute the scattering intensity which is an ensemble estimator of the structure factor of an ergodic stationary point process :math:`\mathcal{X} \subset \mathbb{R}^2`, defined by
 
     .. math::
-            SI(\mathbf{k}) =\left \lvert \sum_{x \in \mathcal{X}} \exp(- i \left\langle \mathbf{k}, \mathbf{x} \right\rangle) \right\rvert^2
+        SI(\mathbf{k}) = \left \lvert \sum_{x \in \mathcal{X}} \exp(- i \left\langle \mathbf{k}, \mathbf{x} \right\rangle) \right\rvert^2
 
     where :math:`\mathbf{k} \in \mathbb{R}^2` is a wave vector.
+
     Args:
-        k (numpy.2darray): vector of wave vectors.
-        data (numpy.2darray): points of the point process.
+        k (numpy.ndarray): array of size :math:`N_1 \times 2` containing :math:`N_1` two dimensional wave vectors.
+        points (numpy.ndarray): array of size :math:`N_2 \times 2` containing the :math:`N_2` points of a realization of the point process :math:`\mathcal{X}`.
 
     Returns:
-        vector of evaluation of the scattering intensity on ``k``.
+        Vector of evaluation of the scattering intensity on ``k``.
+
+    .. seealso::
+
+        `Wikipedia structure factor/scattering intensity <https://en.wikipedia.org/wiki/Structure_factor>`_.
     """
-    X = data
+    X = points
     n = X.shape[0]
     si = np.square(np.abs(np.sum(np.exp(-1j * np.dot(k, X.T)), axis=1)))
     si /= n
     return si
 
 
-#! touver un nom
+# todo Consider a more specific name
 def _binning_function(x, y, **params):
     """Divide ``x`` into bins and evaluate the mean and the standard deviation of the corresponding element of ``y`` over the each bin.
+    This function calls `scipy.stats.binned_statistic` with keyword arguments (except `statistic`) provided by ``params``.
 
     Args:
         x (numpy.1darray): vector of data.
-
         y (numpy.1darray): vector of data associated to the vector ``x``.
 
     Returns:
@@ -134,8 +147,9 @@ def _binning_function(x, y, **params):
     return bin_centers, bin_mean, bin_std
 
 
+# todo clearer description of the function (loglog etc)
 def plot_summary(x, y, axis, label="Mean", **binning_params):
-    r"""Plot means and errors bars (3 \times standard deviation)."""
+    r"""Plot means and errors bars (3 standard deviations)."""
     bin_centers, bin_mean, bin_std = _binning_function(x, y, **binning_params)
     axis.loglog(bin_centers, bin_mean, "b.", label=label)
     axis.errorbar(
@@ -153,18 +167,21 @@ def plot_summary(x, y, axis, label="Mean", **binning_params):
     return axis
 
 
+# todo clearer description of the function (loglog etc)
 def plot_exact(x, y, axis, label):
     """Plot a callable function evaluated on a vector"""
     axis.loglog(x, y(x), "g.", label=label)
     return axis
 
 
+# todo clearer description of the function (loglog etc)
 def plot_approximation(x, y, label, axis, color, linestyle, marker):
     """Plot a x and y"""
     axis.loglog(x, y, color=color, linestyle=linestyle, marker=marker, label=label)
     return axis
 
 
+# todo clearer description of the function (loglog etc)
 def plot_si_showcase(
     norm_k,
     si,
@@ -323,7 +340,7 @@ def plot_sf_hankel_quadrature(
         )
     axis.legend()
     axis.set_xlabel("wave length k")
-    axis.set_ylabel("Aprroximated structure factor $\mathcal{S}(k)$")
+    axis.set_ylabel("Approximated structure factor $\mathcal{S}(k)$")
     axis.title.set_text("loglog plot")
 
     if file_name:
