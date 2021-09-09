@@ -1,6 +1,3 @@
-#!/usr/bin/env python3
-# coding=utf-8
-
 from hypton.spatial_windows import AbstractSpatialWindow, UnitBoxWindow
 from hypton.utils import get_random_number_generator
 
@@ -19,7 +16,14 @@ class HomogeneousPoissonPointProcess(object):
         self.intensity = intensity
 
     def generate_sample(self, window=UnitBoxWindow(2), random_state=None):
-        """Generate an exact sample from the corresponding :py:class:`HomogeneousPoissonPointProcess` restricted to `window`."""
+        r"""Generate an exact sample from the corresponding :py:class:`HomogeneousPoissonPointProcess` restricted to the :math:`d` dimensional `window`.
+
+        Args:
+            window (AbstractSpatialWindow, optional):. Defaults to ``UnitBoxWindow(2)`` :math:`[0,1]^2`.
+
+        Returns:
+            points: numpy.ndarray of size :math:`n \times d`, where :math:`n` is the number of points forming the sample.
+        """
         if not isinstance(window, AbstractSpatialWindow):
             raise TypeError("window argument must be an AbstractSpatialWindow")
 
