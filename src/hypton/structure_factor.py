@@ -1,38 +1,34 @@
 import numpy as np
-import scipy.interpolate as interpolate
 import pandas as pd
 import rpy2.robjects as robjects
+import scipy.interpolate as interpolate
 
 import hypton.utils as utils
 from hypton.point_pattern import PointPattern
-from hypton.transforms import RadiallySymmetricFourierTransform
 from hypton.spatial_windows import BoxWindow
-
 from hypton.spatstat_interface import SpatstatInterface
+from hypton.transforms import RadiallySymmetricFourierTransform
 
 
 class StructureFactor:
-    r"""Implementation of various estimators of the structure factor :math:`S` of a 2 dimensional stationary ergodic point process :math:`\mathcal{X}` of intensity :math:`\rho`, defined as
+    r"""Implementation of various estimators of the `structure factor <https://en.wikipedia.org/wiki/Structure_factor>`_ :math:`S` of a 2 dimensional stationary ergodic point process :math:`\mathcal{X}` with intensity :math:`\rho`, defined as
 
     .. math::
 
         S(\mathbf{k}) = 1 + \rho \mathcal{F}(g-1)(\mathbf{k}),
 
-    where :math:`\mathcal{F}` denotes the Fourier transform, :math:`g` the pair correlation function corresponds to :math:`\mathcal{X}` # add link
-    and :math:`\mathbf{k}` is a wave in :math:`\mathbb{R}^2`.
-    We denote by wave length :math:`k` the Euclidean norm of the wave :math:`\mathbf{k}`.
+    where :math:`\mathcal{F}` denotes the Fourier transform, :math:`g` the pair correlation function corresponds to :math:`\mathcal{X}`, :math:`\mathbf{k} \in \mathbb{R}^2` is a wave vector and we denote the wave length :math:`k = \| \mathbf{k} \|_2`.
 
     .. seealso::
 
-        `page 8 <http://chemlabs.princeton.edu/torquato/wp-content/uploads/sites/12/2018/06/paper-401.pdf>`_
+        `Page 8 of Torquato's paper <http://chemlabs.princeton.edu/torquato/wp-content/uploads/sites/12/2018/06/paper-401.pdf>`_
     """
     # ! Mettre un warning que scattering_intensity marche seulement dans les cubic windows, pcf pour dimension 2 et 3 seulement, hankel pour isotropic en dimension 2, en dimension 3 faire un MC pour approximer l'integral
 
     def __init__(self, point_pattern):
         r"""
-
         Args:
-            point_pattern (object): Object of type point pattern which contains a simulation of a point process (point_pattern.points), the window containing the simulated points (point_pattern.window), and the intensity of the point process (point_pattern.intensity)
+            point_pattern (:py:class:`~hypton.point_pattern.PointPattern`): Object of type point pattern which contains a realization ``point_pattern.points`` of a point process, the window where the points were simulated ``point_pattern.points`` and (optionally) the ``point_pattern.intensity`` of the point process.
         """
         assert isinstance(point_pattern, PointPattern)
         assert point_pattern.dimension == 2
@@ -42,6 +38,7 @@ class StructureFactor:
 
     @property
     def dimension(self):
+        """Ambient dimension of the underlying point process."""
         return self.point_pattern.dimension
 
     def compute_sf_scattering_intensity(
@@ -53,24 +50,25 @@ class StructureFactor:
     ):
         r"""Compute the scattering intensity which is an ensemble estimator of the structure factor of an ergodic stationary point process :math:`\mathcal{X} \subset \mathbb{R}^2`, defined by
 
-                .. math::
+        .. math::
 
-                    SI(\mathbf{k}) =
-                    \left\lvert
-                        \sum_{x \in \mathcal{X}}
-                            \exp(- i \left\langle \mathbf{k}, \mathbf{x} \right\rangle)
-                    \right\rvert^2
+            SI(\mathbf{k}) =
+            \left\lvert
+                \sum_{x \in \mathcal{X}}
+                    \exp(- i \left\langle \mathbf{k}, \mathbf{x} \right\rangle)
+            \right\rvert^2
 
         where :math:`\mathbf{k} \in \mathbb{R}^2` is a wave vector.
 
-        This estimation converges to the structure factor in the thermodynamic limits.
-        The scattering intensity can be evaluated on any vector (np.array or meshgrid) of waves by precising the argument k_vector. Nevertheless, the estimation of the structure factor by the scattering intensity is valid for point process sampled in a cubic window (or restricted to a box window via the method restrict_to_window of the class :py:class:`.PointPattern` for more details see paper...) and on a specific vector of allowed values of waves corresponding to the dual of the lattice having as fundamental cell the sample of points. In other words, if the points are simulated in a cubic window :math:`W` of side length
-        :math:`L`, then the vector of allowed is
+        The scattering intensity converges to the structure factor in the thermodynamic limits.
+        The scattering intensity can be evaluated on any vector (np.array or meshgrid) of waves by precising the argument k_vector.
+        Nevertheless, the estimation of the structure factor by the scattering intensity is valid for point process sampled in a cubic window (or restricted to a box window via the method restrict_to_window of the class :py:class:`~hypton.point_pattern.PointPattern` for more details see paper...) and on a specific vector of allowed values of waves corresponding to the dual of the lattice having as fundamental cell the sample of points.
+        In other words, if the points are simulated in a cubic window of length :math:`L`, then the vector of allowed is
 
-                .. math::
-                    \{
-                    \frac{2 \pi}{L} \mathbf{n},\,
-                    \text{for} \; \mathbf{n} \in (\mathbb{Z}^d)^\ast \}
+        .. math::
+            \{
+            \frac{2 \pi}{L} \mathbf{n},\,
+            \text{for} \; \mathbf{n} \in (\mathbb{Z}^d)^\ast \}
 
         So it's recommended to not specify the vector of wave ``k_vector``, but to either specify a meshgrid size and the maximum component of the wave vector respectively via ``meshgrid_size`` and ``max_k`` if you need to evaluate the scattering intensity on a meshgrid of allowed values (see example of ...) or just the maximum component of the wave vector ``max_k`` if you need to evaluate the scattering intensity on a vector of allowed values. see :py:meth:`utils.allowed_values`.
 
@@ -87,9 +85,6 @@ class StructureFactor:
         Returns:
             norm_k_vector (numpy.ndarray): The vector of wave length (i.e. the vector of norms of the wave vectors) on which the scattering intensity is evaluated.
             si (numpy.ndarray): The evaluation of the scattering intensity corresponding to the vector of wave length ``norm_k_vector``.
-
-
-
         """
         # todo ajouter la possibilité d'entré  plusieur echantillion
         # todo utuliser l'intensité et le volume au lieu de N dans la formule i.e. remplacer N pas intensité*volume de la fenetre
@@ -129,23 +124,25 @@ class StructureFactor:
         **binning_params
     ):
         """Plot the result of the method :py:meth:`compute_sf_scattering_intensity`.
-        You can add the theoretical structure factor using ``exact_sf`` and visualize the mean and the variance over bins of the scattering intensity by specifying ``error_bar=True`` (this is donne using a binning method :py:meth:`utils._binning_function`). The figure could be saved by specifying ``file_name``.
+        You can add the theoretical structure factor using ``exact_sf`` and visualize the mean and the variance over bins of the scattering intensity by specifying ``error_bar=True`` (this is donne using a binning method :py:meth:`utils._binning_function`).
+        The figure could be saved by specifying ``file_name``.
 
         Args:
             norm_k (numpy.ndarray): vactor of wave length.
+
             si (numpy.ndarray): vector of scattering intensity.
 
             plot_type (str, optional): ("plot", "imshow", "all"). Precision of the type of the plot we want to visualize. If "plot" is used then the output is a loglog plot. If "imshow" is used then the output is a color level plot. if "all" is used the the results are 3 subplots: the point pattern (or a restriction to a specific window if ``window_res`` is set), the loglog plots, and the color level plot. Note that you can not use the option "imshow" or "all", if ``norm_k``is not a meshgrid. Defaults to "plot".
 
-            axes ([axis, optional): the support axis of the plots. Defaults to None.
+            axes (axis, optional): the support axis of the plots. Defaults to None.
 
-            exact_sf (function, optional): a callable function representing the theoretical structure factor of the point process. Defaults to None.
+            exact_sf (callable, optional): function representing the theoretical structure factor of the point process. Defaults to None.
 
-            error_bar (bool, optional): if it is set to "True" then, the ``norm_k`` is divided into bins and the mean and the standard deviation over each bin are derived and visualized on the plot. Note that the error bar represent 3 times the standard deviation. Defaults to False.
+            error_bar (bool, optional): Defaults to False. When set to ``True``, ``norm_k`` is divided into bins and the mean and the standard deviation over each bin are derived and visualized on the plot. Note that the error bar represent 3 times the standard deviation.
 
             file_name (str, optional): name used to save the figure. The available output formats depend on the backend being used. Defaults to "".
 
-            window_res (spatial_window, optional): Object of the class :py:class:`.spatial_window`. This could be used when the sample of points is large, so for time and visualization purpose it's better to restrict the plot of the sample of points to a smaller window.  Defaults to None.
+            window_res (:py:class:`~hypton.spatial_windows.AbstractSpatialWindow`, optional): This could be used when the sample of points is large, so for time and visualization purpose it's better to restrict the plot of the sample of points to a smaller window.  Defaults to None.
         """
 
         if plot_type == "plot":
@@ -173,34 +170,30 @@ class StructureFactor:
 
     def compute_pcf(self, method="fv", install_spatstat=False, **params):
         """Estimate the pair correlation function of an **isotropic** point process process :math:`\mathcal{X} \subset \mathbb{R}^2`.
-        The two methods that can be used are the methods ``spastat.core.pcf_ppp`` and ``spastat.core.pcf_fv`` of the the package `spatstat`. The choice of the argument ``method`` specify which method will be used and its associated parameters are specified via the  argument ``params``.
+        The two methods that can be used are the methods ``spastat.core.pcf_ppp`` and ``spastat.core.pcf_fv`` of the the `R package `spatstat` <https://github.com/spatstat/spatstat>`_.
 
         .. warning::
-            To use this method you should have on your local machine the program language R (for installation `see <https://cran.r-project.org/>`_). Nevertheless is not required to have any knowledge of this program language. A hidden interface will be built between your Python and R. This is necessary since this method use some function from the package ``spatstat`` implemented in the program language R.
+
+            This function relies on the `spatstat-interface <https://github.com/For-a-few-DPPs-more/spatstat-interface>`_ Python package which requires the `R programming language <https://cran.r-project.org/>`_ to be installed, but experience with R it is not required.
 
         Args:
-            method (str, optional): "ppp" or "fv" referring respectively to `pcf.ppp <https://www.rdocumentation.org/packages/spatstat.core/versions/2.1-2/topics/pcf.ppp>`_ or `pcf.fv <https://www.rdocumentation.org/packages/spatstat.core/versions/2.1-2/topics/pcf.fv>`_ functions for estimating the pair correlation function. These 2 methods are 2 ways to approximate the pair correlation function of a point process from a realization of this point process using some edge corrections and some basic approximations. For more details `see <https://www.routledge.com/Spatial-Point-Patterns-Methodology-and-Applications-with-R/Baddeley-Rubak-Turner/p/book/9781482210200>`_. Defaults to "fv".
+            method (str, optional): Defaults to ``"fv"``. Choose between ``"ppp"`` or ``"fv"`` referring respectively to ` ``spatstat.core.pcf.ppp <https://www.rdocumentation.org/packages/spatstat.core/versions/2.1-2/topics/pcf.ppp>`_ and ` ``spatsta.core.pcf.fv`` <https://www.rdocumentation.org/packages/spatstat.core/versions/2.1-2/topics/pcf.fv>`_ functions.
+            These 2 methods approximate the pair correlation function of a point process from a realization of the underlying point process using some edge corrections and some basic approximations.
+            For more details `see <https://www.routledge.com/Spatial-Point-Patterns-Methodology-and-Applications-with-R/Baddeley-Rubak-Turner/p/book/9781482210200>`_.
 
-            install_spatstat (bool, optional): If it is set to "True" then the package spatstat of R will  be update or install your local machine, allowing the interface space to be built between python and R. This is necessary since this method use the 2 methods  ``pcf.ppp`` and ``pcf.fv`` of the package spatstat of R. Defaults to False.
+            install_spatstat (bool, optional): If it is set to ``True`` then the `R package `spatstat` <https://github.com/spatstat/spatstat>`_  will be updated or installed (if not present), see also the `spatstat-interface <https://github.com/For-a-few-DPPs-more/spatstat-interface>`_ Python package.
 
-            params:
-                - if method = 'ppp'
-                    - dict(``spastat.core.pcf.ppp`` `parameters <https://rdrr.io/cran/spatstat.core/man/pcf.ppp.html>`_)
+            Keyword Args (params):
 
-                - if method = 'fv'
-                    - dict(
-                        Kest=dict(``spastat.core.Kest`` `parameters <https://rdrr.io/github/spatstat/spatstat.core/man/Kest.html>`_),
-                        fv=dict(``spastat.core.pcf.fv`` `parameters <https://rdrr.io/cran/spatstat.core/man/pcf.fv.html>`_)
-                    )
+                - if ``method = "ppp"``
+                    - keyword arguments of ` ``spastat.core.pcf.ppp`` <https://rdrr.io/cran/spatstat.core/man/pcf.ppp.html>`_)
+
+                - if ``method = "fv"``
+                    - Kest = dict(keyword arguments of ` ``spastat.core.Kest`` ` <https://rdrr.io/github/spatstat/spatstat.core/man/Kest.html>`_,
+                    - fv = dict( keyword arguments of ` ``spastat.core.pcf.fv`` <https://rdrr.io/cran/spatstat.core/man/pcf.fv.html>`_
 
         Returns:
-            a dictionary containing the DataFrame output of ``spastat.core.pcf.ppp`` or ``spastat.core.pcf.fv`` functions.
-
-        .. seealso::
-
-                - `pcf.ppp <https://www.rdocumentation.org/packages/spatstat.core/versions/2.1-2/topics/pcf.ppp>`_
-                - `pcf.fv <https://www.rdocumentation.org/packages/spatstat.core/versions/2.1-2/topics/pcf.fv>`_
-
+            pandas.DataFrame version of the output of ` ``spatstat.core.pcf.ppp <https://www.rdocumentation.org/packages/spatstat.core/versions/2.1-2/topics/pcf.ppp>`_ of ` ``spatsta.core.pcf.fv`` <https://www.rdocumentation.org/packages/spatstat.core/versions/2.1-2/topics/pcf.fv>`_.
         """
 
         assert method in ("ppp", "fv")
@@ -229,34 +222,35 @@ class StructureFactor:
         return pd.DataFrame(np.array(pcf).T, columns=pcf.names)
 
     def plot_pcf(self, pcf_dataframe, exact_pcf=None, file_name="", **kwargs):
-        """Plot the results of the method :py:meth:`compute_pcf`.
-        The figure could be saved by specifying ``file_name``. You can add the plot of the exact theoretical pair correlation function (if it is known) via the parameter ``exact_pcf``.
+        """Display the data frame output from the method :py:meth:`compute_pcf`.
 
         Args:
-            pcf_dataframe (DataFrame): output DataFrame of the method ``compute_pcf``.
+            pcf_dataframe (pandas.DataFrame): output DataFrame of the method :py:meth:`compute_pcf`.
 
-            exact_pcf (function, optional): a callable function representing the theoretical pair correlation function of the point process. Defaults to None.
+            exact_pcf (callable, optional): function representing the theoretical pair correlation function of the point process. Defaults to None.
 
             file_name (str, optional): name used to save the figure. The available output formats depend on the backend being used. Defaults to "".
 
-            kwargs (dic, optional): parameter of `pandas.DataFrame.plot.line <https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.plot.line.html>`_.
-
+        Keyword Args (kwargs):
+            Keyword arguments of the function `pandas.DataFrame.plot.line <https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.plot.line.html>`_.
         """
         return utils.plot_pcf(pcf_dataframe, exact_pcf, file_name, **kwargs)
 
     def interpolate_pcf(self, r, pcf_r, clean=True, **params):
-        """Interpolate a discrete vector of evaluations of the pair correlation function.
+        """Interpolate the pair correlation function (pcf) evaluated at ``r``.
 
         Args:
-            r (numpy.1darray): vector of radius.
+            r (numpy.ndarray): vector of radius.
 
-            pcf_r (numpy.1darray): vector of approximation of the pair correlation function.
+            pcf_r (numpy.ndarray): vector of approximation of the pair correlation function.
 
-            clean (bool, optional): a method to automatically clean the vector ``pcf_r`` form possible  nan, posinf, neginf before the interpolation process. This values (if any exists) will be set to zero. Defaults to True.
+            clean (bool, optional): replace nan, posinf, neginf values to ``pcf_r`` by zeros before interpolation. Defaults to True.
+
+        Keyword Args (params):
+            Keyword arguments of the function ` ``scipy.interpolate.interp1d`` <https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html>`_.
 
         Returns:
-            dictionary containing the bounds of the interval containing the values of the vector ``r`` and interpolated function of the pair correlation approximations.
-
+            tuple (dict, callable): dictionary containing the bounds of the interval containing the values of the vector ``r`` and the interpolated version of the pair correlation function.
         """
         params.setdefault("fill_value", "extrapolate")
         params.setdefault("kind", "cubic")
@@ -267,20 +261,20 @@ class StructureFactor:
         return dict(rmin=rmin, rmax=rmax), interpolate.interp1d(r, pcf_r, **params)
 
     def compute_sf_hankel_quadrature(self, pcf, norm_k=None, method="Ogata", **params):
-        r"""Estimate the structure factor :math:`S` of a **stationary isotropic** point process :math:`\mathcal{X} \subset \mathbb{R}^2`,
-        by estimating the Fourier transform of the pair correlation function :math:`g`, via the quadrature of `Ogata <https://www.kurims.kyoto-u.ac.jp/~prims/pdf/41-4/41-4-40.pdf>`_ or `Baddour and Chouinard <https://openresearchsoftware.metajnl.com/articles/10.5334/jors.82/>`_ derived for estimating the Hankeml transform of a radial function.
+        r"""Compute the structure factor :math:`S` of the underlying **stationary isotropic** point process :math:`\mathcal{X} \subset \mathbb{R}^2`.
+        This is done by first computing the Fourier transform of the pair correlation function :math:`g`, via `correspondence with the Hankel transform <https://en.wikipedia.org/wiki/Hankel_transform#Fourier_transform_in_d_dimensions_(radially_symmetric_case)>`_, which is in turn computed via the quadrature shemes of :cite:`Oga05` or :cite:`BaCh15`.
 
         Args:
-            pcf (function): callable radially symmetric pair correlation function :math:`g`. You can get a discrete vector of estimation of the pair correlation function using the method :py:meth:`compute_pcf`, then interpolate the resulting vector using :py:meth:`interpolate_pcf` and pass the resulting function to the argument ``pcf``.
+            pcf (callable): radially symmetric pair correlation function :math:`g`. You can get a discrete vector of estimation of the pair correlation function using the method :py:meth:`compute_pcf`, then interpolate the resulting vector using :py:meth:`interpolate_pcf` and pass the resulting function to the argument ``pcf``.
 
-            norm_k (numpy.1darray, optional): vector of wave lengths (i.e. norm of waves) where the structure factor is to be evaluated. Defaults to None.
+            # todo why not simply k ?
+            norm_k (numpy.ndarray, optional): vector of wave lengths (i.e. norm of wave vectors) where the structure factor is to be evaluated. Defaults to None.
 
-            method (str, optional): "Ogata" or "BaddourChouinard". Select the method to compute the `Radially Symmetric Fourier transform <https://en.wikipedia.org/wiki/Hankel_transform#Fourier_transform_in_d_dimensions_(radially_symmetric_case)>`_ of :math:`g` as a Hankel transform
-                :py:class:`.HankelTransFormOgata`,
-                :py:class:`.HankelTransFormBaddourChouinard`.
-            Defaults to "Ogata".
+            method (str, optional): Choose between ``"Ogata"`` or ``"BaddourChouinard"``. Defaults to ``"Ogata"``.
+            This selects the method used to compute the Fourier transform of :math:`g`, via the `correspondence with the Hankel transform <https://en.wikipedia.org/wiki/Hankel_transform#Fourier_transform_in_d_dimensions_(radially_symmetric_case)>`_, see :py:class:`~pyhank.transforms.HankelTransFormOgata` and :py:class:`~pyhank.transforms.HankelTransFormBaddourChouinard`.
 
-            params: parameters passed to the corresponding approximation of the Hankel transform specified by the argument ``method``
+            Keyword Args (params):
+                Keyword arguments passed to the corresponding Hankel transformer selected according to the ``method`` argument.
 
                 - ``method == "Ogata"``
                     params = dict(step_size=..., nb_points=...)
@@ -292,24 +286,11 @@ class StructureFactor:
                     )
 
         Returns:
-           norm_k: vector of wave lengths (i.e. norms of waves) on which the structure factor is approximated.
-
-           sf: vector of approximations of the structure factor associated to ``norm_k``.
-
-        .. important::
-
-                The `Fourier transform <https://en.wikipedia.org/wiki/Hankel_transform#Fourier_transform_in_d_dimensions_(radially_symmetric_case)>`_  :math:`\mathcal{F}` involved of :math:`g` is computed by approximating the zero order `Hankel transform <https://en.wikipedia.org/wiki/Hankel_transform>`_  :math:`\mathcal{H}` via
-
-                .. math::
-
-                        \mathcal{F}_{s}(f)(k)= 2\pi \mathcal{H}_{0}(g)(k)
-
-                :py:class:`.RadiallySymmetricFourierTransform`
+            tuple (np.ndarray, np.ndarray): vector of wave lengths ``k`` and the corresponding evaluation of the structure factor ``S(k)``.
 
         .. note::
 
-                Typical usage: ``pcf`` is estimated using :py:meth:`StructureFactor.compute_pcf` and then interpolated using :py:meth:`StructureFactor.interpolate_pcf`.
-
+            Typical usage: ``pcf`` is estimated using :py:meth:`compute_pcf` and then interpolated using :py:meth:`interpolate_pcf`.
         """
         assert callable(pcf)
         if method == "Ogata" and norm_k.all() is None:
@@ -342,7 +323,7 @@ class StructureFactor:
         file_name="",
         **binning_params
     ):
-        """plot the result of the method :py:meth:`compute_sf_hankel_quadrature`.
+        """Display the output of :py:meth:`compute_sf_hankel_quadrature`.
         You can add the theoretical structure factor using ``exact_sf`` (if it is known) and visualize the mean and the variance over bins of the scattering intensity by specifying ``error_bar=True`` (this is donne using a binning method :py:meth:`utils._binning_function`).
         The figure could be saved by specifying ``file_name``.
 
@@ -354,8 +335,8 @@ class StructureFactor:
 
             norm_k_min (float, optional): estimation of an upper bounds for the allowed wave lengths. Defaults to None.
 
-            exact_sf (function, optional): callable function representing the theoretical structure factor of the point process. Defaults to None.
-            error_bar (bool, optional): if it is set to "True" then, the ``norm_k`` is divided into bins and the mean and the standard deviation over each bin are derived and visualized on the plot. Note that the error bar represent 3 times the standard deviation. Defaults to False.
+            exact_sf (callable, optional): function representing the theoretical structure factor of the point process. Defaults to None.
+            error_bar (bool, optional): if it is set to ``True`` then, the ``norm_k`` is divided into bins and the mean and the standard deviation over each bin are derived and visualized on the plot. Note that the error bar represent 3 times the standard deviation. Defaults to False.
 
             file_name (str, optional): name used to save the figure. The available output formats depend on the backend being used. Defaults to "".
 
