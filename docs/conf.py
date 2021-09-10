@@ -33,6 +33,7 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinx.ext.todo",
     "sphinx.ext.mathjax",
+    "sphinxcontrib.bibtex",
 ]
 
 # The suffix(es) of source filenames.
@@ -67,3 +68,11 @@ html_theme = "alabaster"
 
 # member order
 autodoc_member_order = "bysource"
+
+
+# -- Extension configuration -------------------------------------------------
+
+# sphinxcontrib-bibtex https://sphinxcontrib-bibtex.readthedocs.io/en/latest/index.html
+bibtex_bibfiles = ["./bibliography/bibliography.bib"]
+bibtex_encoding = "latin"
+# bibtex_reference_style = "alpha"  # alpha, plain , unsrt, and unsrtalpha

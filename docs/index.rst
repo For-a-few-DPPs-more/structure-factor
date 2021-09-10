@@ -17,6 +17,8 @@ Welcome to structure-factor's documentation:
    structure_factor
    transforms
    utils
+   bibliography/index
+
 
 
 
