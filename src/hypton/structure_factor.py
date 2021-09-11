@@ -21,7 +21,7 @@ class StructureFactor:
 
     .. seealso::
 
-        `Page 8 of Torquato's paper <http://chemlabs.princeton.edu/torquato/wp-content/uploads/sites/12/2018/06/paper-401.pdf>`_
+        :cite:`Tor18` page 8.
     """
     # ! Mettre un warning que scattering_intensity marche seulement dans les cubic windows, pcf pour dimension 2 et 3 seulement, hankel pour isotropic en dimension 2, en dimension 3 faire un MC pour approximer l'integral
 
@@ -132,7 +132,7 @@ class StructureFactor:
 
             si (numpy.ndarray): vector of scattering intensity.
 
-            plot_type (str, optional): ("plot", "imshow", "all"). Precision of the type of the plot we want to visualize. If "plot" is used then the output is a loglog plot. If "imshow" is used then the output is a color level plot. if "all" is used the the results are 3 subplots: the point pattern (or a restriction to a specific window if ``window_res`` is set), the loglog plots, and the color level plot. Note that you can not use the option "imshow" or "all", if ``norm_k``is not a meshgrid. Defaults to "plot".
+            plot_type (str, optional): ("plot", "imshow", "all"). Precision of the type of the plot we want to visualize. If "plot" is used then the output is a loglog plot. If "imshow" is used then the output is a color level plot. if "all" is used the the results are 3 subplots: the point pattern (or a restriction to a specific window if ``window_res`` is set), the loglog plots, and the color level plot. Note that you can not use the option "imshow" or "all", if ``norm_k`` is not a meshgrid. Defaults to "plot".
 
             axes (axis, optional): the support axis of the plots. Defaults to None.
 
@@ -262,7 +262,7 @@ class StructureFactor:
 
     def compute_sf_hankel_quadrature(self, pcf, norm_k=None, method="Ogata", **params):
         r"""Compute the structure factor :math:`S` of the underlying **stationary isotropic** point process :math:`\mathcal{X} \subset \mathbb{R}^2`.
-        This is done by first computing the Fourier transform of the pair correlation function :math:`g`, via `correspondence with the Hankel transform <https://en.wikipedia.org/wiki/Hankel_transform#Fourier_transform_in_d_dimensions_(radially_symmetric_case)>`_, which is in turn computed via the quadrature shemes of :cite:`Oga05` or :cite:`BaCh15`.
+        This is done by first computing the Fourier transform of the pair correlation function :math:`g`, involving the `correspondence with the Hankel transform <https://en.wikipedia.org/wiki/Hankel_transform#Fourier_transform_in_d_dimensions_(radially_symmetric_case)>`_, which is in turn computed via the quadrature shemes of :cite:`Oga05` or :cite:`BaCh15`.
 
         Args:
             pcf (callable): radially symmetric pair correlation function :math:`g`. You can get a discrete vector of estimation of the pair correlation function using the method :py:meth:`compute_pcf`, then interpolate the resulting vector using :py:meth:`interpolate_pcf` and pass the resulting function to the argument ``pcf``.
@@ -270,20 +270,19 @@ class StructureFactor:
             # todo why not simply k ?
             norm_k (numpy.ndarray, optional): vector of wave lengths (i.e. norm of wave vectors) where the structure factor is to be evaluated. Defaults to None.
 
-            method (str, optional): Choose between ``"Ogata"`` or ``"BaddourChouinard"``. Defaults to ``"Ogata"``.
-            This selects the method used to compute the Fourier transform of :math:`g`, via the `correspondence with the Hankel transform <https://en.wikipedia.org/wiki/Hankel_transform#Fourier_transform_in_d_dimensions_(radially_symmetric_case)>`_, see :py:class:`~pyhank.transforms.HankelTransFormOgata` and :py:class:`~pyhank.transforms.HankelTransFormBaddourChouinard`.
+            method (str, optional): Choose between ``"Ogata"`` or ``"BaddourChouinard"``. Defaults to ``"Ogata"``. This selects the method used to compute the Fourier transform of :math:`g`, via the `correspondence with the Hankel transform <https://en.wikipedia.org/wiki/Hankel_transform#Fourier_transform_in_d_dimensions_(radially_symmetric_case)>`_, see :py:class:`~hypton.transforms.HankelTransformOgata` and :py:class:`~hypton.transforms.HankelTransformBaddourChouinard`.
 
-            Keyword Args (params):
-                Keyword arguments passed to the corresponding Hankel transformer selected according to the ``method`` argument.
+        Keyword Args (params):
+            Keyword arguments passed to the corresponding Hankel transformer selected according to the ``method`` argument.
 
-                - ``method == "Ogata"``
-                    params = dict(step_size=..., nb_points=...)
-                - ``method == "BaddourChouinard"``
-                    params = dict(
-                        rmax=...,
-                        nb_points=...,
-                        interpolotation=dict(:py:func:`scipy.integrate.interp1d` `parameters <https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html>`_)
-                    )
+            - ``method == "Ogata"``, see :py:meth:`~hypton.transforms.HankelTransformOgata.compute_transformation_parameters`
+                - ``step_size``
+                - ``nb_points``
+
+            - ``method == "BaddourChouinard"``, see :py:meth:`~hypton.transforms.HankelTransformBaddourChouinard.compute_transformation_parameters`
+                - ``rmax``
+                - ``nb_points``
+                - ``interpolotation`` dictonnary containing the keyword arguments of ` ``scipy.integrate.interp1d`` parameters <https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html>`_
 
         Returns:
             tuple (np.ndarray, np.ndarray): vector of wave lengths ``k`` and the corresponding evaluation of the structure factor ``S(k)``.
@@ -336,9 +335,10 @@ class StructureFactor:
             norm_k_min (float, optional): estimation of an upper bounds for the allowed wave lengths. Defaults to None.
 
             exact_sf (callable, optional): function representing the theoretical structure factor of the point process. Defaults to None.
+
             error_bar (bool, optional): if it is set to ``True`` then, the ``norm_k`` is divided into bins and the mean and the standard deviation over each bin are derived and visualized on the plot. Note that the error bar represent 3 times the standard deviation. Defaults to False.
 
-            file_name (str, optional): name used to save the figure. The available output formats depend on the backend being used. Defaults to "".
+            file_name (str, optional): Defaults to "". Name used to save the figure. The available output formats depend on the backend being used.
 
         Returns:
             plot of the approximated structure factor.
