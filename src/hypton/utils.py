@@ -43,7 +43,7 @@ def bessel2(order, x):
     return yv(order, x)
 
 
-def allowed_values(L, max_k, meshgrid_size, max_add_k):
+def allowed_values(L, max_k, meshgrid_size, max_add_k=1):
     r"""Given a realization of a point process in a cubic window with length :math:`L`, compute the 'allowed' wave vectors :math:`(k_i)` at which the structure factor :math:`S(k_i)` is consistently estimated by the scattering intensity
 
     .. math::
