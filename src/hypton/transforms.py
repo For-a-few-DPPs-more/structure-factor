@@ -61,7 +61,8 @@ class RadiallySymmetricFourierTransform:
             "Ogata": HankelTransformOgata,
             "BaddourChouinard": HankelTransformBaddourChouinard,
         }
-        return hankel_transformer[method]
+        hankel_transform = hankel_transformer[method]
+        return hankel_transform(order)
 
     def compute_k_min(self, step_size):
         # todo add docstring
