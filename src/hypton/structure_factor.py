@@ -2,6 +2,8 @@ import numpy as np
 import pandas as pd
 import rpy2.robjects as robjects
 import scipy.interpolate as interpolate
+import warnings
+import ipdb
 
 import hypton.utils as utils
 from hypton.point_pattern import PointPattern
@@ -88,7 +90,19 @@ class StructureFactor:
         """
         # todo ajouter la possibilité d'entré  plusieur echantillion
         # todo utuliser l'intensité et le volume au lieu de N dans la formule i.e. remplacer N pas intensité*volume de la fenetre
+        if self.dimension != 2:
+            warnings.warn(
+                message="The package actually is applicable for 2 dimensional point process",
+                category=DeprecationWarning,
+            )
+
         point_pattern = self.point_pattern
+
+        if type(point_pattern.window) is not BoxWindow:
+            warnings.warn(
+                message="The window should be a BoxWindow for that the scattering intensity consists an approximation of the structure factor. Hint: use PointPattern.restrict_to_window."
+            )
+            # ipdb.set_trace()
         if k_vector is None:
             assert isinstance(point_pattern.window, BoxWindow)
             L = np.abs(
