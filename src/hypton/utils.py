@@ -43,6 +43,7 @@ def bessel2(order, x):
     return yv(order, x)
 
 
+#! changer le nom en plus explicite ex.
 def allowed_values(L, max_k, meshgrid_size, max_add_k=1):
     r"""Given a realization of a point process in a cubic window with length :math:`L`, compute the 'allowed' wave vectors :math:`(k_i)` at which the structure factor :math:`S(k_i)` is consistently estimated by the scattering intensity
 
@@ -58,7 +59,7 @@ def allowed_values(L, max_k, meshgrid_size, max_add_k=1):
         max_k (float): Maximum norm of the wave vectors.
 
         # todo give clearer description of meshgrid_size
-        meshgrid_size (float): Size of the meshgrid of allowed values if ``k_vector`` is set to None and ``max_k`` is specified.
+        meshgrid_size (int): Size of the meshgrid of allowed values if ``k_vector`` is set to None and ``max_k`` is specified.
         Warning: setting big value in ``meshgrid_size`` could be time consuming when the sample has a lot of points.
 
         # todo give clearer description of max_add_k
@@ -123,7 +124,7 @@ def compute_scattering_intensity(k, points):
     return si
 
 
-# todo Consider a more specific name
+# todo Consider a more specific name ex bin_statistics
 def _binning_function(x, y, **params):
     """Divide ``x`` into bins and evaluate the mean and the standard deviation of the corresponding element of ``y`` over the each bin.
     This function calls `scipy.stats.binned_statistic` with keyword arguments (except `statistic`) provided by ``params``.
@@ -214,7 +215,6 @@ def plot_si_showcase(
     if error_bar:
         plot_summary(norm_k, si, axis=axis, **binning_params)
 
-    axis.title.set_text("loglog plot")
     axis.set_xlabel("Wave length ($||\mathbf{k}||$)")
     axis.set_ylabel("Scattering intensity ($\mathsf{S}(\mathbf{k})$)")
     axis.legend(loc=4)
@@ -341,7 +341,6 @@ def plot_sf_hankel_quadrature(
     axis.legend()
     axis.set_xlabel("wave length k")
     axis.set_ylabel("Approximated structure factor $\mathcal{S}(k)$")
-    axis.title.set_text("loglog plot")
 
     if file_name:
         fig.savefig(file_name, bbox_inches="tight")
