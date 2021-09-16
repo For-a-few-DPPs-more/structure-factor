@@ -21,7 +21,7 @@ class EffectiveHyperuniform:
 
         **Typical usage**:
 
-        Estimating the structure factor of a point process by one of the method of the class :py:class:`~.structure_factor.StructureFactor`, then testing the effective hyperuniformity using :py:meth:`~EffectiveHyperuniform.index_H`.
+        Estimating the structure factor of a point process by one of the method of the class :py:class:`~.hypton.StructureFactor`, then testing the effective hyperuniformity using :py:meth:`~EffectiveHyperuniform.index_H`.
 
     """
     # ? How about EffectiveHyperuniformity instead of EffectiveHyperuniform.

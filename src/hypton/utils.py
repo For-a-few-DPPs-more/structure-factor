@@ -30,7 +30,7 @@ def bessel1(order, x):
 
 
 def bessel1_zeros(order, nb_zeros):
-    """Zeros of the first kind bessel function <https://en.wikipedia.org/wiki/Bessel_function>`_"""
+    """Zeros of the `first kind bessel function <https://en.wikipedia.org/wiki/Bessel_function>`_"""
     return jn_zeros(order, nb_zeros)
 
 
@@ -310,7 +310,7 @@ def plot_pcf(pcf_dataframe, exact_pcf, file_name, **kwargs):
 def plot_sf_hankel_quadrature(
     norm_k, sf, axis, k_min, exact_sf, error_bar, file_name, **binning_params
 ):
-    """Plot approximation of structure factor using :py:meth:`~.structure_factor.compute_sf_hankel_quadrature` with means and error bars over bins."""
+    """Plot approximation of structure factor using :py:meth:`~.hypton.compute_sf_hankel_quadrature` with means and error bars over bins."""
     if axis is None:
         fig, axis = plt.subplots(figsize=(8, 5))
 
