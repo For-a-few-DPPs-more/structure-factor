@@ -171,7 +171,7 @@ def plot_summary(x, y, axis, label="Mean", **binning_params):
 # todo clearer description of the function (loglog etc)
 def plot_exact(x, y, axis, label):
     """Plot a callable function evaluated on a vector"""
-    axis.loglog(x, y(x), "g.", label=label)
+    axis.loglog(x, y(x), "g", label=label)
     return axis
 
 
@@ -205,18 +205,18 @@ def plot_si_showcase(
         norm_k,
         si,
         axis=axis,
-        label="$\mathsf{S}(\mathbf{k})$",
+        label="$SI$",
         color="grey",
         linestyle="",
         marker=",",
     )
     if exact_sf is not None:
-        plot_exact(norm_k, exact_sf, axis=axis, label="Exact sf")
+        plot_exact(norm_k, exact_sf, axis=axis, label="Exact $S(k)$")
     if error_bar:
         plot_summary(norm_k, si, axis=axis, **binning_params)
 
     axis.set_xlabel("Wave length ($||\mathbf{k}||$)")
-    axis.set_ylabel("Scattering intensity ($\mathsf{S}(\mathbf{k})$)")
+    axis.set_ylabel("Scattering intensity (SI)")
     axis.legend(loc=4)
 
     if file_name:
@@ -318,13 +318,13 @@ def plot_sf_hankel_quadrature(
         norm_k,
         sf,
         axis=axis,
-        label="$\mathcal{S}(k)$",
+        label="approx $\mathcal{S}(k)$",
         marker=".",
         linestyle="",
         color="grey",
     )
     if exact_sf is not None:
-        plot_exact(norm_k, exact_sf, axis=axis, label="Exact sf")
+        plot_exact(norm_k, exact_sf, axis=axis, label="Exact $\mathcal{S}(k)$")
     if error_bar:
         plot_summary(norm_k, sf, axis=axis, **binning_params)
     axis.plot(norm_k, np.ones_like(norm_k), "k--", label="Theo")

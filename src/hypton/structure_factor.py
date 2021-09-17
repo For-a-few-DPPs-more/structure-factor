@@ -98,11 +98,10 @@ class StructureFactor:
 
         point_pattern = self.point_pattern
 
-        if type(point_pattern.window) is not BoxWindow:
+        if not isinstance(point_pattern.window, BoxWindow):
             warnings.warn(
                 message="The window should be a BoxWindow for that the scattering intensity consists an approximation of the structure factor. Hint: use PointPattern.restrict_to_window."
             )
-            # ipdb.set_trace()
         if k_vector is None:
             assert isinstance(point_pattern.window, BoxWindow)
             L = np.abs(
@@ -321,6 +320,7 @@ class StructureFactor:
         if method == "Ogata" and params["rmax"] is not None:
             params.setdefault("step_size", 0.1)
             step_size = params["step_size"]
+            # todo il y a une fonct qui le fait why not used????
             self.norm_k_min = (2.7 * np.pi) / (params["rmax"] * step_size)
         sf = 1.0 + self.intensity * ft_k
         return norm_k, sf

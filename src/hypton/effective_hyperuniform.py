@@ -59,6 +59,7 @@ class EffectiveHyperuniform:
         """
         return _binning_function(self.norm_k.ravel(), self.sf.ravel(), **params)
 
+    #! c'est bizare qu'elle prend norm_k et sf qui sont deja des atribus de la class
     def index_H(self, norm_k, sf, std=None, norm_k_stop=None):
         """Estimation of the effective hyperuniformity of a point process :math:`\mathcal{X} \subset \mathbb{R}^2` using the index :math:`H`.
 
