@@ -3,7 +3,6 @@ import pandas as pd
 import rpy2.robjects as robjects
 import scipy.interpolate as interpolate
 import warnings
-import ipdb
 
 import hypton.utils as utils
 from hypton.point_pattern import PointPattern
@@ -182,31 +181,28 @@ class StructureFactor:
             )
 
     def compute_pcf(self, method="fv", install_spatstat=False, **params):
-        """Estimate the pair correlation function of an **isotropic** point process process :math:`\mathcal{X} \subset \mathbb{R}^2`.
-        The two methods that can be used are the methods ``spastat.core.pcf_ppp`` and ``spastat.core.pcf_fv`` of the the `R package `spatstat` <https://github.com/spatstat/spatstat>`_.
+        """Estimate the pair correlation function of an **isotropic** point process process :math:`\mathcal{X} \subset \mathbb{R}^2`. The two methods that can be used are the methods ``spastat.core.pcf_ppp`` and ``spastat.core.pcf_fv`` of the the `R` package `spatstat <https://github.com/spatstat/spatstat>`_.
 
         .. warning::
 
             This function relies on the `spatstat-interface <https://github.com/For-a-few-DPPs-more/spatstat-interface>`_ Python package which requires the `R programming language <https://cran.r-project.org/>`_ to be installed, but experience with R it is not required.
 
         Args:
-            method (str, optional): Defaults to ``"fv"``. Choose between ``"ppp"`` or ``"fv"`` referring respectively to ` ``spatstat.core.pcf.ppp <https://www.rdocumentation.org/packages/spatstat.core/versions/2.1-2/topics/pcf.ppp>`_ and ` ``spatsta.core.pcf.fv`` <https://www.rdocumentation.org/packages/spatstat.core/versions/2.1-2/topics/pcf.fv>`_ functions.
-            These 2 methods approximate the pair correlation function of a point process from a realization of the underlying point process using some edge corrections and some basic approximations.
-            For more details `see <https://www.routledge.com/Spatial-Point-Patterns-Methodology-and-Applications-with-R/Baddeley-Rubak-Turner/p/book/9781482210200>`_.
+            method (str, optional): Defaults to ``"fv"``. Choose between ``"ppp"`` or ``"fv"`` referring respectively to `spatstat.core.pcf.ppp <https://www.rdocumentation.org/packages/spatstat.core/versions/2.1-2/topics/pcf.ppp>`_ and `spatsta.core.pcf.fv <https://www.rdocumentation.org/packages/spatstat.core/versions/2.1-2/topics/pcf.fv>`_ functions. These 2 methods approximate the pair correlation function of a point process from a realization of the underlying point process using some edge corrections and some basic approximations. For more details `see <https://www.routledge.com/Spatial-Point-Patterns-Methodology-and-Applications-with-R/Baddeley-Rubak-Turner/p/book/9781482210200>`_.
 
-            install_spatstat (bool, optional): If it is set to ``True`` then the `R package `spatstat` <https://github.com/spatstat/spatstat>`_  will be updated or installed (if not present), see also the `spatstat-interface <https://github.com/For-a-few-DPPs-more/spatstat-interface>`_ Python package.
+            install_spatstat (bool, optional): If it is set to ``True`` then the `R` package `spatstat <https://github.com/spatstat/spatstat>`_  will be updated or installed (if not present), see also the `spatstat-interface <https://github.com/For-a-few-DPPs-more/spatstat-interface>`_ Python package.
 
             Keyword Args (params):
 
                 - if ``method = "ppp"``
-                    - keyword arguments of ` ``spastat.core.pcf.ppp`` <https://rdrr.io/cran/spatstat.core/man/pcf.ppp.html>`_)
+                    - keyword arguments of `spastat.core.pcf.ppp <https://rdrr.io/cran/spatstat.core/man/pcf.ppp.html>`_)
 
                 - if ``method = "fv"``
-                    - Kest = dict(keyword arguments of ` ``spastat.core.Kest`` ` <https://rdrr.io/github/spatstat/spatstat.core/man/Kest.html>`_,
-                    - fv = dict( keyword arguments of ` ``spastat.core.pcf.fv`` <https://rdrr.io/cran/spatstat.core/man/pcf.fv.html>`_
+                    - Kest = dict(keyword arguments of `spastat.core.Kest <https://rdrr.io/github/spatstat/spatstat.core/man/Kest.html>`_),
+                    - fv = dict( keyword arguments of `spastat.core.pcf.fv <https://rdrr.io/cran/spatstat.core/man/pcf.fv.html>`_)
 
         Returns:
-            pandas.DataFrame version of the output of ` ``spatstat.core.pcf.ppp <https://www.rdocumentation.org/packages/spatstat.core/versions/2.1-2/topics/pcf.ppp>`_ of ` ``spatsta.core.pcf.fv`` <https://www.rdocumentation.org/packages/spatstat.core/versions/2.1-2/topics/pcf.fv>`_.
+            pandas.DataFrame: version of the output of `spatstat.core.pcf.ppp <https://www.rdocumentation.org/packages/spatstat.core/versions/2.1-2/topics/pcf.ppp>`_ of `spatsta.core.pcf.fv <https://www.rdocumentation.org/packages/spatstat.core/versions/2.1-2/topics/pcf.fv>`_.
         """
 
         assert method in ("ppp", "fv")
@@ -260,7 +256,7 @@ class StructureFactor:
             clean (bool, optional): replace nan, posinf, neginf values to ``pcf_r`` by zeros before interpolation. Defaults to True.
 
         Keyword Args (params):
-            Keyword arguments of the function ` ``scipy.interpolate.interp1d`` <https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html>`_.
+            Keyword arguments of the function `scipy.interpolate.interp1d <https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html>`_.
 
         Returns:
             tuple (dict, callable): dictionary containing the bounds of the interval containing the values of the vector ``r`` and the interpolated version of the pair correlation function.
@@ -295,7 +291,7 @@ class StructureFactor:
             - ``method == "BaddourChouinard"``, see :py:meth:`~hypton.transforms.HankelTransformBaddourChouinard.compute_transformation_parameters`
                 - ``rmax``
                 - ``nb_points``
-                - ``interpolotation`` dictonnary containing the keyword arguments of ` ``scipy.integrate.interp1d`` parameters <https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html>`_
+                - ``interpolotation`` dictonnary containing the keyword arguments of `scipy.integrate.interp1d <https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html>`_ parameters.
 
         Returns:
             tuple (np.ndarray, np.ndarray): vector of wave lengths ``k`` and the corresponding evaluation of the structure factor ``S(k)``.

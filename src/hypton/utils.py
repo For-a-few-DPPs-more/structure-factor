@@ -11,17 +11,17 @@ import warnings
 
 # todo consider a more specific name like set_nan_inf_to_zero
 def cleaning_data(array, nan=0, posinf=0, neginf=0):
-    """Set nan, posinf and neginf to 0"""
+    """Set nan, posinf and neginf to 0."""
     return np.nan_to_num(array, nan=nan, posinf=posinf, neginf=neginf)
 
 
 def get_random_number_generator(seed):
-    """Turn seed into a np.random.Generator instance"""
+    """Turn seed into a np.random.Generator instance."""
     return np.random.default_rng(seed)
 
 
 def bessel1(order, x):
-    """`First kind bessel function <https://en.wikipedia.org/wiki/Bessel_function>`_"""
+    """Evaluate `first kind bessel function <https://en.wikipedia.org/wiki/Bessel_function>`_."""
     if order == 0:
         return j0(x)
     if order == 1:
@@ -30,12 +30,12 @@ def bessel1(order, x):
 
 
 def bessel1_zeros(order, nb_zeros):
-    """Zeros of the first kind bessel function <https://en.wikipedia.org/wiki/Bessel_function>`_"""
+    """Evaluate zeros of the `first kind bessel function <https://en.wikipedia.org/wiki/Bessel_function>`_."""
     return jn_zeros(order, nb_zeros)
 
 
 def bessel2(order, x):
-    """`Second kind bessel function <https://en.wikipedia.org/wiki/Bessel_function>`_"""
+    """Evaluate `second kind bessel function <https://en.wikipedia.org/wiki/Bessel_function>`_."""
     if order == 0:
         return y0(x)
     if order == 1:
@@ -49,7 +49,7 @@ def allowed_values(L, max_k, meshgrid_size, max_add_k=1):
 
     .. math::
 
-        \{\frac{2 \pi}{L} \mathbf{n} \; \mathbf{n} \in (\mathbb{Z}^d)^\ast, \left\lVert \mathbf{n} \right\rVert \leq \text{ max\_k}\}
+        \{\frac{2 \pi}{L} \mathbf{n} ~ ; ~ \mathbf{n} \in (\mathbb{Z}^d)^\ast, \left\lVert \mathbf{n} \right\rVert \leq \text{ max_k}\}
 
     # todo add bibliographic reference
 
@@ -59,16 +59,13 @@ def allowed_values(L, max_k, meshgrid_size, max_add_k=1):
         max_k (float): Maximum norm of the wave vectors.
 
         # todo give clearer description of meshgrid_size
-        meshgrid_size (int): Size of the meshgrid of allowed values if ``k_vector`` is set to None and ``max_k`` is specified.
-        Warning: setting big value in ``meshgrid_size`` could be time consuming when the sample has a lot of points.
+        meshgrid_size (float): Size of the meshgrid of allowed values if ``k_vector`` is set to None and ``max_k`` is specified. **Warning:** setting big value in ``meshgrid_size`` could be time consuming when the sample has a lot of points.
 
         # todo give clearer description of max_add_k
-        max_add_k (float): Maximum component of the allowed wave vectors to be added.
-        In other words, in the case of the evaluation on a vector of allowed values (without specifying ``meshgrid_size``),  ``max_add_k`` can be used to add allowed values in a certain region for better precision.
-        Warning: setting big value in ``max_add_k`` could be time consuming when the sample has a lot of points. Defaults to 1.
+        max_add_k (float): Maximum component of the allowed wave vectors to be added. In other words, in the case of the evaluation on a vector of allowed values (without specifying ``meshgrid_size``),  ``max_add_k`` can be used to add allowed values in a certain region for better precision. **Warning:** setting big value in ``max_add_k`` could be time consuming when the sample has a lot of points. Defaults to 1.
 
     Returns:
-        array of 'allowed' wave vectors :math:`N \times d`
+        numpy.ndarray: array (:math:`N \times d`) of 'allowed' wave vectors.
     """
     max_n = np.floor(max_k * L / (2 * np.pi))  # maximum of ``k_vector``
     if meshgrid_size is None:  # Add extra allowed values near zero
@@ -111,7 +108,7 @@ def compute_scattering_intensity(k, points):
         points (numpy.ndarray): array of size :math:`N_2 \times 2` containing the :math:`N_2` points of a realization of the point process :math:`\mathcal{X}`.
 
     Returns:
-        Vector of evaluation of the scattering intensity on ``k``.
+        numpy.ndarray: Vector of evaluation of the scattering intensity on ``k``.
 
     .. seealso::
 
@@ -134,9 +131,10 @@ def _binning_function(x, y, **params):
         y (numpy.1darray): vector of data associated to the vector ``x``.
 
     Returns:
-        bin_centers: vector of centers of the bins associated to ``x``.
-        bin_mean: vector of means of ``y``over the bins.
-        std_mean: vector of standard deviation of ``y``over the bins.
+        tuple(numpy.ndarray): Three vectors
+            - ``bin_centers`` vector of centers of the bins associated to ``x``.
+            - ``bin_mean`` vector of means of ``y``over the bins.
+            - ``std_mean`` vector of standard deviation of ``y``over the bins.
     """
 
     bin_mean, bin_edges, _ = stats.binned_statistic(x, y, statistic="mean", **params)
@@ -150,7 +148,7 @@ def _binning_function(x, y, **params):
 
 # todo clearer description of the function (loglog etc)
 def plot_summary(x, y, axis, label="Mean", **binning_params):
-    r"""Plot means and errors bars (3 standard deviations)."""
+    """Plot means and errors bars (3 standard deviations)."""
     bin_centers, bin_mean, bin_std = _binning_function(x, y, **binning_params)
     axis.loglog(bin_centers, bin_mean, "b.", label=label)
     axis.errorbar(
@@ -310,7 +308,7 @@ def plot_pcf(pcf_dataframe, exact_pcf, file_name, **kwargs):
 def plot_sf_hankel_quadrature(
     norm_k, sf, axis, k_min, exact_sf, error_bar, file_name, **binning_params
 ):
-    """Plot approximation of structure factor using :py:meth:`~.structure_factor.compute_sf_hankel_quadrature` with means and error bars over bins."""
+    """Plot approximation of structure factor using :py:meth:`~.hypton.compute_sf_hankel_quadrature` with means and error bars over bins."""
     if axis is None:
         fig, axis = plt.subplots(figsize=(8, 5))
 
