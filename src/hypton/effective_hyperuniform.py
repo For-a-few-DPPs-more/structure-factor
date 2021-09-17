@@ -6,16 +6,16 @@ from hypton.utils import _binning_function
 
 
 class EffectiveHyperuniform:
-    r"""Test of effective hyperuniformity of a point process :math:`\mathcal{X} \subset \mathbb{R}^2` using the index :math:`H` defined by:
+    r"""Test of effective hyperuniformity of a point process :math:`\mathcal{X} \subset \mathbb{R}^2`.
+
+    :math:`\mathcal{X}` is said to be effectively hyperuniform if :math:`H \leq 10^{-3}` where
 
     .. math::
-        H = \frac{\hat{S}(\mathbf{0})}{S(\mathbf{k}_{peak})},
-
-    :math:`\mathcal{X}` is said to be effectively hyperuniform if :math:`H \leq 10^{-3}`.
+        H = \frac{\hat{S}(\mathbf{0})}{S(\mathbf{k}_{peak})}\cdot
 
     - :math:`S` is the structure factor of :math:`\mathcal{X}`,
-    - :math:`\hat{S}(\mathbf{0})` is a linear extrapolation of the structure factor to :math:`\mathbf{k}=\mathbf{0}`
-    - :math:`\mathbf{k}_{peak}` is the location of the first dominant peak value of the structure factor.
+    - :math:`\hat{S}(\mathbf{0})` is a linear extrapolation of the structure factor at :math:`\mathbf{k}=\mathbf{0}`,
+    - :math:`\mathbf{k}_{peak}` is the location of the first dominant peak value of :math:`S`.
 
     .. note::
 
@@ -23,6 +23,9 @@ class EffectiveHyperuniform:
 
         Estimating the structure factor of a point process by one of the method of the class :py:class:`~.hypton.StructureFactor`, then testing the effective hyperuniformity using :py:meth:`~EffectiveHyperuniform.index_H`.
 
+    .. todo::
+
+        Add bibliographic reference.
     """
     # ? How about EffectiveHyperuniformity instead of EffectiveHyperuniform.
     # ? The later qualifies a class of point processes while former characterizes a property of a point process
@@ -44,12 +47,12 @@ class EffectiveHyperuniform:
         """Regularization of the estimation of the structure factor, by spliting the vector ``norm_k`` into bins and we average the associated values of the vector ``sf`` and derive the standard deviation over each bins.
 
         Args:
-            params(dict): parameters associated to _binning_function.
+            params(dict): parameters associated to :py:func:`~.hypton.utils._binning_function`.
 
         Returns:
-            bin_centers: vector of centers of the bins representing the new vector ``norm_k``
+            bin_centers: vector of centers of the bins representing the new vector ``norm_k``.
 
-            bin_mean: vector of means of the scattering intensity ``sf``over the bins, representing the new vector ``sf``.
+            bin_mean: vector of means of the scattering intensity ``sf`` over the bins, representing the new vector ``sf``.
 
             bin_std: vector of standard deviations corresponding to ``bin_mean``.
 

@@ -180,17 +180,6 @@ class StructureFactor:
                 "plot_type must be chosen among ('all', 'plot', 'imshow')."
             )
 
-    def function_name(self, args):
-        """[summary]
-
-        Args:
-            args ([type]): [description]
-
-        Returns:
-            [type]: [description]
-        """
-        return ewrew
-
     def compute_pcf(self, method="fv", install_spatstat=False, **params):
         """Estimate the pair correlation function of an **isotropic** point process process :math:`\mathcal{X} \subset \mathbb{R}^2`. The two methods that can be used are the methods ``spastat.core.pcf_ppp`` and ``spastat.core.pcf_fv`` of the the `R` package `spatstat <https://github.com/spatstat/spatstat>`_.
 
