@@ -107,6 +107,7 @@ class HankelTransformBaddourChouinard(HankelTransform):
         self.rmax = None  # R in :cite:`BaCh15` Section 4.B
         self.transformation_matrix = None  # Y in :cite:`BaCh15` Section 6.A
 
+    # todo ajouter des defuat pour nb_points
     def compute_transformation_parameters(self, rmax, nb_points):
         """Compute parameters involved in the computation of the corresponding Hankel-type transform using the discretization scheme of :cite:`BaCh15`.
 
@@ -200,7 +201,6 @@ class HankelTransformOgata(HankelTransform):
         n = self.order
         h = step_size
         N = nb_points
-        #! self.rmax is not defined
         self.rmax = rmax
         t = bessel1_zeros(n, N)
         weights = bessel2(n, t) / bessel1(n + 1, t)  # Equation (1.2)
