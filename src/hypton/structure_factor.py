@@ -71,7 +71,7 @@ class StructureFactor:
             \frac{2 \pi}{L} \mathbf{n},\,
             \text{for} \; \mathbf{n} \in (\mathbb{Z}^d)^\ast \}
 
-        So it's recommended to not specify the vector of wave ``k_vector``, but to either specify a meshgrid size and the maximum component of the wave vector respectively via ``meshgrid_size`` and ``max_k`` if you need to evaluate the scattering intensity on a meshgrid of allowed values (see example of ...) or just the maximum component of the wave vector ``max_k`` if you need to evaluate the scattering intensity on a vector of allowed values. see :py:meth:`utils.allowed_values`.
+        So it's recommended to not specify the vector of wave ``k_vector``, but to either specify a meshgrid size and the maximum component of the wave vector respectively via ``meshgrid_size`` and ``max_k`` if you need to evaluate the scattering intensity on a meshgrid of allowed values (see example of ...) or just the maximum component of the wave vector ``max_k`` if you need to evaluate the scattering intensity on a vector of allowed values. see :py:meth:`utils.allowed__wave_values`.
 
         Args:
 
@@ -106,7 +106,7 @@ class StructureFactor:
             L = np.abs(
                 point_pattern.window.bounds[0, 0] - point_pattern.window.bounds[1, 0]
             )
-            k_vector = utils.allowed_values(
+            k_vector = utils.allowed_wave_values(
                 L=L, max_k=max_k, meshgrid_size=meshgrid_size, max_add_k=max_add_k
             )
 
