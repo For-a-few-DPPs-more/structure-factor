@@ -59,7 +59,7 @@ def allowed_values(L, max_k, meshgrid_size, max_add_k=1):
         max_k (float): Maximum norm of the wave vectors.
 
         # todo give clearer description of meshgrid_size
-        meshgrid_size (float): Size of the meshgrid of allowed values if ``k_vector`` is set to None and ``max_k`` is specified. **Warning:** setting big value in ``meshgrid_size`` could be time consuming when the sample has a lot of points.
+        meshgrid_size (int): Size of the meshgrid of allowed values if ``k_vector`` is set to None and ``max_k`` is specified. **Warning:** setting big value in ``meshgrid_size`` could be time consuming when the sample has a lot of points.
 
         # todo give clearer description of max_add_k
         max_add_k (float): Maximum component of the allowed wave vectors to be added. In other words, in the case of the evaluation on a vector of allowed values (without specifying ``meshgrid_size``),  ``max_add_k`` can be used to add allowed values in a certain region for better precision. **Warning:** setting big value in ``max_add_k`` could be time consuming when the sample has a lot of points. Defaults to 1.
