@@ -47,5 +47,5 @@ build-backend = "poetry.core.masonry.api"
 [tool.pytest.ini_options]
 # poetry run pytest --cov tests/
 minversion = "6.0"
-addopts = "-ra -q"
+addopts = "-ra -q -vv"
 testpaths = ["tests"]
