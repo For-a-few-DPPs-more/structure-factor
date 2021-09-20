@@ -18,3 +18,20 @@ def test_allowed_wave_values(L, max_k, meshgrid_size):
     assert np.equal(
         utils.allowed_wave_values(L, max_k, meshgrid_size), true_allowed_wave_values
     ).all()
+
+
+@pytest.mark.parametrize(
+    "k, points, expected",
+    [
+        (np.array([[5], [5]]).T, np.array([np.zeros((6)), np.zeros((6))]).T, 6),
+        (
+            np.array([[2 * np.pi], [2 * np.pi]]).T,
+            np.array([np.ones((6)), np.ones((6))]).T,
+            6,
+        ),
+    ],
+)
+def test_compute_scattering_intensity(k, points, expected):
+    np.testing.assert_almost_equal(
+        utils.compute_scattering_intensity(k, points), expected
+    )
