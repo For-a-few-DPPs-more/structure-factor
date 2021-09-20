@@ -21,6 +21,7 @@ Sphinx = { version = "^4.0.3", optional = true }
 sphinx-rtd-theme = { version = "^0.5.2", optional = true }
 sphinx-autobuild = { version = "^2021.3.14", optional = true }
 sphinxcontrib-bibtex = { version = "^2.4.1", optional = true }
+ipdb = "^0.13.9"
 
 [tool.poetry.extras]
 # poetry install -E name
