@@ -79,20 +79,25 @@ def allowed_wave_values(L, max_k, meshgrid_size, max_add_k=1):
         add_k_vector = 2 * np.pi * np.column_stack((X.ravel(), Y.ravel())) / L
         k_vector = np.concatenate((add_k_vector, k_vector))
 
-    else:
-        step_size = int((2 * max_n + 1) / meshgrid_size)
+    elif meshgrid_size > (2 * max_n):
+        warnings.warn(
+            message="meshgrid_size should be less than the total allowed number of points.",
+            category=DeprecationWarning,
+        )
+        n_vector = np.arange(-max_n, max_n + 1, step=1)
 
-        if meshgrid_size > (2 * max_n + 1):
-            step_size = 1
-            warnings.warn(
-                message="meshgrid_size should be less than the total allowed number of points.",
-                category=DeprecationWarning,
+    else:
+        n_vector = np.linspace(
+            -max_n, max_n, num=meshgrid_size, dtype=int, endpoint=True
+        )
+        if np.count_nonzero(n_vector == 0) != 0:
+            n_vector = np.linspace(
+                -max_n, max_n, num=meshgrid_size + 1, dtype=int, endpoint=True
             )
 
-        n_vector = np.arange(-max_n, max_n, step_size)
-        n_vector = n_vector[n_vector != 0]
-        X, Y = np.meshgrid(n_vector, n_vector)
-        k_vector = 2 * np.pi * np.column_stack((X.ravel(), Y.ravel())) / L
+    n_vector = n_vector[n_vector != 0]
+    X, Y = np.meshgrid(n_vector, n_vector)
+    k_vector = 2 * np.pi * np.column_stack((X.ravel(), Y.ravel())) / L
 
     return k_vector
 
