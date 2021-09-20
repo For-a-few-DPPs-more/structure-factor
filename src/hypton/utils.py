@@ -121,9 +121,11 @@ def compute_scattering_intensity(k, points):
 
         `Wikipedia structure factor/scattering intensity <https://en.wikipedia.org/wiki/Structure_factor>`_.
     """
-    X = points
-    n = X.shape[0]
-    si = np.square(np.abs(np.sum(np.exp(-1j * np.dot(k, X.T)), axis=1)))
+    n = points.shape[0]
+    if points.shape[1] != k.shape[1]:
+        raise ValueError("k and points should have same number of columns")
+
+    si = np.square(np.abs(np.sum(np.exp(-1j * np.dot(k, points.T)), axis=1)))
     si /= n
     return si
 
