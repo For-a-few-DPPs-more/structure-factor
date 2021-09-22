@@ -119,4 +119,5 @@ class EffectiveHyperuniform:
         if idx_peaks.size:
             self.i_first_peak = max(idx_peaks[0], 1)
             s_first_peak = sf[self.i_first_peak]
+
         return s0 / s_first_peak, s0_std
