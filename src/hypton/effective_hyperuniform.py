@@ -5,7 +5,7 @@ from scipy.signal import find_peaks
 from hypton.utils import _binning_function
 
 
-class EffectiveHyperuniform:
+class EffectiveHyperuniformity:
     r"""Test of effective hyperuniformity of a stationary isotropic (or effectively isotropic) point process :math:`\mathcal{X} \subset \mathbb{R}^2`.
 
     :math:`\mathcal{X}` is said to be effectively hyperuniform if :math:`H \leq 10^{-3}` where
@@ -27,8 +27,7 @@ class EffectiveHyperuniform:
 
         Add bibliographic reference.
     """
-    # ? How about EffectiveHyperuniformity instead of EffectiveHyperuniform.
-    # ? The later qualifies a class of point processes while former characterizes a property of a point process
+
     # ! Can't it be reduced to simple function calls to _binning_function and index_H?
 
     def __init__(self, norm_k, sf, std_sf=None):
