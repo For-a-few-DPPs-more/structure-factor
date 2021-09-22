@@ -6,7 +6,7 @@ from hypton.utils import _binning_function
 
 
 class EffectiveHyperuniform:
-    r"""Test of effective hyperuniformity of a point process :math:`\mathcal{X} \subset \mathbb{R}^2`.
+    r"""Test of effective hyperuniformity of a stationary isotropic (or effectively isotropic) point process :math:`\mathcal{X} \subset \mathbb{R}^2`.
 
     :math:`\mathcal{X}` is said to be effectively hyperuniform if :math:`H \leq 10^{-3}` where
 
@@ -31,15 +31,22 @@ class EffectiveHyperuniform:
     # ? The later qualifies a class of point processes while former characterizes a property of a point process
     # ! Can't it be reduced to simple function calls to _binning_function and index_H?
 
-    def __init__(self, norm_k, sf):
+    def __init__(self, norm_k, sf, std_sf=None):
         """
         Args:
             norm_k (numpy.ndarray): vector of wave lengths (i.e. norms of the waves).
 
             sf (numpy.ndarray): Evalutation of the structure factor at ``norm_k``.
+
+            std (numpy.1darray, optional): vector of standard deviation associated to ``sf``. Defaults to None.
+
         """
+        assert isinstance(norm_k, np.ndarray)
+        assert isinstance(sf, np.ndarray)
+        assert norm_k.shape == sf.shape
         self.norm_k = norm_k
         self.sf = sf
+        self.std_sf = std_sf
         self.fitted_line = None
         self.i_first_peak = None
 
@@ -50,20 +57,22 @@ class EffectiveHyperuniform:
             params(dict): parameters associated to :py:func:`~.hypton.utils._binning_function`.
 
         Returns:
-            bin_centers: vector of centers of the bins representing the new vector ``norm_k``.
+            self.norm_k(np.1darray): vector of centers of the bins representing the new vector ``norm_k``.
 
-            bin_mean: vector of means of the scattering intensity ``sf`` over the bins, representing the new vector ``sf``.
+            self.sf(np.1darray): vector of means of the scattering intensity ``sf`` over the bins, representing the new vector ``sf``.
 
-            bin_std: vector of standard deviations corresponding to ``bin_mean``.
+            self.std_sf(np.1darray): vector of standard deviations corresponding to ``bin_mean``.
 
         .. seealso::
             :py:func:`~utils._binning_function`
 
         """
-        return _binning_function(self.norm_k.ravel(), self.sf.ravel(), **params)
+        self.norm_k, self.sf, self.std_sf = _binning_function(
+            self.norm_k.ravel(), self.sf.ravel(), **params
+        )
+        return self.norm_k, self.sf, self.std_sf
 
-    #! c'est bizare qu'elle prend norm_k et sf qui sont deja des atribus de la class
-    def index_H(self, norm_k, sf, std=None, norm_k_stop=None):
+    def index_H(self, norm_k_stop=None):
         """Estimation of the effective hyperuniformity of a point process :math:`\mathcal{X} \subset \mathbb{R}^2` using the index :math:`H`.
 
         .. important::
@@ -73,17 +82,15 @@ class EffectiveHyperuniform:
 
 
         Args:
-            norm_k (numpy.1darray): vector of wave lengths (i.e. norms of the waves) on which the structure factor is provided.
-
-            sf (numpy.1darray): vector of the scattering intensity associated to ``norm_k``.
-
-            std (numpy.1darray, optional): vector of standard deviation associated to ``sf``. Defaults to None.
 
             norm_k_stop (float, optional): the bound on ``norm_k`` used for the linear regression. Defaults to None.
 
         Returns:
             the index :math:`H` and the standard deviations of numerator of :math:`H`.
         """
+        norm_k = self.norm_k
+        sf = self.sf
+        std = self.std_sf
 
         i = len(norm_k)
         if norm_k_stop is not None:
@@ -104,13 +111,12 @@ class EffectiveHyperuniform:
         self.fitted_line = lambda x: intercept + slope * x
 
         # Find first peak in structure factor (sf)
-        S0 = intercept
-        S0_std = np.sqrt(cov[0, 0])
+        s0 = intercept
+        s0_std = np.sqrt(cov[0, 0])
 
-        S_first_peak = 1
-        idx_peaks, _ = find_peaks(sf, height=S_first_peak)
+        s_first_peak = 1
+        idx_peaks, _ = find_peaks(sf, height=s_first_peak)
         if idx_peaks.size:
             self.i_first_peak = max(idx_peaks[0], 1)
-            S_first_peak = sf[self.i_first_peak]
-
-        return S0 / S_first_peak, S0_std
+            s_first_peak = sf[self.i_first_peak]
+        return s0 / s_first_peak, s0_std
