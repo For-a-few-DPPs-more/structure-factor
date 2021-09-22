@@ -23,10 +23,10 @@ def test_allowed_wave_values(L, max_k, meshgrid_size):
 @pytest.mark.parametrize(
     "k, points, expected",
     [
-        (np.array([[5], [5]]).T, np.array([np.zeros((6)), np.zeros((6))]).T, 6),
+        (np.full((1, 2), 5), np.full((6, 2), 0), 6),
         (
-            np.array([[2 * np.pi], [2 * np.pi]]).T,
-            np.array([np.ones((6)), np.ones((6))]).T,
+            np.full((1, 2), 2 * np.pi),
+            np.full((6, 2), 1),
             6,
         ),
     ],
