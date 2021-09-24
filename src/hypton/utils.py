@@ -47,6 +47,10 @@ def bessel2(order, x):
 ####### Theoretical structure factors
 
 
+def pair_correlation_function_ginibre(x):
+    return 1.0 - np.exp(-(x ** 2))
+
+
 def structure_factor_poisson(k):
     return np.ones_like(k)
 

@@ -1,51 +1,60 @@
 import os
 import pickle
 
-import hypton
 import numpy as np
-import numpy.random as npr
 import pytest
+
 from hypton.structure_factor import StructureFactor
-
-direc = os.path.dirname(os.path.abspath(__file__))
-my_data_path = os.path.join(direc, os.pardir, "data/test_pp.pickle")
-with open(my_data_path, "rb") as handle:
-    ginibre_pp = pickle.load(handle)
+from hypton.utils import pair_correlation_function_ginibre, structure_factor_ginibre
 
 
-def pcf_ginibre(x):
-    return 1 - np.exp(-(x ** 2))
+@pytest.fixture
+def radius():
+    return np.linspace(0, 80, 500)
 
 
-def sf_ginibre(x):
-    return 1 - np.exp(-(x ** 2) / 4)
+@pytest.fixture
+def norm_k():
+    return np.linspace(1, 10, 1000)
 
 
-r = np.linspace(0, 80, 500)
-k = np.linspace(1, 10, 1000)
+@pytest.fixture
+def ginibre_pp():
+    test_dir = os.path.dirname(os.path.abspath(__file__))
+    project_dir = os.path.join(test_dir, os.pardir)
+    path_to_file = os.path.join(project_dir, "data", "test_pp.pickle")
+    with open(path_to_file, "rb") as file:
+        ginibre_pp = pickle.load(file)
+    return ginibre_pp
 
 
-@pytest.mark.parametrize("r, pcf", [(r, pcf_ginibre(r))])
-def test_interpolate_pcf(r, pcf):
+def test_interpolate_pcf_ginibre(ginibre_pp, radius):
     sf_pp = StructureFactor(ginibre_pp)
-    _, result_pcf = sf_pp.interpolate_pcf(r, pcf)
+    pcf_r = pair_correlation_function_ginibre(radius)
+    _, interp_pcf = sf_pp.interpolate_pcf(radius, pcf_r)
     x = np.linspace(5, 10, 30)
-    np.testing.assert_almost_equal(pcf_ginibre(x), result_pcf(x))
+    computed_pcf = interp_pcf(x)
+    expected_pcf = pair_correlation_function_ginibre(x)
+    np.testing.assert_almost_equal(computed_pcf, expected_pcf)
 
 
-@pytest.mark.parametrize("pp, pcf, norm_k, rmax", [(ginibre_pp, pcf_ginibre, k, 80)])
-def test_compute_sf_hankel_quadrature(pp, pcf, norm_k, rmax):
-    sf_pp = StructureFactor(pp)
-    norm_k, sf = sf_pp.compute_sf_hankel_quadrature(
-        pcf, norm_k=norm_k, rmax=rmax, step_size=0.01, nb_points=1000
+def test_compute_structure_factor_ginibre_with_ogata(ginibre_pp, norm_k):
+    sf_pp = StructureFactor(ginibre_pp)
+    method = "Ogata"
+    params = dict(rmax=80, step_size=0.01, nb_points=1000)
+    norm_k, sf_computed = sf_pp.compute_sf_hankel_quadrature(
+        pair_correlation_function_ginibre, norm_k=norm_k, method=method, **params
     )
-    np.testing.assert_almost_equal(sf_ginibre(norm_k), sf)
+    sf_expected = structure_factor_ginibre(norm_k)
+    np.testing.assert_almost_equal(sf_computed, sf_expected)
 
 
-@pytest.mark.parametrize("pp, pcf, rmax", [(ginibre_pp, pcf_ginibre, 80)])
-def test_compute_sf_hankel_quadrature(pp, pcf, rmax):
-    sf_pp = StructureFactor(pp)
-    norm_k, sf = sf_pp.compute_sf_hankel_quadrature(
-        pcf, method="BaddourChouinard", rmax=rmax, nb_points=800
+def test_compute_structure_factor_ginibre_with_baddour_chouinard(ginibre_pp):
+    sf_pp = StructureFactor(ginibre_pp)
+    method = "BaddourChouinard"
+    params = dict(rmax=80, nb_points=800)
+    norm_k, sf_computed = sf_pp.compute_sf_hankel_quadrature(
+        pair_correlation_function_ginibre, norm_k=None, method=method, **params
     )
-    np.testing.assert_almost_equal(sf_ginibre(norm_k), sf)
+    sf_expected = structure_factor_ginibre(norm_k)
+    np.testing.assert_almost_equal(sf_computed, sf_expected)
