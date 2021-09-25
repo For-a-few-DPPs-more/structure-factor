@@ -34,7 +34,7 @@ def test_interpolate_pcf(r, pcf):
 
 
 @pytest.mark.parametrize("pp, pcf, norm_k, rmax", [(ginibre_pp, pcf_ginibre, k, 80)])
-def test_compute_sf_hankel_quadrature(pp, pcf, norm_k, rmax):
+def test_compute_sf_hankel_quadrature_Ogata(pp, pcf, norm_k, rmax):
     sf_pp = StructureFactor(pp)
     norm_k, sf = sf_pp.compute_sf_hankel_quadrature(
         pcf, norm_k=norm_k, rmax=rmax, step_size=0.01, nb_points=1000
@@ -43,7 +43,7 @@ def test_compute_sf_hankel_quadrature(pp, pcf, norm_k, rmax):
 
 
 @pytest.mark.parametrize("pp, pcf, rmax", [(ginibre_pp, pcf_ginibre, 80)])
-def test_compute_sf_hankel_quadrature(pp, pcf, rmax):
+def test_compute_sf_hankel_quadrature_Baddour(pp, pcf, rmax):
     sf_pp = StructureFactor(pp)
     norm_k, sf = sf_pp.compute_sf_hankel_quadrature(
         pcf, method="BaddourChouinard", rmax=rmax, nb_points=800
