@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 # coding=utf-8
 
-import numpy as np
-import matplotlib.pyplot as plt
-from scipy.special import j0, j1, jv, jn_zeros, y0, y1, yv
-from scipy import interpolate, stats
-
 # import pandas as pd
 import warnings
+
+import matplotlib.pyplot as plt
+import numpy as np
+from scipy import interpolate, stats
+from scipy.special import j0, j1, jn_zeros, jv, y0, y1, yv
+
 
 # todo consider a more specific name like set_nan_inf_to_zero
 def cleaning_data(array, nan=0, posinf=0, neginf=0):
@@ -41,6 +42,21 @@ def bessel2(order, x):
     if order == 1:
         return y1(x)
     return yv(order, x)
+
+
+####### Theoretical structure factors
+
+
+def pair_correlation_function_ginibre(x):
+    return 1.0 - np.exp(-(x ** 2))
+
+
+def structure_factor_poisson(k):
+    return np.ones_like(k)
+
+
+def structure_factor_ginibre(k):
+    return 1.0 - np.exp(-(k ** 2) / 4)
 
 
 # ? see difference between odd and even L why the final size of the meshgrid change?

@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+
 import hypton.utils as utils
 
 
@@ -11,13 +12,13 @@ import hypton.utils as utils
     ],
 )
 def test_allowed_wave_values(L, max_k, meshgrid_size):
+    # ? seems like a copy paste from original code
     x_k = np.arange(-max_k, max_k + 1, 1)
     x_k = x_k[x_k != 0]
     X, Y = np.meshgrid(x_k, x_k)
-    true_allowed_wave_values = 2 * np.pi * np.column_stack((X.ravel(), Y.ravel())) / L
-    assert np.equal(
-        utils.allowed_wave_values(L, max_k, meshgrid_size), true_allowed_wave_values
-    ).all()
+    expected = 2 * np.pi * np.column_stack((X.ravel(), Y.ravel())) / L
+    computed = utils.allowed_wave_values(L, max_k, meshgrid_size)
+    np.testing.assert_array_equal(computed, expected)
 
 
 @pytest.mark.parametrize(
@@ -32,6 +33,5 @@ def test_allowed_wave_values(L, max_k, meshgrid_size):
     ],
 )
 def test_compute_scattering_intensity(k, points, expected):
-    np.testing.assert_almost_equal(
-        utils.compute_scattering_intensity(k, points), expected
-    )
+    computed = utils.compute_scattering_intensity(k, points)
+    np.testing.assert_almost_equal(computed, expected)
