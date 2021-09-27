@@ -240,7 +240,7 @@ def plot_si_showcase(
 
     axis.set_xlabel("Wave length ($||\mathbf{k}||$)")
     axis.set_ylabel("Scattering intensity (SI)")
-    axis.legend(loc=4)
+    axis.legend(loc=4, framealpha=0.2)
 
     if file_name:
         fig = axis.get_figure()
@@ -255,7 +255,7 @@ def plot_si_imshow(norm_k, si, axis, file_name):
             "the scattering intensity should be evaluated on a meshgrid or choose plot_type = 'plot'. "
         )
     if axis is None:
-        _, axis = plt.subplots(figsize=(6, 6))
+        _, axis = plt.subplots(figsize=(14, 8))
     if len(norm_k.shape) < 2:
         raise ValueError(
             "the scattering intensity should be evaluated on a meshgrid or choose plot_type = 'plot'. "
@@ -271,7 +271,7 @@ def plot_si_imshow(norm_k, si, axis, file_name):
             cmap="PRGn",
         )
         plt.colorbar(f_0, ax=axis)
-        axis.title.set_text("Scattering intensity")
+        # axis.title.set_text("Scattering intensity")
 
         if file_name:
             fig = axis.get_figure()
