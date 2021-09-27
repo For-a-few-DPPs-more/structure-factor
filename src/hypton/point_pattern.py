@@ -76,7 +76,7 @@ class PointPattern(object):
             params["window"] = window.convert_to_spatstat_owin()
         return spatstat.geom.ppp(x, y, **params)
 
-    def plot(self, axis=None, window_res=None):
+    def plot(self, axis=None, window_res=None, c="k,", file_name=""):
         """Visualization of the plot of ``PointPattern.points``.
 
         Args:
@@ -88,7 +88,7 @@ class PointPattern(object):
             plot of ``PointPattern.points`` (in the restricted window window_res if specified).
         """
         if axis is None:
-            _, axis = plt.subplots(figsize=(5, 5))
+            fig, axis = plt.subplots(figsize=(5, 5))
 
         if window_res is None:
             points = self.points
@@ -97,6 +97,9 @@ class PointPattern(object):
             res_pp = self.restrict_to_window(window=window_res)
             points = res_pp.points
 
-        axis.plot(points[:, 0], points[:, 1], "k,")
+        axis.plot(points[:, 0], points[:, 1], c)
         axis.set_aspect("equal", "box")
+
+        if file_name:
+            fig.savefig(file_name, bbox_inches="tight")
         return axis
