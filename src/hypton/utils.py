@@ -10,8 +10,7 @@ from scipy import interpolate, stats
 from scipy.special import j0, j1, jn_zeros, jv, y0, y1, yv
 
 
-# todo consider a more specific name like set_nan_inf_to_zero
-def cleaning_data(array, nan=0, posinf=0, neginf=0):
+def set_nan_inf_to_zero(array, nan=0, posinf=0, neginf=0):
     """Set nan, posinf and neginf to 0."""
     return np.nan_to_num(array, nan=nan, posinf=posinf, neginf=neginf)
 
@@ -147,7 +146,7 @@ def compute_scattering_intensity(k, points):
 
 
 # todo Consider a more specific name ex bin_statistics
-def _binning_function(x, y, **params):
+def _bin_statistics(x, y, **params):
     """Divide ``x`` into bins and evaluate the mean and the standard deviation of the corresponding element of ``y`` over the each bin.
     This function calls `scipy.stats.binned_statistic` with keyword arguments (except `statistic`) provided by ``params``.
 
@@ -174,7 +173,7 @@ def _binning_function(x, y, **params):
 # todo clearer description of the function (loglog etc)
 def plot_summary(x, y, axis, label="Mean", **binning_params):
     """Plot means and errors bars (3 standard deviations)."""
-    bin_centers, bin_mean, bin_std = _binning_function(x, y, **binning_params)
+    bin_centers, bin_mean, bin_std = _bin_statistics(x, y, **binning_params)
     axis.loglog(bin_centers, bin_mean, "b.", label=label)
     axis.errorbar(
         bin_centers,
@@ -188,6 +187,7 @@ def plot_summary(x, y, axis, label="Mean", **binning_params):
         label="Error bar",
         zorder=4,
     )
+
     return axis
 
 
@@ -317,11 +317,12 @@ def plot_pcf(pcf_dataframe, exact_pcf, file_name, **kwargs):
         axis.plot(
             pcf_dataframe["r"],
             exact_pcf(pcf_dataframe["r"]),
+            "g",
             label="exact pcf",
         )
 
     axis.legend()
-    axis.set_xlabel("r")
+    axis.set_xlabel("Radius $r$")
     axis.set_ylabel("Pair correlation function $g(r)$")
 
     if file_name:

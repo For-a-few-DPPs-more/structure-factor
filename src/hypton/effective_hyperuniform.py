@@ -2,7 +2,7 @@ import numpy as np
 from scipy.optimize import curve_fit
 from scipy.signal import find_peaks
 
-from hypton.utils import _binning_function
+from hypton.utils import _bin_statistics
 
 
 class EffectiveHyperuniformity:
@@ -28,7 +28,7 @@ class EffectiveHyperuniformity:
         Add bibliographic reference.
     """
 
-    # ! Can't it be reduced to simple function calls to _binning_function and index_H?
+    # ! Can't it be reduced to simple function calls to _bin_statistics and index_H?
 
     def __init__(self, norm_k, sf, std_sf=None):
         """
@@ -53,7 +53,7 @@ class EffectiveHyperuniformity:
         """Regularization of the estimation of the structure factor, by spliting the vector ``norm_k`` into bins and we average the associated values of the vector ``sf`` and derive the standard deviation over each bins.
 
         Args:
-            params(dict): parameters associated to :py:func:`~.hypton.utils._binning_function`.
+            params(dict): parameters associated to :py:func:`~.hypton.utils._bin_statistics`.
 
         Returns:
             self.norm_k(np.1darray): vector of centers of the bins representing the new vector ``norm_k``.
@@ -63,10 +63,10 @@ class EffectiveHyperuniformity:
             self.std_sf(np.1darray): vector of standard deviations corresponding to ``bin_mean``.
 
         .. seealso::
-            :py:func:`~utils._binning_function`
+            :py:func:`~utils._bin_statistics`
 
         """
-        self.norm_k, self.sf, self.std_sf = _binning_function(
+        self.norm_k, self.sf, self.std_sf = _bin_statistics(
             self.norm_k.ravel(), self.sf.ravel(), **params
         )
         return self.norm_k, self.sf, self.std_sf

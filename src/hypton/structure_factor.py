@@ -136,7 +136,7 @@ class StructureFactor:
         **binning_params
     ):
         """Plot the result of the method :py:meth:`compute_sf_scattering_intensity`.
-        You can add the theoretical structure factor using ``exact_sf`` and visualize the mean and the variance over bins of the scattering intensity by specifying ``error_bar=True`` (this is donne using a binning method :py:meth:`utils._binning_function`).
+        You can add the theoretical structure factor using ``exact_sf`` and visualize the mean and the variance over bins of the scattering intensity by specifying ``error_bar=True`` (this is donne using a binning method :py:meth:`utils._bin_statistics`).
         The figure could be saved by specifying ``file_name``.
 
         Args:
@@ -266,7 +266,7 @@ class StructureFactor:
         rmin = np.min(r)
         rmax = np.max(r)
         if clean:
-            pcf_r = utils.cleaning_data(pcf_r)
+            pcf_r = utils.set_nan_inf_to_zero(pcf_r)
         return dict(rmin=rmin, rmax=rmax), interpolate.interp1d(r, pcf_r, **params)
 
     def compute_sf_hankel_quadrature(self, pcf, norm_k=None, method="Ogata", **params):
@@ -333,7 +333,7 @@ class StructureFactor:
         **binning_params
     ):
         """Display the output of :py:meth:`compute_sf_hankel_quadrature`.
-        You can add the theoretical structure factor using ``exact_sf`` (if it is known) and visualize the mean and the variance over bins of the scattering intensity by specifying ``error_bar=True`` (this is donne using a binning method :py:meth:`utils._binning_function`).
+        You can add the theoretical structure factor using ``exact_sf`` (if it is known) and visualize the mean and the variance over bins of the scattering intensity by specifying ``error_bar=True`` (this is donne using a binning method :py:meth:`utils._bin_statistics`).
         The figure could be saved by specifying ``file_name``.
 
         Args:
