@@ -145,7 +145,6 @@ def compute_scattering_intensity(k, points):
     return si
 
 
-# todo Consider a more specific name ex bin_statistics
 def _bin_statistics(x, y, **params):
     """Divide ``x`` into bins and evaluate the mean and the standard deviation of the corresponding element of ``y`` over the each bin.
     This function calls `scipy.stats.binned_statistic` with keyword arguments (except `statistic`) provided by ``params``.
@@ -170,9 +169,8 @@ def _bin_statistics(x, y, **params):
     return bin_centers, bin_mean, bin_std
 
 
-# todo clearer description of the function (loglog etc)
 def plot_summary(x, y, axis, label="Mean", **binning_params):
-    """Plot means and errors bars (3 standard deviations)."""
+    """loglog plot the summary results of _bin_statistics function i.e. means and errors bars (3 standard deviations)."""
     bin_centers, bin_mean, bin_std = _bin_statistics(x, y, **binning_params)
     axis.loglog(bin_centers, bin_mean, "b.", label=label)
     axis.errorbar(
@@ -191,21 +189,18 @@ def plot_summary(x, y, axis, label="Mean", **binning_params):
     return axis
 
 
-# todo clearer description of the function (loglog etc)
 def plot_exact(x, y, axis, label):
-    """Plot a callable function evaluated on a vector"""
+    """loglog plot of a callable function ``y`` evaluated on the vector ``x``"""
     axis.loglog(x, y(x), "g", label=label)
     return axis
 
 
-# todo clearer description of the function (loglog etc)
 def plot_approximation(x, y, label, axis, color, linestyle, marker):
-    """Plot a x and y"""
+    """loglog plot of ``y`` w.r.t. ``x``"""
     axis.loglog(x, y, color=color, linestyle=linestyle, marker=marker, label=label)
     return axis
 
 
-# todo clearer description of the function (loglog etc)
 def plot_si_showcase(
     norm_k,
     si,
@@ -215,7 +210,7 @@ def plot_si_showcase(
     file_name="",
     **binning_params
 ):
-    """Plot result of scattering intensity with means and error bar over bins."""
+    """loglog plot of the results of the scattering intensity :py:meth:`StructureFactor.compute_sf_scattering_intensity`, with the means and error bars over specific number of bins found via :py:meth:`utils._bin_statistics`."""
     # ? why .ravel()?
     # ravel is needed in plot_summary and for all the labels
     norm_k = norm_k.ravel()
