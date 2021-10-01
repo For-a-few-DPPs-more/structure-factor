@@ -28,8 +28,6 @@ class EffectiveHyperuniformity:
         Add bibliographic reference.
     """
 
-    # ! Can't it be reduced to simple function calls to _bin_statistics and index_H?
-
     def __init__(self, norm_k, sf, std_sf=None):
         """
         Args:
