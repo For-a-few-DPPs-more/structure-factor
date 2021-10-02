@@ -4,7 +4,7 @@
 import numpy as np
 from scipy import interpolate
 
-from hypton.utils import bessel1, bessel2, bessel1_zeros
+from hypton.utils import bessel1, bessel1_zeros, bessel2
 
 
 class RadiallySymmetricFourierTransform:

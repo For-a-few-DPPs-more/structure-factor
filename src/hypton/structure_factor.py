@@ -1,8 +1,9 @@
+import warnings
+
 import numpy as np
 import pandas as pd
 import rpy2.robjects as robjects
 import scipy.interpolate as interpolate
-import warnings
 
 import hypton.utils as utils
 from hypton.point_pattern import PointPattern
