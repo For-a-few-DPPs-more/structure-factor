@@ -2,11 +2,34 @@
 name = "hypton"
 version = "0.1.0"
 description = ""
-authors = ["dhawat <email@gmail.com>"]
 license = "MIT"
+authors = [
+    "Diala Hawat <diala.hawat@univ-lille.fr>",
+    "Guillaume Gautier <guillaume.gga@gmail.com>",
+]
+maintainers = [
+    "Diala Hawat <diala.hawat@univ-lille.fr>",
+    "Guillaume Gautier <guillaume.gga@gmail.com>",
+]
+readme = "README.md" # path to README file (.md or .rst)
+homepage = "https://github.com/For-a-few-DPPs-more/structure-factor"
+repository = "https://github.com/For-a-few-DPPs-more/structure-factor"
+documentation = "https://github.com/For-a-few-DPPs-more/structure-factor"
+keywords = [] # ["optimization", "gradrient descent"] at most 5 keywords
+classifiers = [
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Topic :: Scientific/Engineering :: Mathematics",
+] # https://pypi.org/classifiers/
+packages = []
+
+include = ["data/*"]
 
 [tool.poetry.dependencies]
 python = ">=3.8,<3.10"
+
 # poetry add name
 rpy2 = "^3.4.4"
 numpy = "^1.20.3"
@@ -15,13 +38,16 @@ matplotlib = "^3.4.2"
 pandas = "^1.2.4"
 
 # poetry add name --optional
+
+# Jupyter notebook
 jupyter = { version = "^1.0.0", optional = true }
 ipykernel = { version = "^5.5.3", optional = true }
+
+# Sphinx documentation https://www.sphinx-doc.org
 Sphinx = { version = "^4.0.3", optional = true }
 sphinx-rtd-theme = { version = "^0.5.2", optional = true }
 sphinx-autobuild = { version = "^2021.3.14", optional = true }
 sphinxcontrib-bibtex = { version = "^2.4.1", optional = true }
-ipdb = "^0.13.9"
 
 [tool.poetry.extras]
 # poetry install -E name
@@ -39,18 +65,18 @@ pytest = "^6.2.4"
 pytest-cov = "^2.12.1"
 pytest-subtests = "^0.5.0"
 
+pre-commit = "^2.15.0"
 black = { version = "^21.5b1", allow-prereleases = true }
 isort = "^5.9.3"
 pylint = "^2.8.2"
-
-pre-commit = "^2.15.0"
+pydocstyle = "^6.1.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.pytest.ini_options]
-# poetry run pytest --cov tests/
+# poetry run pytest --cov=hypton --cov-report=xml
 minversion = "6.0"
 addopts = "-ra -q -vv"
 testpaths = ["tests"]
