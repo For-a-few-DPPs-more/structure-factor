@@ -86,6 +86,25 @@ class PointPattern(object):
 
         Returns:
             plot of ``PointPattern.points`` (in the restricted window window_res if specified).
+
+        .. testsetup::
+
+            import numpy as np
+
+        .. testcode::
+
+            x = np.ones(4)
+            print(x.sum())
+
+        .. testoutput::
+
+            4.0
+
+        .. plot:: plots/plot_point_pattern.py
+            :include-source: True
+            :caption: My caption
+            :alt: alternate text
+            :align: center
         """
         if axis is None:
             fig, axis = plt.subplots(figsize=(5, 5))

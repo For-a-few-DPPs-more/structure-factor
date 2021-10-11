@@ -20,8 +20,8 @@ sys.path.insert(0, os.path.abspath("../src"))
 # -- Project information -----------------------------------------------------
 
 project = "hypton"
-copyright = "2021, dhawat"
-author = "diala"
+copyright = "2021, Diala Hawat"
+author = "Diala Hawat, Guillaume Gautier, Rémi Bardenet, and Raphael Lachieze-Rey"
 
 
 # -- General configuration ---------------------------------------------------
@@ -31,12 +31,13 @@ author = "diala"
 # ones.
 extensions = [
     "sphinx.ext.autodoc",
-    "sphinx.ext.napoleon",  # support google and numpy docstring style
-    "sphinx.ext.viewcode",
-    "sphinx.ext.todo",
     "sphinx.ext.doctest",
-    "sphinx.ext.mathjax",
-    "sphinxcontrib.bibtex",
+    "sphinx.ext.mathjax",  # LaTeX math rendering
+    "sphinx.ext.napoleon",  # support google and numpy docstring style
+    "sphinx.ext.todo",  # to-do snippet
+    "sphinx.ext.viewcode",
+    "sphinxcontrib.bibtex",  # Bibliography management
+    "matplotlib.sphinxext.plot_directive",  # Matplotlib plots rendering
 ]
 
 # The suffix(es) of source filenames.
@@ -75,7 +76,22 @@ autodoc_member_order = "bysource"
 
 # -- Extension configuration -------------------------------------------------
 
-# sphinxcontrib-bibtex https://sphinxcontrib-bibtex.readthedocs.io/en/latest/index.html
+# sphinxcontrib-bibtex
+# https://sphinxcontrib-bibtex.readthedocs.io/en/latest/index.html
 bibtex_bibfiles = ["./bibliography/bibliography.bib"]
 bibtex_encoding = "latin"
 # bibtex_reference_style = "alpha"  # alpha, plain , unsrt, and unsrtalpha
+
+# matplotlib.sphinxext.plot_directive
+# https://matplotlib.org/stable/api/sphinxext_plot_directive_api.html
+
+plot_include_source = True
+# plot_html_show_source_link =
+# plot_pre_code =
+# plot_basedir =
+# plot_formats =
+# plot_html_show_formats =
+# plot_rcparams =
+# plot_apply_rcparams =
+# plot_working_directory =
+# plot_template =
