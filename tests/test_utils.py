@@ -25,6 +25,7 @@ def test_allowed_wave_values(L, max_k, meshgrid_size):
     "k, points, expected",
     [
         (np.full((1, 2), 5), np.full((6, 2), 0), 6),
+        (np.full((1, 8), 2), np.full((6, 8), 0), 6),
         (
             np.full((1, 2), 2 * np.pi),
             np.full((6, 2), 1),

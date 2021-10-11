@@ -233,7 +233,7 @@ def plot_si_showcase(
     if error_bar:
         plot_summary(norm_k, si, axis=axis, **binning_params)
 
-    axis.set_xlabel("Wave length ($||\mathbf{k}||$)")
+    axis.set_xlabel("Wavenumber ($||\mathbf{k}||$)")
     axis.set_ylabel("Scattering intensity (SI)")
     axis.legend(loc=4, framealpha=0.2)
 
@@ -337,7 +337,7 @@ def plot_sf_hankel_quadrature(
         norm_k,
         sf,
         axis=axis,
-        label="approx $\mathcal{S}(k)$",
+        label="Approx $\mathcal{S}(k)$",
         marker=".",
         linestyle="",
         color="grey",
@@ -358,9 +358,10 @@ def plot_sf_hankel_quadrature(
             label="k_min",
         )
     axis.legend()
-    axis.set_xlabel("wave length k")
-    axis.set_ylabel("Approximated structure factor $\mathcal{S}(k)$")
+    axis.set_xlabel("Wavenumber k")
+    axis.set_ylabel("Structure factor $\mathcal{S}(k)$")
 
     if file_name:
+        fig = axis.get_figure()
         fig.savefig(file_name, bbox_inches="tight")
     return axis

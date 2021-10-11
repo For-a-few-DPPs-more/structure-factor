@@ -32,7 +32,6 @@ class StructureFactor:
             point_pattern (:py:class:`~hypton.point_pattern.PointPattern`): Object of type point pattern which contains a realization ``point_pattern.points`` of a point process, the window where the points were simulated ``point_pattern.points`` and (optionally) the ``point_pattern.intensity`` of the point process.
         """
         assert isinstance(point_pattern, PointPattern)
-        assert point_pattern.dimension == 2
         self.point_pattern = point_pattern
         self.intensity = point_pattern.intensity
         self.norm_k_min = None
@@ -204,6 +203,7 @@ class StructureFactor:
         Returns:
             pandas.DataFrame: version of the output of `spatstat.core.pcf.ppp <https://www.rdocumentation.org/packages/spatstat.core/versions/2.1-2/topics/pcf.ppp>`_ of `spatsta.core.pcf.fv <https://www.rdocumentation.org/packages/spatstat.core/versions/2.1-2/topics/pcf.fv>`_.
         """
+        assert self.point_pattern.dimension == 2 or self.point_pattern.dimension == 3
 
         assert method in ("ppp", "fv")
 
@@ -300,6 +300,7 @@ class StructureFactor:
 
             Typical usage: ``pcf`` is estimated using :py:meth:`compute_pcf` and then interpolated using :py:meth:`interpolate_pcf`.
         """
+        assert self.point_pattern.dimension == 2
         assert callable(pcf)
         if method == "Ogata" and norm_k.all() is None:
             raise ValueError(

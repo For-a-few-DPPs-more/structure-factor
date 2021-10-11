@@ -80,6 +80,6 @@ class TestHankelTransformWithBaddourChouinard(unittest.TestCase):
         np.testing.assert_almost_equal(
             actual,
             desired,
-            decimal=2,
+            decimal=0,
             err_msg="No worries if test fails, approximation wiggles around true transform (Gibbs phenomenon)",
         )
