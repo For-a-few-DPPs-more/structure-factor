@@ -1,9 +1,10 @@
 import os
+import pickle
 
 import numpy as np
+
 from hypton import utils
 from hypton.point_pattern import PointPattern
-import pickle
 from hypton.structure_factor import StructureFactor
 
 
