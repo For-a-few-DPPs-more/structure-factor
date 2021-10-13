@@ -118,3 +118,33 @@ class EffectiveHyperuniformity:
             s_first_peak = sf[self.i_first_peak]
 
         return s0 / s_first_peak, s0_std
+
+    def power_decay(self, norm_k_stop):
+        r"""Fit a polynomial of the form :math:`y = a + x^b`, where `a` correspond to :math:`S(0)` and the power `b` is used to study the class of hyperuniformity by looking for the power decay of the structure factor
+        #todo add definition of class of hyperuniformity
+
+        Args:
+
+            norm_k_stop (float, optional): the bound on ``norm_k`` used for the linear regression. Defaults to None.
+
+        Returns:
+
+            The power decay of the structure factor and the associated approximated :math:`S(0)`.
+        """
+        norm_k = self.norm_k
+        sf = self.sf
+        std = self.std_sf
+        # fit polynomial
+        poly = lambda x, a, b: a + x ** b
+
+        i = len(norm_k)
+        if norm_k_stop is not None:
+            # index of the closest value to k_stop in norm_k
+            i = np.argmin(np.abs(norm_k.ravel() - norm_k_stop))
+
+        xdata = norm_k[:i]
+        ydata = sf[:i]
+        sigma = std[:i] if std is not None else None
+        # fit a poly and find the power (b) and the intercept (a corresponding to S(0))
+        (intercept, power), _ = curve_fit(f=poly, xdata=xdata, ydata=ydata, sigma=sigma)
+        return power, intercept
