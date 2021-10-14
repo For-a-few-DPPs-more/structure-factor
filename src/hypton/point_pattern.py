@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import numpy as np
 from rpy2 import robjects
 from spatstat_interface.interface import SpatstatInterface
 
@@ -26,8 +27,9 @@ class PointPattern(object):
 
             intensity(float, optional): intensity of the point process. Defaults to None.
         """
-        assert points.ndim == 2
-        self.points = points
+        _points = np.array(points)
+        assert _points.ndim == 2
+        self.points = _points
 
         if window is not None:
             assert isinstance(window, AbstractSpatialWindow)
@@ -36,7 +38,7 @@ class PointPattern(object):
         if intensity is not None:
             assert intensity > 0
         elif window is not None:
-            intensity = points.shape[0] / window.volume
+            intensity = self.points.shape[0] / window.volume
 
         self.intensity = intensity
 
