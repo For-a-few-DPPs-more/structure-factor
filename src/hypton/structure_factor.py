@@ -30,11 +30,10 @@ class StructureFactor:
     def __init__(self, point_pattern):
         r"""
         Args:
-            point_pattern (:py:class:`~hypton.point_pattern.PointPattern`): Object of type point pattern which contains a realization ``point_pattern.points`` of a point process, the window where the points were simulated ``point_pattern.points`` and (optionally) the ``point_pattern.intensity`` of the point process.
+            point_pattern (:py:class:`~hypton.point_pattern.PointPattern`): Object of type point pattern which contains a realization ``point_pattern.points`` of a point process, the window where the points were simulated ``point_pattern.window`` and (optionally) the ``point_pattern.intensity`` of the point process.
         """
         assert isinstance(point_pattern, PointPattern)
         self.point_pattern = point_pattern
-        self.intensity = point_pattern.intensity
         self.norm_k_min = None
 
     @property
@@ -42,6 +41,7 @@ class StructureFactor:
         """Ambient dimension of the underlying point process."""
         return self.point_pattern.dimension
 
+    # todo make a pass on the docstring, too verbose and not cristal clear
     def compute_sf_scattering_intensity(
         self,
         k_vector=None,
@@ -74,12 +74,12 @@ class StructureFactor:
         So it's recommended to not specify the vector of wave ``k_vector``, but to either specify a meshgrid size and the maximum component of the wave vector respectively via ``meshgrid_size`` and ``max_k`` if you need to evaluate the scattering intensity on a meshgrid of allowed values (see example of ...) or just the maximum component of the wave vector ``max_k`` if you need to evaluate the scattering intensity on a vector of allowed values. see :py:meth:`utils.allowed__wave_values`.
 
         Args:
-
+            # ?! why a list of arrays instead of a 2d array
             k_vector (list): list containing the 2 numpy.ndarray corresponding to the x and y components of the wave vector. As we mentioned before it recommended to keep the default k_vector and to specify max_k instead, so that the approximation will be evaluated on a list of allowed values. Defaults to None.
 
             max_k (float, optional): Maximum component of the allowed wave vector. Defaults to None.
 
-            meshgrid_size (int, optional): Size of the meshgrid of allowed values if ``k_vector`` is set to None and ``max_k`` is specified. Warning: setting big value in ``meshgrid_size`` could be time consuming and harmful to your machine for large sample of points. Defaults to None.
+            meshgrid_size (int, optional): Size of the meshgrid of allowed values when ``k_vector`` is None and ``max_k`` is specified. Warning: setting large value in ``meshgrid_size`` could be time consuming and harmful to your machine for large sample of points. Defaults to None.
 
             max_add_k (int, optional): Maximum component of the allowed wave vectors to be add. In other words, in the case of the evaluation on a vector of allowed values (without specifying ``meshgrid_size``),  ``max_add_k`` can be used to add allowed values in a certain region for better precision. Warning: setting big value in ``max_add_k`` could be time consuming and harmful to your machine for large sample of points. Defaults to 1.
 
@@ -116,6 +116,7 @@ class StructureFactor:
         si = utils.compute_scattering_intensity(k_vector, point_pattern.points)
         norm_k_vector = np.linalg.norm(k_vector, axis=1)
 
+        # ! shape_x_k_vector not defined if k_vector is None
         if meshgrid_size is not None or len(shape_x_k_vector) == 2:
             shape_mesh = int(np.sqrt(norm_k_vector.shape[0]))
             norm_k_vector = norm_k_vector.reshape(shape_mesh, shape_mesh)
@@ -200,7 +201,9 @@ class StructureFactor:
 
             install_spatstat (bool, optional): If it is set to ``True`` then the `R` package `spatstat <https://github.com/spatstat/spatstat>`_  will be updated or installed (if not present), see also the `spatstat-interface <https://github.com/For-a-few-DPPs-more/spatstat-interface>`_ Python package.
 
-            Keyword Args (params):
+        Keyword Args:
+
+            params (dict):
 
                 - if ``method = "ppp"``
                     - keyword arguments of `spastat.core.pcf.ppp <https://rdrr.io/cran/spatstat.core/man/pcf.ppp.html>`_)
@@ -327,7 +330,7 @@ class StructureFactor:
             step_size = params["step_size"]
             # todo il y a une fonct qui le fait why not used????
             self.norm_k_min = (2.7 * np.pi) / (params["rmax"] * step_size)
-        sf = 1.0 + self.intensity * ft_k
+        sf = 1.0 + self.point_pattern.intensity * ft_k
         return norm_k, sf
 
     def plot_sf_hankel_quadrature(
