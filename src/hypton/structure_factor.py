@@ -4,11 +4,11 @@ import numpy as np
 import pandas as pd
 import rpy2.robjects as robjects
 import scipy.interpolate as interpolate
+from spatstat_interface.interface import SpatstatInterface
 
 import hypton.utils as utils
 from hypton.point_pattern import PointPattern
 from hypton.spatial_windows import BoxWindow
-from hypton.spatstat_interface import SpatstatInterface
 from hypton.transforms import RadiallySymmetricFourierTransform
 
 

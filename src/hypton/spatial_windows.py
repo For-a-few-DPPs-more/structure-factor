@@ -6,8 +6,8 @@ from abc import ABCMeta, abstractmethod
 import numpy as np
 import scipy as sp
 from rpy2 import robjects
+from spatstat_interface.interface import SpatstatInterface
 
-from hypton.spatstat_interface import SpatstatInterface
 from hypton.utils import get_random_number_generator
 
 

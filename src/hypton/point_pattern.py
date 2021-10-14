@@ -1,8 +1,8 @@
 import matplotlib.pyplot as plt
 from rpy2 import robjects
+from spatstat_interface.interface import SpatstatInterface
 
 from hypton.spatial_windows import AbstractSpatialWindow
-from hypton.spatstat_interface import SpatstatInterface
 
 
 class PointPattern(object):

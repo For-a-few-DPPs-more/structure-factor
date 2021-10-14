@@ -13,7 +13,6 @@ Welcome to structure-factor's documentation:
    effective_hyperuniform
    point_pattern
    spatial_windows
-   spatstat_interface
    structure_factor
    transforms
    utils

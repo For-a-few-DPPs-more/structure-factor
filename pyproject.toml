@@ -23,20 +23,31 @@ classifiers = [
     "Programming Language :: Python :: 3.9",
     "Topic :: Scientific/Engineering :: Mathematics",
 ] # https://pypi.org/classifiers/
+
+# https://python-poetry.org/docs/pyproject/#packages
 packages = []
 
-include = ["data/*"]
+# https://python-poetry.org/docs/pyproject/#include-and-exclude
+# unexpected behavior when using include = ["data/**/*"]
+# will put data at root of site-packages not in package folder
+# https://github.com/python-poetry/poetry/issues/2015
+# Fall back: create a subpackage src/packagename/data
+include = []
+exclude = []
 
 [tool.poetry.dependencies]
 python = ">=3.8,<3.10"
 
+# Main dependencies
 # poetry add name
 rpy2 = "^3.4.4"
+spatstat-interface = "^0.1.0"
 numpy = "^1.20.3"
 scipy = "^1.6.3"
 matplotlib = "^3.4.2"
 pandas = "^1.2.4"
 
+# Optional dependencies
 # poetry add name --optional
 
 # Jupyter notebook
@@ -45,18 +56,12 @@ jupyter = { version = "^1.0.0", optional = true }
 # Sphinx documentation https://www.sphinx-doc.org
 Sphinx = { version = "^4.0.3", optional = true }
 sphinx-rtd-theme = { version = "^0.5.2", optional = true }
-sphinx-autobuild = { version = "^2021.3.14", optional = true }
 sphinxcontrib-bibtex = { version = "^2.4.1", optional = true }
 
 [tool.poetry.extras]
 # poetry install -E name
-notebook = ["jupyter", "ipykernel"]
-docs = [
-    "Sphinx",
-    "sphinx-rtd-theme",
-    "sphinx-autobuild",
-    "sphinxcontrib-bibtex",
-]
+notebook = ["jupyter"]
+docs = ["Sphinx", "sphinx-rtd-theme", "sphinxcontrib-bibtex"]
 
 [tool.poetry.dev-dependencies]
 # poetry add name --dev
@@ -79,3 +84,15 @@ build-backend = "poetry.core.masonry.api"
 minversion = "6.0"
 addopts = "-ra -q -vv"
 testpaths = ["tests"]
+
+
+# For other tools to be black compliant
+# https://black.readthedocs.io/en/stable/guides/using_black_with_other_tools.html
+[tool.isort]
+profile = "black"
+
+[tool.pylint.messages_control]
+disable = "C0330, C0326"
+
+[tool.pylint.format]
+max-line-length = "88"

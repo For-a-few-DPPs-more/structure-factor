@@ -6,7 +6,12 @@ Approximate the structure facture of a point pattern, (a stationary point proces
  In condensed matter physics, it has been observed for some particle systems that, the variance of the number of points in a large window is lower than expected, a phenomenon called hyperuniformity.
 ## Installation
 
-TBC
+### Requirements
+
+Currently, the project calls the `spatstat` R package
+
+- [R programming language](https://www.r-project.org/)
+- project dependencies, see [`tool.poetry.dependencies` in `pyproject.toml`](./pyproject.toml)
 
 ## How to use it
 
@@ -18,12 +23,12 @@ TBC
 
 We build the documentation with [Sphinx](https://www.sphinx-doc.org/en/master/index.html) from `.rst` (reStructuredText) files.
 
-* [Sphinx documentation](https://www.sphinx-doc.org/en/master/index.html)
-* [rst cheatsheet](https://docs.typo3.org/m/typo3/docs-how-to-document/master/en-us/WritingReST/CheatSheet.html
+- [Sphinx documentation](https://www.sphinx-doc.org/en/master/index.html)
+- [rst cheatsheet](https://docs.typo3.org/m/typo3/docs-how-to-document/master/en-us/WritingReST/CheatSheet.html
 )
-* Examples
-  + [DPPy](https://github.com/guilgautier/DPPy) and  [online documentation](https://dppy.readthedocs.io/en/latest/?badge=latest)
-  + [rlberry-py](https://github.com/rlberry-py/rlberry) and [online documentation](https://rlberry.readthedocs.io/en/latest/?badge=latest)
+- Examples
+  - [DPPy](https://github.com/guilgautier/DPPy) and  [online documentation](https://dppy.readthedocs.io/en/latest/?badge=latest)
+  - [rlberry-py](https://github.com/rlberry-py/rlberry) and [online documentation](https://rlberry.readthedocs.io/en/latest/?badge=latest)
 
 ### Remotely
 
