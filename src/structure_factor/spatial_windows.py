@@ -8,7 +8,7 @@ import scipy as sp
 from rpy2 import robjects
 from spatstat_interface.interface import SpatstatInterface
 
-from hypton.utils import get_random_number_generator
+from structure_factor.utils import get_random_number_generator
 
 
 class AbstractSpatialWindow(metaclass=ABCMeta):

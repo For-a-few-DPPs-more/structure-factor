@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-import hypton.utils as utils
+import structure_factor.utils as utils
 
 
 @pytest.mark.parametrize(

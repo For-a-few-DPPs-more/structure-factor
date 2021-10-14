@@ -1,8 +1,8 @@
 import numpy as np
 import pytest
 
-from hypton.effective_hyperuniform import EffectiveHyperuniformity
-from hypton.utils import structure_factor_ginibre, structure_factor_poisson
+from structure_factor.effective_hyperuniform import EffectiveHyperuniformity
+from structure_factor.utils import structure_factor_ginibre, structure_factor_poisson
 
 k = np.linspace(0, 10, 100)
 

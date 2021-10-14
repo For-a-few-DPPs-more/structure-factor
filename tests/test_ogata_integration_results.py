@@ -6,8 +6,8 @@ import unittest
 import numpy as np
 from scipy.special import k0
 
-from hypton.transforms import HankelTransformOgata
-from hypton.utils import bessel1, bessel1_zeros, bessel2
+from structure_factor.transforms import HankelTransformOgata
+from structure_factor.utils import bessel1, bessel1_zeros, bessel2
 
 
 def ogata_integrate_with_abs_monomial(f, nu=0, h=0.1, n=100, f_even=False):

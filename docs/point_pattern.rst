@@ -1,7 +1,7 @@
 Point pattern
 ##############
 
-.. automodule:: hypton.point_pattern
+.. automodule:: structure_factor.point_pattern
     :members:
     :inherited-members:
     :show-inheritance:

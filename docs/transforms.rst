@@ -1,7 +1,7 @@
 Transforms
 ##########
 
-.. automodule:: hypton.transforms
+.. automodule:: structure_factor.transforms
     :members:
     :inherited-members:
     :show-inheritance:

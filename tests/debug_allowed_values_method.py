@@ -3,9 +3,9 @@ import pickle
 
 import numpy as np
 
-from hypton import utils
-from hypton.point_pattern import PointPattern
-from hypton.structure_factor import StructureFactor
+from structure_factor import utils
+from structure_factor.point_pattern import PointPattern
+from structure_factor.structure_factor import StructureFactor
 
 
 def pcf_ginibre(x):

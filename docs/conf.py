@@ -19,7 +19,7 @@ sys.path.insert(0, os.path.abspath("../src"))
 
 # -- Project information -----------------------------------------------------
 
-project = "hypton"
+project = "structure_factor"
 copyright = "2021, Diala Hawat"
 author = "Diala Hawat, Guillaume Gautier, Rémi Bardenet, and Raphael Lachieze-Rey"
 

@@ -6,10 +6,10 @@ import rpy2.robjects as robjects
 import scipy.interpolate as interpolate
 from spatstat_interface.interface import SpatstatInterface
 
-import hypton.utils as utils
-from hypton.point_pattern import PointPattern
-from hypton.spatial_windows import BoxWindow
-from hypton.transforms import RadiallySymmetricFourierTransform
+import structure_factor.utils as utils
+from structure_factor.point_pattern import PointPattern
+from structure_factor.spatial_windows import BoxWindow
+from structure_factor.transforms import RadiallySymmetricFourierTransform
 
 
 class StructureFactor:
@@ -30,7 +30,7 @@ class StructureFactor:
     def __init__(self, point_pattern):
         r"""
         Args:
-            point_pattern (:py:class:`~hypton.point_pattern.PointPattern`): Object of type point pattern which contains a realization ``point_pattern.points`` of a point process, the window where the points were simulated ``point_pattern.window`` and (optionally) the ``point_pattern.intensity`` of the point process.
+            point_pattern (:py:class:`~structure_factor.point_pattern.PointPattern`): Object of type point pattern which contains a realization ``point_pattern.points`` of a point process, the window where the points were simulated ``point_pattern.window`` and (optionally) the ``point_pattern.intensity`` of the point process.
         """
         assert isinstance(point_pattern, PointPattern)
         self.point_pattern = point_pattern
@@ -63,7 +63,7 @@ class StructureFactor:
 
         The scattering intensity converges to the structure factor in the thermodynamic limits.
         The scattering intensity can be evaluated on any vector (np.array or meshgrid) of waves by precising the argument k_vector.
-        Nevertheless, the estimation of the structure factor by the scattering intensity is valid for point process sampled in a cubic window (or restricted to a box window via the method restrict_to_window of the class :py:class:`~hypton.point_pattern.PointPattern` for more details see paper...) and on a specific vector of allowed values of waves corresponding to the dual of the lattice having as fundamental cell the sample of points.
+        Nevertheless, the estimation of the structure factor by the scattering intensity is valid for point process sampled in a cubic window (or restricted to a box window via the method restrict_to_window of the class :py:class:`~structure_factor.point_pattern.PointPattern` for more details see paper...) and on a specific vector of allowed values of waves corresponding to the dual of the lattice having as fundamental cell the sample of points.
         In other words, if the points are simulated in a cubic window of length :math:`L`, then the vector of allowed is
 
         .. math::
@@ -155,7 +155,7 @@ class StructureFactor:
 
             file_name (str, optional): name used to save the figure. The available output formats depend on the backend being used. Defaults to "".
 
-            window_res (:py:class:`~hypton.spatial_windows.AbstractSpatialWindow`, optional): This could be used when the sample of points is large, so for time and visualization purpose it's better to restrict the plot of the sample of points to a smaller window.  Defaults to None.
+            window_res (:py:class:`~structure_factor.spatial_windows.AbstractSpatialWindow`, optional): This could be used when the sample of points is large, so for time and visualization purpose it's better to restrict the plot of the sample of points to a smaller window.  Defaults to None.
         """
 
         if plot_type == "radial":
@@ -290,16 +290,16 @@ class StructureFactor:
             # todo why not simply k ?
             norm_k (numpy.ndarray, optional): vector of wave lengths (i.e. norm of wave vectors) where the structure factor is to be evaluated. Defaults to None.
 
-            method (str, optional): Choose between ``"Ogata"`` or ``"BaddourChouinard"``. Defaults to ``"Ogata"``. This selects the method used to compute the Fourier transform of :math:`g`, via the `correspondence with the Hankel transform <https://en.wikipedia.org/wiki/Hankel_transform#Fourier_transform_in_d_dimensions_(radially_symmetric_case)>`_, see :py:class:`~hypton.transforms.HankelTransformOgata` and :py:class:`~hypton.transforms.HankelTransformBaddourChouinard`.
+            method (str, optional): Choose between ``"Ogata"`` or ``"BaddourChouinard"``. Defaults to ``"Ogata"``. This selects the method used to compute the Fourier transform of :math:`g`, via the `correspondence with the Hankel transform <https://en.wikipedia.org/wiki/Hankel_transform#Fourier_transform_in_d_dimensions_(radially_symmetric_case)>`_, see :py:class:`~structure_factor.transforms.HankelTransformOgata` and :py:class:`~structure_factor.transforms.HankelTransformBaddourChouinard`.
 
         Keyword Args (params):
             Keyword arguments passed to the corresponding Hankel transformer selected according to the ``method`` argument.
 
-            - ``method == "Ogata"``, see :py:meth:`~hypton.transforms.HankelTransformOgata.compute_transformation_parameters`
+            - ``method == "Ogata"``, see :py:meth:`~structure_factor.transforms.HankelTransformOgata.compute_transformation_parameters`
                 - ``step_size``
                 - ``nb_points``
 
-            - ``method == "BaddourChouinard"``, see :py:meth:`~hypton.transforms.HankelTransformBaddourChouinard.compute_transformation_parameters`
+            - ``method == "BaddourChouinard"``, see :py:meth:`~structure_factor.transforms.HankelTransformBaddourChouinard.compute_transformation_parameters`
                 - ``rmax``
                 - ``nb_points``
                 - ``interpolotation`` dictonnary containing the keyword arguments of `scipy.integrate.interp1d <https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html>`_ parameters.

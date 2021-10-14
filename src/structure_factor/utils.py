@@ -353,7 +353,7 @@ def plot_sf_hankel_quadrature(
     label="$\widehat{S}_{H}$",
     **binning_params
 ):
-    """Plot approximation of structure factor using :py:meth:`~.hypton.compute_sf_hankel_quadrature` with means and error bars over bins."""
+    """Plot approximation of structure factor using :py:meth:`~.structure_factor.compute_sf_hankel_quadrature` with means and error bars over bins."""
     if axis is None:
         fig, axis = plt.subplots(figsize=(8, 5))
 

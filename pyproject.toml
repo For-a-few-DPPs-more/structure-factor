@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "hypton"
+name = "structure_factor"
 version = "0.1.0"
 description = ""
 license = "MIT"
@@ -80,7 +80,7 @@ requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.pytest.ini_options]
-# poetry run pytest --cov=hypton --cov-report=xml
+# poetry run pytest --cov=structure_factor --cov-report=xml
 minversion = "6.0"
 addopts = "-ra -q -vv"
 testpaths = ["tests"]

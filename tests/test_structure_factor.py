@@ -4,8 +4,11 @@ import pickle
 import numpy as np
 import pytest
 
-from hypton.structure_factor import StructureFactor
-from hypton.utils import pair_correlation_function_ginibre, structure_factor_ginibre
+from structure_factor.structure_factor import StructureFactor
+from structure_factor.utils import (
+    pair_correlation_function_ginibre,
+    structure_factor_ginibre,
+)
 
 
 @pytest.fixture

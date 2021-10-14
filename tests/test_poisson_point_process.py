@@ -2,8 +2,8 @@ import numpy as np
 import pytest
 from scipy.stats import norm
 
-from hypton.homogeneous_poisson_process import HomogeneousPoissonPointProcess
-from hypton.spatial_windows import BoxWindow
+from structure_factor.homogeneous_poisson_process import HomogeneousPoissonPointProcess
+from structure_factor.spatial_windows import BoxWindow
 
 
 @pytest.mark.parametrize(

@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 from rpy2 import robjects
 from spatstat_interface.interface import SpatstatInterface
 
-from hypton.spatial_windows import AbstractSpatialWindow
+from structure_factor.spatial_windows import AbstractSpatialWindow
 
 
 class PointPattern(object):
@@ -11,7 +11,7 @@ class PointPattern(object):
     .. note::
 
         Typical usage:
-            -The class :py:class:`~.hypton.StructureFactor` take an object of type ``PointPattern``.
+            -The class :py:class:`~.structure_factor.StructureFactor` take an object of type ``PointPattern``.
 
             -Convert Python :py:class:`PointPattern` object to `spatstat <https://cran.r-project.org/web/packages/spatstat/index.html#:~:text=spatstat%3A%20Spatial%20Point%20Pattern%20Analysis,for%20analysing%20Spatial%20Point%20Patterns.&text=Contains%20over%202000%20functions%20for,model%20diagnostics%2C%20and%20formal%20inference>`_ point pattern R object.
     """

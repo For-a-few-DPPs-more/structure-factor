@@ -2,7 +2,7 @@ import numpy as np
 from scipy.optimize import curve_fit
 from scipy.signal import find_peaks
 
-from hypton.utils import _bin_statistics
+from structure_factor.utils import _bin_statistics
 
 
 #! change the name of the class and the module to hyperuniformity
@@ -22,7 +22,7 @@ class EffectiveHyperuniformity:
 
         **Typical usage**:
 
-        Estimating the structure factor of a point process by one of the method of the class :py:class:`~.hypton.StructureFactor`, then testing the effective hyperuniformity using :py:meth:`~EffectiveHyperuniform.index_H`.
+        Estimating the structure factor of a point process by one of the method of the class :py:class:`~.structure_factor.StructureFactor`, then testing the effective hyperuniformity using :py:meth:`~EffectiveHyperuniform.index_H`.
 
     .. todo::
 
@@ -52,7 +52,7 @@ class EffectiveHyperuniformity:
         """Regularization of the estimation of the structure factor, by spliting the vector ``norm_k`` into bins and we average the associated values of the vector ``sf`` and derive the standard deviation over each bins.
 
         Args:
-            params(dict): parameters associated to :py:func:`~.hypton.utils._bin_statistics`.
+            params(dict): parameters associated to :py:func:`~.structure_factor.utils._bin_statistics`.
 
         Returns:
             self.norm_k(np.1darray): vector of centers of the bins representing the new vector ``norm_k``.

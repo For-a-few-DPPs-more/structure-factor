@@ -1,7 +1,7 @@
 Utils
 ################
 
-.. automodule:: hypton.utils
+.. automodule:: structure_factor.utils
     :members:
     :inherited-members:
     :show-inheritance:

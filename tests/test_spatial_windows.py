@@ -1,8 +1,8 @@
 import numpy as np
 import pytest
 
-from hypton.spatial_windows import BallWindow, BoxWindow, UnitBoxWindow
-from hypton.utils import get_random_number_generator
+from structure_factor.spatial_windows import BallWindow, BoxWindow, UnitBoxWindow
+from structure_factor.utils import get_random_number_generator
 
 ##### BallWindow
 
