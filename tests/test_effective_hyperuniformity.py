@@ -7,6 +7,14 @@ from hypton.utils import structure_factor_ginibre, structure_factor_poisson
 k = np.linspace(0, 10, 100)
 
 
+def f(c, alpha, x):
+    return c * x ** alpha
+
+
+x_1 = np.linspace(0, 3, 100)
+x_2 = np.linspace(0.5, 2, 50)
+
+
 @pytest.mark.parametrize(
     "k, sf_k, expected",
     [
@@ -22,3 +30,15 @@ def test_hyperuniformity_index(k, sf_k, expected):
     index_H, _ = hyp_test.index_H(norm_k_stop=4)
     result = index_H < 1e-3
     assert result == expected
+
+
+@pytest.mark.parametrize(
+    "x, fx, c, alpha",
+    [
+        (x_1, f(8, 2, x_1), 8, 2),
+        (x_2, f(6, 0.5, x_2), 6, 0.5),
+    ],
+)
+def test_power_decay(x, fx, c, alpha):
+    test = EffectiveHyperuniformity(x, fx)
+    assert alpha, c == test.power_decay()

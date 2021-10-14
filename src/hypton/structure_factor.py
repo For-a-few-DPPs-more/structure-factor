@@ -88,7 +88,7 @@ class StructureFactor:
             si (numpy.ndarray): The evaluation of the scattering intensity corresponding to the vector of wave length ``norm_k_vector``.
         """
         # todo ajouter la possibilité d'entré  plusieur echantillion
-        # todo utuliser l'intensité et le volume au lieu de N dans la formule i.e. remplacer N pas intensité*volume de la fenetre
+        # todo possibilité d'utiliser l'intensité et le volume au lieu de N dans la formule i.e. remplacer N pas intensité*volume de la fenetre
         if self.dimension != 2:
             warnings.warn(
                 message="The package actually is applicable for 2 dimensional point process",
@@ -127,7 +127,7 @@ class StructureFactor:
         self,
         norm_k,
         si,
-        plot_type="plot",
+        plot_type="radial",
         axes=None,
         exact_sf=None,
         error_bar=False,
@@ -144,7 +144,7 @@ class StructureFactor:
 
             si (numpy.ndarray): vector of scattering intensity.
 
-            plot_type (str, optional): ("plot", "imshow", "all"). Precision of the type of the plot we want to visualize. If "plot" is used then the output is a loglog plot. If "imshow" is used then the output is a color level plot. if "all" is used the the results are 3 subplots: the point pattern (or a restriction to a specific window if ``window_res`` is set), the loglog plots, and the color level plot. Note that you can not use the option "imshow" or "all", if ``norm_k`` is not a meshgrid. Defaults to "plot".
+            plot_type (str, optional): ("radial", "imshow", "all"). Precision of the type of the plot we want to visualize. If "radial" is used then the output is a loglog plot. If "imshow" is used then the output is a color level plot. if "all" is used the the results are 3 subplots: the point pattern (or a restriction to a specific window if ``window_res`` is set), the loglog plots, and the color level plot. Note that you can not use the option "imshow" or "all", if ``norm_k`` is not a meshgrid. Defaults to "radial".
 
             axes (axis, optional): the support axis of the plots. Defaults to None.
 
@@ -157,14 +157,22 @@ class StructureFactor:
             window_res (:py:class:`~hypton.spatial_windows.AbstractSpatialWindow`, optional): This could be used when the sample of points is large, so for time and visualization purpose it's better to restrict the plot of the sample of points to a smaller window.  Defaults to None.
         """
 
-        if plot_type == "plot":
+        if plot_type == "radial":
             return utils.plot_si_showcase(
                 norm_k, si, axes, exact_sf, error_bar, file_name, **binning_params
             )
         elif plot_type == "imshow":
+            if np.min(norm_k.shape) < 2:
+                raise ValueError(
+                    "imshow require a meshgrid data. Choose plot_type= 'radial' or re-evaluate the scattering intensity on a meshgrid of waves vector."
+                )
             return utils.plot_si_imshow(norm_k, si, axes, file_name)
 
         elif plot_type == "all":
+            if np.min(norm_k.shape) < 2:
+                raise ValueError(
+                    "imshow require a meshgrid data. Choose plot_type ='radial' or re-evaluate the scattering intensity on a meshgrid of waves vector."
+                )
             return utils.plot_si_all(
                 self.point_pattern,
                 norm_k,
@@ -177,7 +185,7 @@ class StructureFactor:
             )
         else:
             raise ValueError(
-                "plot_type must be chosen among ('all', 'plot', 'imshow')."
+                "plot_type must be chosen among ('all', 'radial', 'imshow')."
             )
 
     def compute_pcf(self, method="fv", install_spatstat=False, **params):
@@ -228,8 +236,7 @@ class StructureFactor:
             k_ripley = spatstat.core.Kest(data, **params_Kest)
             params_fv = params.get("fv", dict())
             pcf = spatstat.core.pcf_fv(k_ripley, **params_fv)
-
-        return pd.DataFrame(np.array(pcf).T, columns=pcf.names)
+        return pd.DataFrame(np.array(pcf).T, columns=pcf.names).drop(["theo"], axis=1)
 
     def plot_pcf(self, pcf_dataframe, exact_pcf=None, file_name="", **kwargs):
         """Display the data frame output from the method :py:meth:`compute_pcf`.
