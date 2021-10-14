@@ -1,7 +1,9 @@
-# structure-factor
+# structure_factor:
 
-Compute structure factor of stationary and isotropic point processes
+Approximate the structure facture of a point pattern, (a stationary point process) of $\mathbb{R}^d$, and test the effective hyperuniformity and the class of hyperuniformity of the considered point pattern.
 
+## Introduction:
+ In condensed matter physics, it has been observed for some particle systems that, the variance of the number of points in a large window is lower than expected, a phenomenon called hyperuniformity.
 ## Installation
 
 TBC
