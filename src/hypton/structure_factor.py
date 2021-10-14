@@ -88,7 +88,7 @@ class StructureFactor:
             si (numpy.ndarray): The evaluation of the scattering intensity corresponding to the vector of wave length ``norm_k_vector``.
         """
         # todo ajouter la possibilité d'entré  plusieur echantillion
-        # todo utuliser l'intensité et le volume au lieu de N dans la formule i.e. remplacer N pas intensité*volume de la fenetre
+        # todo possibilité d'utiliser l'intensité et le volume au lieu de N dans la formule i.e. remplacer N pas intensité*volume de la fenetre
         if self.dimension != 2:
             warnings.warn(
                 message="The package actually is applicable for 2 dimensional point process",
