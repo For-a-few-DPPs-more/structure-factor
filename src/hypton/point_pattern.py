@@ -73,7 +73,7 @@ class PointPattern(object):
         y = robjects.vectors.FloatVector(self.points[:, 1])
         window = params.get("window", self.window)
         if window is not None and isinstance(window, AbstractSpatialWindow):
-            params["window"] = window.convert_to_spatstat_owin()
+            params["window"] = window.to_spatstat_owin()
         return spatstat.geom.ppp(x, y, **params)
 
     def plot(self, axis=None, window_res=None, c="k,", file_name=""):

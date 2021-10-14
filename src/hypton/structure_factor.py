@@ -103,13 +103,13 @@ class StructureFactor:
             )
         if k_vector is None:
             assert isinstance(point_pattern.window, BoxWindow)
-            L = np.abs(
-                point_pattern.window.bounds[0, 0] - point_pattern.window.bounds[1, 0]
-            )
+            # ? why considering only the first dimension
+            # ! what if BoxWindow is not cubic ?
+            a1, b1 = point_pattern.window.bounds[0]
+            L = np.abs(b1 - a1)
             k_vector = utils.allowed_wave_values(
                 L=L, max_k=max_k, meshgrid_size=meshgrid_size, max_add_k=max_add_k
             )
-
         else:
             shape_x_k_vector = k_vector[0].shape
             k_vector = np.column_stack((k_vector[0].ravel(), k_vector[1].ravel()))
