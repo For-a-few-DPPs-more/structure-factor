@@ -228,8 +228,7 @@ class StructureFactor:
             k_ripley = spatstat.core.Kest(data, **params_Kest)
             params_fv = params.get("fv", dict())
             pcf = spatstat.core.pcf_fv(k_ripley, **params_fv)
-
-        return pd.DataFrame(np.array(pcf).T, columns=pcf.names)
+        return pd.DataFrame(np.array(pcf).T, columns=pcf.names).drop(["theo"], axis=1)
 
     def plot_pcf(self, pcf_dataframe, exact_pcf=None, file_name="", **kwargs):
         """Display the data frame output from the method :py:meth:`compute_pcf`.
