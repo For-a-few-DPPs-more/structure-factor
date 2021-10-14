@@ -1,0 +1,54 @@
+{
+    // Files
+    "files.insertFinalNewline": true,
+    "files.trimFinalNewlines": true,
+    "files.trimTrailingWhitespace": true,
+    // Editor
+    "editor.codeActionsOnSave": {
+        "source.fixAll.markdownlint": true
+    },
+    "editor.detectIndentation": true,
+    "editor.fontSize": 13,
+    "editor.formatOnPaste": true,
+    "editor.formatOnSave": true,
+    "editor.formatOnType": true,
+    "editor.insertSpaces": true,
+    "editor.minimap.enabled": false,
+    "editor.multiCursorModifier": "ctrlCmd",
+    "editor.renderControlCharacters": true,
+    "editor.renderWhitespace": "none",
+    "editor.snippetSuggestions": "top",
+    "editor.suggestOnTriggerCharacters": true,
+    "editor.suggestSelection": "first",
+    "editor.tabSize": 4,
+    "editor.wordWrap": "bounded",
+    "editor.quickSuggestions": true,
+    // Python
+    "python.languageServer": "Pylance",
+    "python.pythonPath": "${workspaceFolder}/.venv/bin/python",
+    "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
+    "python.formatting.provider": "black",
+    // Testing
+    "python.testing.pytestArgs": [
+        "tests"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.nosetestsEnabled": false,
+    "python.testing.pytestEnabled": true,
+    // Documentation
+    // Need "sphinx.ext.napoleon" extension in docs/conf.py
+    "autoDocstring.docstringFormat": "google",
+    "autoDocstring.includeExtendedSummary": true,
+    "pythonIndent.trimLinesWithOnlyWhitespace": true,
+    "restructuredtext.sphinxBuildPath": "${workspaceFolder}/.venv/bin/sphinx-build",
+    "restructuredtext.languageServer.disabled": false,
+    "restructuredtext.builtDocumentationPath": "${workspaceFolder}/docs/_build/html",
+    "restructuredtext.confPath": "${workspaceFolder}/docs",
+    "restructuredtext.updateOnTextChanged": "true",
+    "restructuredtext.updateDelay": 300,
+    // Markdown
+    "[markdown]": {
+        "editor.tabSize": 2,
+        "editor.quickSuggestions": true,
+    },
+}
