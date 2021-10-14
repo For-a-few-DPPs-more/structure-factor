@@ -242,7 +242,7 @@ def plot_si_showcase(
         color="grey",
         linestyle="",
         marker=".",
-        markersize=2,
+        markersize=1.5,
     )
 
     if error_bar:
@@ -365,6 +365,7 @@ def plot_sf_hankel_quadrature(
         marker=".",
         linestyle="",
         color="grey",
+        markersize=4,
     )
     if exact_sf is not None:
         plot_exact(norm_k, exact_sf, axis=axis, label="Exact $\mathcal{S}(k)$")
