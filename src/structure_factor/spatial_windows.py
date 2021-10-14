@@ -79,11 +79,12 @@ class BallWindow(AbstractSpatialWindow):
             center (numpy.ndarray): center of the ball.
             radius (float, optional): radius of the ball. Defaults to 1.0.
         """
-        if not center.ndim == 1:
+        _center = np.array(center)
+        if not _center.ndim == 1:
             raise ValueError("center must be 1D np.ndarray")
         if not radius > 0:
             raise ValueError("radius must be positive")
-        self.center = center
+        self.center = _center
         self.radius = radius
 
     @property
@@ -235,10 +236,9 @@ class UnitBoxWindow(BoxWindow):
             d (int): dimension of the box
             center (numpy.ndarray, optional): center of the box. Defaults to None.
         """
-        if center is None:
-            center = np.full(d, 0.5)
-        elif center.ndim != 1 or center.size != d:
+        _center = np.full(d, 0.5) if center is None else np.array(center)
+        if _center.ndim != 1 or _center.size != d:
             raise ValueError("center must be 1D array with center.size == d")
 
-        bounds = np.add.outer(center, [-0.5, 0.5])
+        bounds = np.add.outer(_center, [-0.5, 0.5])
         super().__init__(bounds)

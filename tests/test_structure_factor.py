@@ -1,9 +1,7 @@
-import os
-import pickle
-
 import numpy as np
 import pytest
 
+from structure_factor.data import load_data
 from structure_factor.structure_factor import StructureFactor
 from structure_factor.utils import (
     pair_correlation_function_ginibre,
@@ -23,12 +21,7 @@ def norm_k():
 
 @pytest.fixture
 def ginibre_pp():
-    test_dir = os.path.dirname(os.path.abspath(__file__))
-    project_dir = os.path.join(test_dir, os.pardir)
-    path_to_file = os.path.join(project_dir, "data", "test_pp.pickle")
-    with open(path_to_file, "rb") as file:
-        ginibre_pp = pickle.load(file)
-    return ginibre_pp
+    return load_data.load_ginibre()
 
 
 def test_interpolate_pcf_ginibre(ginibre_pp, radius):
