@@ -169,10 +169,15 @@ def _bin_statistics(x, y, **params):
     return bin_centers, bin_mean, bin_std
 
 
-def plot_summary(x, y, axis, label="Mean", **binning_params):
+def plot_poisson(x, axis, c="k", linestyle=(0, (5, 10)), label="Poisson"):
+    axis.plot(x, np.ones_like(x), c=c, linestyle=linestyle, label=label)
+    return axis
+
+
+def plot_summary(x, y, axis, label="$mean \pm 3 \cdot std$", **binning_params):
     """loglog plot the summary results of _bin_statistics function i.e. means and errors bars (3 standard deviations)."""
     bin_centers, bin_mean, bin_std = _bin_statistics(x, y, **binning_params)
-    axis.loglog(bin_centers, bin_mean, "b.", label=label)
+    axis.loglog(bin_centers, bin_mean, "b.")
     axis.errorbar(
         bin_centers,
         bin_mean,
@@ -182,7 +187,7 @@ def plot_summary(x, y, axis, label="Mean", **binning_params):
         ecolor="r",
         capsize=3,
         capthick=1,
-        label="Error bar",
+        label=label,
         zorder=4,
     )
 
@@ -195,9 +200,17 @@ def plot_exact(x, y, axis, label):
     return axis
 
 
-def plot_approximation(x, y, label, axis, color, linestyle, marker):
+def plot_approximation(x, y, label, axis, color, linestyle, marker, markersize):
     """loglog plot of ``y`` w.r.t. ``x``"""
-    axis.loglog(x, y, color=color, linestyle=linestyle, marker=marker, label=label)
+    axis.loglog(
+        x,
+        y,
+        color=color,
+        linestyle=linestyle,
+        marker=marker,
+        label=label,
+        markersize=markersize,
+    )
     return axis
 
 
@@ -211,30 +224,32 @@ def plot_si_showcase(
     **binning_params
 ):
     """loglog plot of the results of the scattering intensity :py:meth:`StructureFactor.compute_sf_scattering_intensity`, with the means and error bars over specific number of bins found via :py:meth:`utils._bin_statistics`."""
-    # ? why .ravel()?
-    # ravel is needed in plot_summary and for all the labels
+
     norm_k = norm_k.ravel()
     si = si.ravel()
     if axis is None:
         _, axis = plt.subplots(figsize=(8, 6))
 
-    axis.loglog(norm_k, np.ones_like(norm_k), "k--", label="Theo")
+    plot_poisson(norm_k, axis=axis)
+    if exact_sf is not None:
+        plot_exact(norm_k, exact_sf, axis=axis, label="Exact $S(k)$")
+
     plot_approximation(
         norm_k,
         si,
         axis=axis,
-        label="$SI$",
+        label="$\widehat{S}_{SI}$",
         color="grey",
         linestyle="",
-        marker=",",
+        marker=".",
+        markersize=2,
     )
-    if exact_sf is not None:
-        plot_exact(norm_k, exact_sf, axis=axis, label="Exact $S(k)$")
+
     if error_bar:
         plot_summary(norm_k, si, axis=axis, **binning_params)
 
     axis.set_xlabel("Wavenumber ($||\mathbf{k}||$)")
-    axis.set_ylabel("Scattering intensity (SI)")
+    axis.set_ylabel("Structure factor ($S(k)$)")
     axis.legend(loc=4, framealpha=0.2)
 
     if file_name:
@@ -315,10 +330,11 @@ def plot_pcf(pcf_dataframe, exact_pcf, file_name, **kwargs):
             "g",
             label="exact pcf",
         )
+    plot_poisson(pcf_dataframe["r"], axis=axis, linestyle=(0, (5, 5)))
 
     axis.legend()
-    axis.set_xlabel("Radius $r$")
-    axis.set_ylabel("Pair correlation function $g(r)$")
+    axis.set_xlabel("Radius ($r$)")
+    axis.set_ylabel("Pair correlation function ($g(r)$)")
 
     if file_name:
         fig = axis.get_figure()
@@ -327,7 +343,15 @@ def plot_pcf(pcf_dataframe, exact_pcf, file_name, **kwargs):
 
 
 def plot_sf_hankel_quadrature(
-    norm_k, sf, axis, k_min, exact_sf, error_bar, file_name, **binning_params
+    norm_k,
+    sf,
+    axis,
+    k_min,
+    exact_sf,
+    error_bar,
+    file_name,
+    label="$\widehat{S}_{H}$",
+    **binning_params
 ):
     """Plot approximation of structure factor using :py:meth:`~.hypton.compute_sf_hankel_quadrature` with means and error bars over bins."""
     if axis is None:
@@ -337,7 +361,7 @@ def plot_sf_hankel_quadrature(
         norm_k,
         sf,
         axis=axis,
-        label="Approx $\mathcal{S}(k)$",
+        label=label,
         marker=".",
         linestyle="",
         color="grey",
@@ -346,7 +370,7 @@ def plot_sf_hankel_quadrature(
         plot_exact(norm_k, exact_sf, axis=axis, label="Exact $\mathcal{S}(k)$")
     if error_bar:
         plot_summary(norm_k, sf, axis=axis, **binning_params)
-    axis.plot(norm_k, np.ones_like(norm_k), "k--", label="Theo")
+    plot_poisson(norm_k, axis=axis)
     if k_min is not None:
         sf_interpolate = interpolate.interp1d(
             norm_k, sf, axis=0, fill_value="extrapolate", kind="cubic"
@@ -358,8 +382,8 @@ def plot_sf_hankel_quadrature(
             label="k_min",
         )
     axis.legend()
-    axis.set_xlabel("Wavenumber k")
-    axis.set_ylabel("Structure factor $\mathcal{S}(k)$")
+    axis.set_xlabel("Wavenumber (k)")
+    axis.set_ylabel("Structure factor ($\mathcal{S}(k)$)")
 
     if file_name:
         fig = axis.get_figure()
