@@ -1,24 +1,10 @@
 import numpy as np
 import pytest
 
-from hypton.spatial_windows import BallWindow, BoxWindow
+from hypton.spatial_windows import BallWindow, BoxWindow, UnitBoxWindow
+from hypton.utils import get_random_number_generator
 
 ##### BallWindow
-
-
-@pytest.mark.parametrize(
-    "center",
-    [
-        np.random.randn(2),
-        np.random.randn(3),
-        np.random.randn(4),
-        np.random.randn(10),
-        np.random.randn(100),
-    ],
-)
-def test_center_belongs_to_unit_ball(center):
-    ball = BallWindow(center)
-    assert ball.indicator_function(center)
 
 
 @pytest.mark.parametrize(
@@ -39,13 +25,68 @@ def test_volume_ball(dimension, radius, factor):
     np.testing.assert_almost_equal(ball.volume, expected)
 
 
+@pytest.mark.parametrize(
+    "dimension, seed",
+    (
+        [2, None],
+        [3, None],
+        [4, None],
+        [10, None],
+        [100, None],
+    ),
+)
+def test_center_belongs_to_unit_ball(dimension, seed):
+    rng = get_random_number_generator(seed)
+    center = rng.normal(size=dimension)
+    ball = BallWindow(center)
+    assert center in ball
+
+
+@pytest.mark.parametrize("nb_points", [1, 100])
+def test_random_points_fall_inside_ball(nb_points):
+    center = np.array([0.4, 4, 40])
+    radius = 10
+    ball = BallWindow(center, radius)
+    random_points = ball.rand(nb_points)
+    indicator_vector = ball.indicator_function(random_points)
+    assert np.all(indicator_vector)
+
+
 # BoxWindow
 
 
-@pytest.fixture
-def example_box_window():
-    bounds = np.array([[-5, -5], [5, 5]])
-    return BoxWindow(bounds)
+@pytest.mark.parametrize(
+    "widths, seed",
+    (
+        [[2], None],
+        [[1, 1, np.pi], None],
+        [[0.1, 1, 10], None],
+    ),
+)
+def test_volume_box(widths, seed):
+    rng = get_random_number_generator(seed)
+    a = rng.normal(size=len(widths))
+    b = a + np.array(widths)
+    box = BoxWindow(np.column_stack((a, b)))
+    expected = np.prod(widths)
+    np.testing.assert_almost_equal(box.volume, expected)
+
+
+@pytest.mark.parametrize(
+    "dimension, seed",
+    (
+        [1, None],
+        [2, None],
+        [3, None],
+        [4, None],
+        [10, None],
+    ),
+)
+def test_volume_unit_box_is_one(dimension, seed):
+    rng = get_random_number_generator(seed)
+    center = rng.normal(size=dimension)
+    box = UnitBoxWindow(dimension, center)
+    np.testing.assert_almost_equal(box.volume, 1.0)
 
 
 @pytest.mark.parametrize(
@@ -56,6 +97,16 @@ def example_box_window():
         (np.array([5, 6]), False),
     ],
 )
-def test_indicator_function_box_2d(example_box_window, point, expected):
-    box = example_box_window
-    assert box.indicator_function(point) == expected
+def test_box_2d_contains_point(point, expected):
+    bounds = np.array([[-5, 5], [-5, 5]])
+    box = BoxWindow(bounds)
+    assert (point in box) == expected
+
+
+@pytest.mark.parametrize("nb_points", [1, 100])
+def test_random_points_fall_inside_box(nb_points):
+    bounds = np.array([[-5, 5], [-5, 5]])
+    box = BoxWindow(bounds)
+    random_points = box.rand(nb_points)
+    indicator_vector = box.indicator_function(random_points)
+    assert np.all(indicator_vector)

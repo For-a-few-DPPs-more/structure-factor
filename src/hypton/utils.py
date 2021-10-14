@@ -15,7 +15,7 @@ def set_nan_inf_to_zero(array, nan=0, posinf=0, neginf=0):
     return np.nan_to_num(array, nan=nan, posinf=posinf, neginf=neginf)
 
 
-def get_random_number_generator(seed):
+def get_random_number_generator(seed=None):
     """Turn seed into a np.random.Generator instance."""
     return np.random.default_rng(seed)
 
