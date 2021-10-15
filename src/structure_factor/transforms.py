@@ -17,7 +17,7 @@ class RadiallySymmetricFourierTransform:
         self.rmax = None
 
     def transform(self, f, k, method="Ogata", **params):
-        """Evaluate the Fourier transform :math:`F[f](k)` of the radially symmetric function :math:`f` at :math:`k` using the `correspondence with the Hankel transform <https://en.wikipedia.org/wiki/Hankel_transform#Fourier_transform_in_d_dimensions_(radially_symmetric_case)>`_.
+        r"""Evaluate the Fourier transform :math:`F[f](k)` of the radially symmetric function :math:`f` at :math:`k` using the `correspondence with the Hankel transform <https://en.wikipedia.org/wiki/Hankel_transform#Fourier_transform_in_d_dimensions_(radially_symmetric_case)>`_.
 
         .. math::
 
@@ -35,14 +35,13 @@ class RadiallySymmetricFourierTransform:
         Args:
             f (callable): function to transform
             k (scalar or numpy.ndarray): point(s) where the Fourier tranform is to evaluated.
-            method (str, optional): name of the method used to compute the underlying Hankel transform: ``"Ogata" or "BaddourChouinard"``. Defaults to ``"Ogata"``.
+            method (str, optional): name of the method used to compute the underlying Hankel transform: ``"Ogata"`` or ``"BaddourChouinard"``. Defaults to ``"Ogata"``.
 
         Keyword Args:
-            interpolation (dict): description
-            key2 (int): description
+            params (dict): # todo describe
 
         Returns:
-            tuple: :math:`(k, F[f](k))`
+            tuple (np.ndarray, np.ndarray): :math:`(k, F[f](k))`
         """
         d = self.d
         order = d // 2 - 1
@@ -71,14 +70,14 @@ class RadiallySymmetricFourierTransform:
         return (2.7 * np.pi) / (rmax * step_size)
 
 
-class HankelTransform(object):
-    r"""`Hankel transform <https://en.wikipedia.org/wiki/Hankel_transform>`_
+class HankelTransform:
+    r"""`Hankel transform <https://en.wikipedia.org/wiki/Hankel_transform>`_.
 
     .. seealso::
 
-        - :py:class:`RadiallySymmetricFourierTransform`,
-        - :py:class:`HankelTransformBaddourChouinard`,
-        - :py:class:`HankelTransformOgata`.
+        - :py:class:`~structure_factor.transforms.RadiallySymmetricFourierTransform`,
+        - :py:class:`~structure_factor.transforms.HankelTransformBaddourChouinard`,
+        - :py:class:`~structure_factor.transforms.HankelTransformOgata`.
     """
 
     def __init__(self, order):
@@ -87,7 +86,7 @@ class HankelTransform(object):
 
 
 class HankelTransformBaddourChouinard(HankelTransform):
-    r"""Computation of the forward `Hankel transform <https://en.wikipedia.org/wiki/Hankel_transform>`_
+    r"""Computation of the forward `Hankel transform <https://en.wikipedia.org/wiki/Hankel_transform>`_.
 
     .. math::
 
@@ -102,7 +101,7 @@ class HankelTransformBaddourChouinard(HankelTransform):
     """
 
     def __init__(self, order=0):
-        super(HankelTransformBaddourChouinard, self).__init__(order=order)
+        super().__init__(order=order)
         self.bessel_zeros = None
         self.rmax = None  # R in :cite:`BaCh15` Section 4.B
         self.transformation_matrix = None  # Y in :cite:`BaCh15` Section 6.A
@@ -111,10 +110,11 @@ class HankelTransformBaddourChouinard(HankelTransform):
     def compute_transformation_parameters(self, rmax, nb_points):
         """Compute parameters involved in the computation of the corresponding Hankel-type transform using the discretization scheme of :cite:`BaCh15`.
 
-        The following attributes are defined
-        - :py:attr:`HankelTransformBaddourChouinard.bessel_zeros`
-        - :py:attr:`HankelTransformBaddourChouinard.r_max`
-        - :py:attr:`HankelTransformBaddourChouinard.transformation_matrix`
+        The following object's attributes are defined
+
+        - :py:attr:`~structure_factor.transforms.HankelTransformBaddourChouinard.bessel_zeros`
+        - :py:attr:`~structure_factor.transforms.HankelTransformBaddourChouinard.r_max`
+        - :py:attr:`~structure_factor.transforms.HankelTransformBaddourChouinard.transformation_matrix`
 
         Args:
             step_size (float, optional): Step size of the discretization scheme. Defaults to 0.01.
@@ -132,7 +132,7 @@ class HankelTransformBaddourChouinard(HankelTransform):
         self.transformation_matrix = Y
 
     def transform(self, f, k=None, **interpolation_params):
-        r"""Compute the Hankel transform
+        r"""Compute the Hankel transform of ``f`` at ``k``.
 
         .. math::
 
@@ -140,14 +140,10 @@ class HankelTransformBaddourChouinard(HankelTransform):
 
         Args:
             f (callable): function to be Hankel transformed
-            k (np.ndarray, optional): points of evaluation of the Hankel transform. Defaults to None.
-
-            - If ``k`` is None (default), ``k = self.bessel_zeros[:-1] / self.rmax`` derived from :py:meth:`HankelTransformBaddourChouinard.compute_transformation_parameters`.
-            - If ``k`` is provided, the Hankel transform is first computed at the above k values (case k is None), then interpolated using :py:func:`scipy.interpolate.interp1d` with ``interpolation_params`` and finally evaluated at the provided ``k`` values.
+            k (np.ndarray, optional): points of evaluation of the Hankel transform. Defaults to None. If ``k`` is None (default), ``k = self.bessel_zeros[:-1] / self.rmax`` derived from :py:meth:`~structure_factor.transforms.HankelTransformBaddourChouinard.compute_transformation_parameters`. If ``k`` is provided, the Hankel transform is first computed at the above k values (case k is None), then interpolated using :py:func:`scipy.interpolate.interp1d` with ``interpolation_params`` and finally evaluated at the provided ``k`` values.
 
         Keyword Args:
-
-            - same keyword arguments as :py:func:`scipy.interpolate.interp1d`: ``"fill_value"``, ``"kind"``, etc.
+            interpolation_params (dict): keyword arguments of :py:func:`scipy.interpolate.interp1d`.
 
         Returns:
             tuple (scalar or np.ndarray, scalar or np.ndarray): :math:`k, H[f](k)`
@@ -169,11 +165,11 @@ class HankelTransformBaddourChouinard(HankelTransform):
 
 
 class HankelTransformOgata(HankelTransform):
-    r"""Computation of the forward `Hankel transform <https://en.wikipedia.org/wiki/Hankel_transform>`_
+    r"""Computation of the forward `Hankel transform <https://en.wikipedia.org/wiki/Hankel_transform>`_.
 
     .. math::
 
-        H_\nu(k) = \int_0^\infty f(r) J_\nu(kr) r \mathrm{d}r,
+        H_\nu[f](k) = \int_0^\infty f(r) J_\nu(kr) r \mathrm{d}r,
 
     using the method of :cite:`Oga05` Section 5.
 
@@ -183,7 +179,7 @@ class HankelTransformOgata(HankelTransform):
     """
 
     def __init__(self, order=0):
-        super(HankelTransformOgata, self).__init__(order=order)
+        super().__init__(order=order)
         self.nodes, self.weights = None, None
 
     def compute_transformation_parameters(
@@ -212,14 +208,17 @@ class HankelTransformOgata(HankelTransform):
 
     def transform(self, f, k):
         r"""Compute Hankel transform :math:`H[f](k)` of ``f`` evaluated at ``k``, following the work of :cite:`Oga05` Section 5.
-        Please call :py:meth:`HankelTransformOgata.compute_transformation_parameters` before :py:meth:`HankelTransformOgata.compute_transform`.
+
+        .. important::
+
+            Please call :py:meth:`HankelTransformOgata.compute_transformation_parameters` to define quadrature attributes :py:attr:`~structure_factor.transforms.Ogata.nodes` and :py:attr:`~structure_factor.transforms.Ogata.weights`, before applying :py:meth:`HankelTransformOgata.compute_transform`.
 
         Args:
             f (callable): function to be Hankel transformed
             k (np.ndarray, optional): points of evaluation of the Hankel transform. Defaults to None.
 
         Returns:
-            tuple(np.ndarray): :math:`k, H[f](k)`.
+            tuple(np.ndarray, np.ndarray): :math:`k, H[f](k)`.
         """
         assert callable(f)
         n = self.order
@@ -233,12 +232,12 @@ class HankelTransformOgata(HankelTransform):
 
     @staticmethod
     def _psi(t):
-        """Function involved in the change of variable used by :cite:`Oga05` Equation (5.1)"""
+        """Change of variable used by :cite:`Oga05` Equation (5.1)."""
         return t * np.tanh((0.5 * np.pi) * np.sinh(t))
 
     @staticmethod
     def _d_psi(t):
-        """Function involved in the change of variable used by :cite:`Oga05` Equation (5.1)"""
+        """Change of variable used by :cite:`Oga05` Equation (5.1)."""
         threshold = 3.5  # threshold outside of which psi' plateaus to -1, 1
         out = np.sign(t)
         mask = np.abs(t) < threshold

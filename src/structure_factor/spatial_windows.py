@@ -12,18 +12,18 @@ from structure_factor.utils import get_random_number_generator
 
 
 class AbstractSpatialWindow(metaclass=ABCMeta):
-    """Encapsulate the notion of spatial window in :math:`\mathbb{R}^d`.
+    r"""Encapsulate the notion of spatial window in :math:`\mathbb{R}^d`.
 
     .. note::
 
         Typical usage:
 
-        :py:class:`~.point_pattern.PointPattern` has a window argument/attribute.
+        :py:class:`~structure_factor.point_pattern.PointPattern` has a :py:attr:`~structure_factor.point_pattern.PointPattern.window` argument/attribute.
 
     .. seealso::
 
-        - :py:class:`BallWindow`, :py:class:`UnitBallWindow`
-        - :py:class:`BoxWindow`, :py:class:`UnitBoxWindow`
+        - :py:class:`~structure_factor.spatial_windows.BallWindow`, :py:class:`~structure_factor.spatial_windows.UnitBallWindow`
+        - :py:class:`~structure_factor.spatial_windows.BoxWindow`, :py:class:`~structure_factor.spatial_windows.UnitBoxWindow`
     """
 
     @property
@@ -48,7 +48,7 @@ class AbstractSpatialWindow(metaclass=ABCMeta):
         Returns:
             bool or np.ndarray:
             - If :math:`n=1`, bool,
-            - If :math:`n>1`, :math:`n` boolean array.
+            - If :math:`n>1`, :math:`n` dimensional boolean array.
         """
         if points.ndim == 1 and points.size == self.dimension:
             return points in self
@@ -124,12 +124,12 @@ class BallWindow(AbstractSpatialWindow):
         Args:
             params (dict): optional keyword arguments passed to ``spatstat.geom.disc``.
 
+        Returns:
+            spatstat.geom.disc: R object.
+
         .. seealso::
 
-            https://rdocumentation.org/packages/spatstat.geom/versions/2.2-0/topics/disc
-
-        Returns:
-            spatstat.geom.disc(radius=r, centre=c, **params): ``spatstat.geom.disc`` R object.
+            `https://rdocumentation.org/packages/spatstat.geom/versions/2.2-0/topics/disc <https://rdocumentation.org/packages/spatstat.geom/versions/2.2-0/topics/disc>`_
         """
         spatstat = SpatstatInterface(update=False)
         spatstat.import_package("geom", update=False)
@@ -169,7 +169,7 @@ class BoxWindow(AbstractSpatialWindow):
 
     @property
     def bounds(self):
-        r"""Return the bounds decribing the BoxWindow
+        r"""Return the bounds decribing the BoxWindow.
 
         ``bounds[i, :]`` :math:`=[a_i, b_i]`.
         """
@@ -204,12 +204,12 @@ class BoxWindow(AbstractSpatialWindow):
         Args:
             params (dict): optional keyword arguments passed to ``spatstat.geom.owin``.
 
+        Returns:
+            spatstat.geom.owin: R object.
+
         .. seealso::
 
-            https://rdocumentation.org/packages/spatstat.geom/versions/2.2-0/topics/owin
-
-        Returns:
-            spatstat.geom.owin(xrange=x, yrange=y, **params): ``spatstat.geom.owin`` R object.
+            `https://rdocumentation.org/packages/spatstat.geom/versions/2.2-0/topics/owin <https://rdocumentation.org/packages/spatstat.geom/versions/2.2-0/topics/owin>`_
         """
         if self.dimension != 2:
             raise NotImplementedError("spatstat only handles 2D windows")

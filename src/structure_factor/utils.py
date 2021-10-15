@@ -11,7 +11,7 @@ from scipy.special import j0, j1, jn_zeros, jv, y0, y1, yv
 
 
 def set_nan_inf_to_zero(array, nan=0, posinf=0, neginf=0):
-    """Set nan, posinf and neginf to 0."""
+    """Set nan, posinf and neginf values of ``array`` to 0."""
     return np.nan_to_num(array, nan=nan, posinf=posinf, neginf=neginf)
 
 
@@ -59,10 +59,8 @@ def structure_factor_ginibre(k):
 
 
 # ? see difference between odd and even L why the final size of the meshgrid change?
-
-
 def allowed_wave_values(L, max_k, meshgrid_size, max_add_k=1):
-    r"""Given a realization of a point process in a cubic window with length :math:`L`, compute the 'allowed' wave vectors :math:`(k_i)` at which the structure factor :math:`S(k_i)` is consistently estimated by the scattering intensity
+    r"""Given a realization of a point process in a cubic window with length :math:`L`, compute the 'allowed' wave vectors :math:`(k_i)` at which the structure factor :math:`S(k_i)` is consistently estimated by the scattering intensity defined below.
 
     .. math::
 
@@ -82,7 +80,7 @@ def allowed_wave_values(L, max_k, meshgrid_size, max_add_k=1):
         max_add_k (float): Maximum component of the allowed wave vectors to be added. In other words, in the case of the evaluation on a vector of allowed values (without specifying ``meshgrid_size``),  ``max_add_k`` can be used to add allowed values in a certain region for better precision. **Warning:** setting big value in ``max_add_k`` could be time consuming when the sample has a lot of points. Defaults to 1.
 
     Returns:
-        numpy.ndarray: array (:math:`N \times d`) of 'allowed' wave vectors.
+        numpy.ndarray: array of sizw :math:`N \times d` collecting the 'allowed' wave vectors.
     """
     max_n = np.floor(max_k * L / (2 * np.pi))  # maximum of ``k_vector``
     if meshgrid_size is None:  # Add extra allowed values near zero
@@ -118,7 +116,7 @@ def allowed_wave_values(L, max_k, meshgrid_size, max_add_k=1):
 
 
 def compute_scattering_intensity(k, points):
-    r"""Compute the scattering intensity which is an ensemble estimator of the structure factor of an ergodic stationary point process :math:`\mathcal{X} \subset \mathbb{R}^2`, defined by
+    r"""Compute the scattering intensity which is an ensemble estimator of the structure factor of an ergodic stationary point process :math:`\mathcal{X} \subset \mathbb{R}^2`, defined below.
 
     .. math::
         SI(\mathbf{k}) = \left \lvert \sum_{x \in \mathcal{X}} \exp(- i \left\langle \mathbf{k}, \mathbf{x} \right\rangle) \right\rvert^2
@@ -147,19 +145,20 @@ def compute_scattering_intensity(k, points):
 
 def _bin_statistics(x, y, **params):
     """Divide ``x`` into bins and evaluate the mean and the standard deviation of the corresponding element of ``y`` over the each bin.
-    This function calls `scipy.stats.binned_statistic` with keyword arguments (except `statistic`) provided by ``params``.
 
     Args:
-        x (numpy.1darray): vector of data.
-        y (numpy.1darray): vector of data associated to the vector ``x``.
+        x (np.ndarray): vector of data.
+        y (np.ndarray): vector of data associated to the vector ``x``.
+
+    Keyword args:
+        params (dict): keyword arguments (except ``"statistic"``) of ``scipy.stats.binned_statistic``.
 
     Returns:
-        tuple(numpy.ndarray): Three vectors
-            - ``bin_centers`` vector of centers of the bins associated to ``x``.
-            - ``bin_mean`` vector of means of ``y``over the bins.
-            - ``std_mean`` vector of standard deviation of ``y``over the bins.
+        tuple(numpy.ndarray, numpy.ndarray, numpy.ndarray):
+            - ``bin_centers`` vector of centers of the bins associated to ``x``,
+            - ``bin_mean`` vector of means of ``y`` over the bins,
+            - ``std_mean`` vector of standard deviation of ``y`` over the bins.
     """
-
     bin_mean, bin_edges, _ = stats.binned_statistic(x, y, statistic="mean", **params)
     bin_std, _, _ = stats.binned_statistic(x, y, statistic="std", **params)
     count, _, _ = stats.binned_statistic(x, y, statistic="count", **params)
@@ -170,12 +169,13 @@ def _bin_statistics(x, y, **params):
 
 
 def plot_poisson(x, axis, c="k", linestyle=(0, (5, 10)), label="Poisson"):
+    # todo add docstring
     axis.plot(x, np.ones_like(x), c=c, linestyle=linestyle, label=label)
     return axis
 
 
 def plot_summary(x, y, axis, label="$mean \pm 3 \cdot std$", **binning_params):
-    """loglog plot the summary results of _bin_statistics function i.e. means and errors bars (3 standard deviations)."""
+    """Loglog plot the summary results of _bin_statistics function i.e. means and errors bars (3 standard deviations)."""
     bin_centers, bin_mean, bin_std = _bin_statistics(x, y, **binning_params)
     axis.loglog(bin_centers, bin_mean, "b.")
     axis.errorbar(
@@ -195,13 +195,13 @@ def plot_summary(x, y, axis, label="$mean \pm 3 \cdot std$", **binning_params):
 
 
 def plot_exact(x, y, axis, label):
-    """loglog plot of a callable function ``y`` evaluated on the vector ``x``"""
+    """Loglog plot of a callable function ``y`` evaluated on the vector ``x``."""
     axis.loglog(x, y(x), "g", label=label)
     return axis
 
 
 def plot_approximation(x, y, label, axis, color, linestyle, marker, markersize):
-    """loglog plot of ``y`` w.r.t. ``x``"""
+    """Loglog plot of ``y`` w.r.t. ``x``."""
     axis.loglog(
         x,
         y,
@@ -223,8 +223,7 @@ def plot_si_showcase(
     file_name="",
     **binning_params
 ):
-    """loglog plot of the results of the scattering intensity :py:meth:`StructureFactor.compute_sf_scattering_intensity`, with the means and error bars over specific number of bins found via :py:meth:`utils._bin_statistics`."""
-
+    """Loglog plot of the results of the scattering intensity :py:meth:`StructureFactor.compute_sf_scattering_intensity`, with the means and error bars over specific number of bins found via :py:meth:`~structure_factor.utils._bin_statistics`."""
     norm_k = norm_k.ravel()
     si = si.ravel()
     if axis is None:
@@ -299,7 +298,7 @@ def plot_si_all(
     window_res=None,
     **binning_params
 ):
-    """3 Subplots: point pattern, associated scattering intensity plot, associated scattering intensity color level"""
+    """Construct 3 subplots: point pattern, associated scattering intensity plot, associated scattering intensity color level."""
     figure, axes = plt.subplots(1, 3, figsize=(24, 6))
 
     point_pattern.plot(axis=axes[0], window_res=window_res)
@@ -321,7 +320,7 @@ def plot_si_all(
 
 
 def plot_pcf(pcf_dataframe, exact_pcf, file_name, **kwargs):
-    """Plot DataFrame result"""
+    """Plot DataFrame result."""
     axis = pcf_dataframe.plot.line(x="r", **kwargs)
     if exact_pcf is not None:
         axis.plot(
@@ -353,7 +352,7 @@ def plot_sf_hankel_quadrature(
     label="$\widehat{S}_{H}$",
     **binning_params
 ):
-    """Plot approximation of structure factor using :py:meth:`~.structure_factor.compute_sf_hankel_quadrature` with means and error bars over bins."""
+    """Plot approximation of structure factor using :py:meth:`~structure_factor.compute_sf_hankel_quadrature` with means and error bars over bins."""
     if axis is None:
         fig, axis = plt.subplots(figsize=(8, 5))
 

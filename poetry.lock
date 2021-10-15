@@ -1181,6 +1181,17 @@ pandas = ["numpy", "pandas"]
 test = ["pytest"]
 
 [[package]]
+name = "rstcheck"
+version = "3.3.1"
+description = "Checks syntax of reStructuredText and code blocks nested within it"
+category = "main"
+optional = true
+python-versions = "*"
+
+[package.dependencies]
+docutils = ">=0.7"
+
+[[package]]
 name = "scipy"
 version = "1.7.1"
 description = "SciPy: Scientific Library for Python"
@@ -1535,7 +1546,7 @@ notebook = ["jupyter"]
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.8,<3.10"
-content-hash = "3f3204f974fe6b5ac4b94d3e16e8830bf5523bba37e77b7f83fccff5fadb2869"
+content-hash = "5754995f6415dd91f9ec06605b98d2feff9f818e42292338419cadd1b473db95"
 
 [metadata.files]
 alabaster = [
@@ -2385,6 +2396,9 @@ rpy2 = [
     {file = "rpy2-3.4.5-cp37-cp37m-macosx_10_14_x86_64.whl", hash = "sha256:44235c2a48d0fd03f7820cee93f595e45b20e3b54cc3cf4569c87ec409b86d6c"},
     {file = "rpy2-3.4.5-cp38-cp38-macosx_10_14_x86_64.whl", hash = "sha256:a86bb6a47df7454cbf72a4d98ef1a2a8eb65efbe1082265ba60978d8d421239a"},
     {file = "rpy2-3.4.5.tar.gz", hash = "sha256:5d31a5ea43f5a59f6dec30faca87edb01fc9b8affa0beae96a99be923bd7dab3"},
+]
+rstcheck = [
+    {file = "rstcheck-3.3.1.tar.gz", hash = "sha256:92c4f79256a54270e0402ba16a2f92d0b3c15c8f4410cb9c57127067c215741f"},
 ]
 scipy = [
     {file = "scipy-1.7.1-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:2a0eeaab01258e0870c4022a6cd329aef3b7c6c2b606bd7cf7bb2ba9820ae561"},

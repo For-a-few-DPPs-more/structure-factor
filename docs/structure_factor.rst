@@ -5,5 +5,3 @@ Structure factor
     :members:
     :inherited-members:
     :show-inheritance:
-
-.. autoclass:: structure_factor.transforms.HankelTransform
