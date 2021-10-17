@@ -13,7 +13,7 @@ from structure_factor.transforms import RadiallySymmetricFourierTransform
 
 
 class StructureFactor:
-    r"""Implementation of various estimators of the `structure factor <https://en.wikipedia.org/wiki/Structure_factor>`_ :math:`S` of a 2 dimensional stationary ergodic point process :math:`\mathcal{X}` with intensity :math:`\rho`, defined as
+    r"""Implementation of various estimators of the `structure factor <https://en.wikipedia.org/wiki/Structure_factor>`_ :math:`S` of a 2 dimensional stationary ergodic point process :math:`\mathcal{X}` with intensity :math:`\rho`, as defined below.
 
     .. math::
 
@@ -25,10 +25,12 @@ class StructureFactor:
 
         :cite:`Tor18` page 8.
     """
+
     # ! Mettre un warning que scattering_intensity marche seulement dans les cubic windows, pcf pour dimension 2 et 3 seulement, hankel pour isotropic en dimension 2, en dimension 3 faire un MC pour approximer l'integral
 
     def __init__(self, point_pattern):
-        r"""
+        r"""Initialize StructureFactor from ``point_pattern``.
+
         Args:
             point_pattern (:py:class:`~structure_factor.point_pattern.PointPattern`): Object of type point pattern which contains a realization ``point_pattern.points`` of a point process, the window where the points were simulated ``point_pattern.window`` and (optionally) the ``point_pattern.intensity`` of the point process.
         """
@@ -49,7 +51,7 @@ class StructureFactor:
         meshgrid_size=None,
         max_add_k=1,
     ):
-        r"""Compute the scattering intensity which is an ensemble estimator of the structure factor of an ergodic stationary point process :math:`\mathcal{X} \subset \mathbb{R}^2`, defined by
+        r"""Compute the scattering intensity which is an ensemble estimator of the structure factor of an ergodic stationary point process :math:`\mathcal{X} \subset \mathbb{R}^2`, as defined below.
 
         .. math::
 
@@ -71,7 +73,7 @@ class StructureFactor:
             \frac{2 \pi}{L} \mathbf{n},\,
             \text{for} \; \mathbf{n} \in (\mathbb{Z}^d)^\ast \}
 
-        So it's recommended to not specify the vector of wave ``k_vector``, but to either specify a meshgrid size and the maximum component of the wave vector respectively via ``meshgrid_size`` and ``max_k`` if you need to evaluate the scattering intensity on a meshgrid of allowed values (see example of ...) or just the maximum component of the wave vector ``max_k`` if you need to evaluate the scattering intensity on a vector of allowed values. see :py:meth:`utils.allowed__wave_values`.
+        So it's recommended to not specify the vector of wave ``k_vector``, but to either specify a meshgrid size and the maximum component of the wave vector respectively via ``meshgrid_size`` and ``max_k`` if you need to evaluate the scattering intensity on a meshgrid of allowed values (see example of ...) or just the maximum component of the wave vector ``max_k`` if you need to evaluate the scattering intensity on a vector of allowed values. see :py:meth:`~structure_factor.utils.allowed__wave_values`.
 
         Args:
             # ?! why a list of arrays instead of a 2d array
@@ -137,7 +139,8 @@ class StructureFactor:
         **binning_params
     ):
         """Plot the result of the method :py:meth:`compute_sf_scattering_intensity`.
-        You can add the theoretical structure factor using ``exact_sf`` and visualize the mean and the variance over bins of the scattering intensity by specifying ``error_bar=True`` (this is donne using a binning method :py:meth:`utils._bin_statistics`).
+
+        You can add the theoretical structure factor using ``exact_sf`` and visualize the mean and the variance over bins of the scattering intensity by specifying ``error_bar=True`` (this is donne using a binning method :py:meth:`~structure_factor.utils._bin_statistics`).
         The figure could be saved by specifying ``file_name``.
 
         Args:
@@ -157,7 +160,6 @@ class StructureFactor:
 
             window_res (:py:class:`~structure_factor.spatial_windows.AbstractSpatialWindow`, optional): This could be used when the sample of points is large, so for time and visualization purpose it's better to restrict the plot of the sample of points to a smaller window.  Defaults to None.
         """
-
         if plot_type == "radial":
             return utils.plot_si_showcase(
                 norm_k, si, axes, exact_sf, error_bar, file_name, **binning_params
@@ -190,7 +192,7 @@ class StructureFactor:
             )
 
     def compute_pcf(self, method="fv", install_spatstat=False, **params):
-        """Estimate the pair correlation function of an **isotropic** point process process :math:`\mathcal{X} \subset \mathbb{R}^2`. The two methods that can be used are the methods ``spastat.core.pcf_ppp`` and ``spastat.core.pcf_fv`` of the the `R` package `spatstat <https://github.com/spatstat/spatstat>`_.
+        r"""Estimate the pair correlation function of an **isotropic** point process process :math:`\mathcal{X} \subset \mathbb{R}^2`. The two methods that can be used are the methods ``spastat.core.pcf_ppp`` and ``spastat.core.pcf_fv`` of the the `R` package `spatstat <https://github.com/spatstat/spatstat>`_.
 
         .. warning::
 
@@ -282,6 +284,7 @@ class StructureFactor:
 
     def compute_sf_hankel_quadrature(self, pcf, norm_k=None, method="Ogata", **params):
         r"""Compute the structure factor :math:`S` of the underlying **stationary isotropic** point process :math:`\mathcal{X} \subset \mathbb{R}^2`.
+
         This is done by first computing the Fourier transform of the pair correlation function :math:`g`, involving the `correspondence with the Hankel transform <https://en.wikipedia.org/wiki/Hankel_transform#Fourier_transform_in_d_dimensions_(radially_symmetric_case)>`_, which is in turn computed via the quadrature shemes of :cite:`Oga05` or :cite:`BaCh15`.
 
         Args:
@@ -345,11 +348,11 @@ class StructureFactor:
         **binning_params
     ):
         """Display the output of :py:meth:`compute_sf_hankel_quadrature`.
-        You can add the theoretical structure factor using ``exact_sf`` (if it is known) and visualize the mean and the variance over bins of the scattering intensity by specifying ``error_bar=True`` (this is donne using a binning method :py:meth:`utils._bin_statistics`).
-        The figure could be saved by specifying ``file_name``.
+
+        Pass the theoretical structure factor function through ``exact_sf`` (if it is known) and visualize the mean and the variance over bins of the scattering intensity by specifying ``error_bar=True`` (this is donne using a binning method :py:meth:`~structure_factor.utils._bin_statistics`). The figure can at ``file_name``.
 
         Args:
-            norm_k (numpy.1darray): vector of wave lengths (i.e. norms of waves) on which the structure factor is approximated.
+            norm_k (np.ndarray): vector of wave lengths (i.e. norms of waves) on which the structure factor is approximated.
             sf ([type]): [description]
 
             axis (axis, optional): the support axis of the plots. Defaults to None.
@@ -365,7 +368,6 @@ class StructureFactor:
         Returns:
             plot of the approximated structure factor.
         """
-
         return utils.plot_sf_hankel_quadrature(
             norm_k,
             sf,

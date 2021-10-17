@@ -57,11 +57,12 @@ jupyter = { version = "^1.0.0", optional = true }
 Sphinx = { version = "^4.0.3", optional = true }
 sphinx-rtd-theme = { version = "^0.5.2", optional = true }
 sphinxcontrib-bibtex = { version = "^2.4.1", optional = true }
+rstcheck = { version = "^3.3.1", optional = true }
 
 [tool.poetry.extras]
 # poetry install -E name
 notebook = ["jupyter"]
-docs = ["Sphinx", "sphinx-rtd-theme", "sphinxcontrib-bibtex"]
+docs = ["Sphinx", "sphinx-rtd-theme", "sphinxcontrib-bibtex", "rstcheck"]
 
 [tool.poetry.dev-dependencies]
 # poetry add name --dev
@@ -80,9 +81,9 @@ requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.pytest.ini_options]
-# poetry run pytest --cov=structure_factor --cov-report=xml
+# poetry run pytest
 minversion = "6.0"
-addopts = "-ra -q -vv"
+addopts = "-ra -q -vv --cov=structure_factor --cov-report=xml"
 testpaths = ["tests"]
 
 

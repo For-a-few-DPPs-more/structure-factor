@@ -6,18 +6,22 @@ from structure_factor.spatial_windows import BallWindow, BoxWindow
 
 
 def load_ginibre():
+    # todo explain how data was generated
     return __load_point_pattern_in_ball("ginibre_data.pkl")
 
 
 def load_kly():
+    # todo explain how data was generated
     return __load_point_pattern_in_box("kly_data.pkl")
 
 
 def load_poisson():
+    # todo explain how data was generated
     return __load_point_pattern_in_box("poisson_data.pkl")
 
 
 def load_z2():
+    # todo explain how data was generatedx
     return __load_point_pattern_in_box("z2_data.pkl")
 
 
