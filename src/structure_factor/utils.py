@@ -302,7 +302,7 @@ def plot_si_all(
     """3 Subplots: point pattern, associated scattering intensity plot, associated scattering intensity color level"""
     figure, axes = plt.subplots(1, 3, figsize=(24, 6))
 
-    point_pattern.plot(axis=axes[0], window_res=window_res)
+    point_pattern.plot(axis=axes[0], window_res=window_res, c="k.")
     plot_si_showcase(
         norm_k,
         si,

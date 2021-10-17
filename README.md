@@ -1,8 +1,9 @@
-# structure_factor:
+# structure_factor
 
 Approximate the structure facture of a point pattern (a stationary point process) of \\(\mathbb{R}^d \\), and test the effective hyperuniformity and the class of hyperuniformity of the point pattern.
 
-## Introduction:
+## Introduction
+
  The structure factor \\( S(\mathbf{k}) \\) of a stationary point process of  \\( \mathbb{R}^d \\) with inetnsity \\( \rho \\) is defined (when it exists) through the Fourier transform of its pair correlation function \\( g \\) by,
  \\[ S(\mathbf{k}) = 1 + \rho \mathcal{F}(g -1)(\mathbf{k})\\].
  In condensed matter physics, it has been observed for some particle systems that, the variance of the number of points in a large window is lower than expected, a phenomenon called hyperuniformity.
@@ -23,14 +24,12 @@ Approximate the structure facture of a point pattern (a stationary point process
 
   It also contains a test of effective hyperunifomity using the index H and a test of the decay of the structure factor near 0 to estimate the class of hyperuniformity.
 
-
- ## Installation
+## Installation
 
 - structure_factor works with [Python 3.8+](https://www.python.org/downloads/release/python-380/).
 
 - structure_factor is now available on `PyPI <https://pypi.org/project/>`__ |PyPI package|
-- .. code:: bash
-
+-
       pip install structure_factor
 
 All the necessary dependency will be automatically installed.
