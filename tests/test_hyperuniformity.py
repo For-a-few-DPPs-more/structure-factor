@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from structure_factor.effective_hyperuniform import EffectiveHyperuniformity
+from structure_factor.hyperuniformity import Hyperuniformity
 from structure_factor.utils import structure_factor_ginibre, structure_factor_poisson
 
 k = np.linspace(0, 10, 100)
@@ -26,7 +26,7 @@ x_2 = np.linspace(0.5, 2, 50)
 # todo use a more explicit name, test_small_hyperuniformity_index or test_hyperuniformity_index_should_be...
 def test_hyperuniformity_index(k, sf_k, expected):
     # todo rename hyp_test, it reads like hypothesis test
-    hyp_test = EffectiveHyperuniformity(k, sf_k)
+    hyp_test = Hyperuniformity(k, sf_k)
     index_H, _ = hyp_test.index_H(norm_k_stop=4)
     result = index_H < 1e-3
     assert result == expected
@@ -40,5 +40,5 @@ def test_hyperuniformity_index(k, sf_k, expected):
     ],
 )
 def test_power_decay(x, fx, c, alpha):
-    test = EffectiveHyperuniformity(x, fx)
+    test = Hyperuniformity(x, fx)
     assert alpha, c == test.power_decay()

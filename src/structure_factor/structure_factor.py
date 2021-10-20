@@ -33,6 +33,7 @@ class StructureFactor:
 
         Args:
             point_pattern (:py:class:`~structure_factor.point_pattern.PointPattern`): Object of type point pattern which contains a realization ``point_pattern.points`` of a point process, the window where the points were simulated ``point_pattern.window`` and (optionally) the ``point_pattern.intensity`` of the point process.
+
         """
         assert isinstance(point_pattern, PointPattern)
         self.point_pattern = point_pattern
@@ -159,6 +160,12 @@ class StructureFactor:
             file_name (str, optional): name used to save the figure. The available output formats depend on the backend being used. Defaults to "".
 
             window_res (:py:class:`~structure_factor.spatial_windows.AbstractSpatialWindow`, optional): This could be used when the sample of points is large, so for time and visualization purpose it's better to restrict the plot of the sample of points to a smaller window.  Defaults to None.
+
+        .. plot:: code/si_example.py
+            :include-source: True
+            :caption:
+            :alt: alternate text
+            :align: center
         """
         if plot_type == "radial":
             return utils.plot_si_showcase(
@@ -255,6 +262,12 @@ class StructureFactor:
 
         Keyword Args (kwargs):
             Keyword arguments of the function `pandas.DataFrame.plot.line <https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.plot.line.html>`_.
+
+        .. plot:: code/pcf_example.py
+            :include-source: True
+            :caption:
+            :alt: alternate text
+            :align: center
         """
         return utils.plot_pcf(pcf_dataframe, exact_pcf, file_name, **kwargs)
 
