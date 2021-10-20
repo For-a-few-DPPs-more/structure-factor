@@ -27,6 +27,22 @@ class PointPattern(object):
             window (AbstractSpatialWindow, optional): Observation window containing the ``points``. Defaults to None.
 
             intensity(float, optional): intensity of the point process. Defaults to None.
+
+        .. testsetup::
+
+            from structure_factor.data import load_data #import data
+            from structure_factor.spatial_windows import BoxWindow
+            from structure_factor.point_pattern import PointPattern
+
+        .. testcode::
+
+                #load points
+                points = load_data.load_ginibre().points
+                #create BallWindow
+                window = BallWindow(center=[0,0], radius=100)
+                #create PointPattern object
+                ginibre_pp = PointPattern(points, window)
+
         """
         _points = np.array(points)
         assert _points.ndim == 2
@@ -60,6 +76,23 @@ class PointPattern(object):
 
         Returns:
             ~structure_factor.point_pattern.PointPattern: restriction of the ``PointPattern`` to the prescribed ``window``.
+
+
+        .. testsetup::
+
+                from structure_factor.data import load_data #import data
+
+
+
+        .. plot:: code/restrict_pp.py
+            :include-source: True
+            :caption:
+            :alt: alternate text
+            :align: center
+
+
+
+
         """
         assert isinstance(window, AbstractSpatialWindow)
         points = self.points[window.indicator_function(self.points)]
@@ -99,22 +132,9 @@ class PointPattern(object):
         Returns:
             matplotlib.axis: plot axis.
 
-        .. testsetup::
-
-            import numpy as np
-
-        .. testcode::
-
-            x = np.ones(4)
-            print(x.sum())
-
-        .. testoutput::
-
-            4.0
-
-        .. plot:: plots/plot_point_pattern.py
+        .. plot:: code/plot_point_pattern.py
             :include-source: True
-            :caption: My caption
+            :caption:
             :alt: alternate text
             :align: center
         """
