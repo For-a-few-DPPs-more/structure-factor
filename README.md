@@ -90,7 +90,7 @@ Note that all the necessary **project dependencies** will be automatically insta
   - Open the local HTML version of the documentation
 
     ```bash
-    open _builtd/html/index.html
+    open _build/html/index.html
 
 ## How to use it
 
