@@ -88,6 +88,19 @@ class Hyperuniformity:
 
         Returns:
             tuple(float, float): index :math:`H` and the standard deviation of numerator of :math:`H`.
+
+        .. literalinclude:: code/effective_example.py
+            :language: python
+            :lines: 1-30
+            :emphasize-lines: 29
+
+        .. testoutput::
+
+            H_ginibre= -0.055816051215869376
+
+        .. plot:: code/effective_example.py
+            :include-source: False
+
         """
 
         line = lambda x, a, b: a + b * x
@@ -120,6 +133,15 @@ class Hyperuniformity:
 
         Returns:
             The power decay of the structure factor and the associated approximated :math:`S(0)`.
+
+        .. literalinclude:: code/power_decay_example.py
+            :language: python
+            :emphasize-lines: 29
+
+        .. testoutput::
+
+            The estimated power of the decay to zero of the approximated structure factor is: 1.93893628269006
+
         """
         poly = lambda x, c, alpha: c * x ** alpha
         (c, alpha), _ = self._fit(poly, norm_k_stop, **kwargs)
