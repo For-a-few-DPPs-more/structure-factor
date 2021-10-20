@@ -6,14 +6,14 @@ from structure_factor.utils import _bin_statistics
 
 
 #! change the name of the class and the module to hyperuniformity
-class EffectiveHyperuniformity:
+class Hyperuniformity:
     r"""Compute indicator of hyperuniformity of a stationary isotropic (or effectively isotropic) point process :math:`\mathcal{X} \subset \mathbb{R}^2`, given the evaluation of its structure factor.
 
     .. note::
 
         **Typical usage**:
 
-        Estimating the structure factor of a point process by one of the method of the class :py:class:`~structure_factor.structure_factor.StructureFactor`, then testing the effective hyperuniformity using :py:meth:`~structure_factor.effective_hyperuniform.EffectiveHyperuniformity.index_H`.
+        Estimating the structure factor of a point process by one of the method of the class :py:class:`~structure_factor.structure_factor.StructureFactor`, then testing the effective hyperuniformity using :py:meth:`~structure_factor.hyperuniformity.Hyperuniformity.index_H`.
 
     .. todo::
 
@@ -41,16 +41,16 @@ class EffectiveHyperuniformity:
         self.i_first_peak = None
 
     def bin_data(self, **params):
-        """Regularization of the estimation of the structure factor, by spliting the vector attribute :py:attr:`~structure_factor.effective_hyperuniform.EffectiveHyperuniformity.norm_k` into bins and we average the associated values of the vector attribute :py:attr:`~structure_factor.effective_hyperuniform.EffectiveHyperuniformity.sf` and derive the standard deviation over each bins.
+        """Regularization of the estimation of the structure factor, by spliting the vector attribute :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.norm_k` into bins and we average the associated values of the vector attribute :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.sf` and derive the standard deviation over each bins.
 
         Args:
             params(dict): parameters associated to :py:func:`~structure_factor.utils._bin_statistics`.
 
         Returns:
             tuple(np.ndarray, np.ndarray, np.ndarray):
-                - vector of centers of the bins, representing the new vector attribute :py:attr:`~structure_factor.effective_hyperuniform.EffectiveHyperuniformity.norm_k`.
-                - vector of means of the scattering intensity ``sf`` over the bins, representing the new vector attribute :py:attr:`~structure_factor.effective_hyperuniform.EffectiveHyperuniformity.sf`.
-                - vector of standard deviations, representing the new vector attribute :py:attr:`~structure_factor.effective_hyperuniform.EffectiveHyperuniformity.bin_mean`.
+                - vector of centers of the bins, representing the new vector attribute :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.norm_k`.
+                - vector of means of the scattering intensity ``sf`` over the bins, representing the new vector attribute :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.sf`.
+                - vector of standard deviations, representing the new vector attribute :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.bin_mean`.
 
         .. seealso::
 
