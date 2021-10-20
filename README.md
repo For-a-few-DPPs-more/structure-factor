@@ -17,7 +17,7 @@
  In condensed matter physics, it has been observed for some particle systems that, the variance of the number of points in a large window is lower than expected, a phenomenon called hyperuniformity.
  A point process is also called hyperunifrom if its structure factor  (defined through the Fourier transform of its pair correlation function) vanishes on zero.
 
- Moreover, the repartition of hyperuniform point process between classes is related to the power decay of the structure factor near 0.
+ Moreover, the repartition of hyperuniform point processes between classes is related to the power decay of the structure factor near 0.
 
  `structure_factor` is a Python library that gathers:
 
@@ -39,7 +39,7 @@
 
 ## Related paper
 
-We wrote a companion paper to `structure_factor`, tilted "Exploring the hyperuniformity of a point process using structure_factor" explaining in detail the mathematical foundations behind the estimators present in `structure_factor`. This paper also contains detailed tests of this package on 3 different point processes and discuss the results and  the limitations of the package.
+We wrote a companion paper to `structure_factor`, tilted "Exploring the hyperuniformity of a point process using structure_factor" (which will be published soon) explaining in detail the mathematical foundations behind the estimators present in `structure_factor`. This paper also contains detailed tests of this package on 3 different point processes and discuss the results and  the limitations of the package.
 
 ## Dependencies
 
@@ -48,7 +48,7 @@ Currently, the project calls the [`spatstat`](https://github.com/spatstat/spatst
 - [R programming language](https://www.r-project.org/)
 - project dependencies, see [`tool.poetry.dependencies` in `pyproject.toml`](./pyproject.toml)
 
-All the necessary dependency will be automatically installed.
+Note that all the necessary **project dependencies** will be automatically installed.
 
 ## Installation
 
@@ -58,7 +58,7 @@ All the necessary dependency will be automatically installed.
 
       pip install structure_factor
 
-- Install in editable mode and potentially contribute to the project
+- Installation in editable mode and potentially contribute to the project
   - You may consider [forking the repository](https://github.com/For-a-few-DPPs-more/structure_factor/fork).
   - In any case, your can clone the repository
      1. if you have forked the repository
@@ -80,7 +80,7 @@ All the necessary dependency will be automatically installed.
   - [rst cheatsheet](https://docs.typo3.org/m/typo3/docs-how-to-document/master/en-us/WritingReST/CheatSheet.html
 )
 - The documentation will be built by and published on [ReadTheDocs](https://readthedocs.org/)
-- If you wish to contribute to the documentation or just having it locally, you can install :
+- If you wish to contribute to the documentation or just having it locally, you can:
   - Generate the docs locally
 
     ```bash
@@ -94,10 +94,13 @@ All the necessary dependency will be automatically installed.
 
 ## How to use it
 
-A tutorial in Jupyter notebook is available. You can read and work on the interactive tutorial Notebook (add link to the notebook), directly from your web browser, without having to download or install Python or anything. Just click, wait a little bit, and play with the notebook!
+A tutorial in Jupyter notebook is available (...). You can read and work on the interactive tutorial Notebook (add link to the notebook), directly from your web browser, without having to download or install Python or anything. Just click, wait a little bit, and play with the notebook!
 
 ## How to cite this work
 
 If you use the structure_factor toolbox, please consider citing it with this piece of BibTeX:
+TBC
 
 ## Reproductibility
+
+TBC
