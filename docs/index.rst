@@ -10,7 +10,7 @@ Welcome to structure-factor's documentation:
    :maxdepth: 2
    :caption: Contents:
 
-   effective_hyperuniform
+   hyperuniformity
    point_pattern
    spatial_windows
    structure_factor

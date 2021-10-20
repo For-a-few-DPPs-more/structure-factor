@@ -1,7 +1,7 @@
-Effective hyperuniform
+Hyperuniformity
 #######################
 
-.. automodule:: structure_factor.effective_hyperuniform
+.. automodule:: structure_factor.hyperuniformity
     :members:
     :inherited-members:
     :show-inheritance:
