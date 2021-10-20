@@ -326,6 +326,12 @@ class StructureFactor:
         .. note::
 
             Typical usage: ``pcf`` is estimated using :py:meth:`compute_pcf` and then interpolated using :py:meth:`interpolate_pcf`.
+
+        .. plot:: code/sf_baddour_example.py
+            :include-source: True
+            :caption:
+            :alt: alternate text
+            :align: center
         """
         assert self.point_pattern.dimension == 2
         assert callable(pcf)
