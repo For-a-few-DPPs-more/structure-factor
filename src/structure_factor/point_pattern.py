@@ -128,8 +128,9 @@ class PointPattern(object):
             res_pp = self.restrict_to_window(window=window_res)
             points = res_pp.points
 
-        kwargs.setdefault("c", "k,")
-        axis.plot(points[:, 0], points[:, 1], **kwargs)
+        kwargs.setdefault("c", "k")
+        kwargs.setdefault("s", 0.5)
+        axis.scatter(points[:, 0], points[:, 1], **kwargs)
         axis.set_aspect("equal", "box")
 
         if file_name:
