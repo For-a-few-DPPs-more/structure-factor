@@ -5,7 +5,6 @@ from scipy.signal import find_peaks
 from structure_factor.utils import _bin_statistics
 
 
-#! change the name of the class and the module to hyperuniformity
 class Hyperuniformity:
     r"""Compute indicator of hyperuniformity of a stationary isotropic (or effectively isotropic) point process :math:`\mathcal{X} \subset \mathbb{R}^2`, given the evaluation of its structure factor.
 
