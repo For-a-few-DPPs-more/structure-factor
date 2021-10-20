@@ -105,22 +105,24 @@ class BallWindow(AbstractSpatialWindow):
         return np.pi ** (d / 2) * r ** d / sp.special.gamma(d / 2 + 1)
 
     def __contains__(self, point):
-        assert point.ndim == 1 and point.size == self.dimension
-        return self.indicator_function(point)
+        _point = np.array(point)
+        assert _point.ndim == 1 and _point.size == self.dimension
+        return self.indicator_function(_point)
 
     def indicator_function(self, points):
         return np.linalg.norm(points - self.center, axis=-1) <= self.radius
 
     def rand(self, n=1, seed=None):
+        # Method of dropped coordinates
+        # Efficiently sampling vectors and coordinates from the n-sphere and n-ball
+        # Voelker, Aaron and Gosmann, Jan and Stewart, Terrence
+        # doi: 10.13140/RG.2.2.15829.01767/1
         rng = get_random_number_generator(seed)
         d = self.dimension
-        if n == 1:
-            points = rng.standard_normal(size=d + 2)
-            points /= np.linalg.norm(points)
-            return self.center + self.radius * points[:d]
         points = rng.standard_normal(size=(n, d + 2))
         points /= np.linalg.norm(points, axis=-1, keepdims=True)
-        return self.center + self.radius * points[:, :d]
+        idx = 0 if n == 1 else slice(0, n)
+        return self.center + self.radius * points[idx, :d]
 
     def to_spatstat_owin(self, **params):
         """Convert the object to a ``spatstat.geom.disc`` R object of type ``disc``, which is a subtype of ``owin``.
@@ -206,8 +208,8 @@ class BoxWindow(AbstractSpatialWindow):
     def rand(self, n=1, seed=None):
         rng = get_random_number_generator(seed)
         a, b = self._bounds
-        dim = self.dimension
-        return rng.uniform(a, b, size=(dim,) if n == 1 else (n, dim))
+        d = self.dimension
+        return rng.uniform(a, b, size=(d,) if n == 1 else (n, d))
 
     def to_spatstat_owin(self, **params):
         """Convert the object to a ``spatstat.geom.owin`` R object of type  ``owin``.
