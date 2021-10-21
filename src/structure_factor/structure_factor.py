@@ -157,6 +157,7 @@ class StructureFactor:
         norm_k_vector = np.linalg.norm(k_vector, axis=1)
 
         # ! shape_x_k_vector not defined if k_vector is None
+        # ? si! k_vector always exists
         if meshgrid_size is not None or len(shape_x_k_vector) == 2:
             shape_mesh = int(np.sqrt(norm_k_vector.shape[0]))
             norm_k_vector = norm_k_vector.reshape(shape_mesh, shape_mesh)
@@ -182,17 +183,17 @@ class StructureFactor:
         The figure could be saved by specifying ``file_name``.
 
         Args:
-            norm_k (numpy.ndarray): vactor of wave length.
+            norm_k (numpy.ndarray): vector of norms of the wavevectors .
 
-            si (numpy.ndarray): vector of scattering intensity.
+            si (numpy.ndarray): approximated scattering intensity vector associted to `norm_k`.
 
-            plot_type (str, optional): ("radial", "imshow", "all"). Precision of the type of the plot we want to visualize. If "radial" is used then the output is a loglog plot. If "imshow" is used then the output is a color level plot. if "all" is used the the results are 3 subplots: the point pattern (or a restriction to a specific window if ``window_res`` is set), the loglog plots, and the color level plot. Note that you can not use the option "imshow" or "all", if ``norm_k`` is not a meshgrid. Defaults to "radial".
+            plot_type (str, optional): ("radial", "imshow", "all"). Type of the plot to visualize. If "radial", then the output is a loglog plot. If "imshow", then the output is a color level 2D plot. if "all", the results are 3 subplots: the point pattern (or a restriction to a specific window if ``window_res`` is set), the loglog radial plot, and the color level 2D plot. Note that the options "imshow" and "all" couldn't be used, if ``norm_k`` is not a meshgrid. Defaults to "radial".
 
             axes (axis, optional): the support axis of the plots. Defaults to None.
 
             exact_sf (callable, optional): function representing the theoretical structure factor of the point process. Defaults to None.
 
-            error_bar (bool, optional): Defaults to False. When set to ``True``, ``norm_k`` is divided into bins and the mean and the standard deviation over each bin are derived and visualized on the plot. Note that the error bar represent 3 times the standard deviation.
+            error_bar (bool, optional): Defaults to False. When set to ``True``, ``norm_k`` is divided into bins and the mean and the standard deviation over each bin are derived and visualized on the plot. Note that the error bar represent the means +/- 3 standard deviation.
 
             file_name (str, optional): name used to save the figure. The available output formats depend on the backend being used. Defaults to "".
 
@@ -358,9 +359,18 @@ class StructureFactor:
         return dict(rmin=rmin, rmax=rmax), interpolate.interp1d(r, pcf_r, **params)
 
     def compute_sf_hankel_quadrature(self, pcf, norm_k=None, method="Ogata", **params):
-        r"""Compute the structure factor :math:`S` of the underlying **stationary isotropic** point process :math:`\mathcal{X} \subset \mathbb{R}^2`.
+        r"""Compute the structure factor :math:`S` of the underlying **stationary isotropic** point process :math:`\mathcal{X} \subset \mathbb{R}^d`, which could be defined via the Hankel transform :math:`\mathcal{H}_{d/2 -1}` of order :math:`d/2 -1` as follow,
 
-        This is done by first computing the Fourier transform of the pair correlation function :math:`g`, involving the `correspondence with the Hankel transform <https://en.wikipedia.org/wiki/Hankel_transform#Fourier_transform_in_d_dimensions_(radially_symmetric_case)>`_, which is in turn computed via the quadrature shemes of :cite:`Oga05` or :cite:`BaCh15`.
+        .. math::
+
+            S(\|\mathbf{k}\|) = 1 + \rho \frac{(2 \pi)^{d/2}}{\|\mathbf{k}\|^{d/2 -1}} \mathcal{H}_{d/2 -1}(\tilde g -1)(\|\mathbf{k}\|), \quad \tilde g:x \mapsto  g(x)x^{d/2 -1}.
+
+
+        This method estimate the structure factor by approximating the corresponding Hankel transform via Ogata quadrature shemes of :cite:`Oga05` or Baddour and Chouinard Descrete Hankel transform :cite:`BaCh15`.
+
+        .. warning::
+
+            This method is actually applicable for 2 dimensional point process.
 
         Args:
             pcf (callable): radially symmetric pair correlation function :math:`g`. You can get a discrete vector of estimation of the pair correlation function using the method :py:meth:`compute_pcf`, then interpolate the resulting vector using :py:meth:`interpolate_pcf` and pass the resulting function to the argument ``pcf``.
@@ -387,7 +397,7 @@ class StructureFactor:
 
         .. note::
 
-            Typical usage: ``pcf`` is estimated using :py:meth:`compute_pcf` and then interpolated using :py:meth:`interpolate_pcf`.
+            Typical usage: ``pcf`` is first estimated using :py:meth:`compute_pcf` then interpolated using :py:meth:`interpolate_pcf`, and the resulting function is used as input of this method.
 
         Example:
 
