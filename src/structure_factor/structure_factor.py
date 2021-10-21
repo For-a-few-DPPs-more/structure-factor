@@ -8,22 +8,38 @@ from spatstat_interface.interface import SpatstatInterface
 
 import structure_factor.utils as utils
 from structure_factor.point_pattern import PointPattern
-from structure_factor.spatial_windows import BoxWindow
+from structure_factor.spatial_windows import BoxWindow, check_cubic_window
 from structure_factor.transforms import RadiallySymmetricFourierTransform
 
 
 class StructureFactor:
-    r"""Implementation of various estimators of the `structure factor <https://en.wikipedia.org/wiki/Structure_factor>`_ :math:`S` of a 2 dimensional stationary ergodic point process :math:`\mathcal{X}` with intensity :math:`\rho`, as defined below.
+    r"""Implementation of various estimators of the structure factor :math:`S` of a d dimensional stationary ergodic point process :math:`\mathcal{X}` with intensity :math:`\rho`, as defined below.
 
     .. math::
 
         S(\mathbf{k}) = 1 + \rho \mathcal{F}(g-1)(\mathbf{k}),
 
-    where :math:`\mathcal{F}` denotes the Fourier transform, :math:`g` the pair correlation function corresponds to :math:`\mathcal{X}`, :math:`\mathbf{k} \in \mathbb{R}^2` is a wave vector and we denote the wave length :math:`k = \| \mathbf{k} \|_2`.
+    where :math:`\mathcal{F}` denotes the Fourier transform, :math:`g` the pair correlation function corresponds to :math:`\mathcal{X}`, :math:`\mathbf{k} \in \mathbb{R}^d` is a wave vector and we denote the wave length :math:`k = \| \mathbf{k} \|_d`.
+
+    This class contains
+        - Three estimators of the structure factor:
+            - The scattering intensity :meth:`compute_sf_scattering_intensity`.
+            - Estimator using Ogata quadrature for approximating the Hankel transform  :meth:`compute_sf_hankel_quadrature` with `method="Ogata"`.
+            - Estimator using Baddour and Chouinard Discrete Hankel transform :meth:`compute_sf_hankel_quadrature` with `method="BaddourChouinard"`.
+        - Two estimators of the pair correlation function :
+            - Estimator using Epanechnikov kernel and a bandwidth selected by Stoyan's rule of thumb :meth:`compute_pcf` with `method="ppp"`.
+            - Estimator using the derivative of Ripley's K function :meth:`compute_pcf` with `method="fv"`.
+
+            This 2 estimators are obtained using `spatstat-interface <https://github.com/For-a-few-DPPs-more/spatstat-interface>`_ which builds a hidden interface with the package `spatstat <https://github.com/spatstat/spatstat>`_ of the programming language R.
+        - An interpolation function :meth:`interpolate_pcf`, used to interpolate the result of :meth:`compute_pcf`.
+        - Three plot methods :meth:`plot_scattering_intensity`,  :meth:`plot_pcf` and :meth:`plot_sf_hankel_quadrature` used to visualized the result of :meth:`compute_sf_scattering_intensity`, :meth:`compute_pcf` and :meth:`compute_sf_hankel_quadrature` respectively.
+
 
     .. seealso::
 
-        :cite:`Tor18` page 8.
+        :cite:`Tor18`, Section 2.1, equation (13).
+        :cite:`Oga05`.
+        :cite:`BaCh15`.
     """
 
     # ! Mettre un warning que scattering_intensity marche seulement dans les cubic windows, pcf pour dimension 2 et 3 seulement, hankel pour isotropic en dimension 2, en dimension 3 faire un MC pour approximer l'integral
@@ -32,7 +48,7 @@ class StructureFactor:
         r"""Initialize StructureFactor from ``point_pattern``.
 
         Args:
-            point_pattern (:py:class:`~structure_factor.point_pattern.PointPattern`): Object of type point pattern which contains a realization ``point_pattern.points`` of a point process, the window where the points were simulated ``point_pattern.window`` and (optionally) the ``point_pattern.intensity`` of the point process.
+            point_pattern (:py:class:`~structure_factor.point_pattern.PointPattern`): Object of type point pattern which contains a realization ``point_pattern.points`` of a point process, the window where the points were simulated ``point_pattern.window`` and (optionally) the intensity of the point process ``point_pattern.intensity``.
 
         """
         assert isinstance(point_pattern, PointPattern)
@@ -52,43 +68,63 @@ class StructureFactor:
         meshgrid_size=None,
         max_add_k=1,
     ):
-        r"""Compute the scattering intensity which is an ensemble estimator of the structure factor of an ergodic stationary point process :math:`\mathcal{X} \subset \mathbb{R}^2`, as defined below.
+        r"""Compute the scattering intensity :math:`\widehat{S}_{SI}` which is an ensemble estimator of the structure factor :math:`S` of an ergodic stationary point process :math:`\mathcal{X} \subset \mathbb{R}^d`, from a realization :math:`\mathcal{X}\cap W =\{x_i\}_{i=1}^N` of :math:`\mathcal{X}` within a **cubic** window :math:`W=[-L/2, L/2]^d`.
 
         .. math::
 
-            SI(\mathbf{k}) =
-            \left\lvert
-                \sum_{x \in \mathcal{X}}
-                    \exp(- i \left\langle \mathbf{k}, \mathbf{x} \right\rangle)
+            \widehat{S}_{SI}(\mathbf{k}) =
+             \frac{1}{N}\left\lvert
+                \sum_{j=1}^N
+                    \exp(- i \left\langle \mathbf{k}, \mathbf{x_j} \right\rangle)
             \right\rvert^2
 
-        where :math:`\mathbf{k} \in \mathbb{R}^2` is a wave vector.
-
-        The scattering intensity converges to the structure factor in the thermodynamic limits.
-        The scattering intensity can be evaluated on any vector (np.array or meshgrid) of waves by precising the argument k_vector.
-        Nevertheless, the estimation of the structure factor by the scattering intensity is valid for point process sampled in a cubic window (or restricted to a box window via the method restrict_to_window of the class :py:class:`~structure_factor.point_pattern.PointPattern` for more details see paper...) and on a specific vector of allowed values of waves corresponding to the dual of the lattice having as fundamental cell the sample of points.
-        In other words, if the points are simulated in a cubic window of length :math:`L`, then the vector of allowed is
+        for a specific sef of wavevectors
 
         .. math::
-            \{
+            \mathbf{k} \in \{
             \frac{2 \pi}{L} \mathbf{n},\,
             \text{for} \; \mathbf{n} \in (\mathbb{Z}^d)^\ast \}
 
-        So it's recommended to not specify the vector of wave ``k_vector``, but to either specify a meshgrid size and the maximum component of the wave vector respectively via ``meshgrid_size`` and ``max_k`` if you need to evaluate the scattering intensity on a meshgrid of allowed values (see example of ...) or just the maximum component of the wave vector ``max_k`` if you need to evaluate the scattering intensity on a vector of allowed values. see :py:meth:`~structure_factor.utils.allowed__wave_values`.
+        called in the physics literature **allowed values** or dual lattice.
+
+        .. seealso::
+
+            :cite:`KlaLasYog:20`.
+
+
+        As the estimation of the structure factor :math:`S` via the scattering intensity :math:`\widehat{S}_{SI}` is valid for point processes sampled in a **cubic window**  and on a specific set of allowed wavevectors, so
+            - If the sample :math:`\{x_j\}_{j=1}^N` does note lies in a cubic window, use the method :py:class:`~structure_factor.point_pattern.PointPattern.restrict_to_window` to extract a sub-sample within a cubic window before using :meth:`compute_sf_scattering_intensity`.
+            - :meth:`compute_sf_scattering_intensity` evalute the scattering intensity by default on the corresponding set of allowed wavevectors. But you can specify another set of wavevector by precising the argument ``k_vector``.
+
+
+        So it's recommended to not specify the vector of waves ``k_vector``, but to either specify a meshgrid size and the maximum component of the set of wavevectors respectively via ``meshgrid_size`` and ``max_k``, or just ``max_k``.
+
+        .. note::
+
+            Specifying the meshgrid size argument ``meshgrid_size`` is usefull if the number of points of the realization is big so that in this case the evaluation of :math:`\widehat{S}_{SI}` on all the allowed wavevectors may be time consuming.
+
+        .. seealso::
+
+            :py:meth:`~structure_factor.utils.allowed_wave_values`.
 
         Args:
             # ?! why a list of arrays instead of a 2d array
-            k_vector (list): list containing the 2 numpy.ndarray corresponding to the x and y components of the wave vector. As we mentioned before it recommended to keep the default k_vector and to specify max_k instead, so that the approximation will be evaluated on a list of allowed values. Defaults to None.
+            #? since it's not a 2d array, in dimension 2 it's a list of  ndarray
 
-            max_k (float, optional): Maximum component of the allowed wave vector. Defaults to None.
+            k_vector (list): list containing d numpy.ndarray corresponding to the components of the wavevectors. As mentioned before its recommended to keep the default ``k_vector`` and to specify ``max_k`` instead, so that the approximation will be evaluated on allowed wavevectors. Defaults to None.
 
-            meshgrid_size (int, optional): Size of the meshgrid of allowed values when ``k_vector`` is None and ``max_k`` is specified. Warning: setting large value in ``meshgrid_size`` could be time consuming and harmful to your machine for large sample of points. Defaults to None.
+            max_k (float, optional): Maximum component of the allowed wavevectors (i.e., for any wavevector :math:`\mathbf{k}=(k_1, .., k_d)` we have :math:`k_j< max\_k` for all j). Defaults to None.
 
-            max_add_k (int, optional): Maximum component of the allowed wave vectors to be add. In other words, in the case of the evaluation on a vector of allowed values (without specifying ``meshgrid_size``),  ``max_add_k`` can be used to add allowed values in a certain region for better precision. Warning: setting big value in ``max_add_k`` could be time consuming and harmful to your machine for large sample of points. Defaults to 1.
+            meshgrid_size (int, optional): Size of the meshgrid of allowed wavevectors when ``k_vector`` is None and ``max_k`` is specified. Warning: setting large value in ``meshgrid_size`` could be time consuming and harmful to your machine for large sample of points. Defaults to None.
+
+            max_add_k (int, optional): Maximum component of allowed wavevectors added in the case where ``k_vector`` is of small size. In other words, in the case of the evaluation on a vector of allowed wavevectors which doesn't cover a sufficient number of small allowed wavelengths,  ``max_add_k`` can be used to add allowed wavevectors in a certain neighborhood of zero for better precision. This is useful while studying the behavior of :math:`S` in the neighborhood of the origin. Warning: setting big value in ``max_add_k`` could be time consuming and harmful to your machine for a large sample of points since this similar to the case with big meshgrid size. Defaults to 1.
 
         Returns:
-            norm_k_vector (numpy.ndarray): The vector of wave length (i.e. the vector of norms of the wave vectors) on which the scattering intensity is evaluated.
-            si (numpy.ndarray): The evaluation of the scattering intensity corresponding to the vector of wave length ``norm_k_vector``.
+            [norm_k_vector (numpy.ndarray), si (numpy.ndarray)]
+
+            norm_k_vector (numpy.ndarray): The vector of wavelengths (i.e. the vector of norms of the wave vectors) on which the scattering intensity was evaluated.
+
+            si (numpy.ndarray): The evaluations of the scattering intensity corresponding to the vector of wave length ``norm_k_vector``.
 
         Example:
 
@@ -97,24 +133,22 @@ class StructureFactor:
                 :lines: 1-22
                 :emphasize-lines: 20-21
         """
-        # todo ajouter la possibilité d'entré  plusieur echantillion
-        # todo possibilité d'utiliser l'intensité et le volume au lieu de N dans la formule i.e. remplacer N pas intensité*volume de la fenetre
-        if self.dimension != 2:
-            warnings.warn(
-                message="The package actually is applicable for 2 dimensional point process",
-                category=DeprecationWarning,
-            )
 
         point_pattern = self.point_pattern
 
         if not isinstance(point_pattern.window, BoxWindow):
             warnings.warn(
-                message="The window should be a BoxWindow for that the scattering intensity consists an approximation of the structure factor. Hint: use PointPattern.restrict_to_window."
+                message="The window should be a 'cubic' BoxWindow for that the scattering intensity consists an approximation of the structure factor. Hint: use PointPattern.restrict_to_window."
             )
         if k_vector is None:
-            assert isinstance(point_pattern.window, BoxWindow)
+            cubic, L = check_cubic_window(point_pattern.window)
+            if cubic == "false":
+                raise ValueError(
+                    "The The window should be a 'cubic' BoxWindow for that the scattering intensity consists an approximation of the structure factor. Hint: use PointPattern.restrict_to_window."
+                )
             # ? why considering only the first dimension
             # ! what if BoxWindow is not cubic ?
+
             a1, b1 = point_pattern.window.bounds[0]
             L = np.abs(b1 - a1)
             k_vector = utils.allowed_wave_values(
@@ -366,7 +400,11 @@ class StructureFactor:
                 :emphasize-lines: 21-28
 
         """
-        assert self.point_pattern.dimension == 2
+        if self.dimension != 2:
+            warnings.warn(
+                message="This method is actually applicable for 2 dimensional point process",
+                category=DeprecationWarning,
+            )
         assert callable(pcf)
         if method == "Ogata" and norm_k.all() is None:
             raise ValueError(

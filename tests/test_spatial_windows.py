@@ -6,6 +6,7 @@ from structure_factor.spatial_windows import (
     BoxWindow,
     UnitBallWindow,
     UnitBoxWindow,
+    check_cubic_window,
 )
 from structure_factor.utils import get_random_number_generator
 
@@ -183,3 +184,16 @@ def test_random_points_fall_inside_box(bounds, nb_points, seed):
     random_points = box.rand(nb_points, seed=rng)
     indicator_vector = box.indicator_function(random_points)
     assert np.all(indicator_vector)
+
+
+@pytest.mark.parametrize(
+    "window, expected",
+    (
+        [BoxWindow([[-5, 5], [0, 10], [-2, 8]]), "true"],
+        [BoxWindow([[-2, 2], [-1, 3]]), "true"],
+        [BoxWindow([[-2, 2], [-1, 5]]), "false"],
+    ),
+)
+def test_check_cubic_window(window, expected):
+    result, _ = check_cubic_window(window)
+    assert expected == result

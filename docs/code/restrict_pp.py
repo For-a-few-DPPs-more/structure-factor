@@ -4,9 +4,9 @@ from structure_factor.spatial_windows import BoxWindow
 # load Ginibre PointPattern
 ginibre_pp = load_data.load_ginibre()
 
-# creat box window
+# create box window
 L = 70  # sidelength of the window
-bounds = np.array([[-L / 2, L / 2], [-L / 2, L / 2]])  # bounds of the window
+bounds = [[-L / 2, L / 2], [-L / 2, L / 2]]  # bounds of the window
 window = BoxWindow(bounds)  # create a cubic window
 
 # restrict to window

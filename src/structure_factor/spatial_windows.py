@@ -268,3 +268,18 @@ class UnitBoxWindow(BoxWindow):
 
         bounds = np.add.outer(center, [-0.5, 0.5])
         super().__init__(bounds)
+
+
+def check_cubic_window(window):
+    """Check if a window is a cubic window
+
+    Args:
+        window (AbstractSpatialWindow): window
+    """
+    assert isinstance(window, BoxWindow)
+    L = window.bounds[0][1] - window.bounds[0][0]
+    for i in range(1, len(window.bounds)):
+        if not (L == (window.bounds[i][1] - window.bounds[i][0])):
+            return "false", L
+    else:
+        return "true", L
