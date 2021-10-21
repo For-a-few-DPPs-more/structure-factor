@@ -88,11 +88,11 @@ class BallWindow(AbstractSpatialWindow):
     """
 
     def __init__(self, center, radius=1.0):
-        """Create a BallWindow.
+        """Initialize a :math:`d` dimensional ball window :math:`B(c, r)` from the prescribed ``center`` and ``radius``.
 
         Args:
-            center (numpy.ndarray): center of the ball.
-            radius (float, optional): radius of the ball. Defaults to 1.0.
+            center (numpy.ndarray): center :math:`c` of the ball.
+            radius (float, optional): radius :math:`r > 0` of the ball. Defaults to 1.0.
         """
         _center = np.array(center)
         if not _center.ndim == 1:
@@ -116,22 +116,24 @@ class BallWindow(AbstractSpatialWindow):
         return np.pi ** (d / 2) * r ** d / sp.special.gamma(d / 2 + 1)
 
     def __contains__(self, point):
-        assert point.ndim == 1 and point.size == self.dimension
-        return self.indicator_function(point)
+        _point = np.array(point)
+        assert _point.ndim == 1 and _point.size == self.dimension
+        return self.indicator_function(_point)
 
     def indicator_function(self, points):
         return np.linalg.norm(points - self.center, axis=-1) <= self.radius
 
     def rand(self, n=1, seed=None):
+        # Method of dropped coordinates
+        # Efficiently sampling vectors and coordinates from the n-sphere and n-ball
+        # Voelker, Aaron and Gosmann, Jan and Stewart, Terrence
+        # doi: 10.13140/RG.2.2.15829.01767/1
         rng = get_random_number_generator(seed)
         d = self.dimension
-        if n == 1:
-            points = rng.standard_normal(size=d + 2)
-            points /= np.linalg.norm(points)
-            return self.center + self.radius * points[:d]
         points = rng.standard_normal(size=(n, d + 2))
         points /= np.linalg.norm(points, axis=-1, keepdims=True)
-        return self.center + self.radius * points[:, :d]
+        idx = 0 if n == 1 else slice(0, n)
+        return self.center + self.radius * points[idx, :d]
 
     def to_spatstat_owin(self, **params):
         """Convert the object to a ``spatstat.geom.disc`` R object of type ``disc``, which is a subtype of ``owin``.
@@ -154,16 +156,16 @@ class BallWindow(AbstractSpatialWindow):
 
 
 class UnitBallWindow(BallWindow):
-    r"""Create a :math:`d` dimensional unit ball window.
+    r"""Create a d-dimensional unit ball window :math:`B(c, r=1)`, where :math:`c \in \mathbb{R}^d`.
 
     ``UnitBallWindow(center) = BallWindow(center, radius=1.0)``
     """
 
     def __init__(self, center):
-        """Initialize unit ball window from ``center``.
+        """Initialize a :math:`d` dimensional unit ball window :math:`B(c, r=1)` from the prescribed ``center``.
 
         Args:
-            center (numpy.ndarray): center of the ball.
+            center (numpy.ndarray, optional): center :math:`c` of the ball.
         """
         super().__init__(center, radius=1.0)
 
@@ -183,15 +185,13 @@ class BoxWindow(AbstractSpatialWindow):
     """
 
     def __init__(self, bounds):
-        r"""Initialize BoxWindow from ``bounds[i, :]`` :math:`=[a_i, b_i]`.
+        r"""Initialize :math:`d` dimensional unit box window the prescibed  ``bounds[i, :]`` :math:`=[a_i, b_i]`.
 
         Args:
-            bounds (numpy.ndarray): :math:`d \times 2` array describing the bounds of the box row-wise.
+            bounds (numpy.ndarray): :math:`d \times 2` array describing the bounds of the box.
         """
         _bounds = np.atleast_2d(bounds)
-        if _bounds.ndim != 2:
-            raise ValueError("bounds must be 2d numpy.ndarray")
-        if _bounds.shape[1] != 2:
+        if _bounds.ndim != 2 or _bounds.shape[1] != 2:
             raise ValueError("bounds must be d x 2 numpy.ndarray")
         if np.any(np.diff(_bounds, axis=-1) <= 0):
             raise ValueError("all bounds [a_i, b_i] must satisfy a_i < b_i")
@@ -228,8 +228,8 @@ class BoxWindow(AbstractSpatialWindow):
     def rand(self, n=1, seed=None):
         rng = get_random_number_generator(seed)
         a, b = self._bounds
-        dim = self.dimension
-        return rng.uniform(a, b, size=(dim,) if n == 1 else (n, dim))
+        d = self.dimension
+        return rng.uniform(a, b, size=(d,) if n == 1 else (n, d))
 
     def to_spatstat_owin(self, **params):
         """Convert the object to a ``spatstat.geom.owin`` R object of type  ``owin``.
@@ -255,23 +255,16 @@ class BoxWindow(AbstractSpatialWindow):
 
 
 class UnitBoxWindow(BoxWindow):
-    r"""Create a :math:`d` dimensional unit box window :math:`\prod_{i=1}^{d} [c_i - \frac{1}{2}, c_i + \frac{1}{2}]` where :math:`c_i=` ``center[i]``.
+    r"""Create a :math:`d` dimensional unit box window :math:`\prod_{i=1}^{d} [c_i - \frac{1}{2}, c_i + \frac{1}{2}]` where :math:`c \in \mathbb{R}^d`."""
 
-    Default unit box is :math:`[0, 1]^d` (when ``center`` is None).
-    """
-
-    def __init__(self, d, center=None):
-        r"""Create UnitBoxWindow, i.e., a BoxWindow with length equal to 1, in dimension ``d`` with center prescribed by ``center`` (defaults to :math:`[-\frac{1}{2}, \frac{1}{2}]^d`).
-
-        Default window is :math:`[0, 1]^d`.
+    def __init__(self, center):
+        r"""Initialize a :math:`d` dimensional unit box window :math:`\prod_{i=1}^{d} [c_i - \frac{1}{2}, c_i + \frac{1}{2}]`, i.e., a box window with length equal to 1 and prescribed ``center``, such that :math:`c_i=` ``center[i]``.
 
         Args:
-            d (int): dimension of the box
-            center (numpy.ndarray, optional): center of the box. Defaults to None.
+            center (numpy.ndarray): center :math:`c` of the box.
         """
-        _center = np.full(d, 0.5) if center is None else np.array(center)
-        if _center.ndim != 1 or _center.size != d:
-            raise ValueError("center must be 1D array with center.size == d")
+        if np.ndim(center) != 1:
+            raise ValueError("center must be 1D array.")
 
-        bounds = np.add.outer(_center, [-0.5, 0.5])
+        bounds = np.add.outer(center, [-0.5, 0.5])
         super().__init__(bounds)

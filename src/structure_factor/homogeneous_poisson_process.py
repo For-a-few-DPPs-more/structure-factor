@@ -15,11 +15,11 @@ class HomogeneousPoissonPointProcess(object):
             raise TypeError("intensity argument must be positive")
         self.intensity = intensity
 
-    def generate_sample(self, window=UnitBoxWindow(2), seed=None):
+    def generate_sample(self, window, seed=None):
         r"""Generate an exact sample from the corresponding :py:class:`~structure_factor.homogeneous_poisson_process.HomogeneousPoissonPointProcess` restricted to the :math:`d` dimensional `window`.
 
         Args:
-            window (AbstractSpatialWindow, optional):. Defaults to ``UnitBoxWindow(2)`` :math:`=[0,1]^2`.
+            window (:py:class:`~structure_factor.spatial_windows.AbstractSpatialWindow`, optional): Observation window where the points will be generated.
 
         Returns:
             numpy.ndarray: of size :math:`n \times d`, where :math:`n` is the number of points forming the sample.

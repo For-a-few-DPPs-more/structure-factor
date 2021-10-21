@@ -75,12 +75,38 @@ def test_center_belongs_to_ball(dimension, seed):
     assert center in ball
 
 
-@pytest.mark.parametrize("nb_points", [1, 100])
-def test_random_points_fall_inside_ball(nb_points):
-    center = np.array([0.4, 4, 40])
+@pytest.mark.parametrize(
+    "point",
+    [
+        [0, 1],
+        [0, -1],
+        [1, 0],
+        [-1, 0],
+    ],
+)
+def test_unit_2d_ball_contains_boundary_points(point):
+    d = 2
+    center = np.zeros(d)
+    ball = UnitBallWindow(center)
+    assert point in ball
+
+
+@pytest.mark.parametrize(
+    "center, nb_points, seed",
+    (
+        [[0.4], 1, None],
+        [[0.4, 4], 1, None],
+        [[0.4, 4, 40], 1, None],
+        [[0.4], 100, None],
+        [[0.4, 4], 100, None],
+        [[0.4, 4, 40], 100, None],
+    ),
+)
+def test_random_points_fall_inside_ball(center, nb_points, seed):
+    rng = get_random_number_generator(seed)
     radius = 10
     ball = BallWindow(center, radius)
-    random_points = ball.rand(nb_points)
+    random_points = ball.rand(nb_points, seed=rng)
     indicator_vector = ball.indicator_function(random_points)
     assert np.all(indicator_vector)
 
@@ -118,7 +144,7 @@ def test_volume_box(widths, seed):
 def test_volume_unit_box_is_one(dimension, seed):
     rng = get_random_number_generator(seed)
     center = rng.normal(size=dimension)
-    box = UnitBoxWindow(dimension, center)
+    box = UnitBoxWindow(center)
     np.testing.assert_almost_equal(box.volume, 1.0)
 
 
@@ -140,10 +166,20 @@ def test_box_2d_contains_point(point, expected):
     assert (point in box) == expected
 
 
-@pytest.mark.parametrize("nb_points", [1, 100])
-def test_random_points_fall_inside_box(nb_points):
-    bounds = [[-5, 5], [-5, 5]]
+@pytest.mark.parametrize(
+    "bounds, nb_points, seed",
+    (
+        [[[-5, 5]], 1, None],
+        [[[-5, 5], [-5, 5]], 1, None],
+        [[[-5, 5], [-5, 5], [-5, 5]], 1, None],
+        [[[-5, 5]], 100, None],
+        [[[-5, 5], [-5, 5]], 100, None],
+        [[[-5, 5], [-5, 5], [-5, 5]], 100, None],
+    ),
+)
+def test_random_points_fall_inside_box(bounds, nb_points, seed):
+    rng = get_random_number_generator(seed)
     box = BoxWindow(bounds)
-    random_points = box.rand(nb_points)
+    random_points = box.rand(nb_points, seed=rng)
     indicator_vector = box.indicator_function(random_points)
     assert np.all(indicator_vector)
