@@ -74,7 +74,7 @@ class AbstractSpatialWindow(metaclass=ABCMeta):
 
 
 class BallWindow(AbstractSpatialWindow):
-    """Create a :math:`d` dimensional ball window.
+    """Create a :math:`d` dimensional ball window :math:`B(c, r)`, where :math:`c \in \mathbb{R}^d` and :math:`r>0`.
 
     Example:
 
@@ -171,7 +171,7 @@ class UnitBallWindow(BallWindow):
 
 
 class BoxWindow(AbstractSpatialWindow):
-    r"""Create a :math:`d` dimensional box window :math:`\prod_{i=1}^{d} [a_i, b_i]` from ``bounds[i, :]`` :math:`=[a_i, b_i]`.
+    r"""Create a :math:`d` dimensional box window :math:`\prod_{i=1}^{d} [a_i, b_i]`.
 
     Example:
 
