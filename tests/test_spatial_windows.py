@@ -85,7 +85,9 @@ def test_center_belongs_to_ball(dimension, seed):
     ],
 )
 def test_unit_2d_ball_contains_boundary_points(point):
-    ball = UnitBallWindow(2)
+    d = 2
+    center = np.zeros(d)
+    ball = UnitBallWindow(center)
     assert point in ball
 
 
@@ -142,7 +144,7 @@ def test_volume_box(widths, seed):
 def test_volume_unit_box_is_one(dimension, seed):
     rng = get_random_number_generator(seed)
     center = rng.normal(size=dimension)
-    box = UnitBoxWindow(dimension, center)
+    box = UnitBoxWindow(center)
     np.testing.assert_almost_equal(box.volume, 1.0)
 
 
