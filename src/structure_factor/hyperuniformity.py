@@ -5,7 +5,6 @@ from scipy.signal import find_peaks
 from structure_factor.utils import _bin_statistics
 
 
-#! change the name of the class and the module to hyperuniformity
 class Hyperuniformity:
     r"""Compute indicator of hyperuniformity of a stationary isotropic (or effectively isotropic) point process :math:`\mathcal{X} \subset \mathbb{R}^2`, given the evaluation of its structure factor.
 
@@ -88,6 +87,19 @@ class Hyperuniformity:
 
         Returns:
             tuple(float, float): index :math:`H` and the standard deviation of numerator of :math:`H`.
+
+        .. literalinclude:: code/effective_example.py
+            :language: python
+            :lines: 1-30
+            :emphasize-lines: 29
+
+        .. testoutput::
+
+            H_ginibre= -0.055816051215869376
+
+        .. plot:: code/effective_example.py
+            :include-source: False
+
         """
 
         line = lambda x, a, b: a + b * x
@@ -120,6 +132,15 @@ class Hyperuniformity:
 
         Returns:
             The power decay of the structure factor and the associated approximated :math:`S(0)`.
+
+        .. literalinclude:: code/power_decay_example.py
+            :language: python
+            :emphasize-lines: 29
+
+        .. testoutput::
+
+            The estimated power of the decay to zero of the approximated structure factor is: 1.93893628269006
+
         """
         poly = lambda x, c, alpha: c * x ** alpha
         (c, alpha), _ = self._fit(poly, norm_k_stop, **kwargs)

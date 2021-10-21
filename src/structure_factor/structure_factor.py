@@ -89,6 +89,11 @@ class StructureFactor:
         Returns:
             norm_k_vector (numpy.ndarray): The vector of wave length (i.e. the vector of norms of the wave vectors) on which the scattering intensity is evaluated.
             si (numpy.ndarray): The evaluation of the scattering intensity corresponding to the vector of wave length ``norm_k_vector``.
+
+        .. literalinclude:: code/si_example.py
+            :language: python
+            :lines: 1-22
+            :emphasize-lines: 20-21
         """
         # todo ajouter la possibilité d'entré  plusieur echantillion
         # todo possibilité d'utiliser l'intensité et le volume au lieu de N dans la formule i.e. remplacer N pas intensité*volume de la fenetre
@@ -161,9 +166,12 @@ class StructureFactor:
 
             window_res (:py:class:`~structure_factor.spatial_windows.AbstractSpatialWindow`, optional): This could be used when the sample of points is large, so for time and visualization purpose it's better to restrict the plot of the sample of points to a smaller window.  Defaults to None.
 
+        .. literalinclude:: code/si_example.py
+            :language: python
+            :lines: 23-29
+
         .. plot:: code/si_example.py
-            :include-source: True
-            :caption:
+            :include-source: False
             :alt: alternate text
             :align: center
         """
@@ -223,6 +231,11 @@ class StructureFactor:
 
         Returns:
             pandas.DataFrame: version of the output of `spatstat.core.pcf.ppp <https://www.rdocumentation.org/packages/spatstat.core/versions/2.1-2/topics/pcf.ppp>`_ of `spatsta.core.pcf.fv <https://www.rdocumentation.org/packages/spatstat.core/versions/2.1-2/topics/pcf.fv>`_.
+
+        .. literalinclude:: code/pcf_example.py
+            :language: python
+            :lines: 1-15
+            :emphasize-lines: 12-15
         """
         assert self.point_pattern.dimension == 2 or self.point_pattern.dimension == 3
 
@@ -263,9 +276,13 @@ class StructureFactor:
         Keyword Args (kwargs):
             Keyword arguments of the function `pandas.DataFrame.plot.line <https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.plot.line.html>`_.
 
+        .. literalinclude:: code/pcf_example.py
+            :language: python
+            :lines: 16-20
+
+
         .. plot:: code/pcf_example.py
-            :include-source: True
-            :caption:
+            :include-source: False
             :alt: alternate text
             :align: center
         """
@@ -286,6 +303,11 @@ class StructureFactor:
 
         Returns:
             tuple (dict, callable): dictionary containing the bounds of the interval containing the values of the vector ``r`` and the interpolated version of the pair correlation function.
+
+        .. literalinclude:: code/sf_baddour_example.py
+            :language: python
+            :lines: 16-20
+
         """
         params.setdefault("fill_value", "extrapolate")
         params.setdefault("kind", "cubic")
@@ -327,11 +349,10 @@ class StructureFactor:
 
             Typical usage: ``pcf`` is estimated using :py:meth:`compute_pcf` and then interpolated using :py:meth:`interpolate_pcf`.
 
-        .. plot:: code/sf_baddour_example.py
-            :include-source: True
-            :caption:
-            :alt: alternate text
-            :align: center
+        .. literalinclude:: code/sf_baddour_example.py
+            :lines: 1-29
+            :emphasize-lines: 21-28
+
         """
         assert self.point_pattern.dimension == 2
         assert callable(pcf)
@@ -386,6 +407,12 @@ class StructureFactor:
 
         Returns:
             plot of the approximated structure factor.
+
+        .. literalinclude:: code/sf_baddour_example.py
+            :lines: 30-35
+
+        .. plot:: code/sf_baddour_example.py
+            :include-source: False
         """
         return utils.plot_sf_hankel_quadrature(
             norm_k,
