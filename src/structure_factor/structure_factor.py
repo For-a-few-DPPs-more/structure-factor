@@ -146,11 +146,7 @@ class StructureFactor:
                 raise ValueError(
                     "The The window should be a 'cubic' BoxWindow for that the scattering intensity consists an approximation of the structure factor. Hint: use PointPattern.restrict_to_window."
                 )
-            # ? why considering only the first dimension
-            # ! what if BoxWindow is not cubic ?
 
-            a1, b1 = point_pattern.window.bounds[0]
-            L = np.abs(b1 - a1)
             k_vector = utils.allowed_wave_values(
                 L=L, max_k=max_k, meshgrid_size=meshgrid_size, max_add_k=max_add_k
             )
