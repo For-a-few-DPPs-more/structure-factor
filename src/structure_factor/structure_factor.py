@@ -166,6 +166,10 @@ class StructureFactor:
 
             window_res (:py:class:`~structure_factor.spatial_windows.AbstractSpatialWindow`, optional): This could be used when the sample of points is large, so for time and visualization purpose it's better to restrict the plot of the sample of points to a smaller window.  Defaults to None.
 
+        .. literalinclude:: code/si_example.py
+            :language: python
+            :lines: 23-29
+
         .. plot:: code/si_example.py
             :include-source: False
             :alt: alternate text
