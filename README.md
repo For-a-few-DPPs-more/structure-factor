@@ -54,7 +54,7 @@ Note that all the necessary **project dependencies** will be automatically insta
 
 - structure_factor works with [Python 3.8+](https://www.python.org/downloads/release/python-380/).
 
-- structure_factor is now available on [PyPI](https://pypi.org/project/).
+- Installation using [PyPI](https://pypi.org/project/).
 
       pip install structure_factor
 
@@ -71,6 +71,20 @@ Note that all the necessary **project dependencies** will be automatically insta
 
       ```bash
       git clone https://github.com/For-a-few-DPPs-more/structure_factor.git
+  - Installation using `poetry`
+
+    The package can be installed in **editable** mode along with
+
+    - main (non-optional) dependencies, see `[tool.poetry.dependencies]` in [`pyproject.toml`](./pyproject.toml)
+    - development dependencies, `[tool.poetry.dev-dependencies]` in [`pyproject.toml`](./pyproject.toml)
+
+    ```bash
+    cd structure_factor
+    # activate your virtual environment or run
+    # poetry shell  # to create/activate local .venv (see poetry.toml)
+    poetry install
+    # poetry install --no-dev  # to avoid installing the development dependencies
+    ```
 
 ## Documentation
 
