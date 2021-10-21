@@ -74,7 +74,18 @@ class AbstractSpatialWindow(metaclass=ABCMeta):
 
 
 class BallWindow(AbstractSpatialWindow):
-    """Create a :math:`d` dimensional ball window."""
+    """Create a :math:`d` dimensional ball window.
+
+    Example:
+
+        .. literalinclude:: code/spatial_window_example.py
+            :language: python
+            :lines: 1-4
+
+        .. testoutput::
+
+            The volume of the window is equal to 50.26548245743669
+    """
 
     def __init__(self, center, radius=1.0):
         """Create a BallWindow.
@@ -158,7 +169,18 @@ class UnitBallWindow(BallWindow):
 
 
 class BoxWindow(AbstractSpatialWindow):
-    r"""Create a :math:`d` dimensional box window :math:`\prod_{i=1}^{d} [a_i, b_i]` from ``bounds[i, :]`` :math:`=[a_i, b_i]`."""
+    r"""Create a :math:`d` dimensional box window :math:`\prod_{i=1}^{d} [a_i, b_i]` from ``bounds[i, :]`` :math:`=[a_i, b_i]`.
+
+    Example:
+
+        .. literalinclude:: code/spatial_window_example.py
+            :language: python
+            :lines: 6-10
+
+        .. testoutput::
+
+            The volume of the window is equal to 64
+    """
 
     def __init__(self, bounds):
         r"""Initialize BoxWindow from ``bounds[i, :]`` :math:`=[a_i, b_i]`.

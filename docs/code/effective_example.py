@@ -9,7 +9,7 @@ ginibre_pp = load_data.load_ginibre()
 # Approximating the structure factor
 # creat box window
 L = 70  # sidelength of the window
-bounds = np.array([[-L / 2, L / 2], [-L / 2, L / 2]])  # bounds of the window
+bounds = [[-L / 2, L / 2], [-L / 2, L / 2]]  # bounds of the window
 window = BoxWindow(bounds)  # create a cubic window
 # restrict to box window
 ginibre_pp_box = ginibre_pp.restrict_to_window(window)

@@ -23,6 +23,12 @@ class HomogeneousPoissonPointProcess(object):
 
         Returns:
             numpy.ndarray: of size :math:`n \times d`, where :math:`n` is the number of points forming the sample.
+
+        .. plot:: code/poisson_sample_example.py
+            :include-source: True
+            :caption:
+            :alt: alternate text
+            :align: center
         """
         if not isinstance(window, AbstractSpatialWindow):
             raise TypeError("window argument must be an AbstractSpatialWindow")

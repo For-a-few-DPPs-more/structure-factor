@@ -16,6 +16,23 @@ class PointPattern(object):
             - The class :py:class:`~structure_factor.structure_factor.StructureFactor` gets initialized using a :py:class:`~structure_factor.point_pattern.PointPattern`,
 
             - Convert Python :py:class:`~structure_factor.point_pattern.PointPattern` object to a ``spatstat`` point pattern R object using :py:meth:`~structure_factor.point_pattern.PointPattern.convert_to_spatstat_ppp`.
+
+    Example:
+
+            .. testsetup::
+
+                from structure_factor.data import load_data #import data
+                from structure_factor.spatial_windows import BoxWindow
+                from structure_factor.point_pattern import PointPattern
+
+            .. testcode::
+
+                    #load points
+                    points = load_data.load_ginibre().points
+                    #create BallWindow
+                    window = BallWindow(center=[0,0], radius=100)
+                    #create PointPattern object
+                    ginibre_pp = PointPattern(points, window)
     """
 
     def __init__(self, points, window=None, intensity=None):
@@ -27,22 +44,6 @@ class PointPattern(object):
             window (AbstractSpatialWindow, optional): Observation window containing the ``points``. Defaults to None.
 
             intensity(float, optional): intensity of the point process. Defaults to None.
-
-        .. testsetup::
-
-            from structure_factor.data import load_data #import data
-            from structure_factor.spatial_windows import BoxWindow
-            from structure_factor.point_pattern import PointPattern
-
-        .. testcode::
-
-                #load points
-                points = load_data.load_ginibre().points
-                #create BallWindow
-                window = BallWindow(center=[0,0], radius=100)
-                #create PointPattern object
-                ginibre_pp = PointPattern(points, window)
-
         """
         _points = np.array(points)
         assert _points.ndim == 2
@@ -82,17 +83,13 @@ class PointPattern(object):
 
                 from structure_factor.data import load_data #import data
 
+        Example:
 
-
-        .. plot:: code/restrict_pp.py
-            :include-source: True
-            :caption:
-            :alt: alternate text
-            :align: center
-
-
-
-
+            .. plot:: code/restrict_pp.py
+                :include-source: True
+                :caption:
+                :alt: alternate text
+                :align: center
         """
         assert isinstance(window, AbstractSpatialWindow)
         points = self.points[window.indicator_function(self.points)]
@@ -132,11 +129,13 @@ class PointPattern(object):
         Returns:
             matplotlib.axis: plot axis.
 
-        .. plot:: code/plot_point_pattern.py
-            :include-source: True
-            :caption:
-            :alt: alternate text
-            :align: center
+        Example:
+
+            .. plot:: code/plot_point_pattern.py
+                :include-source: True
+                :caption:
+                :alt: alternate text
+                :align: center
         """
         if axis is None:
             fig, axis = plt.subplots(figsize=(5, 5))
