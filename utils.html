@@ -1,0 +1,271 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Utils &#8212; structure_factor  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    <link rel="stylesheet" type="text/css" href="_static/plot_directive.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Bibliography" href="bibliography/index.html" />
+    <link rel="prev" title="Transforms" href="transforms.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="bibliography/index.html" title="Bibliography"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="transforms.html" title="Transforms"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">structure_factor  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Utils</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-structure_factor.utils">
+<span id="utils"></span><h1>Utils<a class="headerlink" href="#module-structure_factor.utils" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="structure_factor.utils.set_nan_inf_to_zero">
+<span class="sig-prename descclassname"><span class="pre">structure_factor.utils.</span></span><span class="sig-name descname"><span class="pre">set_nan_inf_to_zero</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nan</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">posinf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">neginf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/utils.html#set_nan_inf_to_zero"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.utils.set_nan_inf_to_zero" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set nan, posinf and neginf values of <code class="docutils literal notranslate"><span class="pre">array</span></code> to 0.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="structure_factor.utils.get_random_number_generator">
+<span class="sig-prename descclassname"><span class="pre">structure_factor.utils.</span></span><span class="sig-name descname"><span class="pre">get_random_number_generator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/utils.html#get_random_number_generator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.utils.get_random_number_generator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Turn seed into a np.random.Generator instance.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="structure_factor.utils.bessel1">
+<span class="sig-prename descclassname"><span class="pre">structure_factor.utils.</span></span><span class="sig-name descname"><span class="pre">bessel1</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">order</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/utils.html#bessel1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.utils.bessel1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluate <a class="reference external" href="https://en.wikipedia.org/wiki/Bessel_function">first kind bessel function</a>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="structure_factor.utils.bessel1_zeros">
+<span class="sig-prename descclassname"><span class="pre">structure_factor.utils.</span></span><span class="sig-name descname"><span class="pre">bessel1_zeros</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">order</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nb_zeros</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/utils.html#bessel1_zeros"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.utils.bessel1_zeros" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluate zeros of the <a class="reference external" href="https://en.wikipedia.org/wiki/Bessel_function">first kind bessel function</a>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="structure_factor.utils.bessel2">
+<span class="sig-prename descclassname"><span class="pre">structure_factor.utils.</span></span><span class="sig-name descname"><span class="pre">bessel2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">order</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/utils.html#bessel2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.utils.bessel2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluate <a class="reference external" href="https://en.wikipedia.org/wiki/Bessel_function">second kind bessel function</a>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="structure_factor.utils.allowed_wave_values">
+<span class="sig-prename descclassname"><span class="pre">structure_factor.utils.</span></span><span class="sig-name descname"><span class="pre">allowed_wave_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">L</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k_max</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meshgrid_shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_add_k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/utils.html#allowed_wave_values"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.utils.allowed_wave_values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a realization of a point process in a cubic window with length <span class="math notranslate nohighlight">\(L\)</span>, compute the ‘allowed’ wave vectors <span class="math notranslate nohighlight">\((k_i)\)</span> at which the structure factor <span class="math notranslate nohighlight">\(S(k_i)\)</span> is consistently estimated by the scattering intensity defined below.</p>
+<div class="math notranslate nohighlight">
+\[\{\frac{2 \pi}{L} \mathbf{n} ~ ; ~ \mathbf{n} \in (\mathbb{Z}^d)^\ast, \left\lVert \mathbf{n} \right\rVert \leq \text{ k_max}\}\]</div>
+<p># todo add bibliographic reference</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>L</strong> (<em>float</em>) – Length of the cubic window.</p></li>
+<li><p><strong>k_max</strong> (<em>float</em>) – Maximum norm of the wave vectors.</p></li>
+<li><p><strong>meshgrid_shape</strong> (<em>int</em>) – </p></li>
+<li><p><strong>meshgrid_shape</strong> – Size of the meshgrid of allowed values if <code class="docutils literal notranslate"><span class="pre">k_vector</span></code> is set to None and <code class="docutils literal notranslate"><span class="pre">k_max</span></code> is specified. <strong>Warning:</strong> setting big value in <code class="docutils literal notranslate"><span class="pre">meshgrid_shape</span></code> could be time consuming when the sample has a lot of points.</p></li>
+<li><p><strong>max_add_k</strong> (<em>float</em>) – </p></li>
+<li><p><strong>max_add_k</strong> – Maximum component of the allowed wave vectors to be added. In other words, in the case of the evaluation on a vector of allowed values (without specifying <code class="docutils literal notranslate"><span class="pre">meshgrid_shape</span></code>),  <code class="docutils literal notranslate"><span class="pre">max_add_k</span></code> can be used to add allowed values in a certain region for better precision. <strong>Warning:</strong> setting big value in <code class="docutils literal notranslate"><span class="pre">max_add_k</span></code> could be time consuming when the sample has a lot of points. Defaults to 1.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>array of size <span class="math notranslate nohighlight">\(N \times d\)</span> collecting the ‘allowed’ wave vectors.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="structure_factor.utils.compute_scattering_intensity">
+<span class="sig-prename descclassname"><span class="pre">structure_factor.utils.</span></span><span class="sig-name descname"><span class="pre">compute_scattering_intensity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">points</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/utils.html#compute_scattering_intensity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.utils.compute_scattering_intensity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the scattering intensity which is an ensemble estimator of the structure factor of an ergodic stationary point process <span class="math notranslate nohighlight">\(\mathcal{X} \subset \mathbb{R}^2\)</span>, defined below.</p>
+<div class="math notranslate nohighlight">
+\[SI(\mathbf{k}) = \left \lvert \sum_{x \in \mathcal{X}} \exp(- i \left\langle \mathbf{k}, \mathbf{x} \right\rangle) \right\rvert^2\]</div>
+<p>where <span class="math notranslate nohighlight">\(\mathbf{k} \in \mathbb{R}^2\)</span> is a wave vector.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>k</strong> (<em>numpy.ndarray</em>) – array of size <span class="math notranslate nohighlight">\(N_1 \times 2\)</span> containing <span class="math notranslate nohighlight">\(N_1\)</span> two dimensional wave vectors.</p></li>
+<li><p><strong>points</strong> (<em>numpy.ndarray</em>) – array of size <span class="math notranslate nohighlight">\(N_2 \times 2\)</span> containing the <span class="math notranslate nohighlight">\(N_2\)</span> points of a realization of the point process <span class="math notranslate nohighlight">\(\mathcal{X}\)</span>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Vector of evaluation of the scattering intensity on <code class="docutils literal notranslate"><span class="pre">k</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference external" href="https://en.wikipedia.org/wiki/Structure_factor">Wikipedia structure factor/scattering intensity</a>.</p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="structure_factor.utils._bin_statistics">
+<span class="sig-prename descclassname"><span class="pre">structure_factor.utils.</span></span><span class="sig-name descname"><span class="pre">_bin_statistics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/utils.html#_bin_statistics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.utils._bin_statistics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Divide <code class="docutils literal notranslate"><span class="pre">x</span></code> into bins and evaluate the mean and the standard deviation of the corresponding element of <code class="docutils literal notranslate"><span class="pre">y</span></code> over the each bin.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>np.ndarray</em>) – vector of data.</p></li>
+<li><p><strong>y</strong> (<em>np.ndarray</em>) – vector of data associated to the vector <code class="docutils literal notranslate"><span class="pre">x</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><p><strong>params</strong> (<em>dict</em>) – keyword arguments (except <code class="docutils literal notranslate"><span class="pre">&quot;statistic&quot;</span></code>) of <code class="docutils literal notranslate"><span class="pre">scipy.stats.binned_statistic</span></code>.</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">bin_centers</span></code> vector of centers of the bins associated to <code class="docutils literal notranslate"><span class="pre">x</span></code>,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bin_mean</span></code> vector of means of <code class="docutils literal notranslate"><span class="pre">y</span></code> over the bins,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">std_mean</span></code> vector of standard deviation of <code class="docutils literal notranslate"><span class="pre">y</span></code> over the bins.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>tuple(numpy.ndarray, numpy.ndarray, numpy.ndarray)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="structure_factor.utils.plot_summary">
+<span class="sig-prename descclassname"><span class="pre">structure_factor.utils.</span></span><span class="sig-name descname"><span class="pre">plot_summary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'$mean</span> <span class="pre">\\pm</span> <span class="pre">3</span> <span class="pre">\\cdot</span> <span class="pre">std$'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">binning_params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/utils.html#plot_summary"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.utils.plot_summary" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loglog plot the summary results of _bin_statistics function i.e. means and errors bars (3 standard deviations).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="structure_factor.utils.plot_exact">
+<span class="sig-prename descclassname"><span class="pre">structure_factor.utils.</span></span><span class="sig-name descname"><span class="pre">plot_exact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/utils.html#plot_exact"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.utils.plot_exact" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loglog plot of a callable function <code class="docutils literal notranslate"><span class="pre">y</span></code> evaluated on the vector <code class="docutils literal notranslate"><span class="pre">x</span></code>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="structure_factor.utils.plot_approximation">
+<span class="sig-prename descclassname"><span class="pre">structure_factor.utils.</span></span><span class="sig-name descname"><span class="pre">plot_approximation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linestyle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">marker</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">markersize</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/utils.html#plot_approximation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.utils.plot_approximation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loglog plot of <code class="docutils literal notranslate"><span class="pre">y</span></code> w.r.t. <code class="docutils literal notranslate"><span class="pre">x</span></code>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="structure_factor.utils.plot_si_showcase">
+<span class="sig-prename descclassname"><span class="pre">structure_factor.utils.</span></span><span class="sig-name descname"><span class="pre">plot_si_showcase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">norm_k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">si</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exact_sf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error_bar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">binning_params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/utils.html#plot_si_showcase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.utils.plot_si_showcase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loglog plot of the results of the scattering intensity <code class="xref py py-meth docutils literal notranslate"><span class="pre">StructureFactor.scattering_intensity()</span></code>, with the means and error bars over specific number of bins found via <a class="reference internal" href="#structure_factor.utils._bin_statistics" title="structure_factor.utils._bin_statistics"><code class="xref py py-meth docutils literal notranslate"><span class="pre">_bin_statistics()</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="structure_factor.utils.plot_si_imshow">
+<span class="sig-prename descclassname"><span class="pre">structure_factor.utils.</span></span><span class="sig-name descname"><span class="pre">plot_si_imshow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">norm_k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">si</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/utils.html#plot_si_imshow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.utils.plot_si_imshow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Color level plot, centered on zero.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="structure_factor.utils.plot_si_all">
+<span class="sig-prename descclassname"><span class="pre">structure_factor.utils.</span></span><span class="sig-name descname"><span class="pre">plot_si_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">point_pattern</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">norm_k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">si</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exact_sf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error_bar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_res</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">binning_params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/utils.html#plot_si_all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.utils.plot_si_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Construct 3 subplots: point pattern, associated scattering intensity plot, associated scattering intensity color level.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="structure_factor.utils.plot_pcf">
+<span class="sig-prename descclassname"><span class="pre">structure_factor.utils.</span></span><span class="sig-name descname"><span class="pre">plot_pcf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pcf_dataframe</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exact_pcf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/utils.html#plot_pcf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.utils.plot_pcf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot DataFrame result.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="structure_factor.utils.plot_sf_hankel_quadrature">
+<span class="sig-prename descclassname"><span class="pre">structure_factor.utils.</span></span><span class="sig-name descname"><span class="pre">plot_sf_hankel_quadrature</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">norm_k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k_min</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exact_sf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error_bar</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'$\\widehat{S}_{H}$'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">binning_params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/utils.html#plot_sf_hankel_quadrature"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.utils.plot_sf_hankel_quadrature" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot approximation of structure factor using <code class="xref py py-meth docutils literal notranslate"><span class="pre">hankel_quadrature()</span></code> with means and error bars over bins.</p>
+</dd></dl>
+
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="transforms.html"
+                        title="previous chapter">Transforms</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="bibliography/index.html"
+                        title="next chapter">Bibliography</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/utils.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="bibliography/index.html" title="Bibliography"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="transforms.html" title="Transforms"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">structure_factor  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Utils</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2021, Diala Hawat.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.2.0.
+    </div>
+  </body>
+</html>

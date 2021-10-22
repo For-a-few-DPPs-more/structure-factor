@@ -1,0 +1,477 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>structure_factor.utils &#8212; structure_factor  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/classic.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
+    
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">structure_factor  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">structure_factor.utils</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for structure_factor.utils</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1"># coding=utf-8</span>
+
+<span class="c1"># import pandas as pd</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">interpolate</span><span class="p">,</span> <span class="n">stats</span>
+<span class="kn">from</span> <span class="nn">scipy.special</span> <span class="kn">import</span> <span class="n">j0</span><span class="p">,</span> <span class="n">j1</span><span class="p">,</span> <span class="n">jn_zeros</span><span class="p">,</span> <span class="n">jv</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">yv</span>
+
+
+<div class="viewcode-block" id="set_nan_inf_to_zero"><a class="viewcode-back" href="../../utils.html#structure_factor.utils.set_nan_inf_to_zero">[docs]</a><span class="k">def</span> <span class="nf">set_nan_inf_to_zero</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">nan</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">posinf</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">neginf</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Set nan, posinf and neginf values of ``array`` to 0.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">nan</span><span class="o">=</span><span class="n">nan</span><span class="p">,</span> <span class="n">posinf</span><span class="o">=</span><span class="n">posinf</span><span class="p">,</span> <span class="n">neginf</span><span class="o">=</span><span class="n">neginf</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="get_random_number_generator"><a class="viewcode-back" href="../../utils.html#structure_factor.utils.get_random_number_generator">[docs]</a><span class="k">def</span> <span class="nf">get_random_number_generator</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Turn seed into a np.random.Generator instance.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="bessel1"><a class="viewcode-back" href="../../utils.html#structure_factor.utils.bessel1">[docs]</a><span class="k">def</span> <span class="nf">bessel1</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Evaluate `first kind bessel function &lt;https://en.wikipedia.org/wiki/Bessel_function&gt;`_.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">order</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">j0</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">order</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">j1</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">jv</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="bessel1_zeros"><a class="viewcode-back" href="../../utils.html#structure_factor.utils.bessel1_zeros">[docs]</a><span class="k">def</span> <span class="nf">bessel1_zeros</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="n">nb_zeros</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Evaluate zeros of the `first kind bessel function &lt;https://en.wikipedia.org/wiki/Bessel_function&gt;`_.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">jn_zeros</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="n">nb_zeros</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="bessel2"><a class="viewcode-back" href="../../utils.html#structure_factor.utils.bessel2">[docs]</a><span class="k">def</span> <span class="nf">bessel2</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Evaluate `second kind bessel function &lt;https://en.wikipedia.org/wiki/Bessel_function&gt;`_.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">order</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">y0</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">order</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">y1</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">yv</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span></div>
+
+
+<span class="c1">####### Theoretical structure factors</span>
+
+
+<span class="k">def</span> <span class="nf">pair_correlation_function_ginibre</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">x</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span>
+
+
+<span class="k">def</span> <span class="nf">structure_factor_poisson</span><span class="p">(</span><span class="n">k</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">structure_factor_ginibre</span><span class="p">(</span><span class="n">k</span><span class="p">):</span>
+    <span class="k">return</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">k</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="mi">4</span><span class="p">)</span>
+
+
+<span class="c1">###### utils for the class StructureFactor</span>
+
+<span class="c1"># ? see difference between odd and even L why the final size of the meshgrid change?</span>
+<div class="viewcode-block" id="allowed_wave_values"><a class="viewcode-back" href="../../utils.html#structure_factor.utils.allowed_wave_values">[docs]</a><span class="k">def</span> <span class="nf">allowed_wave_values</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">k_max</span><span class="p">,</span> <span class="n">meshgrid_shape</span><span class="p">,</span> <span class="n">max_add_k</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Given a realization of a point process in a cubic window with length :math:`L`, compute the &#39;allowed&#39; wave vectors :math:`(k_i)` at which the structure factor :math:`S(k_i)` is consistently estimated by the scattering intensity defined below.</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        \{\frac{2 \pi}{L} \mathbf{n} ~ ; ~ \mathbf{n} \in (\mathbb{Z}^d)^\ast, \left\lVert \mathbf{n} \right\rVert \leq \text{ k_max}\}</span>
+
+<span class="sd">    # todo add bibliographic reference</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        L (float): Length of the cubic window.</span>
+
+<span class="sd">        k_max (float): Maximum norm of the wave vectors.</span>
+
+<span class="sd">        # todo give clearer description of meshgrid_shape</span>
+<span class="sd">        meshgrid_shape (int): Size of the meshgrid of allowed values if ``k_vector`` is set to None and ``k_max`` is specified. **Warning:** setting big value in ``meshgrid_shape`` could be time consuming when the sample has a lot of points.</span>
+
+<span class="sd">        # todo give clearer description of max_add_k</span>
+<span class="sd">        max_add_k (float): Maximum component of the allowed wave vectors to be added. In other words, in the case of the evaluation on a vector of allowed values (without specifying ``meshgrid_shape``),  ``max_add_k`` can be used to add allowed values in a certain region for better precision. **Warning:** setting big value in ``max_add_k`` could be time consuming when the sample has a lot of points. Defaults to 1.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        numpy.ndarray: array of size :math:`N \times d` collecting the &#39;allowed&#39; wave vectors.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">max_n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">k_max</span> <span class="o">*</span> <span class="n">L</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">))</span>  <span class="c1"># maximum of ``k_vector``</span>
+    <span class="c1"># todo why here it&#39;s from 1 to max_n not -max_n max_n</span>
+    <span class="k">if</span> <span class="n">meshgrid_shape</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># Add extra allowed values near zero</span>
+        <span class="n">n_vector</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">max_n</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">max_n</span><span class="p">))</span>
+        <span class="n">k_vector</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">((</span><span class="n">n_vector</span><span class="p">,</span> <span class="n">n_vector</span><span class="p">))</span> <span class="o">/</span> <span class="n">L</span>
+        <span class="n">max_add_n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">max_add_k</span> <span class="o">*</span> <span class="n">L</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">))</span>
+        <span class="n">add_n_vector</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int</span><span class="p">(</span><span class="n">max_add_n</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">int</span><span class="p">(</span><span class="n">max_add_n</span><span class="p">))</span>
+        <span class="n">X</span><span class="p">,</span> <span class="n">Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">add_n_vector</span><span class="p">,</span> <span class="n">add_n_vector</span><span class="p">)</span>
+        <span class="n">add_k_vector</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">((</span><span class="n">X</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span> <span class="n">Y</span><span class="o">.</span><span class="n">ravel</span><span class="p">()))</span> <span class="o">/</span> <span class="n">L</span>
+        <span class="n">k_vector</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">add_k_vector</span><span class="p">,</span> <span class="n">k_vector</span><span class="p">))</span>
+
+    <span class="k">elif</span> <span class="n">meshgrid_shape</span> <span class="o">&gt;</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">max_n</span><span class="p">):</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="n">message</span><span class="o">=</span><span class="s2">&quot;meshgrid_shape should be less than the total allowed number of points.&quot;</span>
+        <span class="p">)</span>
+        <span class="n">n_vector</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="n">max_n</span><span class="p">,</span> <span class="n">max_n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">n_vector</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span>
+            <span class="o">-</span><span class="n">max_n</span><span class="p">,</span> <span class="n">max_n</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="n">meshgrid_shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">n_vector</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">n_vector</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span>
+                <span class="o">-</span><span class="n">max_n</span><span class="p">,</span> <span class="n">max_n</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="n">meshgrid_shape</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">)</span>
+
+    <span class="n">n_vector</span> <span class="o">=</span> <span class="n">n_vector</span><span class="p">[</span><span class="n">n_vector</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="n">X</span><span class="p">,</span> <span class="n">Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">n_vector</span><span class="p">,</span> <span class="n">n_vector</span><span class="p">)</span>
+    <span class="n">k_vector</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">((</span><span class="n">X</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span> <span class="n">Y</span><span class="o">.</span><span class="n">ravel</span><span class="p">()))</span> <span class="o">/</span> <span class="n">L</span>
+
+    <span class="k">return</span> <span class="n">k_vector</span></div>
+
+
+<div class="viewcode-block" id="compute_scattering_intensity"><a class="viewcode-back" href="../../utils.html#structure_factor.utils.compute_scattering_intensity">[docs]</a><span class="k">def</span> <span class="nf">compute_scattering_intensity</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">points</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the scattering intensity which is an ensemble estimator of the structure factor of an ergodic stationary point process :math:`\mathcal{X} \subset \mathbb{R}^2`, defined below.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        SI(\mathbf{k}) = \left \lvert \sum_{x \in \mathcal{X}} \exp(- i \left\langle \mathbf{k}, \mathbf{x} \right\rangle) \right\rvert^2</span>
+
+<span class="sd">    where :math:`\mathbf{k} \in \mathbb{R}^2` is a wave vector.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        k (numpy.ndarray): array of size :math:`N_1 \times 2` containing :math:`N_1` two dimensional wave vectors.</span>
+<span class="sd">        points (numpy.ndarray): array of size :math:`N_2 \times 2` containing the :math:`N_2` points of a realization of the point process :math:`\mathcal{X}`.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        numpy.ndarray: Vector of evaluation of the scattering intensity on ``k``.</span>
+
+<span class="sd">    .. seealso::</span>
+
+<span class="sd">        `Wikipedia structure factor/scattering intensity &lt;https://en.wikipedia.org/wiki/Structure_factor&gt;`_.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">points</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">points</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">k</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;k and points should have same number of columns&quot;</span><span class="p">)</span>
+
+    <span class="n">si</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">points</span><span class="o">.</span><span class="n">T</span><span class="p">)),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)))</span>
+    <span class="n">si</span> <span class="o">/=</span> <span class="n">n</span>
+    <span class="k">return</span> <span class="n">si</span></div>
+
+
+<div class="viewcode-block" id="_bin_statistics"><a class="viewcode-back" href="../../utils.html#structure_factor.utils._bin_statistics">[docs]</a><span class="k">def</span> <span class="nf">_bin_statistics</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Divide ``x`` into bins and evaluate the mean and the standard deviation of the corresponding element of ``y`` over the each bin.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x (np.ndarray): vector of data.</span>
+<span class="sd">        y (np.ndarray): vector of data associated to the vector ``x``.</span>
+
+<span class="sd">    Keyword args:</span>
+<span class="sd">        params (dict): keyword arguments (except ``&quot;statistic&quot;``) of ``scipy.stats.binned_statistic``.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        tuple(numpy.ndarray, numpy.ndarray, numpy.ndarray):</span>
+<span class="sd">            - ``bin_centers`` vector of centers of the bins associated to ``x``,</span>
+<span class="sd">            - ``bin_mean`` vector of means of ``y`` over the bins,</span>
+<span class="sd">            - ``std_mean`` vector of standard deviation of ``y`` over the bins.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">bin_mean</span><span class="p">,</span> <span class="n">bin_edges</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">binned_statistic</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">statistic</span><span class="o">=</span><span class="s2">&quot;mean&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span>
+    <span class="n">bin_std</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">binned_statistic</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">statistic</span><span class="o">=</span><span class="s2">&quot;std&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span>
+    <span class="n">count</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">binned_statistic</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">statistic</span><span class="o">=</span><span class="s2">&quot;count&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span>
+    <span class="n">bin_std</span> <span class="o">=</span> <span class="n">bin_std</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">count</span><span class="p">)</span>
+    <span class="n">bin_centers</span> <span class="o">=</span> <span class="n">bin_edges</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">bin_edges</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+
+    <span class="k">return</span> <span class="n">bin_centers</span><span class="p">,</span> <span class="n">bin_mean</span><span class="p">,</span> <span class="n">bin_std</span></div>
+
+
+<span class="k">def</span> <span class="nf">plot_poisson</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;k&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">)),</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Poisson&quot;</span><span class="p">):</span>
+    <span class="c1"># todo add docstring</span>
+    <span class="n">axis</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">c</span><span class="o">=</span><span class="n">c</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="n">linestyle</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">axis</span>
+
+
+<div class="viewcode-block" id="plot_summary"><a class="viewcode-back" href="../../utils.html#structure_factor.utils.plot_summary">[docs]</a><span class="k">def</span> <span class="nf">plot_summary</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;$mean \pm 3 \cdot std$&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">binning_params</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Loglog plot the summary results of _bin_statistics function i.e. means and errors bars (3 standard deviations).&quot;&quot;&quot;</span>
+    <span class="n">bin_centers</span><span class="p">,</span> <span class="n">bin_mean</span><span class="p">,</span> <span class="n">bin_std</span> <span class="o">=</span> <span class="n">_bin_statistics</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="o">**</span><span class="n">binning_params</span><span class="p">)</span>
+    <span class="n">axis</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">bin_centers</span><span class="p">,</span> <span class="n">bin_mean</span><span class="p">,</span> <span class="s2">&quot;b.&quot;</span><span class="p">)</span>
+    <span class="n">axis</span><span class="o">.</span><span class="n">errorbar</span><span class="p">(</span>
+        <span class="n">bin_centers</span><span class="p">,</span>
+        <span class="n">bin_mean</span><span class="p">,</span>
+        <span class="n">yerr</span><span class="o">=</span><span class="mi">3</span> <span class="o">*</span> <span class="n">bin_std</span><span class="p">,</span>  <span class="c1"># 3 times the standard deviation</span>
+        <span class="n">fmt</span><span class="o">=</span><span class="s2">&quot;b&quot;</span><span class="p">,</span>
+        <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">ecolor</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">,</span>
+        <span class="n">capsize</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+        <span class="n">capthick</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span>
+        <span class="n">zorder</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">axis</span></div>
+
+
+<div class="viewcode-block" id="plot_exact"><a class="viewcode-back" href="../../utils.html#structure_factor.utils.plot_exact">[docs]</a><span class="k">def</span> <span class="nf">plot_exact</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Loglog plot of a callable function ``y`` evaluated on the vector ``x``.&quot;&quot;&quot;</span>
+    <span class="n">axis</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="s2">&quot;g&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">axis</span></div>
+
+
+<div class="viewcode-block" id="plot_approximation"><a class="viewcode-back" href="../../utils.html#structure_factor.utils.plot_approximation">[docs]</a><span class="k">def</span> <span class="nf">plot_approximation</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">color</span><span class="p">,</span> <span class="n">linestyle</span><span class="p">,</span> <span class="n">marker</span><span class="p">,</span> <span class="n">markersize</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Loglog plot of ``y`` w.r.t. ``x``.&quot;&quot;&quot;</span>
+    <span class="n">axis</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span>
+        <span class="n">x</span><span class="p">,</span>
+        <span class="n">y</span><span class="p">,</span>
+        <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span>
+        <span class="n">linestyle</span><span class="o">=</span><span class="n">linestyle</span><span class="p">,</span>
+        <span class="n">marker</span><span class="o">=</span><span class="n">marker</span><span class="p">,</span>
+        <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span>
+        <span class="n">markersize</span><span class="o">=</span><span class="n">markersize</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">axis</span></div>
+
+
+<div class="viewcode-block" id="plot_si_showcase"><a class="viewcode-back" href="../../utils.html#structure_factor.utils.plot_si_showcase">[docs]</a><span class="k">def</span> <span class="nf">plot_si_showcase</span><span class="p">(</span>
+    <span class="n">norm_k</span><span class="p">,</span>
+    <span class="n">si</span><span class="p">,</span>
+    <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">exact_sf</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">error_bar</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">file_name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">binning_params</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Loglog plot of the results of the scattering intensity :py:meth:`StructureFactor.scattering_intensity`, with the means and error bars over specific number of bins found via :py:meth:`~structure_factor.utils._bin_statistics`.&quot;&quot;&quot;</span>
+    <span class="n">norm_k</span> <span class="o">=</span> <span class="n">norm_k</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+    <span class="n">si</span> <span class="o">=</span> <span class="n">si</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">axis</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+
+    <span class="n">plot_poisson</span><span class="p">(</span><span class="n">norm_k</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">exact_sf</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">plot_exact</span><span class="p">(</span><span class="n">norm_k</span><span class="p">,</span> <span class="n">exact_sf</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Exact $S(k)$&quot;</span><span class="p">)</span>
+
+    <span class="n">plot_approximation</span><span class="p">(</span>
+        <span class="n">norm_k</span><span class="p">,</span>
+        <span class="n">si</span><span class="p">,</span>
+        <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span>
+        <span class="n">label</span><span class="o">=</span><span class="s2">&quot;$\widehat</span><span class="si">{S}</span><span class="s2">_</span><span class="si">{SI}</span><span class="s2">$&quot;</span><span class="p">,</span>
+        <span class="n">color</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">,</span>
+        <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;.&quot;</span><span class="p">,</span>
+        <span class="n">markersize</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">error_bar</span><span class="p">:</span>
+        <span class="n">plot_summary</span><span class="p">(</span><span class="n">norm_k</span><span class="p">,</span> <span class="n">si</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="o">**</span><span class="n">binning_params</span><span class="p">)</span>
+
+    <span class="n">axis</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Wavenumber ($||\mathbf</span><span class="si">{k}</span><span class="s2">||$)&quot;</span><span class="p">)</span>
+    <span class="n">axis</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Structure factor ($S(k)$)&quot;</span><span class="p">)</span>
+    <span class="n">axis</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">framealpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">file_name</span><span class="p">:</span>
+        <span class="n">fig</span> <span class="o">=</span> <span class="n">axis</span><span class="o">.</span><span class="n">get_figure</span><span class="p">()</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">axis</span></div>
+
+
+<div class="viewcode-block" id="plot_si_imshow"><a class="viewcode-back" href="../../utils.html#structure_factor.utils.plot_si_imshow">[docs]</a><span class="k">def</span> <span class="nf">plot_si_imshow</span><span class="p">(</span><span class="n">norm_k</span><span class="p">,</span> <span class="n">si</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">file_name</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Color level plot, centered on zero.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">norm_k</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;the scattering intensity should be evaluated on a meshgrid or choose plot_type = &#39;plot&#39;. &quot;</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">axis</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">norm_k</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;the scattering intensity should be evaluated on a meshgrid or choose plot_type = &#39;plot&#39;. &quot;</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">log_si</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">si</span><span class="p">)</span>
+        <span class="n">m</span><span class="p">,</span> <span class="n">n</span> <span class="o">=</span> <span class="n">log_si</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">m</span> <span class="o">/=</span> <span class="mi">2</span>
+        <span class="n">n</span> <span class="o">/=</span> <span class="mi">2</span>
+        <span class="n">f_0</span> <span class="o">=</span> <span class="n">axis</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span>
+            <span class="n">log_si</span><span class="p">,</span>
+            <span class="n">extent</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="o">-</span><span class="n">m</span><span class="p">,</span> <span class="n">m</span><span class="p">],</span>
+            <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;PRGn&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">f_0</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span>
+        <span class="c1"># axis.title.set_text(&quot;Scattering intensity&quot;)</span>
+
+        <span class="k">if</span> <span class="n">file_name</span><span class="p">:</span>
+            <span class="n">fig</span> <span class="o">=</span> <span class="n">axis</span><span class="o">.</span><span class="n">get_figure</span><span class="p">()</span>
+            <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">axis</span></div>
+
+
+<div class="viewcode-block" id="plot_si_all"><a class="viewcode-back" href="../../utils.html#structure_factor.utils.plot_si_all">[docs]</a><span class="k">def</span> <span class="nf">plot_si_all</span><span class="p">(</span>
+    <span class="n">point_pattern</span><span class="p">,</span>
+    <span class="n">norm_k</span><span class="p">,</span>
+    <span class="n">si</span><span class="p">,</span>
+    <span class="n">exact_sf</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">error_bar</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">file_name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="n">window_res</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">binning_params</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Construct 3 subplots: point pattern, associated scattering intensity plot, associated scattering intensity color level.&quot;&quot;&quot;</span>
+    <span class="n">figure</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">24</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+
+    <span class="n">point_pattern</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">window_res</span><span class="o">=</span><span class="n">window_res</span><span class="p">)</span>
+    <span class="n">plot_si_showcase</span><span class="p">(</span>
+        <span class="n">norm_k</span><span class="p">,</span>
+        <span class="n">si</span><span class="p">,</span>
+        <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+        <span class="n">exact_sf</span><span class="p">,</span>
+        <span class="n">error_bar</span><span class="p">,</span>
+        <span class="n">file_name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">binning_params</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">plot_si_imshow</span><span class="p">(</span><span class="n">norm_k</span><span class="p">,</span> <span class="n">si</span><span class="p">,</span> <span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">file_name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">file_name</span><span class="p">:</span>
+        <span class="n">figure</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">axes</span></div>
+
+
+<div class="viewcode-block" id="plot_pcf"><a class="viewcode-back" href="../../utils.html#structure_factor.utils.plot_pcf">[docs]</a><span class="k">def</span> <span class="nf">plot_pcf</span><span class="p">(</span><span class="n">pcf_dataframe</span><span class="p">,</span> <span class="n">exact_pcf</span><span class="p">,</span> <span class="n">file_name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Plot DataFrame result.&quot;&quot;&quot;</span>
+    <span class="n">axis</span> <span class="o">=</span> <span class="n">pcf_dataframe</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">line</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">exact_pcf</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">axis</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+            <span class="n">pcf_dataframe</span><span class="p">[</span><span class="s2">&quot;r&quot;</span><span class="p">],</span>
+            <span class="n">exact_pcf</span><span class="p">(</span><span class="n">pcf_dataframe</span><span class="p">[</span><span class="s2">&quot;r&quot;</span><span class="p">]),</span>
+            <span class="s2">&quot;g&quot;</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="s2">&quot;exact pcf&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="n">plot_poisson</span><span class="p">(</span><span class="n">pcf_dataframe</span><span class="p">[</span><span class="s2">&quot;r&quot;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">)))</span>
+
+    <span class="n">axis</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+    <span class="n">axis</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Radius ($r$)&quot;</span><span class="p">)</span>
+    <span class="n">axis</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Pair correlation function ($g(r)$)&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">file_name</span><span class="p">:</span>
+        <span class="n">fig</span> <span class="o">=</span> <span class="n">axis</span><span class="o">.</span><span class="n">get_figure</span><span class="p">()</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">axis</span></div>
+
+
+<div class="viewcode-block" id="plot_sf_hankel_quadrature"><a class="viewcode-back" href="../../utils.html#structure_factor.utils.plot_sf_hankel_quadrature">[docs]</a><span class="k">def</span> <span class="nf">plot_sf_hankel_quadrature</span><span class="p">(</span>
+    <span class="n">norm_k</span><span class="p">,</span>
+    <span class="n">sf</span><span class="p">,</span>
+    <span class="n">axis</span><span class="p">,</span>
+    <span class="n">k_min</span><span class="p">,</span>
+    <span class="n">exact_sf</span><span class="p">,</span>
+    <span class="n">error_bar</span><span class="p">,</span>
+    <span class="n">file_name</span><span class="p">,</span>
+    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;$\widehat</span><span class="si">{S}</span><span class="s2">_</span><span class="si">{H}</span><span class="s2">$&quot;</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">binning_params</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Plot approximation of structure factor using :py:meth:`~structure_factor.hankel_quadrature` with means and error bars over bins.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">fig</span><span class="p">,</span> <span class="n">axis</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+
+    <span class="n">plot_approximation</span><span class="p">(</span>
+        <span class="n">norm_k</span><span class="p">,</span>
+        <span class="n">sf</span><span class="p">,</span>
+        <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span>
+        <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span>
+        <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;.&quot;</span><span class="p">,</span>
+        <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">color</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">,</span>
+        <span class="n">markersize</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">exact_sf</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">plot_exact</span><span class="p">(</span><span class="n">norm_k</span><span class="p">,</span> <span class="n">exact_sf</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Exact $\mathcal</span><span class="si">{S}</span><span class="s2">(k)$&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">error_bar</span><span class="p">:</span>
+        <span class="n">plot_summary</span><span class="p">(</span><span class="n">norm_k</span><span class="p">,</span> <span class="n">sf</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="o">**</span><span class="n">binning_params</span><span class="p">)</span>
+    <span class="n">plot_poisson</span><span class="p">(</span><span class="n">norm_k</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">k_min</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">sf_interpolate</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span>
+            <span class="n">norm_k</span><span class="p">,</span> <span class="n">sf</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="s2">&quot;extrapolate&quot;</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;cubic&quot;</span>
+        <span class="p">)</span>
+        <span class="n">axis</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span>
+            <span class="n">k_min</span><span class="p">,</span>
+            <span class="n">sf_interpolate</span><span class="p">(</span><span class="n">k_min</span><span class="p">),</span>
+            <span class="s2">&quot;ro&quot;</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="s2">&quot;k_min&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="n">axis</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+    <span class="n">axis</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Wavenumber (k)&quot;</span><span class="p">)</span>
+    <span class="n">axis</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Structure factor ($\mathcal</span><span class="si">{S}</span><span class="s2">(k)$)&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">file_name</span><span class="p">:</span>
+        <span class="n">fig</span> <span class="o">=</span> <span class="n">axis</span><span class="o">.</span><span class="n">get_figure</span><span class="p">()</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">axis</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">structure_factor  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">structure_factor.utils</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2021, Diala Hawat.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.2.0.
+    </div>
+  </body>
+</html>

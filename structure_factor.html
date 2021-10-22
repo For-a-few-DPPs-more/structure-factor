@@ -1,0 +1,528 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Structure factor &#8212; structure_factor  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    <link rel="stylesheet" type="text/css" href="_static/plot_directive.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Transforms" href="transforms.html" />
+    <link rel="prev" title="Spatial window" href="spatial_windows.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="transforms.html" title="Transforms"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="spatial_windows.html" title="Spatial window"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">structure_factor  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Structure factor</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-structure_factor.structure_factor">
+<span id="structure-factor"></span><h1>Structure factor<a class="headerlink" href="#module-structure_factor.structure_factor" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="structure_factor.structure_factor.StructureFactor">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">structure_factor.structure_factor.</span></span><span class="sig-name descname"><span class="pre">StructureFactor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">point_pattern</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/structure_factor.html#StructureFactor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.structure_factor.StructureFactor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Implementation of various estimators of the structure factor <span class="math notranslate nohighlight">\(S\)</span> of a d dimensional stationary ergodic point process <span class="math notranslate nohighlight">\(\mathcal{X}\)</span> with intensity <span class="math notranslate nohighlight">\(\rho\)</span>, as defined below.</p>
+<div class="math notranslate nohighlight">
+\[S(\mathbf{k}) = 1 + \rho \mathcal{F}(g-1)(\mathbf{k}),\]</div>
+<p>where <span class="math notranslate nohighlight">\(\mathcal{F}\)</span> denotes the Fourier transform, <span class="math notranslate nohighlight">\(g\)</span> the pair correlation function corresponds to <span class="math notranslate nohighlight">\(\mathcal{X}\)</span>, <span class="math notranslate nohighlight">\(\mathbf{k} \in \mathbb{R}^d\)</span> is a wave vector and we denote the wave length <span class="math notranslate nohighlight">\(k = \| \mathbf{k} \|_d\)</span>.</p>
+<dl>
+<dt>This class contains</dt><dd><ul>
+<li><dl class="simple">
+<dt>Three estimators of the structure factor:</dt><dd><ul class="simple">
+<li><p>The scattering intensity <a class="reference internal" href="#structure_factor.structure_factor.StructureFactor.scattering_intensity" title="structure_factor.structure_factor.StructureFactor.scattering_intensity"><code class="xref py py-meth docutils literal notranslate"><span class="pre">scattering_intensity()</span></code></a>.</p></li>
+<li><p>Estimator using Ogata quadrature for approximating the Hankel transform  <a class="reference internal" href="#structure_factor.structure_factor.StructureFactor.hankel_quadrature" title="structure_factor.structure_factor.StructureFactor.hankel_quadrature"><code class="xref py py-meth docutils literal notranslate"><span class="pre">hankel_quadrature()</span></code></a> with <cite>method=”Ogata”</cite> <span id="id1">[<a class="reference internal" href="bibliography/index.html#id6" title="H. Ogata. A numerical integration formula based on the bessel functions. Research Institute for Mathematical Sciences, 2005. doi:10.2977/prims/1145474602.">Oga05</a>]</span>.</p></li>
+<li><p>Estimator using Baddour and Chouinard Discrete Hankel transform <a class="reference internal" href="#structure_factor.structure_factor.StructureFactor.hankel_quadrature" title="structure_factor.structure_factor.StructureFactor.hankel_quadrature"><code class="xref py py-meth docutils literal notranslate"><span class="pre">hankel_quadrature()</span></code></a> with <cite>method=”BaddourChouinard”</cite> <span id="id2">[<a class="reference internal" href="bibliography/index.html#id2" title="Natalie Baddour and Ugo Chouinard. Theory and operational rules for the discrete hankel transform. J. Opt. Soc. Am. A, 32(4):611–622, Apr 2015. URL: http://josaa.osa.org/abstract.cfm?URI=josaa-32-4-611, doi:10.1364/JOSAA.32.000611.">BC15</a>]</span>.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl>
+<dt>Two estimators of the pair correlation function :</dt><dd><ul class="simple">
+<li><p>Estimator using Epanechnikov kernel and a bandwidth selected by Stoyan’s rule of thumb <a class="reference internal" href="#structure_factor.structure_factor.StructureFactor.compute_pcf" title="structure_factor.structure_factor.StructureFactor.compute_pcf"><code class="xref py py-meth docutils literal notranslate"><span class="pre">compute_pcf()</span></code></a> with <cite>method=”ppp”</cite>.</p></li>
+<li><p>Estimator using the derivative of Ripley’s K function <a class="reference internal" href="#structure_factor.structure_factor.StructureFactor.compute_pcf" title="structure_factor.structure_factor.StructureFactor.compute_pcf"><code class="xref py py-meth docutils literal notranslate"><span class="pre">compute_pcf()</span></code></a> with <cite>method=”fv”</cite>.</p></li>
+</ul>
+<p>This 2 estimators are obtained using <a class="reference external" href="https://github.com/For-a-few-DPPs-more/spatstat-interface">spatstat-interface</a> which builds a hidden interface with the package <a class="reference external" href="https://github.com/spatstat/spatstat">spatstat</a> of the programming language R.</p>
+</dd>
+</dl>
+</li>
+<li><p>An interpolation function <a class="reference internal" href="#structure_factor.structure_factor.StructureFactor.interpolate_pcf" title="structure_factor.structure_factor.StructureFactor.interpolate_pcf"><code class="xref py py-meth docutils literal notranslate"><span class="pre">interpolate_pcf()</span></code></a>, used to interpolate the result of <a class="reference internal" href="#structure_factor.structure_factor.StructureFactor.compute_pcf" title="structure_factor.structure_factor.StructureFactor.compute_pcf"><code class="xref py py-meth docutils literal notranslate"><span class="pre">compute_pcf()</span></code></a>.</p></li>
+<li><p>Three plot methods <a class="reference internal" href="#structure_factor.structure_factor.StructureFactor.plot_scattering_intensity" title="structure_factor.structure_factor.StructureFactor.plot_scattering_intensity"><code class="xref py py-meth docutils literal notranslate"><span class="pre">plot_scattering_intensity()</span></code></a>,  <a class="reference internal" href="#structure_factor.structure_factor.StructureFactor.plot_pcf" title="structure_factor.structure_factor.StructureFactor.plot_pcf"><code class="xref py py-meth docutils literal notranslate"><span class="pre">plot_pcf()</span></code></a> and <a class="reference internal" href="#structure_factor.structure_factor.StructureFactor.plot_sf_hankel_quadrature" title="structure_factor.structure_factor.StructureFactor.plot_sf_hankel_quadrature"><code class="xref py py-meth docutils literal notranslate"><span class="pre">plot_sf_hankel_quadrature()</span></code></a> used to visualized the result of <a class="reference internal" href="#structure_factor.structure_factor.StructureFactor.scattering_intensity" title="structure_factor.structure_factor.StructureFactor.scattering_intensity"><code class="xref py py-meth docutils literal notranslate"><span class="pre">scattering_intensity()</span></code></a>, <a class="reference internal" href="#structure_factor.structure_factor.StructureFactor.compute_pcf" title="structure_factor.structure_factor.StructureFactor.compute_pcf"><code class="xref py py-meth docutils literal notranslate"><span class="pre">compute_pcf()</span></code></a> and <a class="reference internal" href="#structure_factor.structure_factor.StructureFactor.hankel_quadrature" title="structure_factor.structure_factor.StructureFactor.hankel_quadrature"><code class="xref py py-meth docutils literal notranslate"><span class="pre">hankel_quadrature()</span></code></a> respectively.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><span id="id3">[<a class="reference internal" href="bibliography/index.html#id9" title="S. Torquato. Hyperuniform states of matter. Physics Reports, 2018. URL: https://doi.org/10.1016/j.physrep.2018.03.001, doi:10.1016/j.physrep.2018.03.001.">Tor18</a>]</span>, Section 2.1, equation (13).</p>
+</div>
+<dl class="py property">
+<dt class="sig sig-object py" id="structure_factor.structure_factor.StructureFactor.dimension">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">dimension</span></span><a class="headerlink" href="#structure_factor.structure_factor.StructureFactor.dimension" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ambient dimension of the underlying point process.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="structure_factor.structure_factor.StructureFactor.scattering_intensity">
+<span class="sig-name descname"><span class="pre">scattering_intensity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meshgrid_shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/structure_factor.html#StructureFactor.scattering_intensity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.structure_factor.StructureFactor.scattering_intensity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the scattering intensity <span class="math notranslate nohighlight">\(\widehat{S}_{SI}\)</span> which is an ensemble estimator of the structure factor <span class="math notranslate nohighlight">\(S\)</span> of an ergodic stationary point process <span class="math notranslate nohighlight">\(\mathcal{X} \subset \mathbb{R}^d\)</span>, from a realization <span class="math notranslate nohighlight">\(\mathcal{X}\cap W =\{x_i\}_{i=1}^N\)</span> of <span class="math notranslate nohighlight">\(\mathcal{X}\)</span> within a <strong>cubic</strong> window <span class="math notranslate nohighlight">\(W=[-L/2, L/2]^d\)</span>.</p>
+<div class="math notranslate nohighlight">
+\[\widehat{S}_{SI}(\mathbf{k}) =
+ \frac{1}{N}\left\lvert
+    \sum_{j=1}^N
+        \exp(- i \left\langle \mathbf{k}, \mathbf{x_j} \right\rangle)
+\right\rvert^2\]</div>
+<p>for a specific sef of wavevectors</p>
+<div class="math notranslate nohighlight">
+\[\mathbf{k} \in \{
+\frac{2 \pi}{L} \mathbf{n},\,
+\text{for} \; \mathbf{n} \in (\mathbb{Z}^d)^\ast \}\]</div>
+<p>called in the physics literature <strong>allowed values</strong> or dual lattice <span id="id4">[<a class="reference internal" href="bibliography/index.html#id5" title="M.A. Klatt, G. Last, and D. Yogeshwaran. Hyperuniform and rigid stable matchings. ArXiv:1810.00265v3, 2020. URL: https://arxiv.org/abs/1810.00265.">KLY20</a>]</span>.</p>
+<dl class="simple">
+<dt>As the estimation of the structure factor <span class="math notranslate nohighlight">\(S\)</span> via the scattering intensity <span class="math notranslate nohighlight">\(\widehat{S}_{SI}\)</span> is valid for point processes sampled in a <strong>cubic window</strong>  and on a specific set of allowed wavevectors, so</dt><dd><ul class="simple">
+<li><p>If the sample <span class="math notranslate nohighlight">\(\{x_j\}_{j=1}^N\)</span> does note lies in a cubic window, use the method <a class="reference internal" href="point_pattern.html#structure_factor.point_pattern.PointPattern.restrict_to_window" title="structure_factor.point_pattern.PointPattern.restrict_to_window"><code class="xref py py-class docutils literal notranslate"><span class="pre">restrict_to_window</span></code></a> to extract a sub-sample within a cubic window before using <a class="reference internal" href="#structure_factor.structure_factor.StructureFactor.scattering_intensity" title="structure_factor.structure_factor.StructureFactor.scattering_intensity"><code class="xref py py-meth docutils literal notranslate"><span class="pre">scattering_intensity()</span></code></a>.</p></li>
+<li><p><a class="reference internal" href="#structure_factor.structure_factor.StructureFactor.scattering_intensity" title="structure_factor.structure_factor.StructureFactor.scattering_intensity"><code class="xref py py-meth docutils literal notranslate"><span class="pre">scattering_intensity()</span></code></a> evalute the scattering intensity by default on the corresponding set of allowed wavevectors. But you can specify another set of wavevector by precising the argument <code class="docutils literal notranslate"><span class="pre">k</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+<p>So it’s recommended to not specify the vector of waves <code class="docutils literal notranslate"><span class="pre">k</span></code>, but to either specify a meshgrid size and the maximum component of the set of wavevectors respectively via <code class="docutils literal notranslate"><span class="pre">meshgrid_shape</span></code> and <code class="docutils literal notranslate"><span class="pre">k_max</span></code>, or just <code class="docutils literal notranslate"><span class="pre">k_max</span></code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Specifying the meshgrid size argument <code class="docutils literal notranslate"><span class="pre">meshgrid_shape</span></code> is usefull if the number of points of the realization is big so that in this case the evaluation of <span class="math notranslate nohighlight">\(\widehat{S}_{SI}\)</span> on all the allowed wavevectors may be time consuming.</p>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="utils.html#structure_factor.utils.allowed_wave_values" title="structure_factor.utils.allowed_wave_values"><code class="xref py py-meth docutils literal notranslate"><span class="pre">allowed_wave_values()</span></code></a>.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>array</strong> (<em>#? since it's not a 2d</em>) – </p></li>
+<li><p><strong>array</strong> – </p></li>
+<li><p><strong>ndarray</strong> (<em>in dimension 2 it's a list of</em>) – </p></li>
+<li><p><strong>k</strong> (<em>list</em>) – list containing d numpy.ndarray corresponding to the components of the wavevectors. As mentioned before its recommended to keep the default <code class="docutils literal notranslate"><span class="pre">k</span></code> and to specify <code class="docutils literal notranslate"><span class="pre">k_max</span></code> instead, so that the approximation will be evaluated on allowed wavevectors. Defaults to None.</p></li>
+<li><p><strong>k_max</strong> (<em>float</em><em>, </em><em>optional</em>) – Maximum component of the allowed wavevectors (i.e., for any wavevector <span class="math notranslate nohighlight">\(\mathbf{k}=(k_1, .., k_d)\)</span> we have <span class="math notranslate nohighlight">\(k_j&lt; max\_k\)</span> for all j). Defaults to None.</p></li>
+<li><p><strong>meshgrid_shape</strong> (<em>int</em><em>, </em><em>optional</em>) – Size of the meshgrid of allowed wavevectors when <code class="docutils literal notranslate"><span class="pre">k</span></code> is None and <code class="docutils literal notranslate"><span class="pre">k_max</span></code> is specified. Warning: setting large value in <code class="docutils literal notranslate"><span class="pre">meshgrid_shape</span></code> could be time consuming and harmful to your machine for large sample of points. Defaults to None.</p></li>
+<li><p><strong>max_add_k</strong> (<em>int</em><em>, </em><em>optional</em>) – Maximum component of allowed wavevectors added in the case where <code class="docutils literal notranslate"><span class="pre">k</span></code> is of small size. In other words, in the case of the evaluation on a vector of allowed wavevectors which doesn’t cover a sufficient number of small allowed wavelengths,  <code class="docutils literal notranslate"><span class="pre">max_add_k</span></code> can be used to add allowed wavevectors in a certain neighborhood of zero for better precision. This is useful while studying the behavior of <span class="math notranslate nohighlight">\(S\)</span> in the neighborhood of the origin. Warning: setting big value in <code class="docutils literal notranslate"><span class="pre">max_add_k</span></code> could be time consuming and harmful to your machine for a large sample of points since this similar to the case with big meshgrid size. Defaults to 1.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p>k_norm: The vector of wavelengths (i.e. the vector of norms of the wave vectors) on which the scattering intensity was evaluated.</p></li>
+<li><p>si: The evaluations of the scattering intensity corresponding to the vector of wave length <code class="docutils literal notranslate"><span class="pre">k_norm</span></code>.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>tuple(numpy.ndarray, numpy.ndarray)</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">structure_factor.data</span> <span class="kn">import</span> <span class="n">load_data</span>
+<span class="kn">from</span> <span class="nn">structure_factor.spatial_windows</span> <span class="kn">import</span> <span class="n">BoxWindow</span>
+<span class="kn">from</span> <span class="nn">structure_factor.structure_factor</span> <span class="kn">import</span> <span class="n">StructureFactor</span>
+<span class="kn">import</span> <span class="nn">structure_factor.utils</span> <span class="k">as</span> <span class="nn">utils</span>
+
+
+<span class="c1"># load Ginibre PointPattern</span>
+<span class="n">ginibre_pp</span> <span class="o">=</span> <span class="n">load_data</span><span class="o">.</span><span class="n">load_ginibre</span><span class="p">()</span>
+
+<span class="c1"># creat box window</span>
+<span class="n">L</span> <span class="o">=</span> <span class="mi">70</span>  <span class="c1"># sidelength of the window</span>
+<span class="n">bounds</span> <span class="o">=</span> <span class="p">[[</span><span class="o">-</span><span class="n">L</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">L</span> <span class="o">/</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="n">L</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">L</span> <span class="o">/</span> <span class="mi">2</span><span class="p">]]</span>  <span class="c1"># bounds of the window</span>
+<span class="n">window</span> <span class="o">=</span> <span class="n">BoxWindow</span><span class="p">(</span><span class="n">bounds</span><span class="p">)</span>  <span class="c1"># create a cubic window</span>
+
+<span class="c1"># restrict to box window</span>
+<span class="n">ginibre_pp_box</span> <span class="o">=</span> <span class="n">ginibre_pp</span><span class="o">.</span><span class="n">restrict_to_window</span><span class="p">(</span><span class="n">window</span><span class="p">)</span>
+
+<span class="c1"># scattering intensity</span>
+<span class="n">sf_ginibre_box</span> <span class="o">=</span> <span class="n">StructureFactor</span><span class="p">(</span><span class="n">ginibre_pp_box</span><span class="p">)</span>  <span class="c1"># initialize the class StructureFactor</span>
+<span class="hll"><span class="n">norm_k</span><span class="p">,</span> <span class="n">si</span> <span class="o">=</span> <span class="n">sf_ginibre_box</span><span class="o">.</span><span class="n">scattering_intensity</span><span class="p">(</span><span class="n">k_component_max</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">meshgrid_shape</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+</span><span class="hll">
+</span><span class="c1"># plot</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="structure_factor.structure_factor.StructureFactor.plot_scattering_intensity">
+<span class="sig-name descname"><span class="pre">plot_scattering_intensity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k_norm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">si</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'radial'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exact_sf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error_bar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_res</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">binning_params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/structure_factor.html#StructureFactor.plot_scattering_intensity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.structure_factor.StructureFactor.plot_scattering_intensity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot the result of the method <a class="reference internal" href="#structure_factor.structure_factor.StructureFactor.scattering_intensity" title="structure_factor.structure_factor.StructureFactor.scattering_intensity"><code class="xref py py-meth docutils literal notranslate"><span class="pre">scattering_intensity()</span></code></a>.</p>
+<p>You can add the theoretical structure factor using <code class="docutils literal notranslate"><span class="pre">exact_sf</span></code> and visualize the mean and the variance over bins of the scattering intensity by specifying <code class="docutils literal notranslate"><span class="pre">error_bar=True</span></code> (this is donne using a binning method <a class="reference internal" href="utils.html#structure_factor.utils._bin_statistics" title="structure_factor.utils._bin_statistics"><code class="xref py py-meth docutils literal notranslate"><span class="pre">_bin_statistics()</span></code></a>).
+The figure could be saved by specifying <code class="docutils literal notranslate"><span class="pre">file_name</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>k_norm</strong> (<em>numpy.ndarray</em>) – vector of norms of the wavevectors .</p></li>
+<li><p><strong>si</strong> (<em>numpy.ndarray</em>) – approximated scattering intensity vector associted to <cite>k_norm</cite>.</p></li>
+<li><p><strong>plot_type</strong> (<em>str</em><em>, </em><em>optional</em>) – (“radial”, “imshow”, “all”). Type of the plot to visualize. If “radial”, then the output is a loglog plot. If “imshow”, then the output is a color level 2D plot. if “all”, the results are 3 subplots: the point pattern (or a restriction to a specific window if <code class="docutils literal notranslate"><span class="pre">window_res</span></code> is set), the loglog radial plot, and the color level 2D plot. Note that the options “imshow” and “all” couldn’t be used, if <code class="docutils literal notranslate"><span class="pre">k_norm</span></code> is not a meshgrid. Defaults to “radial”.</p></li>
+<li><p><strong>axes</strong> (<em>axis</em><em>, </em><em>optional</em>) – the support axis of the plots. Defaults to None.</p></li>
+<li><p><strong>exact_sf</strong> (<em>callable</em><em>, </em><em>optional</em>) – function representing the theoretical structure factor of the point process. Defaults to None.</p></li>
+<li><p><strong>error_bar</strong> (<em>bool</em><em>, </em><em>optional</em>) – Defaults to False. When set to <code class="docutils literal notranslate"><span class="pre">True</span></code>, <code class="docutils literal notranslate"><span class="pre">k_norm</span></code> is divided into bins and the mean and the standard deviation over each bin are derived and visualized on the plot. Note that the error bar represent the means +/- 3 standard deviation.</p></li>
+<li><p><strong>file_name</strong> (<em>str</em><em>, </em><em>optional</em>) – name used to save the figure. The available output formats depend on the backend being used. Defaults to “”.</p></li>
+<li><p><strong>window_res</strong> (<a class="reference internal" href="spatial_windows.html#structure_factor.spatial_windows.AbstractSpatialWindow" title="structure_factor.spatial_windows.AbstractSpatialWindow"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractSpatialWindow</span></code></a>, optional) – This could be used when the sample of points is large, so for time and visualization purpose it’s better to restrict the plot of the sample of points to a smaller window.  Defaults to None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>plot of the approximated structure factor.</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sf_ginibre_box</span><span class="o">.</span><span class="n">plot_scattering_intensity</span><span class="p">(</span>
+    <span class="n">norm_k</span><span class="p">,</span>
+    <span class="n">si</span><span class="p">,</span>
+    <span class="n">plot_type</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
+    <span class="n">exact_sf</span><span class="o">=</span><span class="n">utils</span><span class="o">.</span><span class="n">structure_factor_ginibre</span><span class="p">,</span>
+    <span class="n">bins</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span>  <span class="c1"># number of bins</span>
+    <span class="n">error_bar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># visualizing the error bars</span>
+</pre></div>
+</div>
+<p>(<a class="reference external" href="./code/si_example.py">Source code</a>)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="structure_factor.structure_factor.StructureFactor.compute_pcf">
+<span class="sig-name descname"><span class="pre">compute_pcf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'fv'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">install_spatstat</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/structure_factor.html#StructureFactor.compute_pcf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.structure_factor.StructureFactor.compute_pcf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Estimate the pair correlation function of an <strong>isotropic</strong> point process process <span class="math notranslate nohighlight">\(\mathcal{X} \subset \mathbb{R}^2\)</span>. The two methods that can be used are the methods <code class="docutils literal notranslate"><span class="pre">spastat.core.pcf_ppp</span></code> and <code class="docutils literal notranslate"><span class="pre">spastat.core.pcf_fv</span></code> of the the <cite>R</cite> package <a class="reference external" href="https://github.com/spatstat/spatstat">spatstat</a>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This function relies on the <a class="reference external" href="https://github.com/For-a-few-DPPs-more/spatstat-interface">spatstat-interface</a> Python package which requires the <a class="reference external" href="https://cran.r-project.org/">R programming language</a> to be installed, but experience with R it is not required.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>method</strong> (<em>str</em><em>, </em><em>optional</em>) – Defaults to <code class="docutils literal notranslate"><span class="pre">&quot;fv&quot;</span></code>. Choose between <code class="docutils literal notranslate"><span class="pre">&quot;ppp&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;fv&quot;</span></code> referring respectively to <a class="reference external" href="https://www.rdocumentation.org/packages/spatstat.core/versions/2.1-2/topics/pcf.ppp">spatstat.core.pcf.ppp</a> and <a class="reference external" href="https://www.rdocumentation.org/packages/spatstat.core/versions/2.1-2/topics/pcf.fv">spatsta.core.pcf.fv</a> functions. These 2 methods approximate the pair correlation function of a point process from a realization of the underlying point process using some edge corrections and some basic approximations. For more details <a class="reference external" href="https://www.routledge.com/Spatial-Point-Patterns-Methodology-and-Applications-with-R/Baddeley-Rubak-Turner/p/book/9781482210200">see</a>.</p></li>
+<li><p><strong>install_spatstat</strong> (<em>bool</em><em>, </em><em>optional</em>) – <p>If it is set to <code class="docutils literal notranslate"><span class="pre">True</span></code> then the <cite>R</cite> package <a class="reference external" href="https://github.com/spatstat/spatstat">spatstat</a>  will be updated or installed (if not present), see also the <a class="reference external" href="https://github.com/For-a-few-DPPs-more/spatstat-interface">spatstat-interface</a> Python package.</p>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><p><strong>params</strong> (<em>dict</em>) – <ul class="simple">
+<li><dl class="simple">
+<dt>if <code class="docutils literal notranslate"><span class="pre">method</span> <span class="pre">=</span> <span class="pre">&quot;ppp&quot;</span></code></dt><dd><ul>
+<li><p>keyword arguments of <a class="reference external" href="https://rdrr.io/cran/spatstat.core/man/pcf.ppp.html">spastat.core.pcf.ppp</a>)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>if <code class="docutils literal notranslate"><span class="pre">method</span> <span class="pre">=</span> <span class="pre">&quot;fv&quot;</span></code></dt><dd><ul>
+<li><p>Kest = dict(keyword arguments of <a class="reference external" href="https://rdrr.io/github/spatstat/spatstat.core/man/Kest.html">spastat.core.Kest</a>),</p></li>
+<li><p>fv = dict( keyword arguments of <a class="reference external" href="https://rdrr.io/cran/spatstat.core/man/pcf.fv.html">spastat.core.pcf.fv</a>)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><p>version of the output of <a class="reference external" href="https://www.rdocumentation.org/packages/spatstat.core/versions/2.1-2/topics/pcf.ppp">spatstat.core.pcf.ppp</a> of <a class="reference external" href="https://www.rdocumentation.org/packages/spatstat.core/versions/2.1-2/topics/pcf.fv">spatsta.core.pcf.fv</a>.</p>
+</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>pandas.DataFrame</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">structure_factor.data</span> <span class="kn">import</span> <span class="n">load_data</span>
+<span class="kn">from</span> <span class="nn">structure_factor.structure_factor</span> <span class="kn">import</span> <span class="n">StructureFactor</span>
+<span class="kn">import</span> <span class="nn">structure_factor.utils</span> <span class="k">as</span> <span class="nn">utils</span>
+
+
+<span class="c1"># load Ginibre PointPattern</span>
+<span class="n">ginibre_pp</span> <span class="o">=</span> <span class="n">load_data</span><span class="o">.</span><span class="n">load_ginibre</span><span class="p">()</span>
+
+<span class="c1"># initialize the class StructureFactor</span>
+<span class="n">sf_ginibre</span> <span class="o">=</span> <span class="n">StructureFactor</span><span class="p">(</span><span class="n">ginibre_pp</span><span class="p">)</span>  
+
+<span class="hll"><span class="c1"># compute pair correlation function</span>
+</span><span class="hll"><span class="n">pcf_fv</span> <span class="o">=</span> <span class="n">sf_ginibre</span><span class="o">.</span><span class="n">compute_pcf</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;fv&quot;</span><span class="p">,</span> <span class="n">Kest</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">rmax</span><span class="o">=</span><span class="mi">45</span><span class="p">),</span>
+</span><span class="hll">                                        <span class="n">fv</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="n">spar</span><span class="o">=</span><span class="mf">0.1</span><span class="p">))</span>
+</span><span class="hll">
+</span></pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="structure_factor.structure_factor.StructureFactor.plot_pcf">
+<span class="sig-name descname"><span class="pre">plot_pcf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pcf_dataframe</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exact_pcf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/structure_factor.html#StructureFactor.plot_pcf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.structure_factor.StructureFactor.plot_pcf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Display the data frame output from the method <a class="reference internal" href="#structure_factor.structure_factor.StructureFactor.compute_pcf" title="structure_factor.structure_factor.StructureFactor.compute_pcf"><code class="xref py py-meth docutils literal notranslate"><span class="pre">compute_pcf()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pcf_dataframe</strong> (<em>pandas.DataFrame</em>) – output DataFrame of the method <a class="reference internal" href="#structure_factor.structure_factor.StructureFactor.compute_pcf" title="structure_factor.structure_factor.StructureFactor.compute_pcf"><code class="xref py py-meth docutils literal notranslate"><span class="pre">compute_pcf()</span></code></a>.</p></li>
+<li><p><strong>exact_pcf</strong> (<em>callable</em><em>, </em><em>optional</em>) – function representing the theoretical pair correlation function of the point process. Defaults to None.</p></li>
+<li><p><strong>file_name</strong> (<em>str</em><em>, </em><em>optional</em>) – name used to save the figure. The available output formats depend on the backend being used. Defaults to “”.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><p><strong>kwargs</strong> (<em>dict</em>) – Keyword arguments of the function <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.plot.line.html">pandas.DataFrame.plot.line</a>.</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>plot of the approximated pair correlation function.</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># plot</span>
+<span class="n">sf_ginibre</span><span class="o">.</span><span class="n">plot_pcf</span><span class="p">(</span><span class="n">pcf_fv</span><span class="p">,</span> <span class="n">exact_pcf</span><span class="o">=</span><span class="n">utils</span><span class="o">.</span><span class="n">pair_correlation_function_ginibre</span><span class="p">,</span>
+                    <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">6</span><span class="p">),</span>
+                    <span class="n">color</span><span class="o">=</span><span class="p">[</span> <span class="s1">&#39;grey&#39;</span><span class="p">,</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;darkcyan&#39;</span><span class="p">],</span>
+                    <span class="n">style</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="s2">&quot;^&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>(<a class="reference external" href="./code/pcf_example.py">Source code</a>, <a class="reference external" href="./code/pcf_example.png">png</a>, <a class="reference external" href="./code/pcf_example.hires.png">hires.png</a>, <a class="reference external" href="./code/pcf_example.pdf">pdf</a>)</p>
+<div class="figure align-center">
+<img alt="alternate text" class="plot-directive" src="_images/pcf_example.png" />
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="structure_factor.structure_factor.StructureFactor.interpolate_pcf">
+<span class="sig-name descname"><span class="pre">interpolate_pcf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pcf_r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clean</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/structure_factor.html#StructureFactor.interpolate_pcf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.structure_factor.StructureFactor.interpolate_pcf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interpolate the pair correlation function (pcf) evaluated at <code class="docutils literal notranslate"><span class="pre">r</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>r</strong> (<em>numpy.ndarray</em>) – vector of radius.</p></li>
+<li><p><strong>pcf_r</strong> (<em>numpy.ndarray</em>) – vector of approximation of the pair correlation function.</p></li>
+<li><p><strong>clean</strong> (<em>bool</em><em>, </em><em>optional</em>) – replace nan, posinf, neginf values to <code class="docutils literal notranslate"><span class="pre">pcf_r</span></code> by zeros before interpolation. Defaults to True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><p><strong>params</strong> (<em>dict</em>) – Keyword arguments of the function <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html">scipy.interpolate.interp1d</a>.</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>dictionary containing the bounds of the interval containing the values of the vector <code class="docutils literal notranslate"><span class="pre">r</span></code> and the interpolated version of the pair correlation function.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>tuple (dict, callable)</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># interpolate pcf_fv</span>
+<span class="n">domain</span><span class="p">,</span> <span class="n">pcf_fv_func</span> <span class="o">=</span> <span class="n">sf_ginibre</span><span class="o">.</span><span class="n">interpolate_pcf</span><span class="p">(</span><span class="n">r</span><span class="o">=</span><span class="n">pcf_fv</span><span class="p">[</span><span class="s2">&quot;r&quot;</span><span class="p">],</span> 
+                                                 <span class="n">pcf_r</span><span class="o">=</span><span class="n">pcf_fv</span><span class="p">[</span><span class="s2">&quot;pcf&quot;</span><span class="p">],</span>
+                                                 <span class="n">clean</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="structure_factor.structure_factor.StructureFactor.hankel_quadrature">
+<span class="sig-name descname"><span class="pre">hankel_quadrature</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pcf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k_norm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Ogata'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/structure_factor.html#StructureFactor.hankel_quadrature"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.structure_factor.StructureFactor.hankel_quadrature" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the structure factor <span class="math notranslate nohighlight">\(S\)</span> of the underlying <strong>stationary isotropic</strong> point process <span class="math notranslate nohighlight">\(\mathcal{X} \subset \mathbb{R}^d\)</span>, which could be defined via the Hankel transform <span class="math notranslate nohighlight">\(\mathcal{H}_{d/2 -1}\)</span> of order <span class="math notranslate nohighlight">\(d/2 -1\)</span> as follow,</p>
+<div class="math notranslate nohighlight">
+\[S(\|\mathbf{k}\|) = 1 + \rho \frac{(2 \pi)^{d/2}}{\|\mathbf{k}\|^{d/2 -1}} \mathcal{H}_{d/2 -1}(\tilde g -1)(\|\mathbf{k}\|), \quad \tilde g:x \mapsto  g(x)x^{d/2 -1}.\]</div>
+<p>This method estimate the structure factor by approximating the corresponding Hankel transform via Ogata quadrature shemes of <span id="id11">[<a class="reference internal" href="bibliography/index.html#id6" title="H. Ogata. A numerical integration formula based on the bessel functions. Research Institute for Mathematical Sciences, 2005. doi:10.2977/prims/1145474602.">Oga05</a>]</span> or Baddour and Chouinard Descrete Hankel transform <span id="id12">[<a class="reference internal" href="bibliography/index.html#id2" title="Natalie Baddour and Ugo Chouinard. Theory and operational rules for the discrete hankel transform. J. Opt. Soc. Am. A, 32(4):611–622, Apr 2015. URL: http://josaa.osa.org/abstract.cfm?URI=josaa-32-4-611, doi:10.1364/JOSAA.32.000611.">BC15</a>]</span>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This method is actually applicable for 2 dimensional point process.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pcf</strong> (<em>callable</em>) – radially symmetric pair correlation function <span class="math notranslate nohighlight">\(g\)</span>. You can get a discrete vector of estimation of the pair correlation function using the method <a class="reference internal" href="#structure_factor.structure_factor.StructureFactor.compute_pcf" title="structure_factor.structure_factor.StructureFactor.compute_pcf"><code class="xref py py-meth docutils literal notranslate"><span class="pre">compute_pcf()</span></code></a>, then interpolate the resulting vector using <a class="reference internal" href="#structure_factor.structure_factor.StructureFactor.interpolate_pcf" title="structure_factor.structure_factor.StructureFactor.interpolate_pcf"><code class="xref py py-meth docutils literal notranslate"><span class="pre">interpolate_pcf()</span></code></a> and pass the resulting function to the argument <code class="docutils literal notranslate"><span class="pre">pcf</span></code>.</p></li>
+<li><p><strong>?</strong> (<em># todo why not simply k</em>) – </p></li>
+<li><p><strong>k_norm</strong> (<em>numpy.ndarray</em><em>, </em><em>optional</em>) – vector of wave lengths (i.e. norm of wave vectors) where the structure factor is to be evaluated. Defaults to None.</p></li>
+<li><p><strong>method</strong> (<em>str</em><em>, </em><em>optional</em>) – Choose between <code class="docutils literal notranslate"><span class="pre">&quot;Ogata&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;BaddourChouinard&quot;</span></code>. Defaults to <code class="docutils literal notranslate"><span class="pre">&quot;Ogata&quot;</span></code>. This selects the method used to compute the Fourier transform of <span class="math notranslate nohighlight">\(g\)</span>, via the <a class="reference external" href="https://en.wikipedia.org/wiki/Hankel_transform#Fourier_transform_in_d_dimensions_(radially_symmetric_case)">correspondence with the Hankel transform</a>, see <a class="reference internal" href="transforms.html#structure_factor.transforms.HankelTransformOgata" title="structure_factor.transforms.HankelTransformOgata"><code class="xref py py-class docutils literal notranslate"><span class="pre">HankelTransformOgata</span></code></a> and <a class="reference internal" href="transforms.html#structure_factor.transforms.HankelTransformBaddourChouinard" title="structure_factor.transforms.HankelTransformBaddourChouinard"><code class="xref py py-class docutils literal notranslate"><span class="pre">HankelTransformBaddourChouinard</span></code></a>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><p><strong>params</strong> (<em>dict</em>) – <p>Keyword arguments passed to the corresponding Hankel transformer selected according to the <code class="docutils literal notranslate"><span class="pre">method</span></code> argument.</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">method</span> <span class="pre">==</span> <span class="pre">&quot;Ogata&quot;</span></code>, see <a class="reference internal" href="transforms.html#structure_factor.transforms.HankelTransformOgata.compute_transformation_parameters" title="structure_factor.transforms.HankelTransformOgata.compute_transformation_parameters"><code class="xref py py-meth docutils literal notranslate"><span class="pre">compute_transformation_parameters()</span></code></a></dt><dd><ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">step_size</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">nb_points</span></code></p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">method</span> <span class="pre">==</span> <span class="pre">&quot;BaddourChouinard&quot;</span></code>, see <a class="reference internal" href="transforms.html#structure_factor.transforms.HankelTransformBaddourChouinard.compute_transformation_parameters" title="structure_factor.transforms.HankelTransformBaddourChouinard.compute_transformation_parameters"><code class="xref py py-meth docutils literal notranslate"><span class="pre">compute_transformation_parameters()</span></code></a></dt><dd><ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">rmax</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">nb_points</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">interpolotation</span></code> dictonnary containing the keyword arguments of <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html">scipy.integrate.interp1d</a> parameters.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p>k_norm: vector of wave lengths.</p></li>
+<li><p>sf: the corresponding evaluation of the structure factor <code class="docutils literal notranslate"><span class="pre">S(k)</span></code>.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>tuple (np.ndarray, np.ndarray)</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Typical usage: <code class="docutils literal notranslate"><span class="pre">pcf</span></code> is first estimated using <a class="reference internal" href="#structure_factor.structure_factor.StructureFactor.compute_pcf" title="structure_factor.structure_factor.StructureFactor.compute_pcf"><code class="xref py py-meth docutils literal notranslate"><span class="pre">compute_pcf()</span></code></a> then interpolated using <a class="reference internal" href="#structure_factor.structure_factor.StructureFactor.interpolate_pcf" title="structure_factor.structure_factor.StructureFactor.interpolate_pcf"><code class="xref py py-meth docutils literal notranslate"><span class="pre">interpolate_pcf()</span></code></a>, and the resulting function is used as input of this method.</p>
+</div>
+<p class="rubric">Example</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">structure_factor.data</span> <span class="kn">import</span> <span class="n">load_data</span>
+<span class="kn">from</span> <span class="nn">structure_factor.structure_factor</span> <span class="kn">import</span> <span class="n">StructureFactor</span>
+<span class="kn">import</span> <span class="nn">structure_factor.utils</span> <span class="k">as</span> <span class="nn">utils</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="c1"># load Ginibre PointPattern</span>
+<span class="n">ginibre_pp</span> <span class="o">=</span> <span class="n">load_data</span><span class="o">.</span><span class="n">load_ginibre</span><span class="p">()</span>
+
+<span class="c1"># initialize the class StructureFactor</span>
+<span class="n">sf_ginibre</span> <span class="o">=</span> <span class="n">StructureFactor</span><span class="p">(</span><span class="n">ginibre_pp</span><span class="p">)</span>
+
+<span class="c1"># compute pair correlation function</span>
+<span class="n">pcf_fv</span> <span class="o">=</span> <span class="n">sf_ginibre</span><span class="o">.</span><span class="n">compute_pcf</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;fv&quot;</span><span class="p">,</span> <span class="n">Kest</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">rmax</span><span class="o">=</span><span class="mi">45</span><span class="p">),</span> 
+                                <span class="n">fv</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="n">spar</span><span class="o">=</span><span class="mf">0.1</span><span class="p">))</span>
+
+<span class="c1"># interpolate pcf_fv</span>
+<span class="n">domain</span><span class="p">,</span> <span class="n">pcf_fv_func</span> <span class="o">=</span> <span class="n">sf_ginibre</span><span class="o">.</span><span class="n">interpolate_pcf</span><span class="p">(</span><span class="n">r</span><span class="o">=</span><span class="n">pcf_fv</span><span class="p">[</span><span class="s2">&quot;r&quot;</span><span class="p">],</span> 
+                                                 <span class="n">pcf_r</span><span class="o">=</span><span class="n">pcf_fv</span><span class="p">[</span><span class="s2">&quot;pcf&quot;</span><span class="p">],</span>
+                                                 <span class="n">clean</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="hll"><span class="c1"># structure factor using Baddour Chouinard discrete hankel transform</span>
+</span><span class="hll"><span class="n">rmax</span> <span class="o">=</span> <span class="n">domain</span><span class="p">[</span><span class="s2">&quot;rmax&quot;</span><span class="p">]</span>
+</span><span class="hll"><span class="n">norm_k</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.3</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">2000</span><span class="p">)</span>
+</span><span class="hll"><span class="n">norm_k</span><span class="p">,</span> <span class="n">sf_BadChou</span> <span class="o">=</span> <span class="n">sf_ginibre</span><span class="o">.</span><span class="n">compute_sf_hankel_quadrature</span><span class="p">(</span> <span class="n">pcf_fv_func</span><span class="p">,</span> 
+</span><span class="hll">                                                        <span class="n">method</span><span class="o">=</span><span class="s2">&quot;BaddourChouinard&quot;</span><span class="p">,</span> 
+</span><span class="hll">                                                        <span class="n">norm_k</span><span class="o">=</span><span class="n">norm_k</span><span class="p">,</span> 
+</span><span class="hll">                                                        <span class="n">rmax</span><span class="o">=</span><span class="n">rmax</span><span class="p">,</span> 
+</span><span class="hll">                                                        <span class="n">nb_points</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="structure_factor.structure_factor.StructureFactor.plot_sf_hankel_quadrature">
+<span class="sig-name descname"><span class="pre">plot_sf_hankel_quadrature</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k_norm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k_norm_min</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exact_sf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error_bar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">binning_params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/structure_factor.html#StructureFactor.plot_sf_hankel_quadrature"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.structure_factor.StructureFactor.plot_sf_hankel_quadrature" title="Permalink to this definition">¶</a></dt>
+<dd><p>Display the output of <a class="reference internal" href="#structure_factor.structure_factor.StructureFactor.hankel_quadrature" title="structure_factor.structure_factor.StructureFactor.hankel_quadrature"><code class="xref py py-meth docutils literal notranslate"><span class="pre">hankel_quadrature()</span></code></a>.</p>
+<p>Pass the theoretical structure factor function through <code class="docutils literal notranslate"><span class="pre">exact_sf</span></code> (if it is known) and visualize the mean and the variance over bins of the scattering intensity by specifying <code class="docutils literal notranslate"><span class="pre">error_bar=True</span></code> (this is donne using a binning method <a class="reference internal" href="utils.html#structure_factor.utils._bin_statistics" title="structure_factor.utils._bin_statistics"><code class="xref py py-meth docutils literal notranslate"><span class="pre">_bin_statistics()</span></code></a>). The figure can at <code class="docutils literal notranslate"><span class="pre">file_name</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>k_norm</strong> (<em>np.ndarray</em>) – vector of wave lengths (i.e. norms of waves) on which the structure factor is approximated.</p></li>
+<li><p><strong>sf</strong> (<em>[</em><em>type</em><em>]</em>) – [description]</p></li>
+<li><p><strong>axis</strong> (<em>axis</em><em>, </em><em>optional</em>) – the support axis of the plots. Defaults to None.</p></li>
+<li><p><strong>k_norm_min</strong> (<em>float</em><em>, </em><em>optional</em>) – estimation of an upper bounds for the allowed wave lengths. Defaults to None.</p></li>
+<li><p><strong>exact_sf</strong> (<em>callable</em><em>, </em><em>optional</em>) – function representing the theoretical structure factor of the point process. Defaults to None.</p></li>
+<li><p><strong>error_bar</strong> (<em>bool</em><em>, </em><em>optional</em>) – if it is set to <code class="docutils literal notranslate"><span class="pre">True</span></code> then, the <code class="docutils literal notranslate"><span class="pre">k_norm</span></code> is divided into bins and the mean and the standard deviation over each bin are derived and visualized on the plot. Note that the error bar represent 3 times the standard deviation. Defaults to False.</p></li>
+<li><p><strong>file_name</strong> (<em>str</em><em>, </em><em>optional</em>) – Defaults to “”. Name used to save the figure. The available output formats depend on the backend being used.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>plot of the approximated structure factor.</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># plot</span>
+<span class="n">sf_ginibre</span><span class="o">.</span><span class="n">plot_sf_hankel_quadrature</span><span class="p">(</span><span class="n">norm_k</span><span class="p">,</span><span class="n">sf_BadChou</span><span class="p">,</span>
+                                    <span class="n">exact_sf</span><span class="o">=</span><span class="n">utils</span><span class="o">.</span><span class="n">structure_factor_ginibre</span><span class="p">,</span>
+                                    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;$S_</span><span class="si">{HBC}</span><span class="s2">(k)$&quot;</span><span class="p">,</span>
+                                    <span class="n">error_bar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                    <span class="n">bins</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>(<a class="reference external" href="./code/sf_baddour_example.py">Source code</a>)</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="spatial_windows.html"
+                        title="previous chapter">Spatial window</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="transforms.html"
+                        title="next chapter">Transforms</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/structure_factor.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="transforms.html" title="Transforms"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="spatial_windows.html" title="Spatial window"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">structure_factor  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Structure factor</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2021, Diala Hawat.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.2.0.
+    </div>
+  </body>
+</html>

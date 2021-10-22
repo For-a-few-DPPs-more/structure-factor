@@ -1,0 +1,574 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Spatial window &#8212; structure_factor  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    <link rel="stylesheet" type="text/css" href="_static/plot_directive.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Structure factor" href="structure_factor.html" />
+    <link rel="prev" title="Point pattern" href="point_pattern.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="structure_factor.html" title="Structure factor"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="point_pattern.html" title="Point pattern"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">structure_factor  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Spatial window</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-structure_factor.spatial_windows">
+<span id="spatial-window"></span><h1>Spatial window<a class="headerlink" href="#module-structure_factor.spatial_windows" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="structure_factor.spatial_windows.AbstractSpatialWindow">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">structure_factor.spatial_windows.</span></span><span class="sig-name descname"><span class="pre">AbstractSpatialWindow</span></span><a class="reference internal" href="_modules/structure_factor/spatial_windows.html#AbstractSpatialWindow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.spatial_windows.AbstractSpatialWindow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Encapsulate the notion of spatial window in <span class="math notranslate nohighlight">\(\mathbb{R}^d\)</span>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Typical usage:</p>
+<p><a class="reference internal" href="point_pattern.html#structure_factor.point_pattern.PointPattern" title="structure_factor.point_pattern.PointPattern"><code class="xref py py-class docutils literal notranslate"><span class="pre">PointPattern</span></code></a> has a <code class="xref py py-attr docutils literal notranslate"><span class="pre">window</span></code> argument/attribute.</p>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#structure_factor.spatial_windows.BallWindow" title="structure_factor.spatial_windows.BallWindow"><code class="xref py py-class docutils literal notranslate"><span class="pre">BallWindow</span></code></a>, <a class="reference internal" href="#structure_factor.spatial_windows.UnitBallWindow" title="structure_factor.spatial_windows.UnitBallWindow"><code class="xref py py-class docutils literal notranslate"><span class="pre">UnitBallWindow</span></code></a></p></li>
+<li><p><a class="reference internal" href="#structure_factor.spatial_windows.BoxWindow" title="structure_factor.spatial_windows.BoxWindow"><code class="xref py py-class docutils literal notranslate"><span class="pre">BoxWindow</span></code></a>, <a class="reference internal" href="#structure_factor.spatial_windows.UnitBoxWindow" title="structure_factor.spatial_windows.UnitBoxWindow"><code class="xref py py-class docutils literal notranslate"><span class="pre">UnitBoxWindow</span></code></a></p></li>
+</ul>
+</div>
+<dl class="py property">
+<dt class="sig sig-object py" id="structure_factor.spatial_windows.AbstractSpatialWindow.dimension">
+<em class="property"><span class="pre">abstract</span> <span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">dimension</span></span><a class="headerlink" href="#structure_factor.spatial_windows.AbstractSpatialWindow.dimension" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the ambient dimension of the corresponding window.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="structure_factor.spatial_windows.AbstractSpatialWindow.volume">
+<em class="property"><span class="pre">abstract</span> <span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">volume</span></span><a class="headerlink" href="#structure_factor.spatial_windows.AbstractSpatialWindow.volume" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the volume of the corresponding window.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="structure_factor.spatial_windows.AbstractSpatialWindow.indicator_function">
+<span class="sig-name descname"><span class="pre">indicator_function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/spatial_windows.html#AbstractSpatialWindow.indicator_function"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.spatial_windows.AbstractSpatialWindow.indicator_function" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the indicator function of the corresponding window evaluated at each of the <span class="math notranslate nohighlight">\(n\)</span> <code class="docutils literal notranslate"><span class="pre">points</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>points</strong> (<em>numpy.ndarray</em>) – vector of size <span class="math notranslate nohighlight">\(d\)</span> or array of size <span class="math notranslate nohighlight">\(n \times d\)</span> containing point(s) to be tested.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p>If <span class="math notranslate nohighlight">\(n=1\)</span>, bool,</p></li>
+<li><p>If <span class="math notranslate nohighlight">\(n&gt;1\)</span>, <span class="math notranslate nohighlight">\(n\)</span> dimensional boolean array.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool or numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="structure_factor.spatial_windows.AbstractSpatialWindow.rand">
+<em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">rand</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/spatial_windows.html#AbstractSpatialWindow.rand"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.spatial_windows.AbstractSpatialWindow.rand" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate <cite>n</cite> points uniformly at random in the corresponding spatial window.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of points. Defaults to 1.</p></li>
+<li><p><strong>seed</strong> (<em>int</em><em> or </em><em>np.random.Generator</em><em>, </em><em>optional</em>) – Defaults to None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p>If <span class="math notranslate nohighlight">\(n=1\)</span>, <span class="math notranslate nohighlight">\(d\)</span> dimensional vector</p></li>
+<li><p>If <span class="math notranslate nohighlight">\(n&gt;1\)</span>, <span class="math notranslate nohighlight">\(n \times d\)</span> array containing the points.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="structure_factor.spatial_windows.BallWindow">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">structure_factor.spatial_windows.</span></span><span class="sig-name descname"><span class="pre">BallWindow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">center</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/spatial_windows.html#BallWindow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.spatial_windows.BallWindow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#structure_factor.spatial_windows.AbstractSpatialWindow" title="structure_factor.spatial_windows.AbstractSpatialWindow"><code class="xref py py-class docutils literal notranslate"><span class="pre">structure_factor.spatial_windows.AbstractSpatialWindow</span></code></a></p>
+<p>Create a <span class="math notranslate nohighlight">\(d\)</span> dimensional ball window <span class="math notranslate nohighlight">\(B(c, r)\)</span>, where <span class="math notranslate nohighlight">\(c \in \mathbb{R}^d\)</span> and <span class="math notranslate nohighlight">\(r&gt;0\)</span>.</p>
+<p class="rubric">Example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">structure_factor.spatial_windows</span> <span class="kn">import</span> <span class="n">BallWindow</span>
+
+<span class="n">window</span> <span class="o">=</span> <span class="n">BallWindow</span><span class="p">(</span><span class="n">center</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">radius</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The volume of the window is equal to&quot;</span><span class="p">,</span> <span class="n">window</span><span class="o">.</span><span class="n">volume</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>The volume of the window is equal to 50.26548245743669
+</pre></div>
+</div>
+<dl class="py property">
+<dt class="sig sig-object py" id="structure_factor.spatial_windows.BallWindow.dimension">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">dimension</span></span><a class="headerlink" href="#structure_factor.spatial_windows.BallWindow.dimension" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the ambient dimension of the corresponding window.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="structure_factor.spatial_windows.BallWindow.volume">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">volume</span></span><a class="headerlink" href="#structure_factor.spatial_windows.BallWindow.volume" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the volume of the corresponding window.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="structure_factor.spatial_windows.BallWindow.indicator_function">
+<span class="sig-name descname"><span class="pre">indicator_function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/spatial_windows.html#BallWindow.indicator_function"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.spatial_windows.BallWindow.indicator_function" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the indicator function of the corresponding window evaluated at each of the <span class="math notranslate nohighlight">\(n\)</span> <code class="docutils literal notranslate"><span class="pre">points</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>points</strong> (<em>numpy.ndarray</em>) – vector of size <span class="math notranslate nohighlight">\(d\)</span> or array of size <span class="math notranslate nohighlight">\(n \times d\)</span> containing point(s) to be tested.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p>If <span class="math notranslate nohighlight">\(n=1\)</span>, bool,</p></li>
+<li><p>If <span class="math notranslate nohighlight">\(n&gt;1\)</span>, <span class="math notranslate nohighlight">\(n\)</span> dimensional boolean array.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool or numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="structure_factor.spatial_windows.BallWindow.rand">
+<span class="sig-name descname"><span class="pre">rand</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/spatial_windows.html#BallWindow.rand"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.spatial_windows.BallWindow.rand" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate <cite>n</cite> points uniformly at random in the corresponding spatial window.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of points. Defaults to 1.</p></li>
+<li><p><strong>seed</strong> (<em>int</em><em> or </em><em>np.random.Generator</em><em>, </em><em>optional</em>) – Defaults to None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p>If <span class="math notranslate nohighlight">\(n=1\)</span>, <span class="math notranslate nohighlight">\(d\)</span> dimensional vector</p></li>
+<li><p>If <span class="math notranslate nohighlight">\(n&gt;1\)</span>, <span class="math notranslate nohighlight">\(n \times d\)</span> array containing the points.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="structure_factor.spatial_windows.BallWindow.to_spatstat_owin">
+<span class="sig-name descname"><span class="pre">to_spatstat_owin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/spatial_windows.html#BallWindow.to_spatstat_owin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.spatial_windows.BallWindow.to_spatstat_owin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert the object to a <code class="docutils literal notranslate"><span class="pre">spatstat.geom.disc</span></code> R object of type <code class="docutils literal notranslate"><span class="pre">disc</span></code>, which is a subtype of <code class="docutils literal notranslate"><span class="pre">owin</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>params</strong> (<em>dict</em>) – optional keyword arguments passed to <code class="docutils literal notranslate"><span class="pre">spatstat.geom.disc</span></code>.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>R object.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>spatstat.geom.disc</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference external" href="https://rdocumentation.org/packages/spatstat.geom/versions/2.2-0/topics/disc">https://rdocumentation.org/packages/spatstat.geom/versions/2.2-0/topics/disc</a></p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="structure_factor.spatial_windows.UnitBallWindow">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">structure_factor.spatial_windows.</span></span><span class="sig-name descname"><span class="pre">UnitBallWindow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">center</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/spatial_windows.html#UnitBallWindow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.spatial_windows.UnitBallWindow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#structure_factor.spatial_windows.BallWindow" title="structure_factor.spatial_windows.BallWindow"><code class="xref py py-class docutils literal notranslate"><span class="pre">structure_factor.spatial_windows.BallWindow</span></code></a></p>
+<p>Create a d-dimensional unit ball window <span class="math notranslate nohighlight">\(B(c, r=1)\)</span>, where <span class="math notranslate nohighlight">\(c \in \mathbb{R}^d\)</span>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">UnitBallWindow(center)</span> <span class="pre">=</span> <span class="pre">BallWindow(center,</span> <span class="pre">radius=1.0)</span></code></p>
+<dl class="py property">
+<dt class="sig sig-object py" id="structure_factor.spatial_windows.UnitBallWindow.dimension">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">dimension</span></span><a class="headerlink" href="#structure_factor.spatial_windows.UnitBallWindow.dimension" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the ambient dimension of the corresponding window.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="structure_factor.spatial_windows.UnitBallWindow.indicator_function">
+<span class="sig-name descname"><span class="pre">indicator_function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#structure_factor.spatial_windows.UnitBallWindow.indicator_function" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the indicator function of the corresponding window evaluated at each of the <span class="math notranslate nohighlight">\(n\)</span> <code class="docutils literal notranslate"><span class="pre">points</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>points</strong> (<em>numpy.ndarray</em>) – vector of size <span class="math notranslate nohighlight">\(d\)</span> or array of size <span class="math notranslate nohighlight">\(n \times d\)</span> containing point(s) to be tested.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p>If <span class="math notranslate nohighlight">\(n=1\)</span>, bool,</p></li>
+<li><p>If <span class="math notranslate nohighlight">\(n&gt;1\)</span>, <span class="math notranslate nohighlight">\(n\)</span> dimensional boolean array.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool or numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="structure_factor.spatial_windows.UnitBallWindow.rand">
+<span class="sig-name descname"><span class="pre">rand</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#structure_factor.spatial_windows.UnitBallWindow.rand" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate <cite>n</cite> points uniformly at random in the corresponding spatial window.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of points. Defaults to 1.</p></li>
+<li><p><strong>seed</strong> (<em>int</em><em> or </em><em>np.random.Generator</em><em>, </em><em>optional</em>) – Defaults to None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p>If <span class="math notranslate nohighlight">\(n=1\)</span>, <span class="math notranslate nohighlight">\(d\)</span> dimensional vector</p></li>
+<li><p>If <span class="math notranslate nohighlight">\(n&gt;1\)</span>, <span class="math notranslate nohighlight">\(n \times d\)</span> array containing the points.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="structure_factor.spatial_windows.UnitBallWindow.to_spatstat_owin">
+<span class="sig-name descname"><span class="pre">to_spatstat_owin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#structure_factor.spatial_windows.UnitBallWindow.to_spatstat_owin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert the object to a <code class="docutils literal notranslate"><span class="pre">spatstat.geom.disc</span></code> R object of type <code class="docutils literal notranslate"><span class="pre">disc</span></code>, which is a subtype of <code class="docutils literal notranslate"><span class="pre">owin</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>params</strong> (<em>dict</em>) – optional keyword arguments passed to <code class="docutils literal notranslate"><span class="pre">spatstat.geom.disc</span></code>.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>R object.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>spatstat.geom.disc</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference external" href="https://rdocumentation.org/packages/spatstat.geom/versions/2.2-0/topics/disc">https://rdocumentation.org/packages/spatstat.geom/versions/2.2-0/topics/disc</a></p>
+</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="structure_factor.spatial_windows.UnitBallWindow.volume">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">volume</span></span><a class="headerlink" href="#structure_factor.spatial_windows.UnitBallWindow.volume" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the volume of the corresponding window.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="structure_factor.spatial_windows.BoxWindow">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">structure_factor.spatial_windows.</span></span><span class="sig-name descname"><span class="pre">BoxWindow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bounds</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/spatial_windows.html#BoxWindow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.spatial_windows.BoxWindow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#structure_factor.spatial_windows.AbstractSpatialWindow" title="structure_factor.spatial_windows.AbstractSpatialWindow"><code class="xref py py-class docutils literal notranslate"><span class="pre">structure_factor.spatial_windows.AbstractSpatialWindow</span></code></a></p>
+<p>Create a <span class="math notranslate nohighlight">\(d\)</span> dimensional box window <span class="math notranslate nohighlight">\(\prod_{i=1}^{d} [a_i, b_i]\)</span>.</p>
+<p class="rubric">Example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">structure_factor.spatial_windows</span> <span class="kn">import</span> <span class="n">BoxWindow</span>
+
+<span class="n">bounds</span> <span class="o">=</span> <span class="p">[[</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">]]</span>
+<span class="n">window</span> <span class="o">=</span> <span class="n">BoxWindow</span><span class="p">(</span><span class="n">bounds</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The volume of the window is equal to&quot;</span><span class="p">,</span> <span class="n">window</span><span class="o">.</span><span class="n">volume</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>The volume of the window is equal to 64
+</pre></div>
+</div>
+<dl class="py property">
+<dt class="sig sig-object py" id="structure_factor.spatial_windows.BoxWindow.bounds">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">bounds</span></span><a class="headerlink" href="#structure_factor.spatial_windows.BoxWindow.bounds" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the bounds decribing the BoxWindow.</p>
+<p><code class="docutils literal notranslate"><span class="pre">bounds[i,</span> <span class="pre">:]</span></code> <span class="math notranslate nohighlight">\(=[a_i, b_i]\)</span>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="structure_factor.spatial_windows.BoxWindow.dimension">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">dimension</span></span><a class="headerlink" href="#structure_factor.spatial_windows.BoxWindow.dimension" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the ambient dimension of the corresponding window.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="structure_factor.spatial_windows.BoxWindow.volume">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">volume</span></span><a class="headerlink" href="#structure_factor.spatial_windows.BoxWindow.volume" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the volume of the corresponding window.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="structure_factor.spatial_windows.BoxWindow.indicator_function">
+<span class="sig-name descname"><span class="pre">indicator_function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/spatial_windows.html#BoxWindow.indicator_function"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.spatial_windows.BoxWindow.indicator_function" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the indicator function of the corresponding window evaluated at each of the <span class="math notranslate nohighlight">\(n\)</span> <code class="docutils literal notranslate"><span class="pre">points</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>points</strong> (<em>numpy.ndarray</em>) – vector of size <span class="math notranslate nohighlight">\(d\)</span> or array of size <span class="math notranslate nohighlight">\(n \times d\)</span> containing point(s) to be tested.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p>If <span class="math notranslate nohighlight">\(n=1\)</span>, bool,</p></li>
+<li><p>If <span class="math notranslate nohighlight">\(n&gt;1\)</span>, <span class="math notranslate nohighlight">\(n\)</span> dimensional boolean array.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool or numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="structure_factor.spatial_windows.BoxWindow.rand">
+<span class="sig-name descname"><span class="pre">rand</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/spatial_windows.html#BoxWindow.rand"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.spatial_windows.BoxWindow.rand" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate <cite>n</cite> points uniformly at random in the corresponding spatial window.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of points. Defaults to 1.</p></li>
+<li><p><strong>seed</strong> (<em>int</em><em> or </em><em>np.random.Generator</em><em>, </em><em>optional</em>) – Defaults to None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p>If <span class="math notranslate nohighlight">\(n=1\)</span>, <span class="math notranslate nohighlight">\(d\)</span> dimensional vector</p></li>
+<li><p>If <span class="math notranslate nohighlight">\(n&gt;1\)</span>, <span class="math notranslate nohighlight">\(n \times d\)</span> array containing the points.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="structure_factor.spatial_windows.BoxWindow.to_spatstat_owin">
+<span class="sig-name descname"><span class="pre">to_spatstat_owin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/spatial_windows.html#BoxWindow.to_spatstat_owin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.spatial_windows.BoxWindow.to_spatstat_owin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert the object to a <code class="docutils literal notranslate"><span class="pre">spatstat.geom.owin</span></code> R object of type  <code class="docutils literal notranslate"><span class="pre">owin</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>params</strong> (<em>dict</em>) – optional keyword arguments passed to <code class="docutils literal notranslate"><span class="pre">spatstat.geom.owin</span></code>.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>R object.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>spatstat.geom.owin</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference external" href="https://rdocumentation.org/packages/spatstat.geom/versions/2.2-0/topics/owin">https://rdocumentation.org/packages/spatstat.geom/versions/2.2-0/topics/owin</a></p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="structure_factor.spatial_windows.UnitBoxWindow">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">structure_factor.spatial_windows.</span></span><span class="sig-name descname"><span class="pre">UnitBoxWindow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">center</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/spatial_windows.html#UnitBoxWindow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.spatial_windows.UnitBoxWindow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#structure_factor.spatial_windows.BoxWindow" title="structure_factor.spatial_windows.BoxWindow"><code class="xref py py-class docutils literal notranslate"><span class="pre">structure_factor.spatial_windows.BoxWindow</span></code></a></p>
+<p>Create a <span class="math notranslate nohighlight">\(d\)</span> dimensional unit box window <span class="math notranslate nohighlight">\(\prod_{i=1}^{d} [c_i - \frac{1}{2}, c_i + \frac{1}{2}]\)</span> where <span class="math notranslate nohighlight">\(c \in \mathbb{R}^d\)</span>.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="structure_factor.spatial_windows.UnitBoxWindow.bounds">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">bounds</span></span><a class="headerlink" href="#structure_factor.spatial_windows.UnitBoxWindow.bounds" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the bounds decribing the BoxWindow.</p>
+<p><code class="docutils literal notranslate"><span class="pre">bounds[i,</span> <span class="pre">:]</span></code> <span class="math notranslate nohighlight">\(=[a_i, b_i]\)</span>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="structure_factor.spatial_windows.UnitBoxWindow.dimension">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">dimension</span></span><a class="headerlink" href="#structure_factor.spatial_windows.UnitBoxWindow.dimension" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the ambient dimension of the corresponding window.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="structure_factor.spatial_windows.UnitBoxWindow.indicator_function">
+<span class="sig-name descname"><span class="pre">indicator_function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#structure_factor.spatial_windows.UnitBoxWindow.indicator_function" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the indicator function of the corresponding window evaluated at each of the <span class="math notranslate nohighlight">\(n\)</span> <code class="docutils literal notranslate"><span class="pre">points</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>points</strong> (<em>numpy.ndarray</em>) – vector of size <span class="math notranslate nohighlight">\(d\)</span> or array of size <span class="math notranslate nohighlight">\(n \times d\)</span> containing point(s) to be tested.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p>If <span class="math notranslate nohighlight">\(n=1\)</span>, bool,</p></li>
+<li><p>If <span class="math notranslate nohighlight">\(n&gt;1\)</span>, <span class="math notranslate nohighlight">\(n\)</span> dimensional boolean array.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool or numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="structure_factor.spatial_windows.UnitBoxWindow.rand">
+<span class="sig-name descname"><span class="pre">rand</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#structure_factor.spatial_windows.UnitBoxWindow.rand" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate <cite>n</cite> points uniformly at random in the corresponding spatial window.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of points. Defaults to 1.</p></li>
+<li><p><strong>seed</strong> (<em>int</em><em> or </em><em>np.random.Generator</em><em>, </em><em>optional</em>) – Defaults to None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p>If <span class="math notranslate nohighlight">\(n=1\)</span>, <span class="math notranslate nohighlight">\(d\)</span> dimensional vector</p></li>
+<li><p>If <span class="math notranslate nohighlight">\(n&gt;1\)</span>, <span class="math notranslate nohighlight">\(n \times d\)</span> array containing the points.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="structure_factor.spatial_windows.UnitBoxWindow.to_spatstat_owin">
+<span class="sig-name descname"><span class="pre">to_spatstat_owin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#structure_factor.spatial_windows.UnitBoxWindow.to_spatstat_owin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert the object to a <code class="docutils literal notranslate"><span class="pre">spatstat.geom.owin</span></code> R object of type  <code class="docutils literal notranslate"><span class="pre">owin</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>params</strong> (<em>dict</em>) – optional keyword arguments passed to <code class="docutils literal notranslate"><span class="pre">spatstat.geom.owin</span></code>.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>R object.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>spatstat.geom.owin</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference external" href="https://rdocumentation.org/packages/spatstat.geom/versions/2.2-0/topics/owin">https://rdocumentation.org/packages/spatstat.geom/versions/2.2-0/topics/owin</a></p>
+</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="structure_factor.spatial_windows.UnitBoxWindow.volume">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">volume</span></span><a class="headerlink" href="#structure_factor.spatial_windows.UnitBoxWindow.volume" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the volume of the corresponding window.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="structure_factor.spatial_windows.check_cubic_window">
+<span class="sig-prename descclassname"><span class="pre">structure_factor.spatial_windows.</span></span><span class="sig-name descname"><span class="pre">check_cubic_window</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">window</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/spatial_windows.html#check_cubic_window"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.spatial_windows.check_cubic_window" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if a window is a cubic window.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>window</strong> (<a class="reference internal" href="#structure_factor.spatial_windows.AbstractSpatialWindow" title="structure_factor.spatial_windows.AbstractSpatialWindow"><em>AbstractSpatialWindow</em></a>) – window.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="point_pattern.html"
+                        title="previous chapter">Point pattern</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="structure_factor.html"
+                        title="next chapter">Structure factor</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/spatial_windows.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="structure_factor.html" title="Structure factor"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="point_pattern.html" title="Point pattern"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">structure_factor  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Spatial window</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2021, Diala Hawat.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.2.0.
+    </div>
+  </body>
+</html>

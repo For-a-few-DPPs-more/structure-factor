@@ -1,0 +1,576 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>structure_factor.structure_factor &#8212; structure_factor  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/classic.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
+    
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">structure_factor  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">structure_factor.structure_factor</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for structure_factor.structure_factor</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">warnings</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">rpy2.robjects</span> <span class="k">as</span> <span class="nn">robjects</span>
+<span class="kn">import</span> <span class="nn">scipy.interpolate</span> <span class="k">as</span> <span class="nn">interpolate</span>
+<span class="kn">from</span> <span class="nn">spatstat_interface.interface</span> <span class="kn">import</span> <span class="n">SpatstatInterface</span>
+
+<span class="kn">import</span> <span class="nn">structure_factor.utils</span> <span class="k">as</span> <span class="nn">utils</span>
+<span class="kn">from</span> <span class="nn">structure_factor.point_pattern</span> <span class="kn">import</span> <span class="n">PointPattern</span>
+<span class="kn">from</span> <span class="nn">structure_factor.spatial_windows</span> <span class="kn">import</span> <span class="n">BoxWindow</span><span class="p">,</span> <span class="n">check_cubic_window</span>
+<span class="kn">from</span> <span class="nn">structure_factor.transforms</span> <span class="kn">import</span> <span class="n">RadiallySymmetricFourierTransform</span>
+
+
+<div class="viewcode-block" id="StructureFactor"><a class="viewcode-back" href="../../structure_factor.html#structure_factor.structure_factor.StructureFactor">[docs]</a><span class="k">class</span> <span class="nc">StructureFactor</span><span class="p">:</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Implementation of various estimators of the structure factor :math:`S` of a d dimensional stationary ergodic point process :math:`\mathcal{X}` with intensity :math:`\rho`, as defined below.</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        S(\mathbf{k}) = 1 + \rho \mathcal{F}(g-1)(\mathbf{k}),</span>
+
+<span class="sd">    where :math:`\mathcal{F}` denotes the Fourier transform, :math:`g` the pair correlation function corresponds to :math:`\mathcal{X}`, :math:`\mathbf{k} \in \mathbb{R}^d` is a wave vector and we denote the wave length :math:`k = \| \mathbf{k} \|_d`.</span>
+
+<span class="sd">    This class contains</span>
+<span class="sd">        - Three estimators of the structure factor:</span>
+<span class="sd">            - The scattering intensity :meth:`scattering_intensity`.</span>
+<span class="sd">            - Estimator using Ogata quadrature for approximating the Hankel transform  :meth:`hankel_quadrature` with `method=&quot;Ogata&quot;` :cite:`Oga05`.</span>
+<span class="sd">            - Estimator using Baddour and Chouinard Discrete Hankel transform :meth:`hankel_quadrature` with `method=&quot;BaddourChouinard&quot;` :cite:`BaCh15`.</span>
+<span class="sd">        - Two estimators of the pair correlation function :</span>
+<span class="sd">            - Estimator using Epanechnikov kernel and a bandwidth selected by Stoyan&#39;s rule of thumb :meth:`compute_pcf` with `method=&quot;ppp&quot;`.</span>
+<span class="sd">            - Estimator using the derivative of Ripley&#39;s K function :meth:`compute_pcf` with `method=&quot;fv&quot;`.</span>
+
+<span class="sd">            This 2 estimators are obtained using `spatstat-interface &lt;https://github.com/For-a-few-DPPs-more/spatstat-interface&gt;`_ which builds a hidden interface with the package `spatstat &lt;https://github.com/spatstat/spatstat&gt;`_ of the programming language R.</span>
+<span class="sd">        - An interpolation function :meth:`interpolate_pcf`, used to interpolate the result of :meth:`compute_pcf`.</span>
+<span class="sd">        - Three plot methods :meth:`plot_scattering_intensity`,  :meth:`plot_pcf` and :meth:`plot_sf_hankel_quadrature` used to visualized the result of :meth:`scattering_intensity`, :meth:`compute_pcf` and :meth:`hankel_quadrature` respectively.</span>
+
+
+<span class="sd">    .. seealso::</span>
+
+<span class="sd">        :cite:`Tor18`, Section 2.1, equation (13).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># ! Mettre un warning que scattering_intensity marche seulement dans les cubic windows, pcf pour dimension 2 et 3 seulement, hankel pour isotropic en dimension 2, en dimension 3 faire un MC pour approximer l&#39;integral</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">point_pattern</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Initialize StructureFactor from ``point_pattern``.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            point_pattern (:py:class:`~structure_factor.point_pattern.PointPattern`): Object of type point pattern which contains a realization ``point_pattern.points`` of a point process, the window where the points were simulated ``point_pattern.window`` and (optionally) the intensity of the point process ``point_pattern.intensity``.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">point_pattern</span><span class="p">,</span> <span class="n">PointPattern</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">point_pattern</span> <span class="o">=</span> <span class="n">point_pattern</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">k_norm_min</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">dimension</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Ambient dimension of the underlying point process.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">point_pattern</span><span class="o">.</span><span class="n">dimension</span>
+
+    <span class="c1"># todo make a pass on the docstring, too verbose and not cristal clear</span>
+<div class="viewcode-block" id="StructureFactor.scattering_intensity"><a class="viewcode-back" href="../../structure_factor.html#structure_factor.structure_factor.StructureFactor.scattering_intensity">[docs]</a>    <span class="k">def</span> <span class="nf">scattering_intensity</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">k</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">k_max</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">meshgrid_shape</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the scattering intensity :math:`\widehat{S}_{SI}` which is an ensemble estimator of the structure factor :math:`S` of an ergodic stationary point process :math:`\mathcal{X} \subset \mathbb{R}^d`, from a realization :math:`\mathcal{X}\cap W =\{x_i\}_{i=1}^N` of :math:`\mathcal{X}` within a **cubic** window :math:`W=[-L/2, L/2]^d`.</span>
+
+<span class="sd">        .. math::</span>
+
+<span class="sd">            \widehat{S}_{SI}(\mathbf{k}) =</span>
+<span class="sd">             \frac{1}{N}\left\lvert</span>
+<span class="sd">                \sum_{j=1}^N</span>
+<span class="sd">                    \exp(- i \left\langle \mathbf{k}, \mathbf{x_j} \right\rangle)</span>
+<span class="sd">            \right\rvert^2</span>
+
+<span class="sd">        for a specific sef of wavevectors</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">            \mathbf{k} \in \{</span>
+<span class="sd">            \frac{2 \pi}{L} \mathbf{n},\,</span>
+<span class="sd">            \text{for} \; \mathbf{n} \in (\mathbb{Z}^d)^\ast \}</span>
+
+<span class="sd">        called in the physics literature **allowed values** or dual lattice :cite:`KlaLasYog20`.</span>
+
+
+<span class="sd">        As the estimation of the structure factor :math:`S` via the scattering intensity :math:`\widehat{S}_{SI}` is valid for point processes sampled in a **cubic window**  and on a specific set of allowed wavevectors, so</span>
+<span class="sd">            - If the sample :math:`\{x_j\}_{j=1}^N` does note lies in a cubic window, use the method :py:class:`~structure_factor.point_pattern.PointPattern.restrict_to_window` to extract a sub-sample within a cubic window before using :meth:`scattering_intensity`.</span>
+<span class="sd">            - :meth:`scattering_intensity` evalute the scattering intensity by default on the corresponding set of allowed wavevectors. But you can specify another set of wavevector by precising the argument ``k``.</span>
+
+
+<span class="sd">        So it&#39;s recommended to not specify the vector of waves ``k``, but to either specify a meshgrid size and the maximum component of the set of wavevectors respectively via ``meshgrid_shape`` and ``k_max``, or just ``k_max``.</span>
+
+<span class="sd">        .. note::</span>
+
+<span class="sd">            Specifying the meshgrid size argument ``meshgrid_shape`` is usefull if the number of points of the realization is big so that in this case the evaluation of :math:`\widehat{S}_{SI}` on all the allowed wavevectors may be time consuming.</span>
+
+<span class="sd">        .. seealso::</span>
+
+<span class="sd">            :py:meth:`~structure_factor.utils.allowed_wave_values`.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            # ?! why a list of arrays instead of a 2d array</span>
+<span class="sd">            #? since it&#39;s not a 2d array, in dimension 2 it&#39;s a list of  ndarray</span>
+
+<span class="sd">            k (list): list containing d numpy.ndarray corresponding to the components of the wavevectors. As mentioned before its recommended to keep the default ``k`` and to specify ``k_max`` instead, so that the approximation will be evaluated on allowed wavevectors. Defaults to None.</span>
+
+<span class="sd">            k_max (float, optional): Maximum component of the allowed wavevectors (i.e., for any wavevector :math:`\mathbf{k}=(k_1, .., k_d)` we have :math:`k_j&lt; max\_k` for all j). Defaults to None.</span>
+
+<span class="sd">            meshgrid_shape (int, optional): Size of the meshgrid of allowed wavevectors when ``k`` is None and ``k_max`` is specified. Warning: setting large value in ``meshgrid_shape`` could be time consuming and harmful to your machine for large sample of points. Defaults to None.</span>
+
+<span class="sd">            max_add_k (int, optional): Maximum component of allowed wavevectors added in the case where ``k`` is of small size. In other words, in the case of the evaluation on a vector of allowed wavevectors which doesn&#39;t cover a sufficient number of small allowed wavelengths,  ``max_add_k`` can be used to add allowed wavevectors in a certain neighborhood of zero for better precision. This is useful while studying the behavior of :math:`S` in the neighborhood of the origin. Warning: setting big value in ``max_add_k`` could be time consuming and harmful to your machine for a large sample of points since this similar to the case with big meshgrid size. Defaults to 1.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            tuple(numpy.ndarray, numpy.ndarray):</span>
+<span class="sd">                - k_norm: The vector of wavelengths (i.e. the vector of norms of the wave vectors) on which the scattering intensity was evaluated.</span>
+<span class="sd">                - si: The evaluations of the scattering intensity corresponding to the vector of wave length ``k_norm``.</span>
+
+<span class="sd">        Example:</span>
+
+<span class="sd">            .. literalinclude:: code/si_example.py</span>
+<span class="sd">                :language: python</span>
+<span class="sd">                :lines: 1-22</span>
+<span class="sd">                :emphasize-lines: 20-21</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">point_pattern</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">point_pattern</span>
+        <span class="n">window</span> <span class="o">=</span> <span class="n">point_pattern</span><span class="o">.</span><span class="n">window</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">window</span><span class="p">,</span> <span class="n">BoxWindow</span><span class="p">):</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="n">message</span><span class="o">=</span><span class="s2">&quot;The window should be a &#39;cubic&#39; BoxWindow for that the scattering intensity consists an approximation of the structure factor. Hint: use PointPattern.restrict_to_window.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">k</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">check_cubic_window</span><span class="p">(</span><span class="n">window</span><span class="p">)</span>
+            <span class="n">L</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">window</span><span class="o">.</span><span class="n">bounds</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+            <span class="n">k</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">allowed_wave_values</span><span class="p">(</span>
+                <span class="n">L</span><span class="o">=</span><span class="n">L</span><span class="p">,</span> <span class="n">k_max</span><span class="o">=</span><span class="n">k_max</span><span class="p">,</span> <span class="n">meshgrid_shape</span><span class="o">=</span><span class="n">meshgrid_shape</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">shape_x_k</span> <span class="o">=</span> <span class="n">k</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
+            <span class="n">k</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">((</span><span class="n">k</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span> <span class="n">k</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">ravel</span><span class="p">()))</span>
+        <span class="n">si</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">compute_scattering_intensity</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">point_pattern</span><span class="o">.</span><span class="n">points</span><span class="p">)</span>
+        <span class="n">k_norm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># ! shape_x_k not defined if k is None</span>
+        <span class="c1"># ? si! k always exists</span>
+        <span class="k">if</span> <span class="n">meshgrid_shape</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">shape_x_k</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">shape_mesh</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">k_norm</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+            <span class="n">k_norm</span> <span class="o">=</span> <span class="n">k_norm</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">shape_mesh</span><span class="p">,</span> <span class="n">shape_mesh</span><span class="p">)</span>
+            <span class="n">si</span> <span class="o">=</span> <span class="n">si</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">shape_mesh</span><span class="p">,</span> <span class="n">shape_mesh</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">k_norm</span><span class="p">,</span> <span class="n">si</span></div>
+
+<div class="viewcode-block" id="StructureFactor.plot_scattering_intensity"><a class="viewcode-back" href="../../structure_factor.html#structure_factor.structure_factor.StructureFactor.plot_scattering_intensity">[docs]</a>    <span class="k">def</span> <span class="nf">plot_scattering_intensity</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">k_norm</span><span class="p">,</span>
+        <span class="n">si</span><span class="p">,</span>
+        <span class="n">plot_type</span><span class="o">=</span><span class="s2">&quot;radial&quot;</span><span class="p">,</span>
+        <span class="n">axes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">exact_sf</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">error_bar</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">file_name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">window_res</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">binning_params</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Plot the result of the method :py:meth:`scattering_intensity`.</span>
+
+<span class="sd">        You can add the theoretical structure factor using ``exact_sf`` and visualize the mean and the variance over bins of the scattering intensity by specifying ``error_bar=True`` (this is donne using a binning method :py:meth:`~structure_factor.utils._bin_statistics`).</span>
+<span class="sd">        The figure could be saved by specifying ``file_name``.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            k_norm (numpy.ndarray): vector of norms of the wavevectors .</span>
+
+<span class="sd">            si (numpy.ndarray): approximated scattering intensity vector associted to `k_norm`.</span>
+
+<span class="sd">            plot_type (str, optional): (&quot;radial&quot;, &quot;imshow&quot;, &quot;all&quot;). Type of the plot to visualize. If &quot;radial&quot;, then the output is a loglog plot. If &quot;imshow&quot;, then the output is a color level 2D plot. if &quot;all&quot;, the results are 3 subplots: the point pattern (or a restriction to a specific window if ``window_res`` is set), the loglog radial plot, and the color level 2D plot. Note that the options &quot;imshow&quot; and &quot;all&quot; couldn&#39;t be used, if ``k_norm`` is not a meshgrid. Defaults to &quot;radial&quot;.</span>
+
+<span class="sd">            axes (axis, optional): the support axis of the plots. Defaults to None.</span>
+
+<span class="sd">            exact_sf (callable, optional): function representing the theoretical structure factor of the point process. Defaults to None.</span>
+
+<span class="sd">            error_bar (bool, optional): Defaults to False. When set to ``True``, ``k_norm`` is divided into bins and the mean and the standard deviation over each bin are derived and visualized on the plot. Note that the error bar represent the means +/- 3 standard deviation.</span>
+
+<span class="sd">            file_name (str, optional): name used to save the figure. The available output formats depend on the backend being used. Defaults to &quot;&quot;.</span>
+
+<span class="sd">            window_res (:py:class:`~structure_factor.spatial_windows.AbstractSpatialWindow`, optional): This could be used when the sample of points is large, so for time and visualization purpose it&#39;s better to restrict the plot of the sample of points to a smaller window.  Defaults to None.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            plot of the approximated structure factor.</span>
+
+<span class="sd">        Example:</span>
+
+<span class="sd">            .. literalinclude:: code/si_example.py</span>
+<span class="sd">                :language: python</span>
+<span class="sd">                :lines: 23-29</span>
+
+<span class="sd">            .. plot:: code/si_example.py</span>
+<span class="sd">                :include-source: False</span>
+<span class="sd">                :alt: alternate text</span>
+<span class="sd">                :align: center</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">plot_type</span> <span class="o">==</span> <span class="s2">&quot;radial&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">plot_si_showcase</span><span class="p">(</span>
+                <span class="n">k_norm</span><span class="p">,</span> <span class="n">si</span><span class="p">,</span> <span class="n">axes</span><span class="p">,</span> <span class="n">exact_sf</span><span class="p">,</span> <span class="n">error_bar</span><span class="p">,</span> <span class="n">file_name</span><span class="p">,</span> <span class="o">**</span><span class="n">binning_params</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">plot_type</span> <span class="o">==</span> <span class="s2">&quot;imshow&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">k_norm</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;imshow require a meshgrid data. Choose plot_type= &#39;radial&#39; or re-evaluate the scattering intensity on a meshgrid of waves vector.&quot;</span>
+                <span class="p">)</span>
+            <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">plot_si_imshow</span><span class="p">(</span><span class="n">k_norm</span><span class="p">,</span> <span class="n">si</span><span class="p">,</span> <span class="n">axes</span><span class="p">,</span> <span class="n">file_name</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">plot_type</span> <span class="o">==</span> <span class="s2">&quot;all&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">k_norm</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;imshow require a meshgrid data. Choose plot_type =&#39;radial&#39; or re-evaluate the scattering intensity on a meshgrid of waves vector.&quot;</span>
+                <span class="p">)</span>
+            <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">plot_si_all</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">point_pattern</span><span class="p">,</span>
+                <span class="n">k_norm</span><span class="p">,</span>
+                <span class="n">si</span><span class="p">,</span>
+                <span class="n">exact_sf</span><span class="p">,</span>
+                <span class="n">error_bar</span><span class="p">,</span>
+                <span class="n">file_name</span><span class="p">,</span>
+                <span class="n">window_res</span><span class="p">,</span>
+                <span class="o">**</span><span class="n">binning_params</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;plot_type must be chosen among (&#39;all&#39;, &#39;radial&#39;, &#39;imshow&#39;).&quot;</span>
+            <span class="p">)</span></div>
+
+<div class="viewcode-block" id="StructureFactor.compute_pcf"><a class="viewcode-back" href="../../structure_factor.html#structure_factor.structure_factor.StructureFactor.compute_pcf">[docs]</a>    <span class="k">def</span> <span class="nf">compute_pcf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;fv&quot;</span><span class="p">,</span> <span class="n">install_spatstat</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Estimate the pair correlation function of an **isotropic** point process process :math:`\mathcal{X} \subset \mathbb{R}^2`. The two methods that can be used are the methods ``spastat.core.pcf_ppp`` and ``spastat.core.pcf_fv`` of the the `R` package `spatstat &lt;https://github.com/spatstat/spatstat&gt;`_.</span>
+
+<span class="sd">        .. warning::</span>
+
+<span class="sd">            This function relies on the `spatstat-interface &lt;https://github.com/For-a-few-DPPs-more/spatstat-interface&gt;`_ Python package which requires the `R programming language &lt;https://cran.r-project.org/&gt;`_ to be installed, but experience with R it is not required.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            method (str, optional): Defaults to ``&quot;fv&quot;``. Choose between ``&quot;ppp&quot;`` or ``&quot;fv&quot;`` referring respectively to `spatstat.core.pcf.ppp &lt;https://www.rdocumentation.org/packages/spatstat.core/versions/2.1-2/topics/pcf.ppp&gt;`_ and `spatsta.core.pcf.fv &lt;https://www.rdocumentation.org/packages/spatstat.core/versions/2.1-2/topics/pcf.fv&gt;`_ functions. These 2 methods approximate the pair correlation function of a point process from a realization of the underlying point process using some edge corrections and some basic approximations. For more details `see &lt;https://www.routledge.com/Spatial-Point-Patterns-Methodology-and-Applications-with-R/Baddeley-Rubak-Turner/p/book/9781482210200&gt;`_.</span>
+
+<span class="sd">            install_spatstat (bool, optional): If it is set to ``True`` then the `R` package `spatstat &lt;https://github.com/spatstat/spatstat&gt;`_  will be updated or installed (if not present), see also the `spatstat-interface &lt;https://github.com/For-a-few-DPPs-more/spatstat-interface&gt;`_ Python package.</span>
+
+<span class="sd">        Keyword Args:</span>
+
+<span class="sd">            params (dict):</span>
+
+<span class="sd">                - if ``method = &quot;ppp&quot;``</span>
+<span class="sd">                    - keyword arguments of `spastat.core.pcf.ppp &lt;https://rdrr.io/cran/spatstat.core/man/pcf.ppp.html&gt;`_)</span>
+
+<span class="sd">                - if ``method = &quot;fv&quot;``</span>
+<span class="sd">                    - Kest = dict(keyword arguments of `spastat.core.Kest &lt;https://rdrr.io/github/spatstat/spatstat.core/man/Kest.html&gt;`_),</span>
+<span class="sd">                    - fv = dict( keyword arguments of `spastat.core.pcf.fv &lt;https://rdrr.io/cran/spatstat.core/man/pcf.fv.html&gt;`_)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            pandas.DataFrame: version of the output of `spatstat.core.pcf.ppp &lt;https://www.rdocumentation.org/packages/spatstat.core/versions/2.1-2/topics/pcf.ppp&gt;`_ of `spatsta.core.pcf.fv &lt;https://www.rdocumentation.org/packages/spatstat.core/versions/2.1-2/topics/pcf.fv&gt;`_.</span>
+
+<span class="sd">        Example:</span>
+
+<span class="sd">            .. literalinclude:: code/pcf_example.py</span>
+<span class="sd">                :language: python</span>
+<span class="sd">                :lines: 1-15</span>
+<span class="sd">                :emphasize-lines: 12-15</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">point_pattern</span><span class="o">.</span><span class="n">dimension</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">point_pattern</span><span class="o">.</span><span class="n">dimension</span> <span class="o">==</span> <span class="mi">3</span>
+
+        <span class="k">assert</span> <span class="n">method</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;ppp&quot;</span><span class="p">,</span> <span class="s2">&quot;fv&quot;</span><span class="p">)</span>
+
+        <span class="c1"># core, geom and other subpackages are updated if install_spatstat</span>
+        <span class="n">spatstat</span> <span class="o">=</span> <span class="n">SpatstatInterface</span><span class="p">(</span><span class="n">update</span><span class="o">=</span><span class="n">install_spatstat</span><span class="p">)</span>
+        <span class="n">spatstat</span><span class="o">.</span><span class="n">import_package</span><span class="p">(</span><span class="s2">&quot;core&quot;</span><span class="p">,</span> <span class="s2">&quot;geom&quot;</span><span class="p">,</span> <span class="n">update</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">point_pattern</span><span class="o">.</span><span class="n">convert_to_spatstat_ppp</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;ppp&quot;</span><span class="p">:</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">r</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+                <span class="n">params</span><span class="p">[</span><span class="s2">&quot;r&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">robjects</span><span class="o">.</span><span class="n">vectors</span><span class="o">.</span><span class="n">FloatVector</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+            <span class="n">pcf</span> <span class="o">=</span> <span class="n">spatstat</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">pcf_ppp</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;fv&quot;</span><span class="p">:</span>
+            <span class="n">params_Kest</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Kest&quot;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">())</span>
+            <span class="n">Kest_r</span> <span class="o">=</span> <span class="n">params_Kest</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">Kest_r</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">Kest_r</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+                <span class="n">params_Kest</span><span class="p">[</span><span class="s2">&quot;r&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">robjects</span><span class="o">.</span><span class="n">vectors</span><span class="o">.</span><span class="n">FloatVector</span><span class="p">(</span><span class="n">Kest_r</span><span class="p">)</span>
+            <span class="n">k_ripley</span> <span class="o">=</span> <span class="n">spatstat</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">Kest</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">params_Kest</span><span class="p">)</span>
+            <span class="n">params_fv</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;fv&quot;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">())</span>
+            <span class="n">pcf</span> <span class="o">=</span> <span class="n">spatstat</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">pcf_fv</span><span class="p">(</span><span class="n">k_ripley</span><span class="p">,</span> <span class="o">**</span><span class="n">params_fv</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">pcf</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">pcf</span><span class="o">.</span><span class="n">names</span><span class="p">)</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s2">&quot;theo&quot;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="StructureFactor.plot_pcf"><a class="viewcode-back" href="../../structure_factor.html#structure_factor.structure_factor.StructureFactor.plot_pcf">[docs]</a>    <span class="k">def</span> <span class="nf">plot_pcf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pcf_dataframe</span><span class="p">,</span> <span class="n">exact_pcf</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">file_name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Display the data frame output from the method :py:meth:`compute_pcf`.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            pcf_dataframe (pandas.DataFrame): output DataFrame of the method :py:meth:`compute_pcf`.</span>
+
+<span class="sd">            exact_pcf (callable, optional): function representing the theoretical pair correlation function of the point process. Defaults to None.</span>
+
+<span class="sd">            file_name (str, optional): name used to save the figure. The available output formats depend on the backend being used. Defaults to &quot;&quot;.</span>
+
+<span class="sd">        Keyword Args:</span>
+
+<span class="sd">            kwargs (dict):</span>
+
+<span class="sd">                Keyword arguments of the function `pandas.DataFrame.plot.line &lt;https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.plot.line.html&gt;`_.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            plot of the approximated pair correlation function.</span>
+
+<span class="sd">        Example:</span>
+
+<span class="sd">            .. literalinclude:: code/pcf_example.py</span>
+<span class="sd">                :language: python</span>
+<span class="sd">                :lines: 16-20</span>
+
+
+<span class="sd">            .. plot:: code/pcf_example.py</span>
+<span class="sd">                :include-source: False</span>
+<span class="sd">                :alt: alternate text</span>
+<span class="sd">                :align: center</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">plot_pcf</span><span class="p">(</span><span class="n">pcf_dataframe</span><span class="p">,</span> <span class="n">exact_pcf</span><span class="p">,</span> <span class="n">file_name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="StructureFactor.interpolate_pcf"><a class="viewcode-back" href="../../structure_factor.html#structure_factor.structure_factor.StructureFactor.interpolate_pcf">[docs]</a>    <span class="k">def</span> <span class="nf">interpolate_pcf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">pcf_r</span><span class="p">,</span> <span class="n">clean</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Interpolate the pair correlation function (pcf) evaluated at ``r``.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            r (numpy.ndarray): vector of radius.</span>
+
+<span class="sd">            pcf_r (numpy.ndarray): vector of approximation of the pair correlation function.</span>
+
+<span class="sd">            clean (bool, optional): replace nan, posinf, neginf values to ``pcf_r`` by zeros before interpolation. Defaults to True.</span>
+
+<span class="sd">        Keyword Args:</span>
+
+<span class="sd">            params (dict):</span>
+
+<span class="sd">                Keyword arguments of the function `scipy.interpolate.interp1d &lt;https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html&gt;`_.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            tuple (dict, callable): dictionary containing the bounds of the interval containing the values of the vector ``r`` and the interpolated version of the pair correlation function.</span>
+
+<span class="sd">        Example:</span>
+
+<span class="sd">            .. literalinclude:: code/sf_baddour_example.py</span>
+<span class="sd">                :language: python</span>
+<span class="sd">                :lines: 16-20</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">params</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;fill_value&quot;</span><span class="p">,</span> <span class="s2">&quot;extrapolate&quot;</span><span class="p">)</span>
+        <span class="n">params</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;kind&quot;</span><span class="p">,</span> <span class="s2">&quot;cubic&quot;</span><span class="p">)</span>
+        <span class="n">rmin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+        <span class="n">rmax</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">clean</span><span class="p">:</span>
+            <span class="n">pcf_r</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">set_nan_inf_to_zero</span><span class="p">(</span><span class="n">pcf_r</span><span class="p">)</span>
+
+        <span class="n">dict_rmin_rmax</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">rmin</span><span class="o">=</span><span class="n">rmin</span><span class="p">,</span> <span class="n">rmax</span><span class="o">=</span><span class="n">rmax</span><span class="p">)</span>
+        <span class="n">pcf</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">pcf_r</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">dict_rmin_rmax</span><span class="p">,</span> <span class="n">pcf</span></div>
+
+<div class="viewcode-block" id="StructureFactor.hankel_quadrature"><a class="viewcode-back" href="../../structure_factor.html#structure_factor.structure_factor.StructureFactor.hankel_quadrature">[docs]</a>    <span class="k">def</span> <span class="nf">hankel_quadrature</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pcf</span><span class="p">,</span> <span class="n">k_norm</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;Ogata&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the structure factor :math:`S` of the underlying **stationary isotropic** point process :math:`\mathcal{X} \subset \mathbb{R}^d`, which could be defined via the Hankel transform :math:`\mathcal{H}_{d/2 -1}` of order :math:`d/2 -1` as follow,</span>
+
+<span class="sd">        .. math::</span>
+
+<span class="sd">            S(\|\mathbf{k}\|) = 1 + \rho \frac{(2 \pi)^{d/2}}{\|\mathbf{k}\|^{d/2 -1}} \mathcal{H}_{d/2 -1}(\tilde g -1)(\|\mathbf{k}\|), \quad \tilde g:x \mapsto  g(x)x^{d/2 -1}.</span>
+
+
+<span class="sd">        This method estimate the structure factor by approximating the corresponding Hankel transform via Ogata quadrature shemes of :cite:`Oga05` or Baddour and Chouinard Descrete Hankel transform :cite:`BaCh15`.</span>
+
+<span class="sd">        .. warning::</span>
+
+<span class="sd">            This method is actually applicable for 2 dimensional point process.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            pcf (callable): radially symmetric pair correlation function :math:`g`. You can get a discrete vector of estimation of the pair correlation function using the method :py:meth:`compute_pcf`, then interpolate the resulting vector using :py:meth:`interpolate_pcf` and pass the resulting function to the argument ``pcf``.</span>
+
+<span class="sd">            # todo why not simply k ?</span>
+<span class="sd">            k_norm (numpy.ndarray, optional): vector of wave lengths (i.e. norm of wave vectors) where the structure factor is to be evaluated. Defaults to None.</span>
+
+<span class="sd">            method (str, optional): Choose between ``&quot;Ogata&quot;`` or ``&quot;BaddourChouinard&quot;``. Defaults to ``&quot;Ogata&quot;``. This selects the method used to compute the Fourier transform of :math:`g`, via the `correspondence with the Hankel transform &lt;https://en.wikipedia.org/wiki/Hankel_transform#Fourier_transform_in_d_dimensions_(radially_symmetric_case)&gt;`_, see :py:class:`~structure_factor.transforms.HankelTransformOgata` and :py:class:`~structure_factor.transforms.HankelTransformBaddourChouinard`.</span>
+
+<span class="sd">        Keyword Args:</span>
+
+<span class="sd">            params (dict):</span>
+
+<span class="sd">                Keyword arguments passed to the corresponding Hankel transformer selected according to the ``method`` argument.</span>
+
+<span class="sd">                - ``method == &quot;Ogata&quot;``, see :py:meth:`~structure_factor.transforms.HankelTransformOgata.compute_transformation_parameters`</span>
+<span class="sd">                    - ``step_size``</span>
+<span class="sd">                    - ``nb_points``</span>
+
+<span class="sd">                - ``method == &quot;BaddourChouinard&quot;``, see :py:meth:`~structure_factor.transforms.HankelTransformBaddourChouinard.compute_transformation_parameters`</span>
+<span class="sd">                    - ``rmax``</span>
+<span class="sd">                    - ``nb_points``</span>
+<span class="sd">                    - ``interpolotation`` dictonnary containing the keyword arguments of `scipy.integrate.interp1d &lt;https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html&gt;`_ parameters.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            tuple (np.ndarray, np.ndarray):</span>
+<span class="sd">                - k_norm: vector of wave lengths.</span>
+<span class="sd">                - sf: the corresponding evaluation of the structure factor ``S(k)``.</span>
+
+<span class="sd">        .. note::</span>
+
+<span class="sd">            Typical usage: ``pcf`` is first estimated using :py:meth:`compute_pcf` then interpolated using :py:meth:`interpolate_pcf`, and the resulting function is used as input of this method.</span>
+
+<span class="sd">        Example:</span>
+
+<span class="sd">            .. literalinclude:: code/sf_baddour_example.py</span>
+<span class="sd">                :lines: 1-29</span>
+<span class="sd">                :emphasize-lines: 21-28</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dimension</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="n">message</span><span class="o">=</span><span class="s2">&quot;This method is actually applicable for 2 dimensional point process&quot;</span><span class="p">,</span>
+                <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">assert</span> <span class="n">callable</span><span class="p">(</span><span class="n">pcf</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;Ogata&quot;</span> <span class="ow">and</span> <span class="n">k_norm</span><span class="o">.</span><span class="n">all</span><span class="p">()</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;k_norm is not optional while using method=&#39;Ogata&#39;. Please provide a vector k_norm in the input. &quot;</span>
+            <span class="p">)</span>
+        <span class="n">params</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;rmax&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;BaddourChouinard&quot;</span> <span class="ow">and</span> <span class="n">params</span><span class="p">[</span><span class="s2">&quot;rmax&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;rmax is not optional while using method=&#39;BaddourChouinard&#39;. Please provide rmax in the input. &quot;</span>
+            <span class="p">)</span>
+        <span class="n">ft</span> <span class="o">=</span> <span class="n">RadiallySymmetricFourierTransform</span><span class="p">(</span><span class="n">dimension</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dimension</span><span class="p">)</span>
+        <span class="n">total_pcf</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">r</span><span class="p">:</span> <span class="n">pcf</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="o">-</span> <span class="mf">1.0</span>
+        <span class="n">k_norm</span><span class="p">,</span> <span class="n">ft_k</span> <span class="o">=</span> <span class="n">ft</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">total_pcf</span><span class="p">,</span> <span class="n">k_norm</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;Ogata&quot;</span> <span class="ow">and</span> <span class="n">params</span><span class="p">[</span><span class="s2">&quot;rmax&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">params</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;step_size&quot;</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
+            <span class="n">step_size</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s2">&quot;step_size&quot;</span><span class="p">]</span>
+            <span class="c1"># todo il y a une fonct qui le fait why not used????</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">k_norm_min</span> <span class="o">=</span> <span class="p">(</span><span class="mf">2.7</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;rmax&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">step_size</span><span class="p">)</span>
+        <span class="n">sf</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">point_pattern</span><span class="o">.</span><span class="n">intensity</span> <span class="o">*</span> <span class="n">ft_k</span>
+        <span class="k">return</span> <span class="n">k_norm</span><span class="p">,</span> <span class="n">sf</span></div>
+
+<div class="viewcode-block" id="StructureFactor.plot_sf_hankel_quadrature"><a class="viewcode-back" href="../../structure_factor.html#structure_factor.structure_factor.StructureFactor.plot_sf_hankel_quadrature">[docs]</a>    <span class="k">def</span> <span class="nf">plot_sf_hankel_quadrature</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">k_norm</span><span class="p">,</span>
+        <span class="n">sf</span><span class="p">,</span>
+        <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">k_norm_min</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">exact_sf</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">error_bar</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">file_name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">binning_params</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Display the output of :py:meth:`hankel_quadrature`.</span>
+
+<span class="sd">        Pass the theoretical structure factor function through ``exact_sf`` (if it is known) and visualize the mean and the variance over bins of the scattering intensity by specifying ``error_bar=True`` (this is donne using a binning method :py:meth:`~structure_factor.utils._bin_statistics`). The figure can at ``file_name``.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            k_norm (np.ndarray): vector of wave lengths (i.e. norms of waves) on which the structure factor is approximated.</span>
+<span class="sd">            sf ([type]): [description]</span>
+
+<span class="sd">            axis (axis, optional): the support axis of the plots. Defaults to None.</span>
+
+<span class="sd">            k_norm_min (float, optional): estimation of an upper bounds for the allowed wave lengths. Defaults to None.</span>
+
+<span class="sd">            exact_sf (callable, optional): function representing the theoretical structure factor of the point process. Defaults to None.</span>
+
+<span class="sd">            error_bar (bool, optional): if it is set to ``True`` then, the ``k_norm`` is divided into bins and the mean and the standard deviation over each bin are derived and visualized on the plot. Note that the error bar represent 3 times the standard deviation. Defaults to False.</span>
+
+<span class="sd">            file_name (str, optional): Defaults to &quot;&quot;. Name used to save the figure. The available output formats depend on the backend being used.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            plot of the approximated structure factor.</span>
+
+<span class="sd">        Example:</span>
+
+<span class="sd">            .. literalinclude:: code/sf_baddour_example.py</span>
+<span class="sd">                :lines: 30-35</span>
+
+<span class="sd">            .. plot:: code/sf_baddour_example.py</span>
+<span class="sd">                :include-source: False</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">plot_sf_hankel_quadrature</span><span class="p">(</span>
+            <span class="n">k_norm</span><span class="p">,</span>
+            <span class="n">sf</span><span class="p">,</span>
+            <span class="n">axis</span><span class="p">,</span>
+            <span class="n">k_norm_min</span><span class="p">,</span>
+            <span class="n">exact_sf</span><span class="p">,</span>
+            <span class="n">error_bar</span><span class="p">,</span>
+            <span class="n">file_name</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">binning_params</span>
+        <span class="p">)</span></div></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">structure_factor  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">structure_factor.structure_factor</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2021, Diala Hawat.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.2.0.
+    </div>
+  </body>
+</html>

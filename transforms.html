@@ -1,0 +1,290 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Transforms &#8212; structure_factor  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    <link rel="stylesheet" type="text/css" href="_static/plot_directive.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Utils" href="utils.html" />
+    <link rel="prev" title="Structure factor" href="structure_factor.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="utils.html" title="Utils"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="structure_factor.html" title="Structure factor"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">structure_factor  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Transforms</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-structure_factor.transforms">
+<span id="transforms"></span><h1>Transforms<a class="headerlink" href="#module-structure_factor.transforms" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="structure_factor.transforms.RadiallySymmetricFourierTransform">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">structure_factor.transforms.</span></span><span class="sig-name descname"><span class="pre">RadiallySymmetricFourierTransform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dimension</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/transforms.html#RadiallySymmetricFourierTransform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.transforms.RadiallySymmetricFourierTransform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Compute the Fourier transform of a radially symmetric function using the <a class="reference external" href="https://en.wikipedia.org/wiki/Hankel_transform#Fourier_transform_in_d_dimensions_(radially_symmetric_case)">correspondence with the Hankel transform</a>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="structure_factor.transforms.RadiallySymmetricFourierTransform.transform">
+<span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Ogata'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/transforms.html#RadiallySymmetricFourierTransform.transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.transforms.RadiallySymmetricFourierTransform.transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluate the Fourier transform <span class="math notranslate nohighlight">\(F[f](k)\)</span> of the radially symmetric function <span class="math notranslate nohighlight">\(f\)</span> at <span class="math notranslate nohighlight">\(k\)</span> using the <a class="reference external" href="https://en.wikipedia.org/wiki/Hankel_transform#Fourier_transform_in_d_dimensions_(radially_symmetric_case)">correspondence with the Hankel transform</a>.</p>
+<div class="math notranslate nohighlight">
+\[k^{d/2-1} F(k)
+= (2 \pi)^{d/2}
+\int_{0}^{+\infty}
+    r^{d/2-1}
+    f(r)
+    J_{d/2-1}(kr)
+    r
+    \mathrm{d}r
+= (2 \pi)^{d/2}
+H_{d/2-1}[\cdot^{d/2-1} f(\cdot)](k)\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>f</strong> (<em>callable</em>) – function to transform</p></li>
+<li><p><strong>k</strong> (<em>scalar</em><em> or </em><em>numpy.ndarray</em>) – point(s) where the Fourier tranform is to evaluated.</p></li>
+<li><p><strong>method</strong> (<em>str</em><em>, </em><em>optional</em>) – name of the method used to compute the underlying Hankel transform: <code class="docutils literal notranslate"><span class="pre">&quot;Ogata&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;BaddourChouinard&quot;</span></code>. Defaults to <code class="docutils literal notranslate"><span class="pre">&quot;Ogata&quot;</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><p><strong>params</strong> (<em>dict</em>) – # todo describe</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><span class="math notranslate nohighlight">\((k, F[f](k))\)</span></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>tuple (np.ndarray, np.ndarray)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="structure_factor.transforms.HankelTransform">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">structure_factor.transforms.</span></span><span class="sig-name descname"><span class="pre">HankelTransform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">order</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/transforms.html#HankelTransform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.transforms.HankelTransform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p><a class="reference external" href="https://en.wikipedia.org/wiki/Hankel_transform">Hankel transform</a>.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#structure_factor.transforms.RadiallySymmetricFourierTransform" title="structure_factor.transforms.RadiallySymmetricFourierTransform"><code class="xref py py-class docutils literal notranslate"><span class="pre">RadiallySymmetricFourierTransform</span></code></a>,</p></li>
+<li><p><a class="reference internal" href="#structure_factor.transforms.HankelTransformBaddourChouinard" title="structure_factor.transforms.HankelTransformBaddourChouinard"><code class="xref py py-class docutils literal notranslate"><span class="pre">HankelTransformBaddourChouinard</span></code></a>,</p></li>
+<li><p><a class="reference internal" href="#structure_factor.transforms.HankelTransformOgata" title="structure_factor.transforms.HankelTransformOgata"><code class="xref py py-class docutils literal notranslate"><span class="pre">HankelTransformOgata</span></code></a>.</p></li>
+</ul>
+</div>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="structure_factor.transforms.HankelTransformBaddourChouinard">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">structure_factor.transforms.</span></span><span class="sig-name descname"><span class="pre">HankelTransformBaddourChouinard</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/transforms.html#HankelTransformBaddourChouinard"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.transforms.HankelTransformBaddourChouinard" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#structure_factor.transforms.HankelTransform" title="structure_factor.transforms.HankelTransform"><code class="xref py py-class docutils literal notranslate"><span class="pre">structure_factor.transforms.HankelTransform</span></code></a></p>
+<p>Computation of the forward <a class="reference external" href="https://en.wikipedia.org/wiki/Hankel_transform">Hankel transform</a>.</p>
+<div class="math notranslate nohighlight">
+\[H_\nu[f](k) = \int_0^\infty f(r) J_\nu(kr) r \mathrm{d}r,\]</div>
+<p>using the method of <span id="id3">[<a class="reference internal" href="bibliography/index.html#id2" title="Natalie Baddour and Ugo Chouinard. Theory and operational rules for the discrete hankel transform. J. Opt. Soc. Am. A, 32(4):611–622, Apr 2015. URL: http://josaa.osa.org/abstract.cfm?URI=josaa-32-4-611, doi:10.1364/JOSAA.32.000611.">BC15</a>]</span> considering that the input function is space-limited, i.e., <span class="math notranslate nohighlight">\(f(r)=0\)</span> for <span class="math notranslate nohighlight">\(r&gt;r_{max}\)</span>.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p>MatLab code of Baddour Chouinard <a class="reference external" href="https://openresearchsoftware.metajnl.com/articles/10.5334/jors.82/">https://openresearchsoftware.metajnl.com/articles/10.5334/jors.82/</a>,</p></li>
+<li><p><a class="reference external" href="https://pypi.org/project/pyhank/">Pyhank Python package</a>.</p></li>
+</ul>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="structure_factor.transforms.HankelTransformBaddourChouinard.compute_transformation_parameters">
+<span class="sig-name descname"><span class="pre">compute_transformation_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rmax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nb_points</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/transforms.html#HankelTransformBaddourChouinard.compute_transformation_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.transforms.HankelTransformBaddourChouinard.compute_transformation_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute parameters involved in the computation of the corresponding Hankel-type transform using the discretization scheme of <span id="id4">[<a class="reference internal" href="bibliography/index.html#id2" title="Natalie Baddour and Ugo Chouinard. Theory and operational rules for the discrete hankel transform. J. Opt. Soc. Am. A, 32(4):611–622, Apr 2015. URL: http://josaa.osa.org/abstract.cfm?URI=josaa-32-4-611, doi:10.1364/JOSAA.32.000611.">BC15</a>]</span>.</p>
+<p>The following object’s attributes are defined</p>
+<ul class="simple">
+<li><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">bessel_zeros</span></code></p></li>
+<li><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">r_max</span></code></p></li>
+<li><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">transformation_matrix</span></code></p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>step_size</strong> (<em>float</em><em>, </em><em>optional</em>) – Step size of the discretization scheme. Defaults to 0.01.</p></li>
+<li><p><strong>nb_points</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of quadrature nodes. Defaults to 300.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="structure_factor.transforms.HankelTransformBaddourChouinard.transform">
+<span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">interpolation_params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/transforms.html#HankelTransformBaddourChouinard.transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.transforms.HankelTransformBaddourChouinard.transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the Hankel transform of <code class="docutils literal notranslate"><span class="pre">f</span></code> at <code class="docutils literal notranslate"><span class="pre">k</span></code>.</p>
+<div class="math notranslate nohighlight">
+\[H_\nu[f](k) = \int_0^\infty f(r) J_\nu(kr) r \mathrm{d}r,\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>f</strong> (<em>callable</em>) – function to be Hankel transformed</p></li>
+<li><p><strong>k</strong> (<em>np.ndarray</em><em>, </em><em>optional</em>) – points of evaluation of the Hankel transform. Defaults to None. If <code class="docutils literal notranslate"><span class="pre">k</span></code> is None (default), <code class="docutils literal notranslate"><span class="pre">k</span> <span class="pre">=</span> <span class="pre">self.bessel_zeros[:-1]</span> <span class="pre">/</span> <span class="pre">self.rmax</span></code> derived from <a class="reference internal" href="#structure_factor.transforms.HankelTransformBaddourChouinard.compute_transformation_parameters" title="structure_factor.transforms.HankelTransformBaddourChouinard.compute_transformation_parameters"><code class="xref py py-meth docutils literal notranslate"><span class="pre">compute_transformation_parameters()</span></code></a>. If <code class="docutils literal notranslate"><span class="pre">k</span></code> is provided, the Hankel transform is first computed at the above k values (case k is None), then interpolated using <code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.interpolate.interp1d()</span></code> with <code class="docutils literal notranslate"><span class="pre">interpolation_params</span></code> and finally evaluated at the provided <code class="docutils literal notranslate"><span class="pre">k</span></code> values.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><p><strong>interpolation_params</strong> (<em>dict</em>) – keyword arguments of <code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.interpolate.interp1d()</span></code>.</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><span class="math notranslate nohighlight">\(k, H[f](k)\)</span></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>tuple (scalar or np.ndarray, scalar or np.ndarray)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="structure_factor.transforms.HankelTransformOgata">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">structure_factor.transforms.</span></span><span class="sig-name descname"><span class="pre">HankelTransformOgata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/transforms.html#HankelTransformOgata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.transforms.HankelTransformOgata" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#structure_factor.transforms.HankelTransform" title="structure_factor.transforms.HankelTransform"><code class="xref py py-class docutils literal notranslate"><span class="pre">structure_factor.transforms.HankelTransform</span></code></a></p>
+<p>Computation of the forward <a class="reference external" href="https://en.wikipedia.org/wiki/Hankel_transform">Hankel transform</a>.</p>
+<div class="math notranslate nohighlight">
+\[H_\nu[f](k) = \int_0^\infty f(r) J_\nu(kr) r \mathrm{d}r,\]</div>
+<p>using the method of <span id="id6">[<a class="reference internal" href="bibliography/index.html#id6" title="H. Ogata. A numerical integration formula based on the bessel functions. Research Institute for Mathematical Sciences, 2005. doi:10.2977/prims/1145474602.">Oga05</a>]</span> Section 5.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://joss.theoj.org/papers/10.21105/joss.01397">Hankel Python package</a></p></li>
+</ul>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="structure_factor.transforms.HankelTransformOgata.compute_transformation_parameters">
+<span class="sig-name descname"><span class="pre">compute_transformation_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nb_points</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">300</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/transforms.html#HankelTransformOgata.compute_transformation_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.transforms.HankelTransformOgata.compute_transformation_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the quadrature nodes and weights used by <span id="id7">[<a class="reference internal" href="bibliography/index.html#id6" title="H. Ogata. A numerical integration formula based on the bessel functions. Research Institute for Mathematical Sciences, 2005. doi:10.2977/prims/1145474602.">Oga05</a>]</span> Equation (5.2) to evaluate the corresponding Hankel-type transform.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>step_size</strong> (<em>float</em><em>, </em><em>optional</em>) – Step size of the discretization scheme. Defaults to 0.01.</p></li>
+<li><p><strong>nb_points</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of quadrature nodes. Defaults to 300.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>quadrature nodes and weights</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>tuple (np.ndarray, np.ndarray)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="structure_factor.transforms.HankelTransformOgata.transform">
+<span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/transforms.html#HankelTransformOgata.transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.transforms.HankelTransformOgata.transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute Hankel transform <span class="math notranslate nohighlight">\(H[f](k)\)</span> of <code class="docutils literal notranslate"><span class="pre">f</span></code> evaluated at <code class="docutils literal notranslate"><span class="pre">k</span></code>, following the work of <span id="id8">[<a class="reference internal" href="bibliography/index.html#id6" title="H. Ogata. A numerical integration formula based on the bessel functions. Research Institute for Mathematical Sciences, 2005. doi:10.2977/prims/1145474602.">Oga05</a>]</span> Section 5.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Please call <a class="reference internal" href="#structure_factor.transforms.HankelTransformOgata.compute_transformation_parameters" title="structure_factor.transforms.HankelTransformOgata.compute_transformation_parameters"><code class="xref py py-meth docutils literal notranslate"><span class="pre">HankelTransformOgata.compute_transformation_parameters()</span></code></a> to define quadrature attributes <code class="xref py py-attr docutils literal notranslate"><span class="pre">nodes</span></code> and <code class="xref py py-attr docutils literal notranslate"><span class="pre">weights</span></code>, before applying <code class="xref py py-meth docutils literal notranslate"><span class="pre">HankelTransformOgata.compute_transform()</span></code>.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>f</strong> (<em>callable</em>) – function to be Hankel transformed</p></li>
+<li><p><strong>k</strong> (<em>np.ndarray</em><em>, </em><em>optional</em>) – points of evaluation of the Hankel transform. Defaults to None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><span class="math notranslate nohighlight">\(k, H[f](k)\)</span>.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>tuple(np.ndarray, np.ndarray)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="structure_factor.html"
+                        title="previous chapter">Structure factor</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="utils.html"
+                        title="next chapter">Utils</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/transforms.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="utils.html" title="Utils"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="structure_factor.html" title="Structure factor"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">structure_factor  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Transforms</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2021, Diala Hawat.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.2.0.
+    </div>
+  </body>
+</html>
