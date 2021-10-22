@@ -51,4 +51,11 @@
         "editor.tabSize": 2,
         "editor.quickSuggestions": true,
     },
+    "python.testing.unittestArgs": [
+        "-v",
+        "-s",
+        "./tests",
+        "-p",
+        "*test.py"
+    ],
 }
