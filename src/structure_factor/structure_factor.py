@@ -23,16 +23,16 @@ class StructureFactor:
 
     This class contains
         - Three estimators of the structure factor:
-            - The scattering intensity :meth:`compute_sf_scattering_intensity`.
-            - Estimator using Ogata quadrature for approximating the Hankel transform  :meth:`compute_sf_hankel_quadrature` with `method="Ogata"` :cite:`Oga05`.
-            - Estimator using Baddour and Chouinard Discrete Hankel transform :meth:`compute_sf_hankel_quadrature` with `method="BaddourChouinard"` :cite:`BaCh15`.
+            - The scattering intensity :meth:`scattering_intensity`.
+            - Estimator using Ogata quadrature for approximating the Hankel transform  :meth:`hankel_quadrature` with `method="Ogata"` :cite:`Oga05`.
+            - Estimator using Baddour and Chouinard Discrete Hankel transform :meth:`hankel_quadrature` with `method="BaddourChouinard"` :cite:`BaCh15`.
         - Two estimators of the pair correlation function :
             - Estimator using Epanechnikov kernel and a bandwidth selected by Stoyan's rule of thumb :meth:`compute_pcf` with `method="ppp"`.
             - Estimator using the derivative of Ripley's K function :meth:`compute_pcf` with `method="fv"`.
 
             This 2 estimators are obtained using `spatstat-interface <https://github.com/For-a-few-DPPs-more/spatstat-interface>`_ which builds a hidden interface with the package `spatstat <https://github.com/spatstat/spatstat>`_ of the programming language R.
         - An interpolation function :meth:`interpolate_pcf`, used to interpolate the result of :meth:`compute_pcf`.
-        - Three plot methods :meth:`plot_scattering_intensity`,  :meth:`plot_pcf` and :meth:`plot_sf_hankel_quadrature` used to visualized the result of :meth:`compute_sf_scattering_intensity`, :meth:`compute_pcf` and :meth:`compute_sf_hankel_quadrature` respectively.
+        - Three plot methods :meth:`plot_scattering_intensity`,  :meth:`plot_pcf` and :meth:`plot_sf_hankel_quadrature` used to visualized the result of :meth:`scattering_intensity`, :meth:`compute_pcf` and :meth:`hankel_quadrature` respectively.
 
 
     .. seealso::
@@ -59,7 +59,7 @@ class StructureFactor:
         return self.point_pattern.dimension
 
     # todo make a pass on the docstring, too verbose and not cristal clear
-    def compute_sf_scattering_intensity(
+    def scattering_intensity(
         self,
         k=None,
         k_max=None,
@@ -86,8 +86,8 @@ class StructureFactor:
 
 
         As the estimation of the structure factor :math:`S` via the scattering intensity :math:`\widehat{S}_{SI}` is valid for point processes sampled in a **cubic window**  and on a specific set of allowed wavevectors, so
-            - If the sample :math:`\{x_j\}_{j=1}^N` does note lies in a cubic window, use the method :py:class:`~structure_factor.point_pattern.PointPattern.restrict_to_window` to extract a sub-sample within a cubic window before using :meth:`compute_sf_scattering_intensity`.
-            - :meth:`compute_sf_scattering_intensity` evalute the scattering intensity by default on the corresponding set of allowed wavevectors. But you can specify another set of wavevector by precising the argument ``k``.
+            - If the sample :math:`\{x_j\}_{j=1}^N` does note lies in a cubic window, use the method :py:class:`~structure_factor.point_pattern.PointPattern.restrict_to_window` to extract a sub-sample within a cubic window before using :meth:`scattering_intensity`.
+            - :meth:`scattering_intensity` evalute the scattering intensity by default on the corresponding set of allowed wavevectors. But you can specify another set of wavevector by precising the argument ``k``.
 
 
         So it's recommended to not specify the vector of waves ``k``, but to either specify a meshgrid size and the maximum component of the set of wavevectors respectively via ``meshgrid_shape`` and ``k_max``, or just ``k_max``.
@@ -166,7 +166,7 @@ class StructureFactor:
         window_res=None,
         **binning_params
     ):
-        """Plot the result of the method :py:meth:`compute_sf_scattering_intensity`.
+        """Plot the result of the method :py:meth:`scattering_intensity`.
 
         You can add the theoretical structure factor using ``exact_sf`` and visualize the mean and the variance over bins of the scattering intensity by specifying ``error_bar=True`` (this is donne using a binning method :py:meth:`~structure_factor.utils._bin_statistics`).
         The figure could be saved by specifying ``file_name``.
@@ -362,7 +362,7 @@ class StructureFactor:
         pcf = interpolate.interp1d(r, pcf_r, **params)
         return dict_rmin_rmax, pcf
 
-    def compute_sf_hankel_quadrature(self, pcf, k_norm=None, method="Ogata", **params):
+    def hankel_quadrature(self, pcf, k_norm=None, method="Ogata", **params):
         r"""Compute the structure factor :math:`S` of the underlying **stationary isotropic** point process :math:`\mathcal{X} \subset \mathbb{R}^d`, which could be defined via the Hankel transform :math:`\mathcal{H}_{d/2 -1}` of order :math:`d/2 -1` as follow,
 
         .. math::
@@ -452,7 +452,7 @@ class StructureFactor:
         file_name="",
         **binning_params
     ):
-        """Display the output of :py:meth:`compute_sf_hankel_quadrature`.
+        """Display the output of :py:meth:`hankel_quadrature`.
 
         Pass the theoretical structure factor function through ``exact_sf`` (if it is known) and visualize the mean and the variance over bins of the scattering intensity by specifying ``error_bar=True`` (this is donne using a binning method :py:meth:`~structure_factor.utils._bin_statistics`). The figure can at ``file_name``.
 

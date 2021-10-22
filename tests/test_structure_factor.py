@@ -38,7 +38,7 @@ def test_compute_structure_factor_ginibre_with_ogata(ginibre_pp, k_norm):
     sf_pp = StructureFactor(ginibre_pp)
     method = "Ogata"
     params = dict(rmax=80, step_size=0.01, nb_points=1000)
-    k_norm, sf_computed = sf_pp.compute_sf_hankel_quadrature(
+    k_norm, sf_computed = sf_pp.hankel_quadrature(
         pair_correlation_function_ginibre, k_norm=k_norm, method=method, **params
     )
     sf_expected = structure_factor_ginibre(k_norm)
@@ -49,7 +49,7 @@ def test_compute_structure_factor_ginibre_with_baddour_chouinard(ginibre_pp):
     sf_pp = StructureFactor(ginibre_pp)
     method = "BaddourChouinard"
     params = dict(rmax=80, nb_points=800)
-    k_norm, sf_computed = sf_pp.compute_sf_hankel_quadrature(
+    k_norm, sf_computed = sf_pp.hankel_quadrature(
         pair_correlation_function_ginibre, k_norm=None, method=method, **params
     )
     sf_expected = structure_factor_ginibre(k_norm)

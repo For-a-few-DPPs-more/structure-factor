@@ -17,9 +17,7 @@ ginibre_pp_box = ginibre_pp.restrict_to_window(window)
 
 # scattering intensity
 sf_ginibre_box = StructureFactor(ginibre_pp_box)  # initialize the class StructureFactor
-norm_k, si = sf_ginibre_box.compute_sf_scattering_intensity(
-    k_component_max=6, meshgrid_shape=200
-)
+norm_k, si = sf_ginibre_box.scattering_intensity(k_component_max=6, meshgrid_shape=200)
 
 # plot
 sf_ginibre_box.plot_scattering_intensity(

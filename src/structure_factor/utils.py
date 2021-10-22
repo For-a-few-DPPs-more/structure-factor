@@ -84,7 +84,9 @@ def allowed_wave_values(L, k_max, meshgrid_shape, max_add_k=1):
     Returns:
         numpy.ndarray: array of size :math:`N \times d` collecting the 'allowed' wave vectors.
     """
+
     max_n = np.floor(k_max * L / (2 * np.pi))  # maximum of ``k_vector``
+    # todo why here it's from 1 to max_n not -max_n max_n
     if meshgrid_shape is None:  # Add extra allowed values near zero
         n_vector = np.linspace(1, max_n, int(max_n))
         k_vector = 2 * np.pi * np.column_stack((n_vector, n_vector)) / L
@@ -224,7 +226,7 @@ def plot_si_showcase(
     file_name="",
     **binning_params
 ):
-    """Loglog plot of the results of the scattering intensity :py:meth:`StructureFactor.compute_sf_scattering_intensity`, with the means and error bars over specific number of bins found via :py:meth:`~structure_factor.utils._bin_statistics`."""
+    """Loglog plot of the results of the scattering intensity :py:meth:`StructureFactor.scattering_intensity`, with the means and error bars over specific number of bins found via :py:meth:`~structure_factor.utils._bin_statistics`."""
     norm_k = norm_k.ravel()
     si = si.ravel()
     if axis is None:
@@ -353,7 +355,7 @@ def plot_sf_hankel_quadrature(
     label="$\widehat{S}_{H}$",
     **binning_params
 ):
-    """Plot approximation of structure factor using :py:meth:`~structure_factor.compute_sf_hankel_quadrature` with means and error bars over bins."""
+    """Plot approximation of structure factor using :py:meth:`~structure_factor.hankel_quadrature` with means and error bars over bins."""
     if axis is None:
         fig, axis = plt.subplots(figsize=(8, 5))
 
