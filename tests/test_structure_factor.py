@@ -15,7 +15,7 @@ def radius():
 
 
 @pytest.fixture
-def norm_k():
+def k_norm():
     return np.linspace(1, 10, 1000)
 
 
@@ -34,14 +34,14 @@ def test_interpolate_pcf_ginibre(ginibre_pp, radius):
     np.testing.assert_almost_equal(computed_pcf, expected_pcf)
 
 
-def test_compute_structure_factor_ginibre_with_ogata(ginibre_pp, norm_k):
+def test_compute_structure_factor_ginibre_with_ogata(ginibre_pp, k_norm):
     sf_pp = StructureFactor(ginibre_pp)
     method = "Ogata"
     params = dict(rmax=80, step_size=0.01, nb_points=1000)
-    norm_k, sf_computed = sf_pp.compute_sf_hankel_quadrature(
-        pair_correlation_function_ginibre, norm_k=norm_k, method=method, **params
+    k_norm, sf_computed = sf_pp.compute_sf_hankel_quadrature(
+        pair_correlation_function_ginibre, k_norm=k_norm, method=method, **params
     )
-    sf_expected = structure_factor_ginibre(norm_k)
+    sf_expected = structure_factor_ginibre(k_norm)
     np.testing.assert_almost_equal(sf_computed, sf_expected)
 
 
@@ -49,8 +49,8 @@ def test_compute_structure_factor_ginibre_with_baddour_chouinard(ginibre_pp):
     sf_pp = StructureFactor(ginibre_pp)
     method = "BaddourChouinard"
     params = dict(rmax=80, nb_points=800)
-    norm_k, sf_computed = sf_pp.compute_sf_hankel_quadrature(
-        pair_correlation_function_ginibre, norm_k=None, method=method, **params
+    k_norm, sf_computed = sf_pp.compute_sf_hankel_quadrature(
+        pair_correlation_function_ginibre, k_norm=None, method=method, **params
     )
-    sf_expected = structure_factor_ginibre(norm_k)
+    sf_expected = structure_factor_ginibre(k_norm)
     np.testing.assert_almost_equal(sf_computed, sf_expected)

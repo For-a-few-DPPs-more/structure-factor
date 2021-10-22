@@ -61,31 +61,31 @@ def structure_factor_ginibre(k):
 ###### utils for the class StructureFactor
 
 # ? see difference between odd and even L why the final size of the meshgrid change?
-def allowed_wave_values(L, max_k, meshgrid_size, max_add_k=1):
+def allowed_wave_values(L, k_max, meshgrid_shape, max_add_k=1):
     r"""Given a realization of a point process in a cubic window with length :math:`L`, compute the 'allowed' wave vectors :math:`(k_i)` at which the structure factor :math:`S(k_i)` is consistently estimated by the scattering intensity defined below.
 
     .. math::
 
-        \{\frac{2 \pi}{L} \mathbf{n} ~ ; ~ \mathbf{n} \in (\mathbb{Z}^d)^\ast, \left\lVert \mathbf{n} \right\rVert \leq \text{ max_k}\}
+        \{\frac{2 \pi}{L} \mathbf{n} ~ ; ~ \mathbf{n} \in (\mathbb{Z}^d)^\ast, \left\lVert \mathbf{n} \right\rVert \leq \text{ k_max}\}
 
     # todo add bibliographic reference
 
     Args:
         L (float): Length of the cubic window.
 
-        max_k (float): Maximum norm of the wave vectors.
+        k_max (float): Maximum norm of the wave vectors.
 
-        # todo give clearer description of meshgrid_size
-        meshgrid_size (int): Size of the meshgrid of allowed values if ``k_vector`` is set to None and ``max_k`` is specified. **Warning:** setting big value in ``meshgrid_size`` could be time consuming when the sample has a lot of points.
+        # todo give clearer description of meshgrid_shape
+        meshgrid_shape (int): Size of the meshgrid of allowed values if ``k_vector`` is set to None and ``k_max`` is specified. **Warning:** setting big value in ``meshgrid_shape`` could be time consuming when the sample has a lot of points.
 
         # todo give clearer description of max_add_k
-        max_add_k (float): Maximum component of the allowed wave vectors to be added. In other words, in the case of the evaluation on a vector of allowed values (without specifying ``meshgrid_size``),  ``max_add_k`` can be used to add allowed values in a certain region for better precision. **Warning:** setting big value in ``max_add_k`` could be time consuming when the sample has a lot of points. Defaults to 1.
+        max_add_k (float): Maximum component of the allowed wave vectors to be added. In other words, in the case of the evaluation on a vector of allowed values (without specifying ``meshgrid_shape``),  ``max_add_k`` can be used to add allowed values in a certain region for better precision. **Warning:** setting big value in ``max_add_k`` could be time consuming when the sample has a lot of points. Defaults to 1.
 
     Returns:
-        numpy.ndarray: array of sizw :math:`N \times d` collecting the 'allowed' wave vectors.
+        numpy.ndarray: array of size :math:`N \times d` collecting the 'allowed' wave vectors.
     """
-    max_n = np.floor(max_k * L / (2 * np.pi))  # maximum of ``k_vector``
-    if meshgrid_size is None:  # Add extra allowed values near zero
+    max_n = np.floor(k_max * L / (2 * np.pi))  # maximum of ``k_vector``
+    if meshgrid_shape is None:  # Add extra allowed values near zero
         n_vector = np.linspace(1, max_n, int(max_n))
         k_vector = 2 * np.pi * np.column_stack((n_vector, n_vector)) / L
         max_add_n = np.floor(max_add_k * L / (2 * np.pi))
@@ -94,20 +94,19 @@ def allowed_wave_values(L, max_k, meshgrid_size, max_add_k=1):
         add_k_vector = 2 * np.pi * np.column_stack((X.ravel(), Y.ravel())) / L
         k_vector = np.concatenate((add_k_vector, k_vector))
 
-    elif meshgrid_size > (2 * max_n):
+    elif meshgrid_shape > (2 * max_n):
         warnings.warn(
-            message="meshgrid_size should be less than the total allowed number of points.",
-            category=DeprecationWarning,
+            message="meshgrid_shape should be less than the total allowed number of points."
         )
         n_vector = np.arange(-max_n, max_n + 1, step=1)
 
     else:
         n_vector = np.linspace(
-            -max_n, max_n, num=meshgrid_size, dtype=int, endpoint=True
+            -max_n, max_n, num=meshgrid_shape, dtype=int, endpoint=True
         )
         if np.count_nonzero(n_vector == 0) != 0:
             n_vector = np.linspace(
-                -max_n, max_n, num=meshgrid_size + 1, dtype=int, endpoint=True
+                -max_n, max_n, num=meshgrid_shape + 1, dtype=int, endpoint=True
             )
 
     n_vector = n_vector[n_vector != 0]

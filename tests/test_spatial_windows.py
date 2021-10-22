@@ -187,13 +187,19 @@ def test_random_points_fall_inside_box(bounds, nb_points, seed):
 
 
 @pytest.mark.parametrize(
-    "window, expected",
+    "bounds",
     (
-        [BoxWindow([[-5, 5], [0, 10], [-2, 8]]), "true"],
-        [BoxWindow([[-2, 2], [-1, 3]]), "true"],
-        [BoxWindow([[-2, 2], [-1, 5]]), "false"],
+        [[-5, 5], [0, 10], [-2, 6]],
+        [[-2, 2], [-1, 8]],
     ),
 )
-def test_check_cubic_window(window, expected):
-    result, _ = check_cubic_window(window)
-    assert expected == result
+def test_check_cubic_window_raises_error_if_BoxWindow_not_cubic(bounds):
+    box = BoxWindow(bounds)
+    with pytest.raises(ValueError):
+        check_cubic_window(box)
+
+
+def test_check_cubic_window_raises_error_if_not_BoxWindow():
+    ball = BallWindow(center=[0, 0], radius=1)
+    with pytest.raises(TypeError):
+        check_cubic_window(ball)

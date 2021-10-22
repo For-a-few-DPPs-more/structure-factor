@@ -15,7 +15,9 @@ window = BoxWindow(bounds)  # create a cubic window
 ginibre_pp_box = ginibre_pp.restrict_to_window(window)
 # scattering intensity
 sf_ginibre_box = StructureFactor(ginibre_pp_box)  # initialize the class StructureFactor
-norm_k, si = sf_ginibre_box.compute_sf_scattering_intensity(max_k=6, meshgrid_size=200)
+norm_k, si = sf_ginibre_box.compute_sf_scattering_intensity(
+    k_component_max=6, meshgrid_shape=200
+)
 
 
 # test effective hyperuniformity
@@ -27,4 +29,7 @@ hyperuniformity_test = Hyperuniformity(norm_k, si)
 hyperuniformity_test.bin_data(bins=40)
 # find power decay
 sf_power_decay, c = hyperuniformity_test.power_decay(norm_k_stop=1)
-print("The estimated power of the decay to zero of the approximated structure factor is:", sf_power_decay)
+print(
+    "The estimated power of the decay to zero of the approximated structure factor is:",
+    sf_power_decay,
+)

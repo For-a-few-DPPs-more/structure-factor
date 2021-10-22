@@ -271,15 +271,18 @@ class UnitBoxWindow(BoxWindow):
 
 
 def check_cubic_window(window):
-    """Check if a window is a cubic window
+    """Check if a window is a cubic window.
 
     Args:
-        window (AbstractSpatialWindow): window
+
+        window (AbstractSpatialWindow): window.
     """
-    assert isinstance(window, BoxWindow)
-    L = window.bounds[0][1] - window.bounds[0][0]
-    for i in range(1, len(window.bounds)):
-        if not (L == (window.bounds[i][1] - window.bounds[i][0])):
-            return "false", L
-    else:
-        return "true", L
+    if not isinstance(window, BoxWindow):
+        raise TypeError("window must be an instance of BoxWindow.")
+    lengths = np.diff(window.bounds, axis=1)
+    L = lengths[0]
+    if np.any(lengths != L):
+        raise ValueError(
+            "The The window should be a 'cubic' BoxWindow for that the scattering intensity consists an approximation of the structure factor. Hint: use PointPattern.restrict_to_window."
+        )
+    return None

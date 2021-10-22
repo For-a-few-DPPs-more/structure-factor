@@ -24,8 +24,8 @@ class StructureFactor:
     This class contains
         - Three estimators of the structure factor:
             - The scattering intensity :meth:`compute_sf_scattering_intensity`.
-            - Estimator using Ogata quadrature for approximating the Hankel transform  :meth:`compute_sf_hankel_quadrature` with `method="Ogata"`.
-            - Estimator using Baddour and Chouinard Discrete Hankel transform :meth:`compute_sf_hankel_quadrature` with `method="BaddourChouinard"`.
+            - Estimator using Ogata quadrature for approximating the Hankel transform  :meth:`compute_sf_hankel_quadrature` with `method="Ogata"` :cite:`Oga05`.
+            - Estimator using Baddour and Chouinard Discrete Hankel transform :meth:`compute_sf_hankel_quadrature` with `method="BaddourChouinard"` :cite:`BaCh15`.
         - Two estimators of the pair correlation function :
             - Estimator using Epanechnikov kernel and a bandwidth selected by Stoyan's rule of thumb :meth:`compute_pcf` with `method="ppp"`.
             - Estimator using the derivative of Ripley's K function :meth:`compute_pcf` with `method="fv"`.
@@ -38,8 +38,6 @@ class StructureFactor:
     .. seealso::
 
         :cite:`Tor18`, Section 2.1, equation (13).
-        :cite:`Oga05`.
-        :cite:`BaCh15`.
     """
 
     # ! Mettre un warning que scattering_intensity marche seulement dans les cubic windows, pcf pour dimension 2 et 3 seulement, hankel pour isotropic en dimension 2, en dimension 3 faire un MC pour approximer l'integral
@@ -53,7 +51,7 @@ class StructureFactor:
         """
         assert isinstance(point_pattern, PointPattern)
         self.point_pattern = point_pattern
-        self.norm_k_min = None
+        self.k_norm_min = None
 
     @property
     def dimension(self):
@@ -63,10 +61,9 @@ class StructureFactor:
     # todo make a pass on the docstring, too verbose and not cristal clear
     def compute_sf_scattering_intensity(
         self,
-        k_vector=None,
-        max_k=None,
-        meshgrid_size=None,
-        max_add_k=1,
+        k=None,
+        k_max=None,
+        meshgrid_shape=None,
     ):
         r"""Compute the scattering intensity :math:`\widehat{S}_{SI}` which is an ensemble estimator of the structure factor :math:`S` of an ergodic stationary point process :math:`\mathcal{X} \subset \mathbb{R}^d`, from a realization :math:`\mathcal{X}\cap W =\{x_i\}_{i=1}^N` of :math:`\mathcal{X}` within a **cubic** window :math:`W=[-L/2, L/2]^d`.
 
@@ -85,23 +82,19 @@ class StructureFactor:
             \frac{2 \pi}{L} \mathbf{n},\,
             \text{for} \; \mathbf{n} \in (\mathbb{Z}^d)^\ast \}
 
-        called in the physics literature **allowed values** or dual lattice.
-
-        .. seealso::
-
-            :cite:`KlaLasYog:20`.
+        called in the physics literature **allowed values** or dual lattice :cite:`KlaLasYog20`.
 
 
         As the estimation of the structure factor :math:`S` via the scattering intensity :math:`\widehat{S}_{SI}` is valid for point processes sampled in a **cubic window**  and on a specific set of allowed wavevectors, so
             - If the sample :math:`\{x_j\}_{j=1}^N` does note lies in a cubic window, use the method :py:class:`~structure_factor.point_pattern.PointPattern.restrict_to_window` to extract a sub-sample within a cubic window before using :meth:`compute_sf_scattering_intensity`.
-            - :meth:`compute_sf_scattering_intensity` evalute the scattering intensity by default on the corresponding set of allowed wavevectors. But you can specify another set of wavevector by precising the argument ``k_vector``.
+            - :meth:`compute_sf_scattering_intensity` evalute the scattering intensity by default on the corresponding set of allowed wavevectors. But you can specify another set of wavevector by precising the argument ``k``.
 
 
-        So it's recommended to not specify the vector of waves ``k_vector``, but to either specify a meshgrid size and the maximum component of the set of wavevectors respectively via ``meshgrid_size`` and ``max_k``, or just ``max_k``.
+        So it's recommended to not specify the vector of waves ``k``, but to either specify a meshgrid size and the maximum component of the set of wavevectors respectively via ``meshgrid_shape`` and ``k_max``, or just ``k_max``.
 
         .. note::
 
-            Specifying the meshgrid size argument ``meshgrid_size`` is usefull if the number of points of the realization is big so that in this case the evaluation of :math:`\widehat{S}_{SI}` on all the allowed wavevectors may be time consuming.
+            Specifying the meshgrid size argument ``meshgrid_shape`` is usefull if the number of points of the realization is big so that in this case the evaluation of :math:`\widehat{S}_{SI}` on all the allowed wavevectors may be time consuming.
 
         .. seealso::
 
@@ -111,20 +104,18 @@ class StructureFactor:
             # ?! why a list of arrays instead of a 2d array
             #? since it's not a 2d array, in dimension 2 it's a list of  ndarray
 
-            k_vector (list): list containing d numpy.ndarray corresponding to the components of the wavevectors. As mentioned before its recommended to keep the default ``k_vector`` and to specify ``max_k`` instead, so that the approximation will be evaluated on allowed wavevectors. Defaults to None.
+            k (list): list containing d numpy.ndarray corresponding to the components of the wavevectors. As mentioned before its recommended to keep the default ``k`` and to specify ``k_max`` instead, so that the approximation will be evaluated on allowed wavevectors. Defaults to None.
 
-            max_k (float, optional): Maximum component of the allowed wavevectors (i.e., for any wavevector :math:`\mathbf{k}=(k_1, .., k_d)` we have :math:`k_j< max\_k` for all j). Defaults to None.
+            k_max (float, optional): Maximum component of the allowed wavevectors (i.e., for any wavevector :math:`\mathbf{k}=(k_1, .., k_d)` we have :math:`k_j< max\_k` for all j). Defaults to None.
 
-            meshgrid_size (int, optional): Size of the meshgrid of allowed wavevectors when ``k_vector`` is None and ``max_k`` is specified. Warning: setting large value in ``meshgrid_size`` could be time consuming and harmful to your machine for large sample of points. Defaults to None.
+            meshgrid_shape (int, optional): Size of the meshgrid of allowed wavevectors when ``k`` is None and ``k_max`` is specified. Warning: setting large value in ``meshgrid_shape`` could be time consuming and harmful to your machine for large sample of points. Defaults to None.
 
-            max_add_k (int, optional): Maximum component of allowed wavevectors added in the case where ``k_vector`` is of small size. In other words, in the case of the evaluation on a vector of allowed wavevectors which doesn't cover a sufficient number of small allowed wavelengths,  ``max_add_k`` can be used to add allowed wavevectors in a certain neighborhood of zero for better precision. This is useful while studying the behavior of :math:`S` in the neighborhood of the origin. Warning: setting big value in ``max_add_k`` could be time consuming and harmful to your machine for a large sample of points since this similar to the case with big meshgrid size. Defaults to 1.
+            max_add_k (int, optional): Maximum component of allowed wavevectors added in the case where ``k`` is of small size. In other words, in the case of the evaluation on a vector of allowed wavevectors which doesn't cover a sufficient number of small allowed wavelengths,  ``max_add_k`` can be used to add allowed wavevectors in a certain neighborhood of zero for better precision. This is useful while studying the behavior of :math:`S` in the neighborhood of the origin. Warning: setting big value in ``max_add_k`` could be time consuming and harmful to your machine for a large sample of points since this similar to the case with big meshgrid size. Defaults to 1.
 
         Returns:
-            [norm_k_vector (numpy.ndarray), si (numpy.ndarray)]
-
-            norm_k_vector (numpy.ndarray): The vector of wavelengths (i.e. the vector of norms of the wave vectors) on which the scattering intensity was evaluated.
-
-            si (numpy.ndarray): The evaluations of the scattering intensity corresponding to the vector of wave length ``norm_k_vector``.
+            tuple(numpy.ndarray, numpy.ndarray):
+                - k_norm: The vector of wavelengths (i.e. the vector of norms of the wave vectors) on which the scattering intensity was evaluated.
+                - si: The evaluations of the scattering intensity corresponding to the vector of wave length ``k_norm``.
 
         Example:
 
@@ -135,39 +126,37 @@ class StructureFactor:
         """
 
         point_pattern = self.point_pattern
+        window = point_pattern.window
 
-        if not isinstance(point_pattern.window, BoxWindow):
+        if not isinstance(window, BoxWindow):
             warnings.warn(
                 message="The window should be a 'cubic' BoxWindow for that the scattering intensity consists an approximation of the structure factor. Hint: use PointPattern.restrict_to_window."
             )
-        if k_vector is None:
-            cubic, L = check_cubic_window(point_pattern.window)
-            if cubic == "false":
-                raise ValueError(
-                    "The The window should be a 'cubic' BoxWindow for that the scattering intensity consists an approximation of the structure factor. Hint: use PointPattern.restrict_to_window."
-                )
+        if k is None:
+            check_cubic_window(window)
+            L = np.diff(window.bounds[0])
 
-            k_vector = utils.allowed_wave_values(
-                L=L, max_k=max_k, meshgrid_size=meshgrid_size, max_add_k=max_add_k
+            k = utils.allowed_wave_values(
+                L=L, k_max=k_max, meshgrid_shape=meshgrid_shape
             )
         else:
-            shape_x_k_vector = k_vector[0].shape
-            k_vector = np.column_stack((k_vector[0].ravel(), k_vector[1].ravel()))
-        si = utils.compute_scattering_intensity(k_vector, point_pattern.points)
-        norm_k_vector = np.linalg.norm(k_vector, axis=1)
+            shape_x_k = k[0].shape
+            k = np.column_stack((k[0].ravel(), k[1].ravel()))
+        si = utils.compute_scattering_intensity(k, point_pattern.points)
+        k_norm = np.linalg.norm(k, axis=1)
 
-        # ! shape_x_k_vector not defined if k_vector is None
-        # ? si! k_vector always exists
-        if meshgrid_size is not None or len(shape_x_k_vector) == 2:
-            shape_mesh = int(np.sqrt(norm_k_vector.shape[0]))
-            norm_k_vector = norm_k_vector.reshape(shape_mesh, shape_mesh)
+        # ! shape_x_k not defined if k is None
+        # ? si! k always exists
+        if meshgrid_shape is not None or len(shape_x_k) == 2:
+            shape_mesh = int(np.sqrt(k_norm.shape[0]))
+            k_norm = k_norm.reshape(shape_mesh, shape_mesh)
             si = si.reshape(shape_mesh, shape_mesh)
 
-        return norm_k_vector, si
+        return k_norm, si
 
     def plot_scattering_intensity(
         self,
-        norm_k,
+        k_norm,
         si,
         plot_type="radial",
         axes=None,
@@ -183,21 +172,24 @@ class StructureFactor:
         The figure could be saved by specifying ``file_name``.
 
         Args:
-            norm_k (numpy.ndarray): vector of norms of the wavevectors .
+            k_norm (numpy.ndarray): vector of norms of the wavevectors .
 
-            si (numpy.ndarray): approximated scattering intensity vector associted to `norm_k`.
+            si (numpy.ndarray): approximated scattering intensity vector associted to `k_norm`.
 
-            plot_type (str, optional): ("radial", "imshow", "all"). Type of the plot to visualize. If "radial", then the output is a loglog plot. If "imshow", then the output is a color level 2D plot. if "all", the results are 3 subplots: the point pattern (or a restriction to a specific window if ``window_res`` is set), the loglog radial plot, and the color level 2D plot. Note that the options "imshow" and "all" couldn't be used, if ``norm_k`` is not a meshgrid. Defaults to "radial".
+            plot_type (str, optional): ("radial", "imshow", "all"). Type of the plot to visualize. If "radial", then the output is a loglog plot. If "imshow", then the output is a color level 2D plot. if "all", the results are 3 subplots: the point pattern (or a restriction to a specific window if ``window_res`` is set), the loglog radial plot, and the color level 2D plot. Note that the options "imshow" and "all" couldn't be used, if ``k_norm`` is not a meshgrid. Defaults to "radial".
 
             axes (axis, optional): the support axis of the plots. Defaults to None.
 
             exact_sf (callable, optional): function representing the theoretical structure factor of the point process. Defaults to None.
 
-            error_bar (bool, optional): Defaults to False. When set to ``True``, ``norm_k`` is divided into bins and the mean and the standard deviation over each bin are derived and visualized on the plot. Note that the error bar represent the means +/- 3 standard deviation.
+            error_bar (bool, optional): Defaults to False. When set to ``True``, ``k_norm`` is divided into bins and the mean and the standard deviation over each bin are derived and visualized on the plot. Note that the error bar represent the means +/- 3 standard deviation.
 
             file_name (str, optional): name used to save the figure. The available output formats depend on the backend being used. Defaults to "".
 
             window_res (:py:class:`~structure_factor.spatial_windows.AbstractSpatialWindow`, optional): This could be used when the sample of points is large, so for time and visualization purpose it's better to restrict the plot of the sample of points to a smaller window.  Defaults to None.
+
+        Returns:
+            plot of the approximated structure factor.
 
         Example:
 
@@ -212,23 +204,23 @@ class StructureFactor:
         """
         if plot_type == "radial":
             return utils.plot_si_showcase(
-                norm_k, si, axes, exact_sf, error_bar, file_name, **binning_params
+                k_norm, si, axes, exact_sf, error_bar, file_name, **binning_params
             )
         elif plot_type == "imshow":
-            if np.min(norm_k.shape) < 2:
+            if np.min(k_norm.shape) < 2:
                 raise ValueError(
                     "imshow require a meshgrid data. Choose plot_type= 'radial' or re-evaluate the scattering intensity on a meshgrid of waves vector."
                 )
-            return utils.plot_si_imshow(norm_k, si, axes, file_name)
+            return utils.plot_si_imshow(k_norm, si, axes, file_name)
 
         elif plot_type == "all":
-            if np.min(norm_k.shape) < 2:
+            if np.min(k_norm.shape) < 2:
                 raise ValueError(
                     "imshow require a meshgrid data. Choose plot_type ='radial' or re-evaluate the scattering intensity on a meshgrid of waves vector."
                 )
             return utils.plot_si_all(
                 self.point_pattern,
-                norm_k,
+                k_norm,
                 si,
                 exact_sf,
                 error_bar,
@@ -310,8 +302,14 @@ class StructureFactor:
 
             file_name (str, optional): name used to save the figure. The available output formats depend on the backend being used. Defaults to "".
 
-        Keyword Args (kwargs):
-            Keyword arguments of the function `pandas.DataFrame.plot.line <https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.plot.line.html>`_.
+        Keyword Args:
+
+            kwargs (dict):
+
+                Keyword arguments of the function `pandas.DataFrame.plot.line <https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.plot.line.html>`_.
+
+        Returns:
+            plot of the approximated pair correlation function.
 
         Example:
 
@@ -337,8 +335,11 @@ class StructureFactor:
 
             clean (bool, optional): replace nan, posinf, neginf values to ``pcf_r`` by zeros before interpolation. Defaults to True.
 
-        Keyword Args (params):
-            Keyword arguments of the function `scipy.interpolate.interp1d <https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html>`_.
+        Keyword Args:
+
+            params (dict):
+
+                Keyword arguments of the function `scipy.interpolate.interp1d <https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html>`_.
 
         Returns:
             tuple (dict, callable): dictionary containing the bounds of the interval containing the values of the vector ``r`` and the interpolated version of the pair correlation function.
@@ -356,9 +357,12 @@ class StructureFactor:
         rmax = np.max(r)
         if clean:
             pcf_r = utils.set_nan_inf_to_zero(pcf_r)
-        return dict(rmin=rmin, rmax=rmax), interpolate.interp1d(r, pcf_r, **params)
 
-    def compute_sf_hankel_quadrature(self, pcf, norm_k=None, method="Ogata", **params):
+        dict_rmin_rmax = dict(rmin=rmin, rmax=rmax)
+        pcf = interpolate.interp1d(r, pcf_r, **params)
+        return dict_rmin_rmax, pcf
+
+    def compute_sf_hankel_quadrature(self, pcf, k_norm=None, method="Ogata", **params):
         r"""Compute the structure factor :math:`S` of the underlying **stationary isotropic** point process :math:`\mathcal{X} \subset \mathbb{R}^d`, which could be defined via the Hankel transform :math:`\mathcal{H}_{d/2 -1}` of order :math:`d/2 -1` as follow,
 
         .. math::
@@ -376,24 +380,29 @@ class StructureFactor:
             pcf (callable): radially symmetric pair correlation function :math:`g`. You can get a discrete vector of estimation of the pair correlation function using the method :py:meth:`compute_pcf`, then interpolate the resulting vector using :py:meth:`interpolate_pcf` and pass the resulting function to the argument ``pcf``.
 
             # todo why not simply k ?
-            norm_k (numpy.ndarray, optional): vector of wave lengths (i.e. norm of wave vectors) where the structure factor is to be evaluated. Defaults to None.
+            k_norm (numpy.ndarray, optional): vector of wave lengths (i.e. norm of wave vectors) where the structure factor is to be evaluated. Defaults to None.
 
             method (str, optional): Choose between ``"Ogata"`` or ``"BaddourChouinard"``. Defaults to ``"Ogata"``. This selects the method used to compute the Fourier transform of :math:`g`, via the `correspondence with the Hankel transform <https://en.wikipedia.org/wiki/Hankel_transform#Fourier_transform_in_d_dimensions_(radially_symmetric_case)>`_, see :py:class:`~structure_factor.transforms.HankelTransformOgata` and :py:class:`~structure_factor.transforms.HankelTransformBaddourChouinard`.
 
-        Keyword Args (params):
-            Keyword arguments passed to the corresponding Hankel transformer selected according to the ``method`` argument.
+        Keyword Args:
 
-            - ``method == "Ogata"``, see :py:meth:`~structure_factor.transforms.HankelTransformOgata.compute_transformation_parameters`
-                - ``step_size``
-                - ``nb_points``
+            params (dict):
 
-            - ``method == "BaddourChouinard"``, see :py:meth:`~structure_factor.transforms.HankelTransformBaddourChouinard.compute_transformation_parameters`
-                - ``rmax``
-                - ``nb_points``
-                - ``interpolotation`` dictonnary containing the keyword arguments of `scipy.integrate.interp1d <https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html>`_ parameters.
+                Keyword arguments passed to the corresponding Hankel transformer selected according to the ``method`` argument.
+
+                - ``method == "Ogata"``, see :py:meth:`~structure_factor.transforms.HankelTransformOgata.compute_transformation_parameters`
+                    - ``step_size``
+                    - ``nb_points``
+
+                - ``method == "BaddourChouinard"``, see :py:meth:`~structure_factor.transforms.HankelTransformBaddourChouinard.compute_transformation_parameters`
+                    - ``rmax``
+                    - ``nb_points``
+                    - ``interpolotation`` dictonnary containing the keyword arguments of `scipy.integrate.interp1d <https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html>`_ parameters.
 
         Returns:
-            tuple (np.ndarray, np.ndarray): vector of wave lengths ``k`` and the corresponding evaluation of the structure factor ``S(k)``.
+            tuple (np.ndarray, np.ndarray):
+                - k_norm: vector of wave lengths.
+                - sf: the corresponding evaluation of the structure factor ``S(k)``.
 
         .. note::
 
@@ -412,9 +421,9 @@ class StructureFactor:
                 category=DeprecationWarning,
             )
         assert callable(pcf)
-        if method == "Ogata" and norm_k.all() is None:
+        if method == "Ogata" and k_norm.all() is None:
             raise ValueError(
-                "norm_k is not optional while using method='Ogata'. Please provide a vector norm_k in the input. "
+                "k_norm is not optional while using method='Ogata'. Please provide a vector k_norm in the input. "
             )
         params.setdefault("rmax", None)
         if method == "BaddourChouinard" and params["rmax"] is None:
@@ -423,21 +432,21 @@ class StructureFactor:
             )
         ft = RadiallySymmetricFourierTransform(dimension=self.dimension)
         total_pcf = lambda r: pcf(r) - 1.0
-        norm_k, ft_k = ft.transform(total_pcf, norm_k, method=method, **params)
+        k_norm, ft_k = ft.transform(total_pcf, k_norm, method=method, **params)
         if method == "Ogata" and params["rmax"] is not None:
             params.setdefault("step_size", 0.1)
             step_size = params["step_size"]
             # todo il y a une fonct qui le fait why not used????
-            self.norm_k_min = (2.7 * np.pi) / (params["rmax"] * step_size)
+            self.k_norm_min = (2.7 * np.pi) / (params["rmax"] * step_size)
         sf = 1.0 + self.point_pattern.intensity * ft_k
-        return norm_k, sf
+        return k_norm, sf
 
     def plot_sf_hankel_quadrature(
         self,
-        norm_k,
+        k_norm,
         sf,
         axis=None,
-        norm_k_min=None,
+        k_norm_min=None,
         exact_sf=None,
         error_bar=False,
         file_name="",
@@ -448,16 +457,16 @@ class StructureFactor:
         Pass the theoretical structure factor function through ``exact_sf`` (if it is known) and visualize the mean and the variance over bins of the scattering intensity by specifying ``error_bar=True`` (this is donne using a binning method :py:meth:`~structure_factor.utils._bin_statistics`). The figure can at ``file_name``.
 
         Args:
-            norm_k (np.ndarray): vector of wave lengths (i.e. norms of waves) on which the structure factor is approximated.
+            k_norm (np.ndarray): vector of wave lengths (i.e. norms of waves) on which the structure factor is approximated.
             sf ([type]): [description]
 
             axis (axis, optional): the support axis of the plots. Defaults to None.
 
-            norm_k_min (float, optional): estimation of an upper bounds for the allowed wave lengths. Defaults to None.
+            k_norm_min (float, optional): estimation of an upper bounds for the allowed wave lengths. Defaults to None.
 
             exact_sf (callable, optional): function representing the theoretical structure factor of the point process. Defaults to None.
 
-            error_bar (bool, optional): if it is set to ``True`` then, the ``norm_k`` is divided into bins and the mean and the standard deviation over each bin are derived and visualized on the plot. Note that the error bar represent 3 times the standard deviation. Defaults to False.
+            error_bar (bool, optional): if it is set to ``True`` then, the ``k_norm`` is divided into bins and the mean and the standard deviation over each bin are derived and visualized on the plot. Note that the error bar represent 3 times the standard deviation. Defaults to False.
 
             file_name (str, optional): Defaults to "". Name used to save the figure. The available output formats depend on the backend being used.
 
@@ -473,10 +482,10 @@ class StructureFactor:
                 :include-source: False
         """
         return utils.plot_sf_hankel_quadrature(
-            norm_k,
+            k_norm,
             sf,
             axis,
-            norm_k_min,
+            k_norm_min,
             exact_sf,
             error_bar,
             file_name,
