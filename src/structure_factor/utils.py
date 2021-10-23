@@ -87,8 +87,7 @@ def allowed_wave_values(d, L, k_max, meshgrid_shape=None):
         numpy.ndarray: array of size :math:`N \times d` collecting the 'allowed' wave vectors.
     """
 
-    n_max = np.floor(k_max * L / (2 * np.pi))  # maximum of ``k_vector``
-    # todo why here it's from 1 to n_max not -n_max n_max
+    n_max = np.floor(k_max * L / (2 * np.pi))  # maximum of ``n``
 
     if meshgrid_shape is None:
         warnings.warn(message="Taking all allowed wave vectors may be time consuming.")
@@ -102,7 +101,7 @@ def allowed_wave_values(d, L, k_max, meshgrid_shape=None):
             T.append(X[i].ravel())
         n = np.column_stack(T)
 
-    elif (meshgrid_shape > (2 * n_max)).any:
+    elif (np.array(meshgrid_shape) > (2 * n_max)).any():
         warnings.warn(
             message="meshgrid_shape should be less than the shape of meshgrid of the total allowed wave of points."
         )
@@ -129,7 +128,7 @@ def allowed_wave_values(d, L, k_max, meshgrid_shape=None):
             n_all = []
             for s in meshgrid_shape:
                 n_i = np.linspace(-n_max, n_max, num=s, dtype=int, endpoint=True)
-                if np.count_nonzero(ni == 0) != 0:
+                if np.count_nonzero(n_i == 0) != 0:
                     n_i = np.linspace(
                         -n_max, n_max, num=s + 1, dtype=int, endpoint=True
                     )
@@ -145,7 +144,7 @@ def allowed_wave_values(d, L, k_max, meshgrid_shape=None):
     return k
 
 
-def compute_scattering_intensity(k, points):
+def compute_scattering_intensity(K, points):
     r"""Compute the scattering intensity which is an ensemble estimator of the structure factor of an ergodic stationary point process :math:`\mathcal{X} \subset \mathbb{R}^2`, defined below.
 
     .. math::
@@ -164,12 +163,22 @@ def compute_scattering_intensity(k, points):
 
         `Wikipedia structure factor/scattering intensity <https://en.wikipedia.org/wiki/Structure_factor>`_.
     """
-    n = points.shape[0]
+    d = points.shape[1]
+    # reshape input k
+    T = []
+    for i in range(0, d):
+        T.append(K[i].ravel())
+    k = np.column_stack(T)
+
+    n = points.shape[0]  # number of points
     if points.shape[1] != k.shape[1]:
         raise ValueError("k and points should have same number of columns")
 
     si = np.square(np.abs(np.sum(np.exp(-1j * np.dot(k, points.T)), axis=1)))
     si /= n
+
+    # reshape the output
+
     return si
 
 
