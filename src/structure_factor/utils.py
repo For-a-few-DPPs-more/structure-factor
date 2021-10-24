@@ -64,6 +64,7 @@ def structure_factor_ginibre(k):
 
 
 def allowed_wave_vectors(d, L, k_max, meshgrid_shape=None):
+    # todo refactor docs
     r"""Given a realization of a point process in a cubic window with length :math:`L`, compute the 'allowed' wave vectors :math:`(k_i)` at which the structure factor :math:`S(k_i)` is consistently estimated by the scattering intensity defined below.
 
     .. math::
