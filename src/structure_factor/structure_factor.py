@@ -59,7 +59,6 @@ class StructureFactor:
         """Ambient dimension of the underlying point process."""
         return self.point_pattern.dimension
 
-    # todo make a pass on the docstring, too verbose and not cristal clear
     def scattering_intensity(
         self,
         k=None,
