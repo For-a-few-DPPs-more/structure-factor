@@ -52,6 +52,7 @@ class StructureFactor:
         assert isinstance(point_pattern, PointPattern)
         self.point_pattern = point_pattern
         self.k_norm_min = None
+        self.K_shape = None
 
     @property
     def dimension(self):
@@ -143,9 +144,10 @@ class StructureFactor:
             check_cubic_window(window)
             L = np.diff(window.bounds[0])
 
-            k = utils.allowed_wave_values(
+            k, K = utils.allowed_wave_vectors(
                 d, L=L, k_max=k_max, meshgrid_shape=meshgrid_shape
             )
+            self.K_shape = K[0].shape
         else:
             if k.shape[1] != d:
                 raise ValueError(
@@ -210,17 +212,21 @@ class StructureFactor:
                 k_norm, si, axes, exact_sf, error_bar, file_name, **binning_params
             )
         elif plot_type == "imshow":
-            if np.min(k_norm.shape) < 2:
+            if self.K_shape is None:
                 raise ValueError(
-                    "imshow require a meshgrid data. Choose plot_type= 'radial' or re-evaluate the scattering intensity on a meshgrid of waves vector."
+                    "imshow require a meshgrid data. Choose plot_type= 'radial' or re-evaluate the scattering intensity on the meshgrid of allowed wave vectors."
                 )
+            si = si.reshape(self.K_shape)
+            k_norm = k_norm.reshape(self.K_shape)
             return utils.plot_si_imshow(k_norm, si, axes, file_name)
 
         elif plot_type == "all":
-            if np.min(k_norm.shape) < 2:
+            if self.K_shape is None:
                 raise ValueError(
-                    "imshow require a meshgrid data. Choose plot_type ='radial' or re-evaluate the scattering intensity on a meshgrid of waves vector."
+                    "imshow require a meshgrid data. Choose plot_type ='radial' or re-evaluate the scattering intensity on the meshgrid of allowed wave vectors."
                 )
+            si = si.reshape(self.K_shape)
+            k_norm = k_norm.reshape(self.K_shape)
             return utils.plot_si_all(
                 self.point_pattern,
                 k_norm,
