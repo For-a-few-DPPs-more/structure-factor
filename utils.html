@@ -79,8 +79,8 @@
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="structure_factor.utils.allowed_wave_values">
-<span class="sig-prename descclassname"><span class="pre">structure_factor.utils.</span></span><span class="sig-name descname"><span class="pre">allowed_wave_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">L</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k_max</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meshgrid_shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_add_k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/utils.html#allowed_wave_values"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.utils.allowed_wave_values" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="structure_factor.utils.allowed_wave_vectors">
+<span class="sig-prename descclassname"><span class="pre">structure_factor.utils.</span></span><span class="sig-name descname"><span class="pre">allowed_wave_vectors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k_max</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meshgrid_shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/utils.html#allowed_wave_vectors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.utils.allowed_wave_vectors" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given a realization of a point process in a cubic window with length <span class="math notranslate nohighlight">\(L\)</span>, compute the ‘allowed’ wave vectors <span class="math notranslate nohighlight">\((k_i)\)</span> at which the structure factor <span class="math notranslate nohighlight">\(S(k_i)\)</span> is consistently estimated by the scattering intensity defined below.</p>
 <div class="math notranslate nohighlight">
 \[\{\frac{2 \pi}{L} \mathbf{n} ~ ; ~ \mathbf{n} \in (\mathbb{Z}^d)^\ast, \left\lVert \mathbf{n} \right\rVert \leq \text{ k_max}\}\]</div>
@@ -89,7 +89,7 @@
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>L</strong> (<em>float</em>) – Length of the cubic window.</p></li>
-<li><p><strong>k_max</strong> (<em>float</em>) – Maximum norm of the wave vectors.</p></li>
+<li><p><strong>k_max</strong> (<em>float</em>) – Maximum component of the wave vectors i.e., if k=(k_1,…,k_d) then for all i k_i &lt;k_max.</p></li>
 <li><p><strong>meshgrid_shape</strong> (<em>int</em>) – </p></li>
 <li><p><strong>meshgrid_shape</strong> – Size of the meshgrid of allowed values if <code class="docutils literal notranslate"><span class="pre">k_vector</span></code> is set to None and <code class="docutils literal notranslate"><span class="pre">k_max</span></code> is specified. <strong>Warning:</strong> setting big value in <code class="docutils literal notranslate"><span class="pre">meshgrid_shape</span></code> could be time consuming when the sample has a lot of points.</p></li>
 <li><p><strong>max_add_k</strong> (<em>float</em>) – </p></li>
