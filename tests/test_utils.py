@@ -40,11 +40,18 @@ import structure_factor.utils as utils
                 ]
             ),
         ),
+        (
+            2,
+            2 * np.pi,
+            1,
+            (4, 4),
+            np.array([[-1.0, -1.0], [1.0, -1.0], [-1.0, 1.0], [1.0, 1.0]]),
+        ),
     ],
 )
 def test_allowed_wave_values(d, L, max_k, meshgrid_size, result):
     # ? seems like a copy paste from original code
-    computed = utils.allowed_wave_values(d, L, max_k, meshgrid_size)
+    computed, _ = utils.allowed_wave_values(d, L, max_k, meshgrid_size)
     np.testing.assert_array_equal(computed, result)
 
 

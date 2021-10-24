@@ -86,7 +86,7 @@ def allowed_wave_values(d, L, k_max, meshgrid_shape=None):
     Returns:
         numpy.ndarray: array of size :math:`N \times d` collecting the 'allowed' wave vectors.
     """
-
+    K = None
     n_max = np.floor(k_max * L / (2 * np.pi))  # maximum of ``n``
 
     if meshgrid_shape is None:
@@ -111,6 +111,8 @@ def allowed_wave_values(d, L, k_max, meshgrid_shape=None):
         n_i = n_i[n_i != 0]
         n_all = (n_i for i in range(0, d))
         X = np.meshgrid(*n_all, copy=False)
+        K = [X_i * 2 * np.pi / L for X_i in X]  # meshgrid of allowed wave vectors
+        # reshape allowed vectors as d columns
         T = []
         for i in range(0, d):
             T.append(X[i].ravel())
@@ -136,15 +138,18 @@ def allowed_wave_values(d, L, k_max, meshgrid_shape=None):
                 n_all.append(n_i)
 
             X = np.meshgrid(*n_all, copy=False)
+            K = [X_i * 2 * np.pi / L for X_i in X]  # meshgrid of allowed wave vectors
             T = []
+            # reshape allowed wave vector as q*d array
             for i in range(0, d):
                 T.append(X[i].ravel())
-            n = np.column_stack(T)
+            n = np.column_stack(T)  # allowed wave vectors  (d columns)
+
     k = 2 * np.pi * n / L
-    return k
+    return k, K
 
 
-def compute_scattering_intensity(K, points):
+def compute_scattering_intensity(k, points):
     r"""Compute the scattering intensity which is an ensemble estimator of the structure factor of an ergodic stationary point process :math:`\mathcal{X} \subset \mathbb{R}^2`, defined below.
 
     .. math::
@@ -163,13 +168,6 @@ def compute_scattering_intensity(K, points):
 
         `Wikipedia structure factor/scattering intensity <https://en.wikipedia.org/wiki/Structure_factor>`_.
     """
-    d = points.shape[1]
-    # reshape input k
-    T = []
-    for i in range(0, d):
-        T.append(K[i].ravel())
-    k = np.column_stack(T)
-
     n = points.shape[0]  # number of points
     if points.shape[1] != k.shape[1]:
         raise ValueError("k and points should have same number of columns")
