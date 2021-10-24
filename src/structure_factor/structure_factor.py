@@ -62,7 +62,7 @@ class StructureFactor:
     def scattering_intensity(
         self,
         k=None,
-        k_max=None,
+        k_max=5,
         meshgrid_shape=None,
     ):
         r"""Compute the scattering intensity :math:`\widehat{S}_{SI}` which is an ensemble estimator of the structure factor :math:`S` of an ergodic stationary point process :math:`\mathcal{X} \subset \mathbb{R}^d`, from a realization :math:`\mathcal{X}\cap W =\{x_i\}_{i=1}^N` of :math:`\mathcal{X}` within a **cubic** window :math:`W=[-L/2, L/2]^d`.
@@ -127,34 +127,37 @@ class StructureFactor:
 
         point_pattern = self.point_pattern
         window = point_pattern.window
+        d = point_pattern.dimension
+        # todo add assert k_max in a number
 
         if not isinstance(window, BoxWindow):
             warnings.warn(
                 message="The window should be a 'cubic' BoxWindow for that the scattering intensity consists an approximation of the structure factor. Hint: use PointPattern.restrict_to_window."
             )
         if k is None:
+            if meshgrid_shape is not None and len(meshgrid_shape) != d:
+                raise ValueError(
+                    "Each wave vector should belong to the same dimension (d) of the point process, i.e., len(meshgrid_shape) = d."
+                )
+
             check_cubic_window(window)
             L = np.diff(window.bounds[0])
 
             k = utils.allowed_wave_values(
-                L=L, k_max=k_max, meshgrid_shape=meshgrid_shape
+                d, L=L, k_max=k_max, meshgrid_shape=meshgrid_shape
             )
         else:
-            shape_x_k = k[0].shape
-            k = np.column_stack((k[0].ravel(), k[1].ravel()))
+            if k.shape[1] != d:
+                raise ValueError(
+                    "the vector of wave should belongs to the same dimension as the point process, i.e. k should have d columns"
+                )
         si = utils.compute_scattering_intensity(k, point_pattern.points)
         k_norm = np.linalg.norm(k, axis=1)
 
-        # ! shape_x_k not defined if k is None
-        # ? si! k always exists
-        if meshgrid_shape is not None or len(shape_x_k) == 2:
-            shape_mesh = int(np.sqrt(k_norm.shape[0]))
-            k_norm = k_norm.reshape(shape_mesh, shape_mesh)
-            si = si.reshape(shape_mesh, shape_mesh)
-
         return k_norm, si
 
-    def plot_scattering_intensity(
+    # todo plot for 2D only point process
+    def plot_2D_scattering_intensity(
         self,
         k_norm,
         si,
