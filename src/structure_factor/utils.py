@@ -63,7 +63,7 @@ def structure_factor_ginibre(k):
 # ? see difference between odd and even L why the final size of the meshgrid change?
 
 
-def allowed_wave_values(d, L, k_max, meshgrid_shape=None):
+def allowed_wave_vectors(d, L, k_max, meshgrid_shape=None):
     r"""Given a realization of a point process in a cubic window with length :math:`L`, compute the 'allowed' wave vectors :math:`(k_i)` at which the structure factor :math:`S(k_i)` is consistently estimated by the scattering intensity defined below.
 
     .. math::
@@ -86,7 +86,7 @@ def allowed_wave_values(d, L, k_max, meshgrid_shape=None):
     Returns:
         numpy.ndarray: array of size :math:`N \times d` collecting the 'allowed' wave vectors.
     """
-    # K = None
+    K = None
     n_max = np.floor(k_max * L / (2 * np.pi))  # maximum of ``n``
 
     if meshgrid_shape is None:
@@ -111,7 +111,7 @@ def allowed_wave_values(d, L, k_max, meshgrid_shape=None):
         n_i = n_i[n_i != 0]
         n_all = (n_i for i in range(0, d))
         X = np.meshgrid(*n_all, copy=False)
-        # K = [X_i * 2 * np.pi / L for X_i in X]  # meshgrid of allowed wave vectors
+        K = [X_i * 2 * np.pi / L for X_i in X]  # meshgrid of allowed wave vectors
         # reshape allowed vectors as d columns
         T = []
         for i in range(0, d):
@@ -138,7 +138,7 @@ def allowed_wave_values(d, L, k_max, meshgrid_shape=None):
                 n_all.append(n_i)
 
             X = np.meshgrid(*n_all, copy=False)
-            # K = [X_i * 2 * np.pi / L for X_i in X]  # meshgrid of allowed wave vectors
+            K = [X_i * 2 * np.pi / L for X_i in X]  # meshgrid of allowed wave vectors
             T = []
             # reshape allowed wave vector as q*d array
             for i in range(0, d):
@@ -146,7 +146,7 @@ def allowed_wave_values(d, L, k_max, meshgrid_shape=None):
             n = np.column_stack(T)  # allowed wave vectors  (d columns)
 
     k = 2 * np.pi * n / L
-    return k
+    return k, K
 
 
 def compute_scattering_intensity(k, points):
@@ -296,10 +296,7 @@ def plot_si_showcase(
 
 def plot_si_imshow(norm_k, si, axis, file_name):
     """Color level plot, centered on zero."""
-    if len(norm_k.shape) < 2:
-        raise ValueError(
-            "the scattering intensity should be evaluated on a meshgrid or choose plot_type = 'plot'. "
-        )
+
     if axis is None:
         _, axis = plt.subplots(figsize=(14, 8))
     if len(norm_k.shape) < 2:
