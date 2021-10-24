@@ -61,7 +61,10 @@ def structure_factor_ginibre(k):
 ###### utils for the class StructureFactor
 
 # ? see difference between odd and even L why the final size of the meshgrid change?
-def allowed_wave_values(L, k_max, meshgrid_shape, max_add_k=1):
+
+
+def allowed_wave_vectors(d, L, k_max, meshgrid_shape=None):
+    # todo refactor docs
     r"""Given a realization of a point process in a cubic window with length :math:`L`, compute the 'allowed' wave vectors :math:`(k_i)` at which the structure factor :math:`S(k_i)` is consistently estimated by the scattering intensity defined below.
 
     .. math::
@@ -73,7 +76,7 @@ def allowed_wave_values(L, k_max, meshgrid_shape, max_add_k=1):
     Args:
         L (float): Length of the cubic window.
 
-        k_max (float): Maximum norm of the wave vectors.
+        k_max (float): Maximum component of the wave vectors i.e., if k=(k_1,...,k_d) then for all i k_i <k_max.
 
         # todo give clearer description of meshgrid_shape
         meshgrid_shape (int): Size of the meshgrid of allowed values if ``k_vector`` is set to None and ``k_max`` is specified. **Warning:** setting big value in ``meshgrid_shape`` could be time consuming when the sample has a lot of points.
@@ -84,38 +87,67 @@ def allowed_wave_values(L, k_max, meshgrid_shape, max_add_k=1):
     Returns:
         numpy.ndarray: array of size :math:`N \times d` collecting the 'allowed' wave vectors.
     """
+    K = None
+    n_max = np.floor(k_max * L / (2 * np.pi))  # maximum of ``n``
 
-    max_n = np.floor(k_max * L / (2 * np.pi))  # maximum of ``k_vector``
-    # todo why here it's from 1 to max_n not -max_n max_n
-    if meshgrid_shape is None:  # Add extra allowed values near zero
-        n_vector = np.linspace(1, max_n, int(max_n))
-        k_vector = 2 * np.pi * np.column_stack((n_vector, n_vector)) / L
-        max_add_n = np.floor(max_add_k * L / (2 * np.pi))
-        add_n_vector = np.linspace(1, np.int(max_add_n), np.int(max_add_n))
-        X, Y = np.meshgrid(add_n_vector, add_n_vector)
-        add_k_vector = 2 * np.pi * np.column_stack((X.ravel(), Y.ravel())) / L
-        k_vector = np.concatenate((add_k_vector, k_vector))
+    if meshgrid_shape is None:
+        warnings.warn(message="Taking all allowed wave vectors may be time consuming.")
+        n_all = ()
+        n_i = np.arange(-n_max, n_max + 1, step=1)
+        n_i = n_i[n_i != 0]
+        n_all = (n_i for i in range(0, d))
+        X = np.meshgrid(*n_all, copy=False)
+        T = []
+        for i in range(0, d):
+            T.append(X[i].ravel())
+        n = np.column_stack(T)
 
-    elif meshgrid_shape > (2 * max_n):
+    elif (np.array(meshgrid_shape) > (2 * n_max)).any():
         warnings.warn(
-            message="meshgrid_shape should be less than the total allowed number of points."
+            message="meshgrid_shape should be less than the shape of meshgrid of the total allowed wave of points."
         )
-        n_vector = np.arange(-max_n, max_n + 1, step=1)
+        n_i = np.arange(-n_max, n_max + 1, step=1)
+        n_all = ()
+        n_i = np.arange(-n_max, n_max + 1, step=1)
+        n_i = n_i[n_i != 0]
+        n_all = (n_i for i in range(0, d))
+        X = np.meshgrid(*n_all, copy=False)
+        K = [X_i * 2 * np.pi / L for X_i in X]  # meshgrid of allowed wave vectors
+        # reshape allowed vectors as d columns
+        T = []
+        for i in range(0, d):
+            T.append(X[i].ravel())
+        n = np.column_stack(T)
 
     else:
-        n_vector = np.linspace(
-            -max_n, max_n, num=meshgrid_shape, dtype=int, endpoint=True
-        )
-        if np.count_nonzero(n_vector == 0) != 0:
-            n_vector = np.linspace(
-                -max_n, max_n, num=meshgrid_shape + 1, dtype=int, endpoint=True
-            )
+        if d == 1:
+            n = np.linspace(-n_max, n_max, num=meshgrid_shape, dtype=int, endpoint=True)
+            if np.count_nonzero(n == 0) != 0:
+                n = np.linspace(
+                    -n_max, n_max, num=meshgrid_shape + 1, dtype=int, endpoint=True
+                )
 
-    n_vector = n_vector[n_vector != 0]
-    X, Y = np.meshgrid(n_vector, n_vector)
-    k_vector = 2 * np.pi * np.column_stack((X.ravel(), Y.ravel())) / L
+        else:
+            n_all = []
+            for s in meshgrid_shape:
+                n_i = np.linspace(-n_max, n_max, num=s, dtype=int, endpoint=True)
+                if np.count_nonzero(n_i == 0) != 0:
+                    n_i = np.linspace(
+                        -n_max, n_max, num=s + 1, dtype=int, endpoint=True
+                    )
+                n_i = n_i[n_i != 0]
+                n_all.append(n_i)
 
-    return k_vector
+            X = np.meshgrid(*n_all, copy=False)
+            K = [X_i * 2 * np.pi / L for X_i in X]  # meshgrid of allowed wave vectors
+            T = []
+            # reshape allowed wave vector as q*d array
+            for i in range(0, d):
+                T.append(X[i].ravel())
+            n = np.column_stack(T)  # allowed wave vectors  (d columns)
+
+    k = 2 * np.pi * n / L
+    return k, K
 
 
 def compute_scattering_intensity(k, points):
@@ -137,12 +169,15 @@ def compute_scattering_intensity(k, points):
 
         `Wikipedia structure factor/scattering intensity <https://en.wikipedia.org/wiki/Structure_factor>`_.
     """
-    n = points.shape[0]
+    n = points.shape[0]  # number of points
     if points.shape[1] != k.shape[1]:
         raise ValueError("k and points should have same number of columns")
 
     si = np.square(np.abs(np.sum(np.exp(-1j * np.dot(k, points.T)), axis=1)))
     si /= n
+
+    # reshape the output
+
     return si
 
 
@@ -262,10 +297,7 @@ def plot_si_showcase(
 
 def plot_si_imshow(norm_k, si, axis, file_name):
     """Color level plot, centered on zero."""
-    if len(norm_k.shape) < 2:
-        raise ValueError(
-            "the scattering intensity should be evaluated on a meshgrid or choose plot_type = 'plot'. "
-        )
+
     if axis is None:
         _, axis = plt.subplots(figsize=(14, 8))
     if len(norm_k.shape) < 2:

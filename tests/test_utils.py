@@ -5,20 +5,54 @@ import structure_factor.utils as utils
 
 
 @pytest.mark.parametrize(
-    "L, max_k, meshgrid_size",
+    "d, L, max_k, meshgrid_size, result",
     [
-        (2 * np.pi, 4, 2 * 4 + 1),
-        (2 * np.pi, 10, 2 * 10 + 1),
+        (
+            1,
+            2 * np.pi,
+            4,
+            None,
+            np.array([[-4], [-3], [-2], [-1], [1], [2], [3], [4]]),
+        ),
+        (
+            3,
+            2 * np.pi,
+            2,
+            (4, 2, 2),
+            np.array(
+                [
+                    [-2.0, -2.0, -2.0],
+                    [-2.0, -2.0, 2.0],
+                    [-1.0, -2.0, -2.0],
+                    [-1.0, -2.0, 2.0],
+                    [1.0, -2.0, -2.0],
+                    [1.0, -2.0, 2.0],
+                    [2.0, -2.0, -2.0],
+                    [2.0, -2.0, 2.0],
+                    [-2.0, 2.0, -2.0],
+                    [-2.0, 2.0, 2.0],
+                    [-1.0, 2.0, -2.0],
+                    [-1.0, 2.0, 2.0],
+                    [1.0, 2.0, -2.0],
+                    [1.0, 2.0, 2.0],
+                    [2.0, 2.0, -2.0],
+                    [2.0, 2.0, 2.0],
+                ]
+            ),
+        ),
+        (
+            2,
+            2 * np.pi,
+            1,
+            (4, 4),
+            np.array([[-1.0, -1.0], [1.0, -1.0], [-1.0, 1.0], [1.0, 1.0]]),
+        ),
     ],
 )
-def test_allowed_wave_values(L, max_k, meshgrid_size):
+def test_allowed_wave_vectors(d, L, max_k, meshgrid_size, result):
     # ? seems like a copy paste from original code
-    x_k = np.arange(-max_k, max_k + 1, 1)
-    x_k = x_k[x_k != 0]
-    X, Y = np.meshgrid(x_k, x_k)
-    expected = 2 * np.pi * np.column_stack((X.ravel(), Y.ravel())) / L
-    computed = utils.allowed_wave_values(L, max_k, meshgrid_size)
-    np.testing.assert_array_equal(computed, expected)
+    computed, _ = utils.allowed_wave_vectors(d, L, max_k, meshgrid_size)
+    np.testing.assert_array_equal(computed, result)
 
 
 @pytest.mark.parametrize(
