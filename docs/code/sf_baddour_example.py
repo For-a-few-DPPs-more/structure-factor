@@ -20,15 +20,15 @@ domain, pcf_fv_func = sf_ginibre.interpolate_pcf(r=pcf_fv["r"],
 
 # structure factor using Baddour Chouinard discrete hankel transform
 rmax = domain["rmax"]
-norm_k = np.linspace(0.3, 30, 2000)
-norm_k, sf_BadChou = sf_ginibre.compute_sf_hankel_quadrature( pcf_fv_func, 
+k_norm = np.linspace(0.3, 30, 2000)
+k_norm, sf_BadChou = sf_ginibre.hankel_quadrature( pcf_fv_func, 
                                                         method="BaddourChouinard", 
-                                                        norm_k=norm_k, 
+                                                        k_norm=k_norm, 
                                                         rmax=rmax, 
                                                         nb_points=1000)
 
 # plot
-sf_ginibre.plot_sf_hankel_quadrature(norm_k,sf_BadChou,
+sf_ginibre.plot_sf_hankel_quadrature(k_norm,sf_BadChou,
                                     exact_sf=utils.structure_factor_ginibre,
                                     label="$S_{HBC}(k)$",
                                     error_bar=True,
