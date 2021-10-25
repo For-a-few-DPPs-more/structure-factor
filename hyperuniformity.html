@@ -157,7 +157,7 @@ If the standard deviation of the approximated vector of structure factor <code c
 <span class="n">ginibre_pp_box</span> <span class="o">=</span> <span class="n">ginibre_pp</span><span class="o">.</span><span class="n">restrict_to_window</span><span class="p">(</span><span class="n">window</span><span class="p">)</span>
 <span class="c1"># scattering intensity</span>
 <span class="n">sf_ginibre_box</span> <span class="o">=</span> <span class="n">StructureFactor</span><span class="p">(</span><span class="n">ginibre_pp_box</span><span class="p">)</span>  <span class="c1"># initialize the class StructureFactor</span>
-<span class="n">k_norm</span><span class="p">,</span> <span class="n">si</span> <span class="o">=</span> <span class="n">sf_ginibre_box</span><span class="o">.</span><span class="n">scattering_intensity</span><span class="p">(</span><span class="n">k_max</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">meshgrid_shape</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+<span class="n">k_norm</span><span class="p">,</span> <span class="n">si</span> <span class="o">=</span> <span class="n">sf_ginibre_box</span><span class="o">.</span><span class="n">scattering_intensity</span><span class="p">(</span><span class="n">k_max</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">meshgrid_shape</span><span class="o">=</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="mi">200</span><span class="p">))</span>
 
 
 <span class="c1"># test effective hyperuniformity</span>
@@ -175,7 +175,10 @@ If the standard deviation of the approximated vector of structure factor <code c
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>H_ginibre= -0.055816051215869376
 </pre></div>
 </div>
-<p>(<a class="reference external" href="./code/effective_example.py">Source code</a>)</p>
+<p>(<a class="reference external" href="./code/effective_example.py">Source code</a>, <a class="reference external" href="./code/effective_example.png">png</a>, <a class="reference external" href="./code/effective_example.hires.png">hires.png</a>, <a class="reference external" href="./code/effective_example.pdf">pdf</a>)</p>
+<figure class="align-default">
+<img alt="_images/effective_example.png" class="plot-directive" src="_images/effective_example.png" />
+</figure>
 </dd></dl>
 
 <dl class="py method">

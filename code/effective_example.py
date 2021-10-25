@@ -15,7 +15,7 @@ window = BoxWindow(bounds)  # create a cubic window
 ginibre_pp_box = ginibre_pp.restrict_to_window(window)
 # scattering intensity
 sf_ginibre_box = StructureFactor(ginibre_pp_box)  # initialize the class StructureFactor
-k_norm, si = sf_ginibre_box.scattering_intensity(k_max=6, meshgrid_shape=200)
+k_norm, si = sf_ginibre_box.scattering_intensity(k_max=6, meshgrid_shape=(200, 200))
 
 
 # test effective hyperuniformity
