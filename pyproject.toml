@@ -40,12 +40,11 @@ python = ">=3.8,<3.10"
 
 # Main dependencies
 # poetry add name
-rpy2 = "^3.4.4"
-spatstat-interface = "^0.1.0"
 numpy = "^1.20.3"
 scipy = "^1.6.3"
 matplotlib = "^3.4.2"
 pandas = "^1.2.4"
+spatstat-interface = "^0.1.0"
 
 # Optional dependencies
 # poetry add name --optional
@@ -55,14 +54,13 @@ jupyter = { version = "^1.0.0", optional = true }
 
 # Sphinx documentation https://www.sphinx-doc.org
 Sphinx = { version = "^4.0.3", optional = true }
-sphinx-rtd-theme = { version = "^0.5.2", optional = true }
 sphinxcontrib-bibtex = { version = "^2.4.1", optional = true }
 rstcheck = { version = "^3.3.1", optional = true }
 
 [tool.poetry.extras]
 # poetry install -E name
 notebook = ["jupyter"]
-docs = ["Sphinx", "sphinx-rtd-theme", "sphinxcontrib-bibtex", "rstcheck"]
+docs = ["Sphinx", "sphinxcontrib-bibtex", "rstcheck"]
 
 [tool.poetry.dev-dependencies]
 # poetry add name --dev

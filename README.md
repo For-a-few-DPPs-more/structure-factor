@@ -1,120 +1,151 @@
 # structure_factor
 
-*''Approximate the structure facture of a point pattern (a stationary point process), and test the effective hyperuniformity and the class of hyperuniformity of the point pattern"*.
+[![CI](https://github.com/For-a-few-DPPs-more/structure-factor/actions/workflows/ci.yml/badge.svg)](https://github.com/For-a-few-DPPs-more/structure-factor/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/For-a-few-DPPs-more/structure-factor/branch/main/graph/badge.svg?token=FUDADJLO2W)](https://codecov.io/gh/For-a-few-DPPs-more/structure-factor)
+[![docs](https://github.com/For-a-few-DPPs-more/structure-factor/actions/workflows/docs.yml/badge.svg)](https://github.com/For-a-few-DPPs-more/structure-factor/actions/workflows/docs.yml)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+
+> Approximate the structure factor of a stationary point process and test its effective hyperuniformity and identify its class of hyperuniformity.
 
 - [structure_factor](#structure_factor)
   - [Introduction](#introduction)
-  - [Related paper](#related-paper)
   - [Dependencies](#dependencies)
   - [Installation](#installation)
+    - [Install the project as a dependency](#install-the-project-as-a-dependency)
+    - [Install in editable mode and potentially contribute to the project](#install-in-editable-mode-and-potentially-contribute-to-the-project)
   - [Documentation](#documentation)
-  - [How to use it](#how-to-use-it)
+    - [Build the documentation](#build-the-documentation)
+  - [Getting started](#getting-started)
   - [How to cite this work](#how-to-cite-this-work)
-  - [Reproductibility](#reproductibility)
+    - [Companion paper](#companion-paper)
 
 ## Introduction
 
- In condensed matter physics, it has been observed for some particle systems that, the variance of the number of points in a large window is lower than expected, a phenomenon called hyperuniformity.
- A point process is also called hyperunifrom if its structure factor  (defined through the Fourier transform of its pair correlation function) vanishes on zero.
+In condensed matter physics, it has been observed for some particle systems that, the variance of the number of points in a large window is lower than expected, a phenomenon called hyperuniformity.
 
- Moreover, the repartition of hyperuniform point processes between classes is related to the power decay of the structure factor near 0.
+TODO: Introduce briefly the structure factor: observable/measurable, defined through the Fourier transform of the pair correlation function.
 
- `structure_factor` is a Python library that gathers:
+A point process is also called hyperuniform if its structure factor vanishes at zero.
+
+Classes of hyperuniform point processes are then defined based on the decay of the structure factor around zero.
+
+---
+
+The Python package `structure_factor` currently collects
 
 - Three estimators of the structure factor:
-    1. The scattering inetnsity .
-    2. An estimator using [Ogata quadrature](https://www.kurims.kyoto-u.ac.jp/~prims/pdf/41-4/41-4-40.pdf) for approximating the Hankel transform.
-    3. An estimator using [Baddour and Chouinard Discrete Hankel transform](https://www.osapublishing.org/josaa/abstract.cfm?uri=josaa-32-4-611).
+    1. the scattering intensity,
+    2. an estimator using [Ogata quadrature](https://www.kurims.kyoto-u.ac.jp/~prims/pdf/41-4/41-4-40.pdf) for approximating the Hankel transform,
+    3. an estimator using [Baddour and Chouinard Discrete Hankel transform](https://www.osapublishing.org/josaa/abstract.cfm?uri=josaa-32-4-611).
 
-- Two estimators of the pair correlation function:
-   1. Estimator using Epanechnikov kernel and a bandwidth selected by Stoyan's rule of thumb.
-   2. Estimator using the derivative of Ripley's K function.
+- Two ways to qualify hyperuniformity:
 
-  This 2 estimators are obtained using [spatstat-interface](https://github.com/For-a-few-DPPs-more/spatstat-interface) which builds a hidden interface with the package [`spatstat`](https://github.com/spatstat/spatstat) of the programming language [R](https://www.r-project.org/),
-
-- Two tests of hyperuniformity:
-
-  1. Test of effective hyperunifomity using the index H of hyperunifomity.
-  2. Test of the decay of the structure factor near 0 to estimate the class of hyperuniformity.
-
-## Related paper
-
-We wrote a companion paper to `structure_factor`, tilted "Exploring the hyperuniformity of a point process using structure_factor" (which will be published soon) explaining in detail the mathematical foundations behind the estimators present in `structure_factor`. This paper also contains detailed tests of this package on 3 different point processes and discuss the results and  the limitations of the package.
+  1. effective hyperuniformity,
+  2. classes of hyperuniformity.
 
 ## Dependencies
 
-Currently, the project calls the [`spatstat`](https://github.com/spatstat/spatstat) [R](https://www.r-project.org/) package
+- [R programming language](https://www.r-project.org/), since we call the [`spatstat`](https://github.com/spatstat/spatstat) R package to estimate the pair correlation function of point processes using [`spatstat-interface`](https://github.com/For-a-few-DPPs-more/spatstat-interface).
 
-- [R programming language](https://www.r-project.org/)
-- project dependencies, see [`tool.poetry.dependencies` in `pyproject.toml`](./pyproject.toml)
+- Python dependencies are listed in the [`pyproject.toml`](./pyproject.toml) file. Note that they mostly correspond to the latest version.
 
-Note that all the necessary **project dependencies** will be automatically installed.
+  ```toml
+  [tool.poetry.dependencies]
+  python = ">=3.8,<3.10"
+
+  numpy = "^1.20.3"
+  scipy = "^1.6.3"
+  matplotlib = "^3.4.2"
+  pandas = "^1.2.4"
+  spatstat-interface = "^0.1.0"
+  # spatstat-interface https://github.com/For-a-few-DPPs-more/spatstat-interface requires rpy2 https://rpy2.github.io/
+  ```
 
 ## Installation
 
-- structure_factor works with [Python 3.8+](https://www.python.org/downloads/release/python-380/).
+`structure_factor` works with [Python 3.8+](https://www.python.org/downloads/release/python-380/).
 
-- Installation using [PyPI](https://pypi.org/project/).
+### Install the project as a dependency
 
-      pip install structure_factor
+<!-- - Install the latest version published on [![PyPi version](https://badgen.net/pypi/v/structure_factor/)](https://pypi.org/project/structure_factor/)
 
-- Installation in editable mode and potentially contribute to the project
-  - You may consider [forking the repository](https://github.com/For-a-few-DPPs-more/structure_factor/fork).
-  - In any case, your can clone the repository
-     1. if you have forked the repository
+  ```bash
+  # activate your virtual environment an run
+  poetry add structure_factor
+  # pip install structure_factor
+  ``` -->
 
-      ```bash
-      git clone https://github.com/your_user_name/structure_factor.git
-      ```
+- Install from source (this may be broken)
 
-     2. if you have **not** forked the repository
+  ```bash
+  # activate your virtual environment and run
+  poetry add git+https://github.com/For-a-few-DPPs-more/structure-factor.git
+  # pip install git+https://github.com/For-a-few-DPPs-more/structure-factor.git
+  ```
 
-      ```bash
-      git clone https://github.com/For-a-few-DPPs-more/structure_factor.git
-  - Installation using `poetry`
+### Install in editable mode and potentially contribute to the project
 
-    The package can be installed in **editable** mode along with
+The package can be installed in **editable** mode using [`poetry`](https://python-poetry.org/).
 
-    - main (non-optional) dependencies, see `[tool.poetry.dependencies]` in [`pyproject.toml`](./pyproject.toml)
-    - development dependencies, `[tool.poetry.dev-dependencies]` in [`pyproject.toml`](./pyproject.toml)
+To to this, clone the repository:
 
-    ```bash
-    cd structure_factor
-    # activate your virtual environment or run
-    # poetry shell  # to create/activate local .venv (see poetry.toml)
-    poetry install
-    # poetry install --no-dev  # to avoid installing the development dependencies
-    ```
+- if you considered [forking the repository](https://github.com/For-a-few-DPPs-more/structure-factor/fork)
+
+  ```bash
+  git clone https://github.com/your_user_name/structure-factor.git
+  ```
+
+- if you have **not** forked the repository
+
+  ```bash
+  git clone https://github.com/For-a-few-DPPs-more/structure-factor.git
+  ```
+
+and install the package in editable mode
+
+```bash
+cd structure_factor
+# activate your virtual environment and run
+# poetry shell  # to create/activate local .venv (see poetry.toml)
+poetry install
+# poetry install --no-dev  # to avoid installing the development dependencies
+# poetry add -E docs -E notebook  # to install extra dependencies
+```
 
 ## Documentation
 
-- We build the documentation with [Sphinx](https://www.sphinx-doc.org/en/master/index.html) from `.rst` (reStructuredText) files.
+The documentation <https://for-a-few-dpps-more.github.io/structure-factor> is
 
-  - [Sphinx documentation](https://www.sphinx-doc.org/en/master/index.html)
-  - [rst cheatsheet](https://docs.typo3.org/m/typo3/docs-how-to-document/master/en-us/WritingReST/CheatSheet.html
-)
-- The documentation will be built by and published on [ReadTheDocs](https://readthedocs.org/)
-- If you wish to contribute to the documentation or just having it locally, you can:
-  - Generate the docs locally
+- generated using [Sphinx](https://www.sphinx-doc.org/en/master/index.html), and
+- published via the GitHub workflow file [.github/workflows/docs.yml](.github/workflows/docs.yml).
 
-    ```bash
-     cd structure_factor/docs
-     make html
+### Build the documentation
 
-  - Open the local HTML version of the documentation
+Assuming `structure_factor` has been installed, you can simply run
 
-    ```bash
-    open _build/html/index.html
+```bash
+  # activate your virtual environment
+  cd structure_factor
+  sphinx-build -b html docs docs/_build/html
+  # poetry run sphinx-build -b html docs docs/_build/html
+  open _build/html/index.html
+```
 
-## How to use it
+## Getting started
 
-A tutorial in Jupyter notebook is available (...). You can read and work on the interactive tutorial Notebook (add link to the notebook), directly from your web browser, without having to download or install Python or anything. Just click, wait a little bit, and play with the notebook!
+- [Jupyter](https://jupyter.org/) notebooks that showcase `structure_factor` are available in the [./notebooks](./notebooks) folder.
+- See the documentation <https://for-a-few-dpps-more.github.io/structure-factor>
 
 ## How to cite this work
 
-If you use the structure_factor toolbox, please consider citing it with this piece of BibTeX:
-TBC
+### Companion paper
 
-## Reproductibility
+A companion paper is being written
+
+> Exploring the hyperuniformity of a point process using structure_factor
+
+where we provide rigorous mathematical derivations of the different estimators of the structure factor and showcase `structure_factor` on three different point processes.
+
+If you use the `structure_factor` package, please consider citing it with this piece of BibTeX:
 
 TBC
