@@ -166,7 +166,7 @@
 
 <span class="c1"># scattering intensity</span>
 <span class="n">sf_ginibre_box</span> <span class="o">=</span> <span class="n">StructureFactor</span><span class="p">(</span><span class="n">ginibre_pp_box</span><span class="p">)</span>  <span class="c1"># initialize the class StructureFactor</span>
-<span class="hll"><span class="n">norm_k</span><span class="p">,</span> <span class="n">si</span> <span class="o">=</span> <span class="n">sf_ginibre_box</span><span class="o">.</span><span class="n">scattering_intensity</span><span class="p">(</span><span class="n">k_max</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">meshgrid_shape</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+<span class="hll"><span class="n">norm_k</span><span class="p">,</span> <span class="n">si</span> <span class="o">=</span> <span class="n">sf_ginibre_box</span><span class="o">.</span><span class="n">scattering_intensity</span><span class="p">(</span><span class="n">k_max</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">meshgrid_shape</span><span class="o">=</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="mi">200</span><span class="p">))</span>
 </span><span class="hll">
 </span><span class="c1"># plot</span>
 </pre></div>
@@ -197,7 +197,7 @@ The figure could be saved by specifying <code class="docutils literal notranslat
 </dd>
 </dl>
 <p class="rubric">Example</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sf_ginibre_box</span><span class="o">.</span><span class="n">plot_scattering_intensity</span><span class="p">(</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sf_ginibre_box</span><span class="o">.</span><span class="n">plot_2D_scattering_intensity</span><span class="p">(</span>
     <span class="n">norm_k</span><span class="p">,</span>
     <span class="n">si</span><span class="p">,</span>
     <span class="n">plot_type</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
@@ -206,7 +206,10 @@ The figure could be saved by specifying <code class="docutils literal notranslat
     <span class="n">error_bar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># visualizing the error bars</span>
 </pre></div>
 </div>
-<p>(<a class="reference external" href="./code/si_example.py">Source code</a>)</p>
+<p>(<a class="reference external" href="./code/si_example.py">Source code</a>, <a class="reference external" href="./code/si_example.png">png</a>, <a class="reference external" href="./code/si_example.hires.png">hires.png</a>, <a class="reference external" href="./code/si_example.pdf">pdf</a>)</p>
+<div class="figure align-center">
+<img alt="alternate text" class="plot-directive" src="_images/si_example.png" />
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -419,10 +422,10 @@ The figure could be saved by specifying <code class="docutils literal notranslat
 
 <span class="hll"><span class="c1"># structure factor using Baddour Chouinard discrete hankel transform</span>
 </span><span class="hll"><span class="n">rmax</span> <span class="o">=</span> <span class="n">domain</span><span class="p">[</span><span class="s2">&quot;rmax&quot;</span><span class="p">]</span>
-</span><span class="hll"><span class="n">norm_k</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.3</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">2000</span><span class="p">)</span>
-</span><span class="hll"><span class="n">norm_k</span><span class="p">,</span> <span class="n">sf_BadChou</span> <span class="o">=</span> <span class="n">sf_ginibre</span><span class="o">.</span><span class="n">compute_sf_hankel_quadrature</span><span class="p">(</span> <span class="n">pcf_fv_func</span><span class="p">,</span> 
+</span><span class="hll"><span class="n">k_norm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.3</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">2000</span><span class="p">)</span>
+</span><span class="hll"><span class="n">k_norm</span><span class="p">,</span> <span class="n">sf_BadChou</span> <span class="o">=</span> <span class="n">sf_ginibre</span><span class="o">.</span><span class="n">hankel_quadrature</span><span class="p">(</span> <span class="n">pcf_fv_func</span><span class="p">,</span> 
 </span><span class="hll">                                                        <span class="n">method</span><span class="o">=</span><span class="s2">&quot;BaddourChouinard&quot;</span><span class="p">,</span> 
-</span><span class="hll">                                                        <span class="n">norm_k</span><span class="o">=</span><span class="n">norm_k</span><span class="p">,</span> 
+</span><span class="hll">                                                        <span class="n">k_norm</span><span class="o">=</span><span class="n">k_norm</span><span class="p">,</span> 
 </span><span class="hll">                                                        <span class="n">rmax</span><span class="o">=</span><span class="n">rmax</span><span class="p">,</span> 
 </span><span class="hll">                                                        <span class="n">nb_points</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
 </span>
@@ -453,14 +456,17 @@ The figure could be saved by specifying <code class="docutils literal notranslat
 </dl>
 <p class="rubric">Example</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># plot</span>
-<span class="n">sf_ginibre</span><span class="o">.</span><span class="n">plot_sf_hankel_quadrature</span><span class="p">(</span><span class="n">norm_k</span><span class="p">,</span><span class="n">sf_BadChou</span><span class="p">,</span>
+<span class="n">sf_ginibre</span><span class="o">.</span><span class="n">plot_sf_hankel_quadrature</span><span class="p">(</span><span class="n">k_norm</span><span class="p">,</span><span class="n">sf_BadChou</span><span class="p">,</span>
                                     <span class="n">exact_sf</span><span class="o">=</span><span class="n">utils</span><span class="o">.</span><span class="n">structure_factor_ginibre</span><span class="p">,</span>
                                     <span class="n">label</span><span class="o">=</span><span class="s2">&quot;$S_</span><span class="si">{HBC}</span><span class="s2">(k)$&quot;</span><span class="p">,</span>
                                     <span class="n">error_bar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                                     <span class="n">bins</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>(<a class="reference external" href="./code/sf_baddour_example.py">Source code</a>)</p>
+<p>(<a class="reference external" href="./code/sf_baddour_example.py">Source code</a>, <a class="reference external" href="./code/sf_baddour_example.png">png</a>, <a class="reference external" href="./code/sf_baddour_example.hires.png">hires.png</a>, <a class="reference external" href="./code/sf_baddour_example.pdf">pdf</a>)</p>
+<div class="figure align-default">
+<img alt="_images/sf_baddour_example.png" class="plot-directive" src="_images/sf_baddour_example.png" />
+</div>
 </dd></dl>
 
 </dd></dl>
