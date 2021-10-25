@@ -36,6 +36,7 @@ extensions = [
     "sphinx.ext.napoleon",  # support google and numpy docstring style
     "sphinx.ext.todo",  # to-do snippet
     "sphinx.ext.viewcode",
+    "sphinx.ext.githubpages",
     "sphinxcontrib.bibtex",  # Bibliography management
     "matplotlib.sphinxext.plot_directive",  # Matplotlib plots rendering
 ]
