@@ -5,7 +5,6 @@
 [![docs](https://github.com/For-a-few-DPPs-more/structure-factor/actions/workflows/docs.yml/badge.svg)](https://github.com/For-a-few-DPPs-more/structure-factor/actions/workflows/docs.yml)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-
 > Approximate the structure factor of a stationary point process and test its effective hyperuniformity and identify its class of hyperuniformity.
 
 - [structure_factor](#structure_factor)
@@ -80,8 +79,8 @@ The Python package `structure_factor` currently collects
 
   ```bash
   # activate your virtual environment and run
-  poetry add git+https://github.com/For-a-few-DPPs-more/structure_factor.git
-  # pip install git+https://github.com/For-a-few-DPPs-more/structure_factor.git
+  poetry add git+https://github.com/For-a-few-DPPs-more/structure-factor.git
+  # pip install git+https://github.com/For-a-few-DPPs-more/structure-factor.git
   ```
 
 ### Install in editable mode and potentially contribute to the project
@@ -90,16 +89,16 @@ The package can be installed in **editable** mode using [`poetry`](https://pytho
 
 To to this, clone the repository:
 
-- if you considered [forking the repository](https://github.com/For-a-few-DPPs-more/structure_factor/fork)
+- if you considered [forking the repository](https://github.com/For-a-few-DPPs-more/structure-factor/fork)
 
   ```bash
-  git clone https://github.com/your_user_name/structure_factor.git
+  git clone https://github.com/your_user_name/structure-factor.git
   ```
 
 - if you have **not** forked the repository
 
   ```bash
-  git clone https://github.com/For-a-few-DPPs-more/structure_factor.git
+  git clone https://github.com/For-a-few-DPPs-more/structure-factor.git
   ```
 
 and install the package in editable mode
