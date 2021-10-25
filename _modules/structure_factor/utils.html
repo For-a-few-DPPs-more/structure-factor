@@ -253,7 +253,7 @@
     <span class="k">return</span> <span class="n">axis</span>
 
 
-<div class="viewcode-block" id="plot_summary"><a class="viewcode-back" href="../../utils.html#structure_factor.utils.plot_summary">[docs]</a><span class="k">def</span> <span class="nf">plot_summary</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;$mean \pm 3 \cdot std$&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">binning_params</span><span class="p">):</span>
+<div class="viewcode-block" id="plot_summary"><a class="viewcode-back" href="../../utils.html#structure_factor.utils.plot_summary">[docs]</a><span class="k">def</span> <span class="nf">plot_summary</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;mean $\pm$ 3 $\cdot$ std&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">binning_params</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Loglog plot the summary results of _bin_statistics function i.e. means and errors bars (3 standard deviations).&quot;&quot;&quot;</span>
     <span class="n">bin_centers</span><span class="p">,</span> <span class="n">bin_mean</span><span class="p">,</span> <span class="n">bin_std</span> <span class="o">=</span> <span class="n">_bin_statistics</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="o">**</span><span class="n">binning_params</span><span class="p">)</span>
     <span class="n">axis</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">bin_centers</span><span class="p">,</span> <span class="n">bin_mean</span><span class="p">,</span> <span class="s2">&quot;b.&quot;</span><span class="p">)</span>
@@ -310,13 +310,13 @@
 
     <span class="n">plot_poisson</span><span class="p">(</span><span class="n">norm_k</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">exact_sf</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">plot_exact</span><span class="p">(</span><span class="n">norm_k</span><span class="p">,</span> <span class="n">exact_sf</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Exact $S(k)$&quot;</span><span class="p">)</span>
+        <span class="n">plot_exact</span><span class="p">(</span><span class="n">norm_k</span><span class="p">,</span> <span class="n">exact_sf</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;Exact $S(k)$&quot;</span><span class="p">)</span>
 
     <span class="n">plot_approximation</span><span class="p">(</span>
         <span class="n">norm_k</span><span class="p">,</span>
         <span class="n">si</span><span class="p">,</span>
         <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span>
-        <span class="n">label</span><span class="o">=</span><span class="s2">&quot;$\widehat</span><span class="si">{S}</span><span class="s2">_</span><span class="si">{SI}</span><span class="s2">$&quot;</span><span class="p">,</span>
+        <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;$\widehat</span><span class="si">{S}</span><span class="s2">_</span><span class="si">{SI}</span><span class="s2">$&quot;</span><span class="p">,</span>
         <span class="n">color</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">,</span>
         <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
         <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;.&quot;</span><span class="p">,</span>
@@ -326,8 +326,8 @@
     <span class="k">if</span> <span class="n">error_bar</span><span class="p">:</span>
         <span class="n">plot_summary</span><span class="p">(</span><span class="n">norm_k</span><span class="p">,</span> <span class="n">si</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="o">**</span><span class="n">binning_params</span><span class="p">)</span>
 
-    <span class="n">axis</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Wavenumber ($||\mathbf</span><span class="si">{k}</span><span class="s2">||$)&quot;</span><span class="p">)</span>
-    <span class="n">axis</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Structure factor ($S(k)$)&quot;</span><span class="p">)</span>
+    <span class="n">axis</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;Wavenumber ($||\mathbf</span><span class="si">{k}</span><span class="s2">||$)&quot;</span><span class="p">)</span>
+    <span class="n">axis</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;Structure factor ($S(k)$)&quot;</span><span class="p">)</span>
     <span class="n">axis</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">framealpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">file_name</span><span class="p">:</span>
@@ -408,8 +408,8 @@
     <span class="n">plot_poisson</span><span class="p">(</span><span class="n">pcf_dataframe</span><span class="p">[</span><span class="s2">&quot;r&quot;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">)))</span>
 
     <span class="n">axis</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
-    <span class="n">axis</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Radius ($r$)&quot;</span><span class="p">)</span>
-    <span class="n">axis</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Pair correlation function ($g(r)$)&quot;</span><span class="p">)</span>
+    <span class="n">axis</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;Radius ($r$)&quot;</span><span class="p">)</span>
+    <span class="n">axis</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;Pair correlation function ($g(r)$)&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">file_name</span><span class="p">:</span>
         <span class="n">fig</span> <span class="o">=</span> <span class="n">axis</span><span class="o">.</span><span class="n">get_figure</span><span class="p">()</span>
@@ -425,7 +425,7 @@
     <span class="n">exact_sf</span><span class="p">,</span>
     <span class="n">error_bar</span><span class="p">,</span>
     <span class="n">file_name</span><span class="p">,</span>
-    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;$\widehat</span><span class="si">{S}</span><span class="s2">_</span><span class="si">{H}</span><span class="s2">$&quot;</span><span class="p">,</span>
+    <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;$\widehat</span><span class="si">{S}</span><span class="s2">_</span><span class="si">{H}</span><span class="s2">$&quot;</span><span class="p">,</span>
     <span class="o">**</span><span class="n">binning_params</span>
 <span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Plot approximation of structure factor using :py:meth:`~structure_factor.hankel_quadrature` with means and error bars over bins.&quot;&quot;&quot;</span>
@@ -443,7 +443,7 @@
         <span class="n">markersize</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="k">if</span> <span class="n">exact_sf</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">plot_exact</span><span class="p">(</span><span class="n">norm_k</span><span class="p">,</span> <span class="n">exact_sf</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Exact $\mathcal</span><span class="si">{S}</span><span class="s2">(k)$&quot;</span><span class="p">)</span>
+        <span class="n">plot_exact</span><span class="p">(</span><span class="n">norm_k</span><span class="p">,</span> <span class="n">exact_sf</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;Exact $\mathcal</span><span class="si">{S}</span><span class="s2">(k)$&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">error_bar</span><span class="p">:</span>
         <span class="n">plot_summary</span><span class="p">(</span><span class="n">norm_k</span><span class="p">,</span> <span class="n">sf</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="o">**</span><span class="n">binning_params</span><span class="p">)</span>
     <span class="n">plot_poisson</span><span class="p">(</span><span class="n">norm_k</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span>
@@ -455,11 +455,11 @@
             <span class="n">k_min</span><span class="p">,</span>
             <span class="n">sf_interpolate</span><span class="p">(</span><span class="n">k_min</span><span class="p">),</span>
             <span class="s2">&quot;ro&quot;</span><span class="p">,</span>
-            <span class="n">label</span><span class="o">=</span><span class="s2">&quot;k_min&quot;</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;$k_{\min}$&quot;</span><span class="p">,</span>
         <span class="p">)</span>
     <span class="n">axis</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
-    <span class="n">axis</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Wavenumber (k)&quot;</span><span class="p">)</span>
-    <span class="n">axis</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Structure factor ($\mathcal</span><span class="si">{S}</span><span class="s2">(k)$)&quot;</span><span class="p">)</span>
+    <span class="n">axis</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;Wavenumber ($k$)&quot;</span><span class="p">)</span>
+    <span class="n">axis</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;Structure factor ($\mathcal</span><span class="si">{S}</span><span class="s2">(k)$)&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">file_name</span><span class="p">:</span>
         <span class="n">fig</span> <span class="o">=</span> <span class="n">axis</span><span class="o">.</span><span class="n">get_figure</span><span class="p">()</span>
