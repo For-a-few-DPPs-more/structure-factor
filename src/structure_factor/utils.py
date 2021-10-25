@@ -212,7 +212,7 @@ def plot_poisson(x, axis, c="k", linestyle=(0, (5, 10)), label="Poisson"):
     return axis
 
 
-def plot_summary(x, y, axis, label="$mean \pm 3 \cdot std$", **binning_params):
+def plot_summary(x, y, axis, label=r"mean $\pm$ 3 $\cdot$ std", **binning_params):
     """Loglog plot the summary results of _bin_statistics function i.e. means and errors bars (3 standard deviations)."""
     bin_centers, bin_mean, bin_std = _bin_statistics(x, y, **binning_params)
     axis.loglog(bin_centers, bin_mean, "b.")
@@ -269,13 +269,13 @@ def plot_si_showcase(
 
     plot_poisson(norm_k, axis=axis)
     if exact_sf is not None:
-        plot_exact(norm_k, exact_sf, axis=axis, label="Exact $S(k)$")
+        plot_exact(norm_k, exact_sf, axis=axis, label=r"Exact $S(k)$")
 
     plot_approximation(
         norm_k,
         si,
         axis=axis,
-        label="$\widehat{S}_{SI}$",
+        label=r"$\widehat{S}_{SI}$",
         color="grey",
         linestyle="",
         marker=".",
@@ -285,8 +285,8 @@ def plot_si_showcase(
     if error_bar:
         plot_summary(norm_k, si, axis=axis, **binning_params)
 
-    axis.set_xlabel("Wavenumber ($||\mathbf{k}||$)")
-    axis.set_ylabel("Structure factor ($S(k)$)")
+    axis.set_xlabel(r"Wavenumber ($||\mathbf{k}||$)")
+    axis.set_ylabel(r"Structure factor ($S(k)$)")
     axis.legend(loc=4, framealpha=0.2)
 
     if file_name:
@@ -367,8 +367,8 @@ def plot_pcf(pcf_dataframe, exact_pcf, file_name, **kwargs):
     plot_poisson(pcf_dataframe["r"], axis=axis, linestyle=(0, (5, 5)))
 
     axis.legend()
-    axis.set_xlabel("Radius ($r$)")
-    axis.set_ylabel("Pair correlation function ($g(r)$)")
+    axis.set_xlabel(r"Radius ($r$)")
+    axis.set_ylabel(r"Pair correlation function ($g(r)$)")
 
     if file_name:
         fig = axis.get_figure()
@@ -384,7 +384,7 @@ def plot_sf_hankel_quadrature(
     exact_sf,
     error_bar,
     file_name,
-    label="$\widehat{S}_{H}$",
+    label=r"$\widehat{S}_{H}$",
     **binning_params
 ):
     """Plot approximation of structure factor using :py:meth:`~structure_factor.hankel_quadrature` with means and error bars over bins."""
@@ -402,7 +402,7 @@ def plot_sf_hankel_quadrature(
         markersize=4,
     )
     if exact_sf is not None:
-        plot_exact(norm_k, exact_sf, axis=axis, label="Exact $\mathcal{S}(k)$")
+        plot_exact(norm_k, exact_sf, axis=axis, label=r"Exact $\mathcal{S}(k)$")
     if error_bar:
         plot_summary(norm_k, sf, axis=axis, **binning_params)
     plot_poisson(norm_k, axis=axis)
@@ -414,11 +414,11 @@ def plot_sf_hankel_quadrature(
             k_min,
             sf_interpolate(k_min),
             "ro",
-            label="k_min",
+            label=r"$k_{\min}$",
         )
     axis.legend()
-    axis.set_xlabel("Wavenumber (k)")
-    axis.set_ylabel("Structure factor ($\mathcal{S}(k)$)")
+    axis.set_xlabel(r"Wavenumber ($k$)")
+    axis.set_ylabel(r"Structure factor ($\mathcal{S}(k)$)")
 
     if file_name:
         fig = axis.get_figure()
