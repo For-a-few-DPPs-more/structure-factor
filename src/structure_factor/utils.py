@@ -64,28 +64,32 @@ def structure_factor_ginibre(k):
 
 
 def allowed_wave_vectors(d, L, k_max, meshgrid_shape=None):
-    # todo refactor docs
-    r"""Given a realization of a point process in a cubic window with length :math:`L`, compute the 'allowed' wave vectors :math:`(k_i)` at which the structure factor :math:`S(k_i)` is consistently estimated by the scattering intensity defined below.
+    r"""Given a realization of a point process in a cubic window with length :math:`L`, return a subset of the set of the 'allowed' wave vectors (defined below) :math:`\{\mathbf{k}_i\}_i` at which the structure factor :math:`S(\mathbf{k}_i)` is consistently estimated by the scattering intensity :math:`\widehat{S}_{SI}` .
+
+    The allowed waves vectors are :math:`\{\mathbf{k}_i\}_i` s.t.,
 
     .. math::
 
-        \{\frac{2 \pi}{L} \mathbf{n} ~ ; ~ \mathbf{n} \in (\mathbb{Z}^d)^\ast, \left\lVert \mathbf{n} \right\rVert \leq \text{ k_max}\}
+        \{\mathbf{k}_i\}_i \subset \{\frac{2 \pi}{L} \mathbf{n} ~ ; ~ \mathbf{n} \in (\mathbb{Z}^d)^\ast \}.
 
-    # todo add bibliographic reference
+    The maximum and the number of output allowed wave vectors are specified by setting the parameters `k_max` and `meshgrid_shape`.
+
 
     Args:
-        L (float): Length of the cubic window.
 
-        k_max (float): Maximum component of the wave vectors i.e., if k=(k_1,...,k_d) then for all i k_i <k_max.
+        d (int): dimension of the space containing the point process.
 
-        # todo give clearer description of meshgrid_shape
-        meshgrid_shape (int): Size of the meshgrid of allowed values if ``k_vector`` is set to None and ``k_max`` is specified. **Warning:** setting big value in ``meshgrid_shape`` could be time consuming when the sample has a lot of points.
+        L (float): length of the cubic window containing the sample of points.
 
-        # todo give clearer description of max_add_k
-        max_add_k (float): Maximum component of the allowed wave vectors to be added. In other words, in the case of the evaluation on a vector of allowed values (without specifying ``meshgrid_shape``),  ``max_add_k`` can be used to add allowed values in a certain region for better precision. **Warning:** setting big value in ``max_add_k`` could be time consuming when the sample has a lot of points. Defaults to 1.
+        k_max ([type]): maximum component of the waves vectors i.e., for any output allowed wave vector :math:`\mathbf{k}=(k_1,...,k_d)`, we have :math:`k_i \leq k\_max` for all i. This implies that the maximum wave vectors will be :math:`(k\_max, ... k\_max)`.
+
+        meshgrid_shape (tuple, optional): tuple of length `d`, where each element specify the number of component over the corresponding axis. It consists of the associated size of the meshgrid of allowed waves. For example if we are working in 2 dimensions, letting meshgid_shape=(2,3) will give a meshgrid of allowed waves formed by a vector of 2 values over the x-axis and a vectors of 3 values over the y-axis. Defaults to None.
 
     Returns:
-        numpy.ndarray: array of size :math:`N \times d` collecting the 'allowed' wave vectors.
+        tuple (np.ndarray, list):
+            - k : np.array with d columns where each row is an allowed wave vector.
+            - K : list of meshgrid where the elements of the list corresponding to the 2D respresentation of the components of the wave vectors, i.e., it's a 2D representation of the vectors of allowed values `k`. For example in dimension 2, if K =[X,Y] then X is the 2D representation of the x coordinates of the allowed wave vectors `k` i.e., the representation as meshgrid.
+
     """
     K = None
     n_max = np.floor(k_max * L / (2 * np.pi))  # maximum of ``n``
