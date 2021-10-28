@@ -7,6 +7,7 @@ on:
       - main
     paths-ignore:
       - "**.md"
+      - ".github/workflows/ci.yml"
   pull_request:
     paths-ignore:
       - "**.md"
@@ -47,8 +48,7 @@ jobs:
       - name: Install package with main (non-optional) and docs dependencies
         # see [tool.poetry.dependencies] and [tool.poetry.extras]
         # in pyproject.toml
-        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-        run: poetry install --no-dev -E docs
+        run: poetry install -E docs
 
       - name: Build docs with sphinx
         run: poetry run sphinx-build -b html docs docs/_build/html
