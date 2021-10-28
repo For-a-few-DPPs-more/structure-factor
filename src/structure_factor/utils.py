@@ -81,14 +81,14 @@ def allowed_wave_vectors(d, L, k_max, meshgrid_shape=None):
 
         L (float): length of the cubic window containing the sample of points.
 
-        k_max ([type]): maximum component of the waves vectors i.e., for any output allowed wave vector :math:`\mathbf{k}=(k_1,...,k_d)`, we have :math:`k_i \leq k\_max` for all i. This implies that the maximum wave vectors will be :math:`(k\_max, ... k\_max)`.
+        k_max (float): maximum component of the waves vectors i.e., for any output allowed wave vector :math:`\mathbf{k}=(k_1,...,k_d)`, we have :math:`k_i \leq k\_max` for all i. This implies that the maximum wave vectors will be :math:`(k\_max, ... k\_max)`.
 
         meshgrid_shape (tuple, optional): tuple of length `d`, where each element specify the number of component over the corresponding axis. It consists of the associated size of the meshgrid of allowed waves. For example if we are working in 2 dimensions, letting meshgid_shape=(2,3) will give a meshgrid of allowed waves formed by a vector of 2 values over the x-axis and a vectors of 3 values over the y-axis. Defaults to None.
 
     Returns:
         tuple (np.ndarray, list):
             - k : np.array with d columns where each row is an allowed wave vector.
-            - K : list of meshgrid where the elements of the list corresponding to the 2D respresentation of the components of the wave vectors, i.e., it's a 2D representation of the vectors of allowed values `k`. For example in dimension 2, if K =[X,Y] then X is the 2D representation of the x coordinates of the allowed wave vectors `k` i.e., the representation as meshgrid.
+            - K : list of meshgrid where the elements of the list corresponding to the 2D respresentation of the components of the wave vectors, i.e., it's a 2D representation of the vectors of allowed values ``k``. For example in dimension 2, if K =[X,Y] then X is the 2D representation of the x coordinates of the allowed wave vectors ``k`` i.e., the representation as meshgrid.
 
     """
     K = None
@@ -163,8 +163,10 @@ def compute_scattering_intensity(k, points):
     where :math:`\mathbf{k} \in \mathbb{R}^2` is a wave vector.
 
     Args:
-        k (numpy.ndarray): array of size :math:`N_1 \times 2` containing :math:`N_1` two dimensional wave vectors.
-        points (numpy.ndarray): array of size :math:`N_2 \times 2` containing the :math:`N_2` points of a realization of the point process :math:`\mathcal{X}`.
+
+        k (np.ndarray): np.array of d columns (where d is the dimesion of the space containing the points) where each row correspond to a wave vector. As mentioned before its recommended to keep the default ``k`` and to specify ``k_max`` instead, so that the approximation will be evaluated on allowed wavevectors. Defaults to None.
+
+        points (np.ndarray): np.ndarray od d columns where each row consits a point from the realization of the point process.
 
     Returns:
         numpy.ndarray: Vector of evaluation of the scattering intensity on ``k``.
@@ -211,7 +213,27 @@ def _bin_statistics(x, y, **params):
 
 
 def plot_poisson(x, axis, c="k", linestyle=(0, (5, 10)), label="Poisson"):
-    # todo add docstring
+    r"""plot the pair correlation function :math:`g_{poisson}` and the structure factor :math:`S_{poisson}` corresponding to the Poisson point process.
+
+    .. math::
+
+        g_{poisson} = S_{poisson} = 1
+
+
+    Args:
+        x (np.array): x coordinate.
+
+        axis (axis): axis on which to add the plot.
+
+        c (str, optional): color of the plot. see `matplotlib <https://matplotlib.org/2.1.1/api/_as_gen/matplotlib.pyplot.plot.html>`_ . Defaults to "k".
+
+        linestyle (tuple, optional): linstyle of the plot. see `linestyle <https://matplotlib.org/stable/gallery/lines_bars_and_markers/linestyles.html>`_. Defaults to (0, (5, 10)).
+
+        label (str, optional): specification of the label of the plot. Defaults to "Poisson".
+
+    Returns:
+        plot: plot of the pair correlation function and the structure factor of the Poisson point process over `x`.
+    """
     axis.plot(x, np.ones_like(x), c=c, linestyle=linestyle, label=label)
     return axis
 

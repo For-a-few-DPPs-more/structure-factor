@@ -19,7 +19,7 @@ class StructureFactor:
 
         S(\mathbf{k}) = 1 + \rho \mathcal{F}(g-1)(\mathbf{k}),
 
-    where :math:`\mathcal{F}` denotes the Fourier transform, :math:`g` the pair correlation function corresponds to :math:`\mathcal{X}`, :math:`\mathbf{k} \in \mathbb{R}^d` is a wave vector and we denote the wave length :math:`k = \| \mathbf{k} \|_d`.
+    where :math:`\mathcal{F}` denotes the Fourier transform, :math:`g` the pair correlation function corresponds to :math:`\mathcal{X}`, :math:`\mathbf{k} \in \mathbb{R}^d` is a wave vector and we denote the wave length :math:`k = \| \mathbf{k} \|_2`.
 
     This class contains
         - Three estimators of the structure factor:
@@ -98,19 +98,15 @@ class StructureFactor:
 
         .. seealso::
 
-            :py:meth:`~structure_factor.utils.allowed_wave_values`.
+            :py:meth:`~structure_factor.utils.allowed_wave_vectors`.
 
         Args:
-            # ?! why a list of arrays instead of a 2d array
-            #? since it's not a 2d array, in dimension 2 it's a list of  ndarray
 
-            k (list): list containing d numpy.ndarray corresponding to the components of the wavevectors. As mentioned before its recommended to keep the default ``k`` and to specify ``k_max`` instead, so that the approximation will be evaluated on allowed wavevectors. Defaults to None.
+            k (np.ndarray): np.ndarray of d columns (where d is the dimesion of the space containing the points) where each row correspond to a wave vector. As mentioned before its recommended to keep the default ``k`` and to specify ``k_max`` instead, so that the approximation will be evaluated on allowed wavevectors. Defaults to None.
 
-            k_max (float, optional): Maximum component of the allowed wavevectors (i.e., for any wavevector :math:`\mathbf{k}=(k_1, .., k_d)` we have :math:`k_j< max\_k` for all j). Defaults to None.
+            k_max (float, optional): maximum component of the waves vectors i.e., for any output allowed wave vector :math:`\mathbf{k}=(k_1,...,k_d)`, we have :math:`k_i \leq k\_max` for all i. This implies that the maximum wave vectors will be :math:`(k\_max, ... k\_max)`. Defaults to 5.
 
-            meshgrid_shape (int, optional): Size of the meshgrid of allowed wavevectors when ``k`` is None and ``k_max`` is specified. Warning: setting large value in ``meshgrid_shape`` could be time consuming and harmful to your machine for large sample of points. Defaults to None.
-
-            max_add_k (int, optional): Maximum component of allowed wavevectors added in the case where ``k`` is of small size. In other words, in the case of the evaluation on a vector of allowed wavevectors which doesn't cover a sufficient number of small allowed wavelengths,  ``max_add_k`` can be used to add allowed wavevectors in a certain neighborhood of zero for better precision. This is useful while studying the behavior of :math:`S` in the neighborhood of the origin. Warning: setting big value in ``max_add_k`` could be time consuming and harmful to your machine for a large sample of points since this similar to the case with big meshgrid size. Defaults to 1.
+            meshgrid_shape (tuple, optional): tuple of length `d`, where each element specify the number of component over the corresponding axis. It consists of the associated size of the meshgrid of allowed waves. For example if we are working in 2 dimensions, letting meshgid_shape=(2,3) will give a meshgrid of allowed waves formed by a vector of 2 values over the x-axis and a vectors of 3 values over the y-axis. Defaults to None.
 
         Returns:
             tuple(numpy.ndarray, numpy.ndarray):
@@ -121,8 +117,8 @@ class StructureFactor:
 
             .. literalinclude:: code/si_example.py
                 :language: python
-                :lines: 1-22
-                :emphasize-lines: 20-21
+                :lines: 1-21
+                :emphasize-lines: 19-21
         """
 
         point_pattern = self.point_pattern
@@ -157,8 +153,7 @@ class StructureFactor:
 
         return k_norm, si
 
-    # todo plot for 2D only point process
-    def plot_2D_scattering_intensity(
+    def plot_scattering_intensity(
         self,
         k_norm,
         si,
@@ -180,7 +175,7 @@ class StructureFactor:
 
             si (numpy.ndarray): approximated scattering intensity vector associted to `k_norm`.
 
-            plot_type (str, optional): ("radial", "imshow", "all"). Type of the plot to visualize. If "radial", then the output is a loglog plot. If "imshow", then the output is a color level 2D plot. if "all", the results are 3 subplots: the point pattern (or a restriction to a specific window if ``window_res`` is set), the loglog radial plot, and the color level 2D plot. Note that the options "imshow" and "all" couldn't be used, if ``k_norm`` is not a meshgrid. Defaults to "radial".
+            plot_type (str, optional): ("radial", "imshow", "all"). Type of the plot to visualize. If "radial", then the output is a loglog plot. If "imshow" (option available only for 2D point process), then the output is a color level 2D plot. If "all" (option available only for 2D point process), the results are 3 subplots: the point pattern (or a restriction to a specific window if ``window_res`` is set), the loglog radial plot, and the color level 2D plot . Note that the options "imshow" and "all" couldn't be used, if ``k_norm`` is not a meshgrid. Defaults to "radial".
 
             axes (axis, optional): the support axis of the plots. Defaults to None.
 
@@ -211,6 +206,10 @@ class StructureFactor:
                 k_norm, si, axes, exact_sf, error_bar, file_name, **binning_params
             )
         elif plot_type == "imshow":
+            if self.dimension != 2:
+                raise ValueError(
+                    "This plot option is adpted only for 2D point process. Please use plot_type ='radial'."
+                )
             if self.K_shape is None:
                 raise ValueError(
                     "imshow require a meshgrid data. Choose plot_type= 'radial' or re-evaluate the scattering intensity on the meshgrid of allowed wave vectors."
@@ -220,6 +219,10 @@ class StructureFactor:
             return utils.plot_si_imshow(k_norm, si, axes, file_name)
 
         elif plot_type == "all":
+            if self.dimension != 2:
+                raise ValueError(
+                    "This plot option is adpted only for 2D point process. Please use plot_type ='radial'."
+                )
             if self.K_shape is None:
                 raise ValueError(
                     "imshow require a meshgrid data. Choose plot_type ='radial' or re-evaluate the scattering intensity on the meshgrid of allowed wave vectors."
