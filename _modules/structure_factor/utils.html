@@ -105,28 +105,32 @@
 
 
 <div class="viewcode-block" id="allowed_wave_vectors"><a class="viewcode-back" href="../../utils.html#structure_factor.utils.allowed_wave_vectors">[docs]</a><span class="k">def</span> <span class="nf">allowed_wave_vectors</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">k_max</span><span class="p">,</span> <span class="n">meshgrid_shape</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="c1"># todo refactor docs</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Given a realization of a point process in a cubic window with length :math:`L`, compute the &#39;allowed&#39; wave vectors :math:`(k_i)` at which the structure factor :math:`S(k_i)` is consistently estimated by the scattering intensity defined below.</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Given a realization of a point process in a cubic window with length :math:`L`, return a subset of the set of the &#39;allowed&#39; wave vectors (defined below) :math:`\{\mathbf{k}_i\}_i` at which the structure factor :math:`S(\mathbf{k}_i)` is consistently estimated by the scattering intensity :math:`\widehat{S}_{SI}` .</span>
+
+<span class="sd">    The allowed waves vectors are :math:`\{\mathbf{k}_i\}_i` s.t.,</span>
 
 <span class="sd">    .. math::</span>
 
-<span class="sd">        \{\frac{2 \pi}{L} \mathbf{n} ~ ; ~ \mathbf{n} \in (\mathbb{Z}^d)^\ast, \left\lVert \mathbf{n} \right\rVert \leq \text{ k_max}\}</span>
+<span class="sd">        \{\mathbf{k}_i\}_i \subset \{\frac{2 \pi}{L} \mathbf{n} ~ ; ~ \mathbf{n} \in (\mathbb{Z}^d)^\ast \}.</span>
 
-<span class="sd">    # todo add bibliographic reference</span>
+<span class="sd">    The maximum and the number of output allowed wave vectors are specified by setting the parameters `k_max` and `meshgrid_shape`.</span>
+
 
 <span class="sd">    Args:</span>
-<span class="sd">        L (float): Length of the cubic window.</span>
 
-<span class="sd">        k_max (float): Maximum component of the wave vectors i.e., if k=(k_1,...,k_d) then for all i k_i &lt;k_max.</span>
+<span class="sd">        d (int): dimension of the space containing the point process.</span>
 
-<span class="sd">        # todo give clearer description of meshgrid_shape</span>
-<span class="sd">        meshgrid_shape (int): Size of the meshgrid of allowed values if ``k_vector`` is set to None and ``k_max`` is specified. **Warning:** setting big value in ``meshgrid_shape`` could be time consuming when the sample has a lot of points.</span>
+<span class="sd">        L (float): length of the cubic window containing the sample of points.</span>
 
-<span class="sd">        # todo give clearer description of max_add_k</span>
-<span class="sd">        max_add_k (float): Maximum component of the allowed wave vectors to be added. In other words, in the case of the evaluation on a vector of allowed values (without specifying ``meshgrid_shape``),  ``max_add_k`` can be used to add allowed values in a certain region for better precision. **Warning:** setting big value in ``max_add_k`` could be time consuming when the sample has a lot of points. Defaults to 1.</span>
+<span class="sd">        k_max (float): maximum component of the waves vectors i.e., for any output allowed wave vector :math:`\mathbf{k}=(k_1,...,k_d)`, we have :math:`k_i \leq k\_max` for all i. This implies that the maximum wave vectors will be :math:`(k\_max, ... k\_max)`.</span>
+
+<span class="sd">        meshgrid_shape (tuple, optional): tuple of length `d`, where each element specify the number of component over the corresponding axis. It consists of the associated size of the meshgrid of allowed waves. For example if we are working in 2 dimensions, letting meshgid_shape=(2,3) will give a meshgrid of allowed waves formed by a vector of 2 values over the x-axis and a vectors of 3 values over the y-axis. Defaults to None.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        numpy.ndarray: array of size :math:`N \times d` collecting the &#39;allowed&#39; wave vectors.</span>
+<span class="sd">        tuple (np.ndarray, list):</span>
+<span class="sd">            - k : np.array with d columns where each row is an allowed wave vector.</span>
+<span class="sd">            - K : list of meshgrid where the elements of the list corresponding to the 2D respresentation of the components of the wave vectors, i.e., it&#39;s a 2D representation of the vectors of allowed values ``k``. For example in dimension 2, if K =[X,Y] then X is the 2D representation of the x coordinates of the allowed wave vectors ``k`` i.e., the representation as meshgrid.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">K</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">n_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">k_max</span> <span class="o">*</span> <span class="n">L</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">))</span>  <span class="c1"># maximum of ``n``</span>
@@ -200,8 +204,10 @@
 <span class="sd">    where :math:`\mathbf{k} \in \mathbb{R}^2` is a wave vector.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        k (numpy.ndarray): array of size :math:`N_1 \times 2` containing :math:`N_1` two dimensional wave vectors.</span>
-<span class="sd">        points (numpy.ndarray): array of size :math:`N_2 \times 2` containing the :math:`N_2` points of a realization of the point process :math:`\mathcal{X}`.</span>
+
+<span class="sd">        k (np.ndarray): np.array of d columns (where d is the dimesion of the space containing the points) where each row correspond to a wave vector. As mentioned before its recommended to keep the default ``k`` and to specify ``k_max`` instead, so that the approximation will be evaluated on allowed wavevectors. Defaults to None.</span>
+
+<span class="sd">        points (np.ndarray): np.ndarray od d columns where each row consits a point from the realization of the point process.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        numpy.ndarray: Vector of evaluation of the scattering intensity on ``k``.</span>
@@ -247,10 +253,30 @@
     <span class="k">return</span> <span class="n">bin_centers</span><span class="p">,</span> <span class="n">bin_mean</span><span class="p">,</span> <span class="n">bin_std</span></div>
 
 
-<span class="k">def</span> <span class="nf">plot_poisson</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;k&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">)),</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Poisson&quot;</span><span class="p">):</span>
-    <span class="c1"># todo add docstring</span>
+<div class="viewcode-block" id="plot_poisson"><a class="viewcode-back" href="../../utils.html#structure_factor.utils.plot_poisson">[docs]</a><span class="k">def</span> <span class="nf">plot_poisson</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;k&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">)),</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Poisson&quot;</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;plot the pair correlation function :math:`g_{poisson}` and the structure factor :math:`S_{poisson}` corresponding to the Poisson point process.</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        g_{poisson} = S_{poisson} = 1</span>
+
+
+<span class="sd">    Args:</span>
+<span class="sd">        x (np.array): x coordinate.</span>
+
+<span class="sd">        axis (axis): axis on which to add the plot.</span>
+
+<span class="sd">        c (str, optional): color of the plot. see `matplotlib &lt;https://matplotlib.org/2.1.1/api/_as_gen/matplotlib.pyplot.plot.html&gt;`_ . Defaults to &quot;k&quot;.</span>
+
+<span class="sd">        linestyle (tuple, optional): linstyle of the plot. see `linestyle &lt;https://matplotlib.org/stable/gallery/lines_bars_and_markers/linestyles.html&gt;`_. Defaults to (0, (5, 10)).</span>
+
+<span class="sd">        label (str, optional): specification of the label of the plot. Defaults to &quot;Poisson&quot;.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        plot: plot of the pair correlation function and the structure factor of the Poisson point process over `x`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">axis</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">c</span><span class="o">=</span><span class="n">c</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="n">linestyle</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">axis</span>
+    <span class="k">return</span> <span class="n">axis</span></div>
 
 
 <div class="viewcode-block" id="plot_summary"><a class="viewcode-back" href="../../utils.html#structure_factor.utils.plot_summary">[docs]</a><span class="k">def</span> <span class="nf">plot_summary</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;mean $\pm$ 3 $\cdot$ std&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">binning_params</span><span class="p">):</span>
