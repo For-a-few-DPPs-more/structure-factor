@@ -20,7 +20,7 @@ sf_ginibre_box = StructureFactor(ginibre_pp_box)  # initialize the class Structu
 norm_k, si = sf_ginibre_box.scattering_intensity(k_max=6, meshgrid_shape=(200, 200))
 
 # plot
-sf_ginibre_box.plot_2D_scattering_intensity(
+sf_ginibre_box.plot_scattering_intensity(
     norm_k,
     si,
     plot_type="all",
