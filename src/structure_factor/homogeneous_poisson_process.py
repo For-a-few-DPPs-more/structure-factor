@@ -1,4 +1,4 @@
-from structure_factor.spatial_windows import AbstractSpatialWindow, UnitBoxWindow
+from structure_factor.spatial_windows import AbstractSpatialWindow
 from structure_factor.utils import get_random_number_generator
 
 

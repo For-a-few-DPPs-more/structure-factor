@@ -60,8 +60,6 @@ def structure_factor_ginibre(k):
 
 ###### utils for the class StructureFactor
 
-# ? see difference between odd and even L why the final size of the meshgrid change?
-
 
 def allowed_wave_vectors(d, L, k_max, meshgrid_shape=None):
     r"""Given a realization of a point process in a cubic window with length :math:`L`, return a subset of the set of the 'allowed' wave vectors (defined below) :math:`\{\mathbf{k}_i\}_i` at which the structure factor :math:`S(\mathbf{k}_i)` is consistently estimated by the scattering intensity :math:`\widehat{S}_{SI}` .
