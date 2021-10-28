@@ -65,6 +65,8 @@ def test_allowed_wave_vectors(d, L, max_k, meshgrid_size, result):
             np.full((6, 2), 1),
             6,
         ),
+        (np.full((1, 5), 1), np.full((8, 5), 0), 8),
+        (np.full((1, 1), 1), np.full((12, 1), 0), 12),
     ],
 )
 def test_compute_scattering_intensity(k, points, expected):
