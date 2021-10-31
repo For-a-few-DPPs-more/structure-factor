@@ -22,8 +22,7 @@
 ## Introduction
 
 In condensed matter physics, it has been observed for some particle systems that, the variance of the number of points in a large window is lower than expected, a phenomenon called hyperuniformity.
-
-TODO: Introduce briefly the structure factor: observable/measurable, defined through the Fourier transform of the pair correlation function.
+To study the hyperuniformity of a given point process, common practice in statistical physics is to estimate a spectral measure called the **structure factor**, the behavior of which around zero is a sign of hyperuniformity. The structure factor of a point process is defined via the Fourier transform of its total correlation function. For more details [see](https://scoste.fr/assets/survey_hyperuniformity.pdf).
 
 A point process is also called hyperuniform if its structure factor vanishes at zero.
 
