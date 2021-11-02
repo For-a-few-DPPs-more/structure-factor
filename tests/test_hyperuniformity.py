@@ -22,12 +22,11 @@ x_2 = np.linspace(0.5, 2, 50)
         (k, structure_factor_ginibre(k), True),
     ],
 )
-# ? I don't understand what is tested: the value of the hyperuniformity index or the fact that is it small (< 1e-3)
-# todo use a more explicit name, test_small_hyperuniformity_index or test_hyperuniformity_index_should_be...
-def test_hyperuniformity_index(k, sf_k, expected):
+def test_effective_hyperuniformity(k, sf_k, expected):
+    # verify that the hyperuniformity index for the ginibre ensemble is less than 1e-3
     # todo rename hyp_test, it reads like hypothesis test
-    hyp_test = Hyperuniformity(k, sf_k)
-    index_H, _ = hyp_test.index_H(k_norm_stop=4)
+    hyperuniformity_test = Hyperuniformity(k, sf_k)
+    index_H, _ = hyperuniformity_test.effective_hyperuniformity(k_norm_stop=4)
     result = index_H < 1e-3
     assert result == expected
 
@@ -39,6 +38,6 @@ def test_hyperuniformity_index(k, sf_k, expected):
         (x_2, f(6, 0.5, x_2), 6, 0.5),
     ],
 )
-def test_power_decay(x, fx, c, alpha):
+def test_hyperuniformity_class(x, fx, c, alpha):
     test = Hyperuniformity(x, fx)
-    assert alpha, c == test.power_decay()
+    assert alpha, c == test.hyperuniformity_class()

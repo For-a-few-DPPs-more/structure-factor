@@ -1,7 +1,7 @@
 from structure_factor.data import load_data
 from structure_factor.spatial_windows import BoxWindow
 from structure_factor.structure_factor import StructureFactor
-import structure_factor.utils as utils
+import numpy as np
 
 # load Ginibre PointPattern
 ginibre_pp = load_data.load_ginibre()
@@ -18,7 +18,7 @@ sf_ginibre_box = StructureFactor(ginibre_pp_box)  # initialize the class Structu
 norm_k, si = sf_ginibre_box.scattering_intensity(k_component_max=6, meshgrid_shape=200)
 
 
-# test effective hyperuniformity
+# test hyperuniformity class
 from structure_factor.hyperuniformity import Hyperuniformity
 
 # initialize Hyperuniformity
@@ -26,7 +26,7 @@ hyperuniformity_test = Hyperuniformity(norm_k, si)
 # regularization of the approximated result
 hyperuniformity_test.bin_data(bins=40)
 # find power decay
-sf_power_decay, c = hyperuniformity_test.power_decay(norm_k_stop=1)
+sf_power_decay, c = hyperuniformity_test.hyperuniformity_class(norm_k_stop=1)
 print(
     "The estimated power of the decay to zero of the approximated structure factor is:",
     sf_power_decay,
