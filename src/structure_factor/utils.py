@@ -62,15 +62,15 @@ def structure_factor_ginibre(k):
 
 
 def allowed_wave_vectors(d, L, k_max, meshgrid_shape=None):
-    r"""Given a realization of a point process in a cubic window with length :math:`L`, return a subset of the set of the 'allowed' wave vectors (defined below) :math:`\{\mathbf{k}_i\}_i` at which the structure factor :math:`S(\mathbf{k}_i)` is consistently estimated by the scattering intensity :math:`\widehat{S}_{SI}` .
+    r"""Given a realization of a point process in a cubic window with length :math:`L`, return a subset of the set of the 'allowed' wave vectors (defined below) :math:`\{\mathbf{k}_i\}_i` at which the the scattering intensity :math:`\widehat{S}_{SI}` is consistently an estimator of the structure factor :math:`S(\mathbf{k}_i)`.
 
-    The allowed waves vectors are :math:`\{\mathbf{k}_i\}_i` s.t.,
+    The allowed wave vectors are :math:`\mathbf{k}_i` s.t.,
 
     .. math::
 
         \{\mathbf{k}_i\}_i \subset \{\frac{2 \pi}{L} \mathbf{n} ~ ; ~ \mathbf{n} \in (\mathbb{Z}^d)^\ast \}.
 
-    The maximum and the number of output allowed wave vectors are specified by setting the parameters `k_max` and `meshgrid_shape`.
+    The maximum and the number of output allowed wave vectors are specified by using the parameters `k_max` and `meshgrid_shape`.
 
 
     Args:
@@ -79,14 +79,14 @@ def allowed_wave_vectors(d, L, k_max, meshgrid_shape=None):
 
         L (float): length of the cubic window containing the sample of points.
 
-        k_max (float): maximum component of the waves vectors i.e., for any output allowed wave vector :math:`\mathbf{k}=(k_1,...,k_d)`, we have :math:`k_i \leq k\_max` for all i. This implies that the maximum wave vectors will be :math:`(k\_max, ... k\_max)`.
+        k_max (float): maximum component of the waves vectors i.e., for any allowed wave vector :math:`\mathbf{k}=(k_1,...,k_d)`, :math:`k_i \leq k\_max` for all i. This implies that the maximum wave vector will be :math:`(k\_max, ... k\_max)`.
 
-        meshgrid_shape (tuple, optional): tuple of length `d`, where each element specify the number of component over the corresponding axis. It consists of the associated size of the meshgrid of allowed waves. For example if we are working in 2 dimensions, letting meshgid_shape=(2,3) will give a meshgrid of allowed waves formed by a vector of 2 values over the x-axis and a vectors of 3 values over the y-axis. Defaults to None.
+        meshgrid_shape (tuple, optional): tuple of length `d`, where each element specify the number of components over the corresponding axis. It consists of the associated size of the meshgrid of allowed waves. For example for :math:`d=2`, letting meshgid_shape=(2,3) gives a meshgrid of allowed waves formed by a vector of 2 values over the x-axis and a vectors of 3 values over the y-axis. Defaults to None.
 
     Returns:
         tuple (np.ndarray, list):
-            - k : np.array with d columns where each row is an allowed wave vector.
-            - K : list of meshgrid where the elements of the list corresponding to the 2D respresentation of the components of the wave vectors, i.e., it's a 2D representation of the vectors of allowed values ``k``. For example in dimension 2, if K =[X,Y] then X is the 2D representation of the x coordinates of the allowed wave vectors ``k`` i.e., the representation as meshgrid.
+            - k : np.array with ``d`` columns where each row is an allowed wave vector.
+            - K : list of meshgrids, (the elements of the list correspond to the 2D respresentation of the components of the wave vectors, i.e., a 2D representation of the vectors of allowed values ``k``). For example in dimension 2, if K =[X,Y] then X is the 2D representation of the x coordinates of the allowed wave vectors ``k`` i.e., the representation as meshgrid.
 
     """
     K = None
@@ -153,25 +153,27 @@ def allowed_wave_vectors(d, L, k_max, meshgrid_shape=None):
 
 
 def compute_scattering_intensity(k, points):
-    r"""Compute the scattering intensity which is an ensemble estimator of the structure factor of an ergodic stationary point process :math:`\mathcal{X} \subset \mathbb{R}^2`, defined below.
+    r"""Compute the scattering intensity :math:`\widehat{S}_{SI}`, for a realization of points :math:`\{\mathbf{x}_i\}_{i=1}^N` of :math:`\mathbb{R}^d`.
 
     .. math::
-        SI(\mathbf{k}) = \left \lvert \sum_{x \in \mathcal{X}} \exp(- i \left\langle \mathbf{k}, \mathbf{x} \right\rangle) \right\rvert^2
 
-    where :math:`\mathbf{k} \in \mathbb{R}^2` is a wave vector.
+        \widehat{S}_{SI}(\mathbf{k}) =
+             \frac{1}{N}\left\lvert
+                \sum_{j=1}^N
+                    \exp(- i \left\langle \mathbf{k}, \mathbf{x_j} \right\rangle)
+            \right\rvert^2
+
+    where :math:`\mathbf{k} \in \mathbb{R}^d` is a wave vector.
 
     Args:
 
-        k (np.ndarray): np.array of d columns (where d is the dimesion of the space containing the points) where each row correspond to a wave vector. As mentioned before its recommended to keep the default ``k`` and to specify ``k_max`` instead, so that the approximation will be evaluated on allowed wavevectors. Defaults to None.
+        k (np.ndarray): np.ndarray of d columns (where d is the dimesion of the space containing the points) where each row correspond to a wave vector.
 
-        points (np.ndarray): np.ndarray od d columns where each row consits a point from the realization of the point process.
+        points (np.ndarray): np.ndarray of d columns where each row is a point from the realization of the point process.
 
     Returns:
-        numpy.ndarray: Vector of evaluation of the scattering intensity on ``k``.
+        numpy.ndarray: Vector of evaluations of the scattering intensity on ``k``.
 
-    .. seealso::
-
-        `Wikipedia structure factor/scattering intensity <https://en.wikipedia.org/wiki/Structure_factor>`_.
     """
     n = points.shape[0]  # number of points
     if points.shape[1] != k.shape[1]:
@@ -186,7 +188,7 @@ def compute_scattering_intensity(k, points):
 
 
 def _bin_statistics(x, y, **params):
-    """Divide ``x`` into bins and evaluate the mean and the standard deviation of the corresponding element of ``y`` over the each bin.
+    """Divide ``x`` into bins and evaluate the mean and the standard deviation of the corresponding elements of ``y`` over each bin.
 
     Args:
         x (np.ndarray): vector of data.
@@ -197,8 +199,8 @@ def _bin_statistics(x, y, **params):
 
     Returns:
         tuple(numpy.ndarray, numpy.ndarray, numpy.ndarray):
-            - ``bin_centers`` vector of centers of the bins associated to ``x``,
-            - ``bin_mean`` vector of means of ``y`` over the bins,
+            - ``bin_centers`` vector of centers of the bins associated to ``x``.
+            - ``bin_mean`` vector of means of ``y`` over the bins.
             - ``std_mean`` vector of standard deviation of ``y`` over the bins.
     """
     bin_mean, bin_edges, _ = stats.binned_statistic(x, y, statistic="mean", **params)
@@ -221,7 +223,7 @@ def plot_poisson(x, axis, c="k", linestyle=(0, (5, 10)), label="Poisson"):
     Args:
         x (np.array): x coordinate.
 
-        axis (axis): axis on which to add the plot.
+        axis (matplotlib.axis): axis on which to add the plot.
 
         c (str, optional): color of the plot. see `matplotlib <https://matplotlib.org/2.1.1/api/_as_gen/matplotlib.pyplot.plot.html>`_ . Defaults to "k".
 
@@ -230,14 +232,14 @@ def plot_poisson(x, axis, c="k", linestyle=(0, (5, 10)), label="Poisson"):
         label (str, optional): specification of the label of the plot. Defaults to "Poisson".
 
     Returns:
-        plot: plot of the pair correlation function and the structure factor of the Poisson point process over `x`.
+        matplotlib.plot: plot of the pair correlation function and the structure factor of the Poisson point process over ``x``.
     """
     axis.plot(x, np.ones_like(x), c=c, linestyle=linestyle, label=label)
     return axis
 
 
 def plot_summary(x, y, axis, label=r"mean $\pm$ 3 $\cdot$ std", **binning_params):
-    """Loglog plot the summary results of _bin_statistics function i.e. means and errors bars (3 standard deviations)."""
+    """Loglog plot the summary results of :py:meth:`_bin_statistics` i.e., means and errors bars (3 standard deviations)."""
     bin_centers, bin_mean, bin_std = _bin_statistics(x, y, **binning_params)
     axis.loglog(bin_centers, bin_mean, "b.")
     axis.errorbar(
@@ -357,7 +359,7 @@ def plot_si_all(
     window_res=None,
     **binning_params
 ):
-    """Construct 3 subplots: point pattern, associated scattering intensity plot, associated scattering intensity color level."""
+    """Construct 3 subplots: point pattern, associated scattering intensity plot, associated scattering intensity color level (only for 2D point processes)."""
     figure, axes = plt.subplots(1, 3, figsize=(24, 6))
 
     point_pattern.plot(axis=axes[0], window_res=window_res)
@@ -411,7 +413,7 @@ def plot_sf_hankel_quadrature(
     label=r"$\widehat{S}_{H}$",
     **binning_params
 ):
-    """Plot approximation of structure factor using :py:meth:`~structure_factor.hankel_quadrature` with means and error bars over bins."""
+    """Plot the approximations of the structure factor (results of :py:meth:`~structure_factor.hankel_quadrature`) with means and error bars over bins, see :py:meth:`~structure_factor.utils._bin_statistics`."""
     if axis is None:
         fig, axis = plt.subplots(figsize=(8, 5))
 
