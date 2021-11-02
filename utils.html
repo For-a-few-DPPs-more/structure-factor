@@ -82,24 +82,24 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="structure_factor.utils.allowed_wave_vectors">
 <span class="sig-prename descclassname"><span class="pre">structure_factor.utils.</span></span><span class="sig-name descname"><span class="pre">allowed_wave_vectors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k_max</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meshgrid_shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/utils.html#allowed_wave_vectors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.utils.allowed_wave_vectors" title="Permalink to this definition">¶</a></dt>
-<dd><p>Given a realization of a point process in a cubic window with length <span class="math notranslate nohighlight">\(L\)</span>, return a subset of the set of the ‘allowed’ wave vectors (defined below) <span class="math notranslate nohighlight">\(\{\mathbf{k}_i\}_i\)</span> at which the structure factor <span class="math notranslate nohighlight">\(S(\mathbf{k}_i)\)</span> is consistently estimated by the scattering intensity <span class="math notranslate nohighlight">\(\widehat{S}_{SI}\)</span> .</p>
-<p>The allowed waves vectors are <span class="math notranslate nohighlight">\(\{\mathbf{k}_i\}_i\)</span> s.t.,</p>
+<dd><p>Given a realization of a point process in a cubic window with length <span class="math notranslate nohighlight">\(L\)</span>, return a subset of the set of the ‘allowed’ wave vectors (defined below) <span class="math notranslate nohighlight">\(\{\mathbf{k}_i\}_i\)</span> at which the the scattering intensity <span class="math notranslate nohighlight">\(\widehat{S}_{SI}\)</span> is consistently an estimator of the structure factor <span class="math notranslate nohighlight">\(S(\mathbf{k}_i)\)</span>.</p>
+<p>The allowed wave vectors are <span class="math notranslate nohighlight">\(\mathbf{k}_i\)</span> s.t.,</p>
 <div class="math notranslate nohighlight">
 \[\{\mathbf{k}_i\}_i \subset \{\frac{2 \pi}{L} \mathbf{n} ~ ; ~ \mathbf{n} \in (\mathbb{Z}^d)^\ast \}.\]</div>
-<p>The maximum and the number of output allowed wave vectors are specified by setting the parameters <cite>k_max</cite> and <cite>meshgrid_shape</cite>.</p>
+<p>The maximum and the number of output allowed wave vectors are specified by using the parameters <cite>k_max</cite> and <cite>meshgrid_shape</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>d</strong> (<em>int</em>) – dimension of the space containing the point process.</p></li>
 <li><p><strong>L</strong> (<em>float</em>) – length of the cubic window containing the sample of points.</p></li>
-<li><p><strong>k_max</strong> (<em>float</em>) – maximum component of the waves vectors i.e., for any output allowed wave vector <span class="math notranslate nohighlight">\(\mathbf{k}=(k_1,...,k_d)\)</span>, we have <span class="math notranslate nohighlight">\(k_i \leq k\_max\)</span> for all i. This implies that the maximum wave vectors will be <span class="math notranslate nohighlight">\((k\_max, ... k\_max)\)</span>.</p></li>
-<li><p><strong>meshgrid_shape</strong> (<em>tuple</em><em>, </em><em>optional</em>) – tuple of length <cite>d</cite>, where each element specify the number of component over the corresponding axis. It consists of the associated size of the meshgrid of allowed waves. For example if we are working in 2 dimensions, letting meshgid_shape=(2,3) will give a meshgrid of allowed waves formed by a vector of 2 values over the x-axis and a vectors of 3 values over the y-axis. Defaults to None.</p></li>
+<li><p><strong>k_max</strong> (<em>float</em>) – maximum component of the waves vectors i.e., for any allowed wave vector <span class="math notranslate nohighlight">\(\mathbf{k}=(k_1,...,k_d)\)</span>, <span class="math notranslate nohighlight">\(k_i \leq k\_max\)</span> for all i. This implies that the maximum wave vector will be <span class="math notranslate nohighlight">\((k\_max, ... k\_max)\)</span>.</p></li>
+<li><p><strong>meshgrid_shape</strong> (<em>tuple</em><em>, </em><em>optional</em>) – tuple of length <cite>d</cite>, where each element specify the number of components over the corresponding axis. It consists of the associated size of the meshgrid of allowed waves. For example for <span class="math notranslate nohighlight">\(d=2\)</span>, letting meshgid_shape=(2,3) gives a meshgrid of allowed waves formed by a vector of 2 values over the x-axis and a vectors of 3 values over the y-axis. Defaults to None.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><ul class="simple">
-<li><p>k : np.array with d columns where each row is an allowed wave vector.</p></li>
-<li><p>K : list of meshgrid where the elements of the list corresponding to the 2D respresentation of the components of the wave vectors, i.e., it’s a 2D representation of the vectors of allowed values <code class="docutils literal notranslate"><span class="pre">k</span></code>. For example in dimension 2, if K =[X,Y] then X is the 2D representation of the x coordinates of the allowed wave vectors <code class="docutils literal notranslate"><span class="pre">k</span></code> i.e., the representation as meshgrid.</p></li>
+<li><p>k : np.array with <code class="docutils literal notranslate"><span class="pre">d</span></code> columns where each row is an allowed wave vector.</p></li>
+<li><p>K : list of meshgrids, (the elements of the list correspond to the 2D respresentation of the components of the wave vectors, i.e., a 2D representation of the vectors of allowed values <code class="docutils literal notranslate"><span class="pre">k</span></code>). For example in dimension 2, if K =[X,Y] then X is the 2D representation of the x coordinates of the allowed wave vectors <code class="docutils literal notranslate"><span class="pre">k</span></code> i.e., the representation as meshgrid.</p></li>
 </ul>
 </p>
 </dd>
@@ -112,34 +112,34 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="structure_factor.utils.compute_scattering_intensity">
 <span class="sig-prename descclassname"><span class="pre">structure_factor.utils.</span></span><span class="sig-name descname"><span class="pre">compute_scattering_intensity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">points</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/utils.html#compute_scattering_intensity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.utils.compute_scattering_intensity" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute the scattering intensity which is an ensemble estimator of the structure factor of an ergodic stationary point process <span class="math notranslate nohighlight">\(\mathcal{X} \subset \mathbb{R}^2\)</span>, defined below.</p>
+<dd><p>Compute the scattering intensity <span class="math notranslate nohighlight">\(\widehat{S}_{SI}\)</span>, for a realization of points <span class="math notranslate nohighlight">\(\{\mathbf{x}_i\}_{i=1}^N\)</span> of <span class="math notranslate nohighlight">\(\mathbb{R}^d\)</span>.</p>
 <div class="math notranslate nohighlight">
-\[SI(\mathbf{k}) = \left \lvert \sum_{x \in \mathcal{X}} \exp(- i \left\langle \mathbf{k}, \mathbf{x} \right\rangle) \right\rvert^2\]</div>
-<p>where <span class="math notranslate nohighlight">\(\mathbf{k} \in \mathbb{R}^2\)</span> is a wave vector.</p>
+\[\widehat{S}_{SI}(\mathbf{k}) =
+     \frac{1}{N}\left\lvert
+        \sum_{j=1}^N
+            \exp(- i \left\langle \mathbf{k}, \mathbf{x_j} \right\rangle)
+    \right\rvert^2\]</div>
+<p>where <span class="math notranslate nohighlight">\(\mathbf{k} \in \mathbb{R}^d\)</span> is a wave vector.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>k</strong> (<em>np.ndarray</em>) – np.array of d columns (where d is the dimesion of the space containing the points) where each row correspond to a wave vector. As mentioned before its recommended to keep the default <code class="docutils literal notranslate"><span class="pre">k</span></code> and to specify <code class="docutils literal notranslate"><span class="pre">k_max</span></code> instead, so that the approximation will be evaluated on allowed wavevectors. Defaults to None.</p></li>
-<li><p><strong>points</strong> (<em>np.ndarray</em>) – np.ndarray od d columns where each row consits a point from the realization of the point process.</p></li>
+<li><p><strong>k</strong> (<em>np.ndarray</em>) – np.ndarray of d columns (where d is the dimesion of the space containing the points) where each row correspond to a wave vector.</p></li>
+<li><p><strong>points</strong> (<em>np.ndarray</em>) – np.ndarray of d columns where each row is a point from the realization of the point process.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Vector of evaluation of the scattering intensity on <code class="docutils literal notranslate"><span class="pre">k</span></code>.</p>
+<dd class="field-even"><p>Vector of evaluations of the scattering intensity on <code class="docutils literal notranslate"><span class="pre">k</span></code>.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>numpy.ndarray</p>
 </dd>
 </dl>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p><a class="reference external" href="https://en.wikipedia.org/wiki/Structure_factor">Wikipedia structure factor/scattering intensity</a>.</p>
-</div>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="structure_factor.utils._bin_statistics">
 <span class="sig-prename descclassname"><span class="pre">structure_factor.utils.</span></span><span class="sig-name descname"><span class="pre">_bin_statistics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/utils.html#_bin_statistics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.utils._bin_statistics" title="Permalink to this definition">¶</a></dt>
-<dd><p>Divide <code class="docutils literal notranslate"><span class="pre">x</span></code> into bins and evaluate the mean and the standard deviation of the corresponding element of <code class="docutils literal notranslate"><span class="pre">y</span></code> over the each bin.</p>
+<dd><p>Divide <code class="docutils literal notranslate"><span class="pre">x</span></code> into bins and evaluate the mean and the standard deviation of the corresponding elements of <code class="docutils literal notranslate"><span class="pre">y</span></code> over each bin.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -152,8 +152,8 @@
 </dd>
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p><ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">bin_centers</span></code> vector of centers of the bins associated to <code class="docutils literal notranslate"><span class="pre">x</span></code>,</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">bin_mean</span></code> vector of means of <code class="docutils literal notranslate"><span class="pre">y</span></code> over the bins,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bin_centers</span></code> vector of centers of the bins associated to <code class="docutils literal notranslate"><span class="pre">x</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bin_mean</span></code> vector of means of <code class="docutils literal notranslate"><span class="pre">y</span></code> over the bins.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">std_mean</span></code> vector of standard deviation of <code class="docutils literal notranslate"><span class="pre">y</span></code> over the bins.</p></li>
 </ul>
 </p>
@@ -174,17 +174,17 @@
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x</strong> (<em>np.array</em>) – x coordinate.</p></li>
-<li><p><strong>axis</strong> (<em>axis</em>) – axis on which to add the plot.</p></li>
+<li><p><strong>axis</strong> (<em>matplotlib.axis</em>) – axis on which to add the plot.</p></li>
 <li><p><strong>c</strong> (<em>str</em><em>, </em><em>optional</em>) – color of the plot. see <a class="reference external" href="https://matplotlib.org/2.1.1/api/_as_gen/matplotlib.pyplot.plot.html">matplotlib</a> . Defaults to “k”.</p></li>
 <li><p><strong>linestyle</strong> (<em>tuple</em><em>, </em><em>optional</em>) – linstyle of the plot. see <a class="reference external" href="https://matplotlib.org/stable/gallery/lines_bars_and_markers/linestyles.html">linestyle</a>. Defaults to (0, (5, 10)).</p></li>
 <li><p><strong>label</strong> (<em>str</em><em>, </em><em>optional</em>) – specification of the label of the plot. Defaults to “Poisson”.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>plot of the pair correlation function and the structure factor of the Poisson point process over <cite>x</cite>.</p>
+<dd class="field-even"><p>plot of the pair correlation function and the structure factor of the Poisson point process over <code class="docutils literal notranslate"><span class="pre">x</span></code>.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>plot</p>
+<dd class="field-odd"><p>matplotlib.plot</p>
 </dd>
 </dl>
 </dd></dl>
@@ -192,7 +192,7 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="structure_factor.utils.plot_summary">
 <span class="sig-prename descclassname"><span class="pre">structure_factor.utils.</span></span><span class="sig-name descname"><span class="pre">plot_summary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mean</span> <span class="pre">$\\pm$</span> <span class="pre">3</span> <span class="pre">$\\cdot$</span> <span class="pre">std'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">binning_params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/utils.html#plot_summary"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.utils.plot_summary" title="Permalink to this definition">¶</a></dt>
-<dd><p>Loglog plot the summary results of _bin_statistics function i.e. means and errors bars (3 standard deviations).</p>
+<dd><p>Loglog plot the summary results of <a class="reference internal" href="#structure_factor.utils._bin_statistics" title="structure_factor.utils._bin_statistics"><code class="xref py py-meth docutils literal notranslate"><span class="pre">_bin_statistics()</span></code></a> i.e., means and errors bars (3 standard deviations).</p>
 </dd></dl>
 
 <dl class="py function">
@@ -222,7 +222,7 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="structure_factor.utils.plot_si_all">
 <span class="sig-prename descclassname"><span class="pre">structure_factor.utils.</span></span><span class="sig-name descname"><span class="pre">plot_si_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">point_pattern</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">norm_k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">si</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exact_sf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error_bar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_res</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">binning_params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/utils.html#plot_si_all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.utils.plot_si_all" title="Permalink to this definition">¶</a></dt>
-<dd><p>Construct 3 subplots: point pattern, associated scattering intensity plot, associated scattering intensity color level.</p>
+<dd><p>Construct 3 subplots: point pattern, associated scattering intensity plot, associated scattering intensity color level (only for 2D point processes).</p>
 </dd></dl>
 
 <dl class="py function">
@@ -234,7 +234,7 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="structure_factor.utils.plot_sf_hankel_quadrature">
 <span class="sig-prename descclassname"><span class="pre">structure_factor.utils.</span></span><span class="sig-name descname"><span class="pre">plot_sf_hankel_quadrature</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">norm_k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k_min</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exact_sf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error_bar</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'$\\widehat{S}_{H}$'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">binning_params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/utils.html#plot_sf_hankel_quadrature"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.utils.plot_sf_hankel_quadrature" title="Permalink to this definition">¶</a></dt>
-<dd><p>Plot approximation of structure factor using <code class="xref py py-meth docutils literal notranslate"><span class="pre">hankel_quadrature()</span></code> with means and error bars over bins.</p>
+<dd><p>Plot the approximations of the structure factor (results of <code class="xref py py-meth docutils literal notranslate"><span class="pre">hankel_quadrature()</span></code>) with means and error bars over bins, see <a class="reference internal" href="#structure_factor.utils._bin_statistics" title="structure_factor.utils._bin_statistics"><code class="xref py py-meth docutils literal notranslate"><span class="pre">_bin_statistics()</span></code></a>.</p>
 </dd></dl>
 
 </section>

@@ -103,15 +103,15 @@
 
 
 <div class="viewcode-block" id="allowed_wave_vectors"><a class="viewcode-back" href="../../utils.html#structure_factor.utils.allowed_wave_vectors">[docs]</a><span class="k">def</span> <span class="nf">allowed_wave_vectors</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">k_max</span><span class="p">,</span> <span class="n">meshgrid_shape</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Given a realization of a point process in a cubic window with length :math:`L`, return a subset of the set of the &#39;allowed&#39; wave vectors (defined below) :math:`\{\mathbf{k}_i\}_i` at which the structure factor :math:`S(\mathbf{k}_i)` is consistently estimated by the scattering intensity :math:`\widehat{S}_{SI}` .</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Given a realization of a point process in a cubic window with length :math:`L`, return a subset of the set of the &#39;allowed&#39; wave vectors (defined below) :math:`\{\mathbf{k}_i\}_i` at which the the scattering intensity :math:`\widehat{S}_{SI}` is consistently an estimator of the structure factor :math:`S(\mathbf{k}_i)`.</span>
 
-<span class="sd">    The allowed waves vectors are :math:`\{\mathbf{k}_i\}_i` s.t.,</span>
+<span class="sd">    The allowed wave vectors are :math:`\mathbf{k}_i` s.t.,</span>
 
 <span class="sd">    .. math::</span>
 
 <span class="sd">        \{\mathbf{k}_i\}_i \subset \{\frac{2 \pi}{L} \mathbf{n} ~ ; ~ \mathbf{n} \in (\mathbb{Z}^d)^\ast \}.</span>
 
-<span class="sd">    The maximum and the number of output allowed wave vectors are specified by setting the parameters `k_max` and `meshgrid_shape`.</span>
+<span class="sd">    The maximum and the number of output allowed wave vectors are specified by using the parameters `k_max` and `meshgrid_shape`.</span>
 
 
 <span class="sd">    Args:</span>
@@ -120,14 +120,14 @@
 
 <span class="sd">        L (float): length of the cubic window containing the sample of points.</span>
 
-<span class="sd">        k_max (float): maximum component of the waves vectors i.e., for any output allowed wave vector :math:`\mathbf{k}=(k_1,...,k_d)`, we have :math:`k_i \leq k\_max` for all i. This implies that the maximum wave vectors will be :math:`(k\_max, ... k\_max)`.</span>
+<span class="sd">        k_max (float): maximum component of the waves vectors i.e., for any allowed wave vector :math:`\mathbf{k}=(k_1,...,k_d)`, :math:`k_i \leq k\_max` for all i. This implies that the maximum wave vector will be :math:`(k\_max, ... k\_max)`.</span>
 
-<span class="sd">        meshgrid_shape (tuple, optional): tuple of length `d`, where each element specify the number of component over the corresponding axis. It consists of the associated size of the meshgrid of allowed waves. For example if we are working in 2 dimensions, letting meshgid_shape=(2,3) will give a meshgrid of allowed waves formed by a vector of 2 values over the x-axis and a vectors of 3 values over the y-axis. Defaults to None.</span>
+<span class="sd">        meshgrid_shape (tuple, optional): tuple of length `d`, where each element specify the number of components over the corresponding axis. It consists of the associated size of the meshgrid of allowed waves. For example for :math:`d=2`, letting meshgid_shape=(2,3) gives a meshgrid of allowed waves formed by a vector of 2 values over the x-axis and a vectors of 3 values over the y-axis. Defaults to None.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        tuple (np.ndarray, list):</span>
-<span class="sd">            - k : np.array with d columns where each row is an allowed wave vector.</span>
-<span class="sd">            - K : list of meshgrid where the elements of the list corresponding to the 2D respresentation of the components of the wave vectors, i.e., it&#39;s a 2D representation of the vectors of allowed values ``k``. For example in dimension 2, if K =[X,Y] then X is the 2D representation of the x coordinates of the allowed wave vectors ``k`` i.e., the representation as meshgrid.</span>
+<span class="sd">            - k : np.array with ``d`` columns where each row is an allowed wave vector.</span>
+<span class="sd">            - K : list of meshgrids, (the elements of the list correspond to the 2D respresentation of the components of the wave vectors, i.e., a 2D representation of the vectors of allowed values ``k``). For example in dimension 2, if K =[X,Y] then X is the 2D representation of the x coordinates of the allowed wave vectors ``k`` i.e., the representation as meshgrid.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">K</span> <span class="o">=</span> <span class="kc">None</span>
@@ -194,25 +194,27 @@
 
 
 <div class="viewcode-block" id="compute_scattering_intensity"><a class="viewcode-back" href="../../utils.html#structure_factor.utils.compute_scattering_intensity">[docs]</a><span class="k">def</span> <span class="nf">compute_scattering_intensity</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">points</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the scattering intensity which is an ensemble estimator of the structure factor of an ergodic stationary point process :math:`\mathcal{X} \subset \mathbb{R}^2`, defined below.</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the scattering intensity :math:`\widehat{S}_{SI}`, for a realization of points :math:`\{\mathbf{x}_i\}_{i=1}^N` of :math:`\mathbb{R}^d`.</span>
 
 <span class="sd">    .. math::</span>
-<span class="sd">        SI(\mathbf{k}) = \left \lvert \sum_{x \in \mathcal{X}} \exp(- i \left\langle \mathbf{k}, \mathbf{x} \right\rangle) \right\rvert^2</span>
 
-<span class="sd">    where :math:`\mathbf{k} \in \mathbb{R}^2` is a wave vector.</span>
+<span class="sd">        \widehat{S}_{SI}(\mathbf{k}) =</span>
+<span class="sd">             \frac{1}{N}\left\lvert</span>
+<span class="sd">                \sum_{j=1}^N</span>
+<span class="sd">                    \exp(- i \left\langle \mathbf{k}, \mathbf{x_j} \right\rangle)</span>
+<span class="sd">            \right\rvert^2</span>
+
+<span class="sd">    where :math:`\mathbf{k} \in \mathbb{R}^d` is a wave vector.</span>
 
 <span class="sd">    Args:</span>
 
-<span class="sd">        k (np.ndarray): np.array of d columns (where d is the dimesion of the space containing the points) where each row correspond to a wave vector. As mentioned before its recommended to keep the default ``k`` and to specify ``k_max`` instead, so that the approximation will be evaluated on allowed wavevectors. Defaults to None.</span>
+<span class="sd">        k (np.ndarray): np.ndarray of d columns (where d is the dimesion of the space containing the points) where each row correspond to a wave vector.</span>
 
-<span class="sd">        points (np.ndarray): np.ndarray od d columns where each row consits a point from the realization of the point process.</span>
+<span class="sd">        points (np.ndarray): np.ndarray of d columns where each row is a point from the realization of the point process.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        numpy.ndarray: Vector of evaluation of the scattering intensity on ``k``.</span>
+<span class="sd">        numpy.ndarray: Vector of evaluations of the scattering intensity on ``k``.</span>
 
-<span class="sd">    .. seealso::</span>
-
-<span class="sd">        `Wikipedia structure factor/scattering intensity &lt;https://en.wikipedia.org/wiki/Structure_factor&gt;`_.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">n</span> <span class="o">=</span> <span class="n">points</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># number of points</span>
     <span class="k">if</span> <span class="n">points</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">k</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
@@ -227,7 +229,7 @@
 
 
 <div class="viewcode-block" id="_bin_statistics"><a class="viewcode-back" href="../../utils.html#structure_factor.utils._bin_statistics">[docs]</a><span class="k">def</span> <span class="nf">_bin_statistics</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Divide ``x`` into bins and evaluate the mean and the standard deviation of the corresponding element of ``y`` over the each bin.</span>
+    <span class="sd">&quot;&quot;&quot;Divide ``x`` into bins and evaluate the mean and the standard deviation of the corresponding elements of ``y`` over each bin.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        x (np.ndarray): vector of data.</span>
@@ -238,8 +240,8 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        tuple(numpy.ndarray, numpy.ndarray, numpy.ndarray):</span>
-<span class="sd">            - ``bin_centers`` vector of centers of the bins associated to ``x``,</span>
-<span class="sd">            - ``bin_mean`` vector of means of ``y`` over the bins,</span>
+<span class="sd">            - ``bin_centers`` vector of centers of the bins associated to ``x``.</span>
+<span class="sd">            - ``bin_mean`` vector of means of ``y`` over the bins.</span>
 <span class="sd">            - ``std_mean`` vector of standard deviation of ``y`` over the bins.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">bin_mean</span><span class="p">,</span> <span class="n">bin_edges</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">binned_statistic</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">statistic</span><span class="o">=</span><span class="s2">&quot;mean&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span>
@@ -262,7 +264,7 @@
 <span class="sd">    Args:</span>
 <span class="sd">        x (np.array): x coordinate.</span>
 
-<span class="sd">        axis (axis): axis on which to add the plot.</span>
+<span class="sd">        axis (matplotlib.axis): axis on which to add the plot.</span>
 
 <span class="sd">        c (str, optional): color of the plot. see `matplotlib &lt;https://matplotlib.org/2.1.1/api/_as_gen/matplotlib.pyplot.plot.html&gt;`_ . Defaults to &quot;k&quot;.</span>
 
@@ -271,14 +273,14 @@
 <span class="sd">        label (str, optional): specification of the label of the plot. Defaults to &quot;Poisson&quot;.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        plot: plot of the pair correlation function and the structure factor of the Poisson point process over `x`.</span>
+<span class="sd">        matplotlib.plot: plot of the pair correlation function and the structure factor of the Poisson point process over ``x``.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">axis</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">c</span><span class="o">=</span><span class="n">c</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="n">linestyle</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">axis</span></div>
 
 
 <div class="viewcode-block" id="plot_summary"><a class="viewcode-back" href="../../utils.html#structure_factor.utils.plot_summary">[docs]</a><span class="k">def</span> <span class="nf">plot_summary</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;mean $\pm$ 3 $\cdot$ std&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">binning_params</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Loglog plot the summary results of _bin_statistics function i.e. means and errors bars (3 standard deviations).&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Loglog plot the summary results of :py:meth:`_bin_statistics` i.e., means and errors bars (3 standard deviations).&quot;&quot;&quot;</span>
     <span class="n">bin_centers</span><span class="p">,</span> <span class="n">bin_mean</span><span class="p">,</span> <span class="n">bin_std</span> <span class="o">=</span> <span class="n">_bin_statistics</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="o">**</span><span class="n">binning_params</span><span class="p">)</span>
     <span class="n">axis</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">bin_centers</span><span class="p">,</span> <span class="n">bin_mean</span><span class="p">,</span> <span class="s2">&quot;b.&quot;</span><span class="p">)</span>
     <span class="n">axis</span><span class="o">.</span><span class="n">errorbar</span><span class="p">(</span>
@@ -398,7 +400,7 @@
     <span class="n">window_res</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="o">**</span><span class="n">binning_params</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Construct 3 subplots: point pattern, associated scattering intensity plot, associated scattering intensity color level.&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Construct 3 subplots: point pattern, associated scattering intensity plot, associated scattering intensity color level (only for 2D point processes).&quot;&quot;&quot;</span>
     <span class="n">figure</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">24</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
 
     <span class="n">point_pattern</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">window_res</span><span class="o">=</span><span class="n">window_res</span><span class="p">)</span>
@@ -452,7 +454,7 @@
     <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;$\widehat</span><span class="si">{S}</span><span class="s2">_</span><span class="si">{H}</span><span class="s2">$&quot;</span><span class="p">,</span>
     <span class="o">**</span><span class="n">binning_params</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Plot approximation of structure factor using :py:meth:`~structure_factor.hankel_quadrature` with means and error bars over bins.&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Plot the approximations of the structure factor (results of :py:meth:`~structure_factor.hankel_quadrature`) with means and error bars over bins, see :py:meth:`~structure_factor.utils._bin_statistics`.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">fig</span><span class="p">,</span> <span class="n">axis</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
 

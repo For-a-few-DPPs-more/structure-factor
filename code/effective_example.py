@@ -26,7 +26,7 @@ hyperuniformity_test = Hyperuniformity(k_norm, si)
 # regularization of the approximated result
 hyperuniformity_test.bin_data(bins=40)
 # find the H index
-H_ginibre, std = hyperuniformity_test.index_H(k_norm_stop=4)
+H_ginibre, std = hyperuniformity_test.effective_hyperuniformity(k_norm_stop=4)
 print("H_ginibre=", H_ginibre)
 
 
