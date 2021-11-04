@@ -3,6 +3,7 @@
 
 import numpy as np
 from scipy import interpolate
+import structure_factor.utils as utils
 
 from structure_factor.utils import bessel1, bessel1_zeros, bessel2
 
@@ -14,9 +15,9 @@ class RadiallySymmetricFourierTransform:
         assert isinstance(dimension, int)
         assert dimension % 2 == 0
         self.d = dimension
-        self.rmax = None
+        self.r_max = None
 
-    def transform(self, f, k, method="Ogata", **params):
+    def transform(self, f, k, method, **params):
         r"""Evaluate the Fourier transform :math:`F[f](k)` of the radially symmetric function :math:`f` at :math:`k` using the `correspondence with the Hankel transform <https://en.wikipedia.org/wiki/Hankel_transform#Fourier_transform_in_d_dimensions_(radially_symmetric_case)>`_.
 
         .. math::
@@ -63,12 +64,6 @@ class RadiallySymmetricFourierTransform:
         hankel_transform = hankel_transformer[method]
         return hankel_transform(order)
 
-    def compute_k_min(self, step_size):
-        # todo add docstring
-        rmax = self.rmax
-        # todo explain the hard coded choice of 2.7
-        return (2.7 * np.pi) / (rmax * step_size)
-
 
 class HankelTransform:
     r"""`Hankel transform <https://en.wikipedia.org/wiki/Hankel_transform>`_.
@@ -103,11 +98,11 @@ class HankelTransformBaddourChouinard(HankelTransform):
     def __init__(self, order=0):
         super().__init__(order=order)
         self.bessel_zeros = None
-        self.rmax = None  # R in :cite:`BaCh15` Section 4.B
+        self.r_max = None  # R in :cite:`BaCh15` Section 4.B
         self.transformation_matrix = None  # Y in :cite:`BaCh15` Section 6.A
 
     # todo ajouter des defuat pour nb_points
-    def compute_transformation_parameters(self, rmax, nb_points):
+    def compute_transformation_parameters(self, r_max, nb_points):
         """Compute parameters involved in the computation of the corresponding Hankel-type transform using the discretization scheme of :cite:`BaCh15`.
 
         The following object's attributes are defined
@@ -128,7 +123,7 @@ class HankelTransformBaddourChouinard(HankelTransform):
         Y *= 2 / jN
 
         self.bessel_zeros = bessel_zeros
-        self.rmax = rmax
+        self.r_max = r_max
         self.transformation_matrix = Y
 
     def transform(self, f, k=None, **interpolation_params):
@@ -140,7 +135,7 @@ class HankelTransformBaddourChouinard(HankelTransform):
 
         Args:
             f (callable): function to be Hankel transformed
-            k (np.ndarray, optional): points of evaluation of the Hankel transform. Defaults to None. If ``k`` is None (default), ``k = self.bessel_zeros[:-1] / self.rmax`` derived from :py:meth:`~structure_factor.transforms.HankelTransformBaddourChouinard.compute_transformation_parameters`. If ``k`` is provided, the Hankel transform is first computed at the above k values (case k is None), then interpolated using :py:func:`scipy.interpolate.interp1d` with ``interpolation_params`` and finally evaluated at the provided ``k`` values.
+            k (np.ndarray, optional): points of evaluation of the Hankel transform. Defaults to None. If ``k`` is None (default), ``k = self.bessel_zeros[:-1] / self.r_max`` derived from :py:meth:`~structure_factor.transforms.HankelTransformBaddourChouinard.compute_transformation_parameters`. If ``k`` is provided, the Hankel transform is first computed at the above k values (case k is None), then interpolated using :py:func:`scipy.interpolate.interp1d` with ``interpolation_params`` and finally evaluated at the provided ``k`` values.
 
         Keyword Args:
             interpolation_params (dict): keyword arguments of :py:func:`scipy.interpolate.interp1d`.
@@ -149,12 +144,12 @@ class HankelTransformBaddourChouinard(HankelTransform):
             tuple (scalar or np.ndarray, scalar or np.ndarray): :math:`k, H[f](k)`
         """
         assert callable(f)
-        rmax = self.rmax
+        r_max = self.r_max
         Y = self.transformation_matrix
         jk, jN = self.bessel_zeros[:-1], self.bessel_zeros[-1]
-        r = jk * (rmax / jN)
-        ht_k = (rmax ** 2 / jN) * Y.dot(f(r))  # Equation (23)
-        _k = jk / rmax
+        r = jk * (r_max / jN)
+        ht_k = (r_max ** 2 / jN) * Y.dot(f(r))  # Equation (23)
+        _k = jk / r_max
         if k is not None:
             interpolation_params["assume_sorted"] = True
             interpolation_params.setdefault("fill_value", "extrapolate")
@@ -181,9 +176,10 @@ class HankelTransformOgata(HankelTransform):
     def __init__(self, order=0):
         super().__init__(order=order)
         self.nodes, self.weights = None, None
+        self.k_min = None
 
     def compute_transformation_parameters(
-        self, rmax=None, nb_points=300, step_size=0.01
+        self, r_max=None, nb_points=300, step_size=0.01
     ):
         """Compute the quadrature nodes and weights used by :cite:`Oga05` Equation (5.2) to evaluate the corresponding Hankel-type transform.
 
@@ -197,13 +193,15 @@ class HankelTransformOgata(HankelTransform):
         n = self.order
         h = step_size
         N = nb_points
-        self.rmax = rmax
+        self.r_max = r_max
         t = bessel1_zeros(n, N)
         weights = bessel2(n, t) / bessel1(n + 1, t)  # Equation (1.2)
         t *= h / np.pi  # Equivalent of xi variable
         weights *= self._d_psi(t)
         nodes = (np.pi / h) * self._psi(t)  # Change of variable Equation (5.1)
         self.nodes, self.weights = nodes, weights
+        if r_max is not None:
+            self.k_min = utils._compute_k_min(r_max=r_max, step_size=step_size)
         return nodes, weights
 
     def transform(self, f, k):
