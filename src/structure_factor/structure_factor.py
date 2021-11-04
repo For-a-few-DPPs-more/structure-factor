@@ -48,8 +48,6 @@ class StructureFactor:
         :cite:`Tor18`, Section 2.1, equation (13).
     """
 
-    # ! Mettre un warning que scattering_intensity marche seulement dans les cubic windows, pcf pour dimension 2 et 3 seulement, hankel pour isotropic en dimension 2, en dimension 3 faire un MC pour approximer l'integral
-
     def __init__(self, point_pattern):
         r"""Initialize StructureFactor from ``point_pattern``.
 
@@ -132,7 +130,8 @@ class StructureFactor:
         point_pattern = self.point_pattern
         window = point_pattern.window
         d = point_pattern.dimension
-        # todo add assert k_max in a number
+
+        assert isinstance(k_max, float) or isinstance(k_max, int)
 
         if not isinstance(window, BoxWindow):
             warnings.warn(
