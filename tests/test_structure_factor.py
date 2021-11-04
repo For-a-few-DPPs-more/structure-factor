@@ -113,7 +113,7 @@ def test_interpolate_pcf_ginibre(ginibre_pp, radius):
 def test_compute_pcf(ginibre_pp):
     sf_pp = StructureFactor(ginibre_pp)
     pcf_fv = sf_pp.compute_pcf(
-        method="fv", Kest=dict(rmax=45), fv=dict(method="b", spar=0.1)
+        method="fv", Kest=dict(r_max=45), fv=dict(method="b", spar=0.1)
     )
     _, pcf_fv_func = sf_pp.interpolate_pcf(
         r=pcf_fv["r"], pcf_r=pcf_fv["pcf"], clean=True
@@ -135,7 +135,7 @@ def test_compute_pcf(ginibre_pp):
 def test_compute_structure_factor_ginibre_with_ogata(ginibre_pp, k_norm):
     sf_pp = StructureFactor(ginibre_pp)
     method = "Ogata"
-    params = dict(rmax=80, step_size=0.01, nb_points=1000)
+    params = dict(r_max=80, step_size=0.01, nb_points=1000)
     k_norm, sf_computed = sf_pp.hankel_quadrature(
         pair_correlation_function_ginibre, k_norm=k_norm, method=method, **params
     )
@@ -146,7 +146,7 @@ def test_compute_structure_factor_ginibre_with_ogata(ginibre_pp, k_norm):
 def test_compute_structure_factor_ginibre_with_baddour_chouinard(ginibre_pp):
     sf_pp = StructureFactor(ginibre_pp)
     method = "BaddourChouinard"
-    params = dict(rmax=80, nb_points=800)
+    params = dict(r_max=80, nb_points=800)
     k_norm, sf_computed = sf_pp.hankel_quadrature(
         pair_correlation_function_ginibre, k_norm=None, method=method, **params
     )

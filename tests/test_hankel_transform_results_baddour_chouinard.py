@@ -67,7 +67,6 @@ class TestHankelTransformWithBaddourChouinard(unittest.TestCase):
         desired = ht_f(k)
         np.testing.assert_almost_equal(actual, desired)
 
-    # todo why we use as if we already know that it may fail?
     def test_f2(self):
         a = 5
         f = lambda r: sinc(r, a)
