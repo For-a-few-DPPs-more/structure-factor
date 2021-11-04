@@ -9,7 +9,10 @@ from spatstat_interface.interface import SpatstatInterface
 import structure_factor.utils as utils
 from structure_factor.point_pattern import PointPattern
 from structure_factor.spatial_windows import BoxWindow, check_cubic_window
-from structure_factor.transforms import RadiallySymmetricFourierTransform
+from structure_factor.transforms import (
+    HankelTransformOgata,
+    RadiallySymmetricFourierTransform,
+)
 
 
 class StructureFactor:
@@ -378,13 +381,13 @@ class StructureFactor:
         params.setdefault("fill_value", "extrapolate")
         params.setdefault("kind", "cubic")
         rmin = np.min(r)
-        rmax = np.max(r)
+        r_max = np.max(r)
         if clean:
             pcf_r = utils.set_nan_inf_to_zero(pcf_r)
 
-        dict_rmin_rmax = dict(rmin=rmin, rmax=rmax)
+        dict_rmin_r_max = dict(rmin=rmin, r_max=r_max)
         pcf = interpolate.interp1d(r, pcf_r, **params)
-        return dict_rmin_rmax, pcf
+        return dict_rmin_r_max, pcf
 
     def hankel_quadrature(self, pcf, k_norm=None, method="BaddourChouinard", **params):
         r"""Compute the structure factor :math:`S` of the underlying **stationary isotropic** point process :math:`\mathcal{X} \subset \mathbb{R}^d`, which could be defined via the Hankel transform :math:`\mathcal{H}_{d/2 -1}` of order :math:`d/2 -1` as follows,
@@ -428,7 +431,7 @@ class StructureFactor:
                     - ``nb_points``
 
                 - ``method == "BaddourChouinard"``, see :py:meth:`~structure_factor.transforms.HankelTransformBaddourChouinard.compute_transformation_parameters`
-                    - ``rmax``
+                    - ``r_max``
                     - ``nb_points``
                     - ``interpolotation`` dictonnary containing the keyword arguments of `scipy.integrate.interp1d <https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html>`_ parameters.
 
@@ -456,19 +459,20 @@ class StructureFactor:
             raise ValueError(
                 "k_norm is not optional while using method='Ogata'. Please provide a vector k_norm in the input. "
             )
-        params.setdefault("rmax", None)
-        if method == "BaddourChouinard" and params["rmax"] is None:
+        params.setdefault("r_max", None)
+        if method == "BaddourChouinard" and params["r_max"] is None:
             raise ValueError(
-                "rmax is not optional while using method='BaddourChouinard'. Please provide rmax in the input. "
+                "r_max is not optional while using method='BaddourChouinard'. Please provide r_max in the input. "
             )
         ft = RadiallySymmetricFourierTransform(dimension=self.dimension)
         total_pcf = lambda r: pcf(r) - 1.0
         k_norm, ft_k = ft.transform(total_pcf, k_norm, method=method, **params)
-        if method == "Ogata" and params["rmax"] is not None:
+        if method == "Ogata" and params["r_max"] is not None:
             params.setdefault("step_size", 0.1)
             step_size = params["step_size"]
-            # todo il y a une fonct qui le fait why not used????
-            self.k_norm_min = (2.7 * np.pi) / (params["rmax"] * step_size)
+            self.k_norm_min = utils._compute_k_min(
+                r_max=params["r_max"], step_size=step_size
+            )
         sf = 1.0 + self.point_pattern.intensity * ft_k
         return k_norm, sf
 
