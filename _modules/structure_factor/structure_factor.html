@@ -50,7 +50,10 @@
 <span class="kn">import</span> <span class="nn">structure_factor.utils</span> <span class="k">as</span> <span class="nn">utils</span>
 <span class="kn">from</span> <span class="nn">structure_factor.point_pattern</span> <span class="kn">import</span> <span class="n">PointPattern</span>
 <span class="kn">from</span> <span class="nn">structure_factor.spatial_windows</span> <span class="kn">import</span> <span class="n">BoxWindow</span><span class="p">,</span> <span class="n">check_cubic_window</span>
-<span class="kn">from</span> <span class="nn">structure_factor.transforms</span> <span class="kn">import</span> <span class="n">RadiallySymmetricFourierTransform</span>
+<span class="kn">from</span> <span class="nn">structure_factor.transforms</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">HankelTransformOgata</span><span class="p">,</span>
+    <span class="n">RadiallySymmetricFourierTransform</span><span class="p">,</span>
+<span class="p">)</span>
 
 
 <div class="viewcode-block" id="StructureFactor"><a class="viewcode-back" href="../../structure_factor.html#structure_factor.structure_factor.StructureFactor">[docs]</a><span class="k">class</span> <span class="nc">StructureFactor</span><span class="p">:</span>
@@ -88,8 +91,6 @@
 
 <span class="sd">        :cite:`Tor18`, Section 2.1, equation (13).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="c1"># ! Mettre un warning que scattering_intensity marche seulement dans les cubic windows, pcf pour dimension 2 et 3 seulement, hankel pour isotropic en dimension 2, en dimension 3 faire un MC pour approximer l&#39;integral</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">point_pattern</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Initialize StructureFactor from ``point_pattern``.</span>
@@ -173,7 +174,8 @@
         <span class="n">point_pattern</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">point_pattern</span>
         <span class="n">window</span> <span class="o">=</span> <span class="n">point_pattern</span><span class="o">.</span><span class="n">window</span>
         <span class="n">d</span> <span class="o">=</span> <span class="n">point_pattern</span><span class="o">.</span><span class="n">dimension</span>
-        <span class="c1"># todo add assert k_max in a number</span>
+
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">k_max</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">k_max</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">window</span><span class="p">,</span> <span class="n">BoxWindow</span><span class="p">):</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
@@ -420,13 +422,13 @@
         <span class="n">params</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;fill_value&quot;</span><span class="p">,</span> <span class="s2">&quot;extrapolate&quot;</span><span class="p">)</span>
         <span class="n">params</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;kind&quot;</span><span class="p">,</span> <span class="s2">&quot;cubic&quot;</span><span class="p">)</span>
         <span class="n">rmin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
-        <span class="n">rmax</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+        <span class="n">r_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">clean</span><span class="p">:</span>
             <span class="n">pcf_r</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">set_nan_inf_to_zero</span><span class="p">(</span><span class="n">pcf_r</span><span class="p">)</span>
 
-        <span class="n">dict_rmin_rmax</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">rmin</span><span class="o">=</span><span class="n">rmin</span><span class="p">,</span> <span class="n">rmax</span><span class="o">=</span><span class="n">rmax</span><span class="p">)</span>
+        <span class="n">dict_rmin_r_max</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">rmin</span><span class="o">=</span><span class="n">rmin</span><span class="p">,</span> <span class="n">r_max</span><span class="o">=</span><span class="n">r_max</span><span class="p">)</span>
         <span class="n">pcf</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">pcf_r</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">dict_rmin_rmax</span><span class="p">,</span> <span class="n">pcf</span></div>
+        <span class="k">return</span> <span class="n">dict_rmin_r_max</span><span class="p">,</span> <span class="n">pcf</span></div>
 
 <div class="viewcode-block" id="StructureFactor.hankel_quadrature"><a class="viewcode-back" href="../../structure_factor.html#structure_factor.structure_factor.StructureFactor.hankel_quadrature">[docs]</a>    <span class="k">def</span> <span class="nf">hankel_quadrature</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pcf</span><span class="p">,</span> <span class="n">k_norm</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;BaddourChouinard&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the structure factor :math:`S` of the underlying **stationary isotropic** point process :math:`\mathcal{X} \subset \mathbb{R}^d`, which could be defined via the Hankel transform :math:`\mathcal{H}_{d/2 -1}` of order :math:`d/2 -1` as follows,</span>
@@ -470,7 +472,7 @@
 <span class="sd">                    - ``nb_points``</span>
 
 <span class="sd">                - ``method == &quot;BaddourChouinard&quot;``, see :py:meth:`~structure_factor.transforms.HankelTransformBaddourChouinard.compute_transformation_parameters`</span>
-<span class="sd">                    - ``rmax``</span>
+<span class="sd">                    - ``r_max``</span>
 <span class="sd">                    - ``nb_points``</span>
 <span class="sd">                    - ``interpolotation`` dictonnary containing the keyword arguments of `scipy.integrate.interp1d &lt;https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html&gt;`_ parameters.</span>
 
@@ -498,19 +500,20 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="s2">&quot;k_norm is not optional while using method=&#39;Ogata&#39;. Please provide a vector k_norm in the input. &quot;</span>
             <span class="p">)</span>
-        <span class="n">params</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;rmax&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;BaddourChouinard&quot;</span> <span class="ow">and</span> <span class="n">params</span><span class="p">[</span><span class="s2">&quot;rmax&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">params</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;r_max&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;BaddourChouinard&quot;</span> <span class="ow">and</span> <span class="n">params</span><span class="p">[</span><span class="s2">&quot;r_max&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;rmax is not optional while using method=&#39;BaddourChouinard&#39;. Please provide rmax in the input. &quot;</span>
+                <span class="s2">&quot;r_max is not optional while using method=&#39;BaddourChouinard&#39;. Please provide r_max in the input. &quot;</span>
             <span class="p">)</span>
         <span class="n">ft</span> <span class="o">=</span> <span class="n">RadiallySymmetricFourierTransform</span><span class="p">(</span><span class="n">dimension</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dimension</span><span class="p">)</span>
         <span class="n">total_pcf</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">r</span><span class="p">:</span> <span class="n">pcf</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="o">-</span> <span class="mf">1.0</span>
         <span class="n">k_norm</span><span class="p">,</span> <span class="n">ft_k</span> <span class="o">=</span> <span class="n">ft</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">total_pcf</span><span class="p">,</span> <span class="n">k_norm</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;Ogata&quot;</span> <span class="ow">and</span> <span class="n">params</span><span class="p">[</span><span class="s2">&quot;rmax&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;Ogata&quot;</span> <span class="ow">and</span> <span class="n">params</span><span class="p">[</span><span class="s2">&quot;r_max&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">params</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;step_size&quot;</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
             <span class="n">step_size</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s2">&quot;step_size&quot;</span><span class="p">]</span>
-            <span class="c1"># todo il y a une fonct qui le fait why not used????</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">k_norm_min</span> <span class="o">=</span> <span class="p">(</span><span class="mf">2.7</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;rmax&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">step_size</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">k_norm_min</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">_compute_k_min</span><span class="p">(</span>
+                <span class="n">r_max</span><span class="o">=</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;r_max&quot;</span><span class="p">],</span> <span class="n">step_size</span><span class="o">=</span><span class="n">step_size</span>
+            <span class="p">)</span>
         <span class="n">sf</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">point_pattern</span><span class="o">.</span><span class="n">intensity</span> <span class="o">*</span> <span class="n">ft_k</span>
         <span class="k">return</span> <span class="n">k_norm</span><span class="p">,</span> <span class="n">sf</span></div>
 

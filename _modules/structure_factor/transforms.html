@@ -44,6 +44,7 @@
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">interpolate</span>
+<span class="kn">import</span> <span class="nn">structure_factor.utils</span> <span class="k">as</span> <span class="nn">utils</span>
 
 <span class="kn">from</span> <span class="nn">structure_factor.utils</span> <span class="kn">import</span> <span class="n">bessel1</span><span class="p">,</span> <span class="n">bessel1_zeros</span><span class="p">,</span> <span class="n">bessel2</span>
 
@@ -55,9 +56,9 @@
         <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dimension</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
         <span class="k">assert</span> <span class="n">dimension</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">d</span> <span class="o">=</span> <span class="n">dimension</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">rmax</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">r_max</span> <span class="o">=</span> <span class="kc">None</span>
 
-<div class="viewcode-block" id="RadiallySymmetricFourierTransform.transform"><a class="viewcode-back" href="../../transforms.html#structure_factor.transforms.RadiallySymmetricFourierTransform.transform">[docs]</a>    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;Ogata&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">):</span>
+<div class="viewcode-block" id="RadiallySymmetricFourierTransform.transform"><a class="viewcode-back" href="../../transforms.html#structure_factor.transforms.RadiallySymmetricFourierTransform.transform">[docs]</a>    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Evaluate the Fourier transform :math:`F[f](k)` of the radially symmetric function :math:`f` at :math:`k` using the `correspondence with the Hankel transform &lt;https://en.wikipedia.org/wiki/Hankel_transform#Fourier_transform_in_d_dimensions_(radially_symmetric_case)&gt;`_.</span>
 
 <span class="sd">        .. math::</span>
@@ -102,13 +103,7 @@
             <span class="s2">&quot;BaddourChouinard&quot;</span><span class="p">:</span> <span class="n">HankelTransformBaddourChouinard</span><span class="p">,</span>
         <span class="p">}</span>
         <span class="n">hankel_transform</span> <span class="o">=</span> <span class="n">hankel_transformer</span><span class="p">[</span><span class="n">method</span><span class="p">]</span>
-        <span class="k">return</span> <span class="n">hankel_transform</span><span class="p">(</span><span class="n">order</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">compute_k_min</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step_size</span><span class="p">):</span>
-        <span class="c1"># todo add docstring</span>
-        <span class="n">rmax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rmax</span>
-        <span class="c1"># todo explain the hard coded choice of 2.7</span>
-        <span class="k">return</span> <span class="p">(</span><span class="mf">2.7</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">rmax</span> <span class="o">*</span> <span class="n">step_size</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">hankel_transform</span><span class="p">(</span><span class="n">order</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="HankelTransform"><a class="viewcode-back" href="../../transforms.html#structure_factor.transforms.HankelTransform">[docs]</a><span class="k">class</span> <span class="nc">HankelTransform</span><span class="p">:</span>
@@ -144,11 +139,11 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bessel_zeros</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">rmax</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># R in :cite:`BaCh15` Section 4.B</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">r_max</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># R in :cite:`BaCh15` Section 4.B</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">transformation_matrix</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Y in :cite:`BaCh15` Section 6.A</span>
 
     <span class="c1"># todo ajouter des defuat pour nb_points</span>
-<div class="viewcode-block" id="HankelTransformBaddourChouinard.compute_transformation_parameters"><a class="viewcode-back" href="../../transforms.html#structure_factor.transforms.HankelTransformBaddourChouinard.compute_transformation_parameters">[docs]</a>    <span class="k">def</span> <span class="nf">compute_transformation_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rmax</span><span class="p">,</span> <span class="n">nb_points</span><span class="p">):</span>
+<div class="viewcode-block" id="HankelTransformBaddourChouinard.compute_transformation_parameters"><a class="viewcode-back" href="../../transforms.html#structure_factor.transforms.HankelTransformBaddourChouinard.compute_transformation_parameters">[docs]</a>    <span class="k">def</span> <span class="nf">compute_transformation_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r_max</span><span class="p">,</span> <span class="n">nb_points</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Compute parameters involved in the computation of the corresponding Hankel-type transform using the discretization scheme of :cite:`BaCh15`.</span>
 
 <span class="sd">        The following object&#39;s attributes are defined</span>
@@ -169,7 +164,7 @@
         <span class="n">Y</span> <span class="o">*=</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">jN</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">bessel_zeros</span> <span class="o">=</span> <span class="n">bessel_zeros</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">rmax</span> <span class="o">=</span> <span class="n">rmax</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">r_max</span> <span class="o">=</span> <span class="n">r_max</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">transformation_matrix</span> <span class="o">=</span> <span class="n">Y</span></div>
 
 <div class="viewcode-block" id="HankelTransformBaddourChouinard.transform"><a class="viewcode-back" href="../../transforms.html#structure_factor.transforms.HankelTransformBaddourChouinard.transform">[docs]</a>    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">interpolation_params</span><span class="p">):</span>
@@ -181,7 +176,7 @@
 
 <span class="sd">        Args:</span>
 <span class="sd">            f (callable): function to be Hankel transformed</span>
-<span class="sd">            k (np.ndarray, optional): points of evaluation of the Hankel transform. Defaults to None. If ``k`` is None (default), ``k = self.bessel_zeros[:-1] / self.rmax`` derived from :py:meth:`~structure_factor.transforms.HankelTransformBaddourChouinard.compute_transformation_parameters`. If ``k`` is provided, the Hankel transform is first computed at the above k values (case k is None), then interpolated using :py:func:`scipy.interpolate.interp1d` with ``interpolation_params`` and finally evaluated at the provided ``k`` values.</span>
+<span class="sd">            k (np.ndarray, optional): points of evaluation of the Hankel transform. Defaults to None. If ``k`` is None (default), ``k = self.bessel_zeros[:-1] / self.r_max`` derived from :py:meth:`~structure_factor.transforms.HankelTransformBaddourChouinard.compute_transformation_parameters`. If ``k`` is provided, the Hankel transform is first computed at the above k values (case k is None), then interpolated using :py:func:`scipy.interpolate.interp1d` with ``interpolation_params`` and finally evaluated at the provided ``k`` values.</span>
 
 <span class="sd">        Keyword Args:</span>
 <span class="sd">            interpolation_params (dict): keyword arguments of :py:func:`scipy.interpolate.interp1d`.</span>
@@ -190,12 +185,12 @@
 <span class="sd">            tuple (scalar or np.ndarray, scalar or np.ndarray): :math:`k, H[f](k)`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">assert</span> <span class="n">callable</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
-        <span class="n">rmax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rmax</span>
+        <span class="n">r_max</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">r_max</span>
         <span class="n">Y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transformation_matrix</span>
         <span class="n">jk</span><span class="p">,</span> <span class="n">jN</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bessel_zeros</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">bessel_zeros</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-        <span class="n">r</span> <span class="o">=</span> <span class="n">jk</span> <span class="o">*</span> <span class="p">(</span><span class="n">rmax</span> <span class="o">/</span> <span class="n">jN</span><span class="p">)</span>
-        <span class="n">ht_k</span> <span class="o">=</span> <span class="p">(</span><span class="n">rmax</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">jN</span><span class="p">)</span> <span class="o">*</span> <span class="n">Y</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="n">r</span><span class="p">))</span>  <span class="c1"># Equation (23)</span>
-        <span class="n">_k</span> <span class="o">=</span> <span class="n">jk</span> <span class="o">/</span> <span class="n">rmax</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">jk</span> <span class="o">*</span> <span class="p">(</span><span class="n">r_max</span> <span class="o">/</span> <span class="n">jN</span><span class="p">)</span>
+        <span class="n">ht_k</span> <span class="o">=</span> <span class="p">(</span><span class="n">r_max</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">jN</span><span class="p">)</span> <span class="o">*</span> <span class="n">Y</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="n">r</span><span class="p">))</span>  <span class="c1"># Equation (23)</span>
+        <span class="n">_k</span> <span class="o">=</span> <span class="n">jk</span> <span class="o">/</span> <span class="n">r_max</span>
         <span class="k">if</span> <span class="n">k</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">interpolation_params</span><span class="p">[</span><span class="s2">&quot;assume_sorted&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="n">interpolation_params</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;fill_value&quot;</span><span class="p">,</span> <span class="s2">&quot;extrapolate&quot;</span><span class="p">)</span>
@@ -222,9 +217,10 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">k_min</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="HankelTransformOgata.compute_transformation_parameters"><a class="viewcode-back" href="../../transforms.html#structure_factor.transforms.HankelTransformOgata.compute_transformation_parameters">[docs]</a>    <span class="k">def</span> <span class="nf">compute_transformation_parameters</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">rmax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">nb_points</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="n">step_size</span><span class="o">=</span><span class="mf">0.01</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">r_max</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">nb_points</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="n">step_size</span><span class="o">=</span><span class="mf">0.01</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Compute the quadrature nodes and weights used by :cite:`Oga05` Equation (5.2) to evaluate the corresponding Hankel-type transform.</span>
 
@@ -238,13 +234,15 @@
         <span class="n">n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">order</span>
         <span class="n">h</span> <span class="o">=</span> <span class="n">step_size</span>
         <span class="n">N</span> <span class="o">=</span> <span class="n">nb_points</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">rmax</span> <span class="o">=</span> <span class="n">rmax</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">r_max</span> <span class="o">=</span> <span class="n">r_max</span>
         <span class="n">t</span> <span class="o">=</span> <span class="n">bessel1_zeros</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
         <span class="n">weights</span> <span class="o">=</span> <span class="n">bessel2</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span> <span class="o">/</span> <span class="n">bessel1</span><span class="p">(</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>  <span class="c1"># Equation (1.2)</span>
         <span class="n">t</span> <span class="o">*=</span> <span class="n">h</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span>  <span class="c1"># Equivalent of xi variable</span>
         <span class="n">weights</span> <span class="o">*=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_d_psi</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
         <span class="n">nodes</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="n">h</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_psi</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>  <span class="c1"># Change of variable Equation (5.1)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights</span> <span class="o">=</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">weights</span>
+        <span class="k">if</span> <span class="n">r_max</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">k_min</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">_compute_k_min</span><span class="p">(</span><span class="n">r_max</span><span class="o">=</span><span class="n">r_max</span><span class="p">,</span> <span class="n">step_size</span><span class="o">=</span><span class="n">step_size</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">weights</span></div>
 
 <div class="viewcode-block" id="HankelTransformOgata.transform"><a class="viewcode-back" href="../../transforms.html#structure_factor.transforms.HankelTransformOgata.transform">[docs]</a>    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
