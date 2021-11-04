@@ -381,6 +381,20 @@ def plot_si_all(
     return axes
 
 
+def _compute_k_min(r_max, step_size):
+    """estimate threshold of confidence for the approximation of the Hankel transform using Ogata method. i.e., minimum confidence k for which the approximation of the Hankel transform by Ogata quadrature is doable :cite:`Oga05`.
+    # todo add our paper ref
+
+    Args:
+        r_max (float): maximum radius on which the the function looking for its Hankel transform was approximated
+        step_size (float): stepsize used in the quadrature of Ogata.
+
+    Returns:
+        float: the threshold on k.
+    """
+    return (2.7 * np.pi) / (r_max * step_size)
+
+
 def plot_pcf(pcf_dataframe, exact_pcf, file_name, **kwargs):
     """Plot DataFrame result."""
     axis = pcf_dataframe.plot.line(x="r", **kwargs)
