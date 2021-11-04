@@ -58,6 +58,23 @@ def structure_factor_ginibre(k):
     return 1.0 - np.exp(-(k ** 2) / 4)
 
 
+def _reshape_meshgrid(X):
+    r"""reshape list of meshgrids as np.ndarray of columns, where each column is associated to an element (meshgrid) of the list.
+
+    Args:
+        X (list): list of meshgrids.
+
+    Returns:
+        np.ndarray: np.ndarray where each meshgrid of the original list is stacked as a column.
+    """
+    T = []
+    d = len(X)
+    for i in range(0, d):
+        T.append(X[i].ravel())
+    n = np.column_stack(T)  # stack in d columns
+    return n
+
+
 ###### utils for the class StructureFactor
 
 
@@ -92,34 +109,22 @@ def allowed_wave_vectors(d, L, k_max, meshgrid_shape=None):
     K = None
     n_max = np.floor(k_max * L / (2 * np.pi))  # maximum of ``n``
 
+    # warnings
     if meshgrid_shape is None:
         warnings.warn(message="Taking all allowed wave vectors may be time consuming.")
-        n_all = ()
-        n_i = np.arange(-n_max, n_max + 1, step=1)
-        n_i = n_i[n_i != 0]
-        n_all = (n_i for i in range(0, d))
-        X = np.meshgrid(*n_all, copy=False)
-        T = []
-        for i in range(0, d):
-            T.append(X[i].ravel())
-        n = np.column_stack(T)
-
     elif (np.array(meshgrid_shape) > (2 * n_max)).any():
         warnings.warn(
             message="meshgrid_shape should be less than the shape of meshgrid of the total allowed wave of points."
         )
-        n_i = np.arange(-n_max, n_max + 1, step=1)
+
+    if meshgrid_shape is None or (np.array(meshgrid_shape) > (2 * n_max)).any():
         n_all = ()
         n_i = np.arange(-n_max, n_max + 1, step=1)
         n_i = n_i[n_i != 0]
         n_all = (n_i for i in range(0, d))
         X = np.meshgrid(*n_all, copy=False)
         K = [X_i * 2 * np.pi / L for X_i in X]  # meshgrid of allowed wave vectors
-        # reshape allowed vectors as d columns
-        T = []
-        for i in range(0, d):
-            T.append(X[i].ravel())
-        n = np.column_stack(T)
+        n = _reshape_meshgrid(X)  # reshape allowed vectors as d columns
 
     else:
         if d == 1:
@@ -142,11 +147,7 @@ def allowed_wave_vectors(d, L, k_max, meshgrid_shape=None):
 
             X = np.meshgrid(*n_all, copy=False)
             K = [X_i * 2 * np.pi / L for X_i in X]  # meshgrid of allowed wave vectors
-            T = []
-            # reshape allowed wave vector as q*d array
-            for i in range(0, d):
-                T.append(X[i].ravel())
-            n = np.column_stack(T)  # allowed wave vectors  (d columns)
+            n = _reshape_meshgrid(X)  # reshape allowed vectors as d columns
 
     k = 2 * np.pi * n / L
     return k, K
