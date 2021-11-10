@@ -8,15 +8,12 @@ from structure_factor.utils import _bin_statistics
 class Hyperuniformity:
     r"""Compute indicator of hyperuniformity of a stationary isotropic (or effectively isotropic) point process :math:`\mathcal{X} \subset \mathbb{R}^d`, given the evaluation of its structure factor.
 
-    This class contains
+    **This class contains**:
         - A method for regularizing the approximated structure factor sample, :meth:`bin_data`, consisting on dividing the vector of wavelength into sub-intervals and taking the mean and strandard deviation over each sub-interval.
         - Test of effective hyperuniformity, :meth:`effective_hyperuniformity`, consisting on evaluating the index H of hyperuniformity :cite:`Kla+al19` and used to study if the sample is effectively hyperuniform.
         - Test of power decay of the structure factor near zero, :meth:`hyperuniformity_class`, used to determine the class of hyperuniformity of the sample :cite:`Cos21`.
 
-    .. note::
-
-        **Typical usage**:
-
+    **Typical usage**:
             1- Estimating the structure factor of a point process by one of the methods of :py:class:`~structure_factor.structure_factor.StructureFactor`.
 
             2- Regularize the results using :meth:`bin_data`.
@@ -47,9 +44,7 @@ class Hyperuniformity:
         self.i_first_peak = None
 
     def bin_data(self, **params):
-        """Regularization of the estimated the structure factor sample.
-
-        This method split the vector attribute :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.k_norm` into sub-intervals (or bins)  then evaluate over each sub-interval the mean and the standard deviation of the corresponding associated values of the vector attribute :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.sf`.
+        """Split the vector attribute :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.k_norm` into sub-intervals (or bins) and evaluate over each sub-interval the mean and the standard deviation of the corresponding values of the vector attribute :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.sf`.
 
         Args:
             params(dict): parameters associated to :py:func:`~structure_factor.utils._bin_statistics`.
@@ -60,15 +55,12 @@ class Hyperuniformity:
                 - self.sf: corresponding vector of means of the structure factor ``sf`` over the bins, representing the new vector attribute :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.sf`.
                 - self.std_sf: vector of standard deviations, representing the new vector attribute :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.std_sf`.
 
-        .. seealso::
-
-            :py:func:`~structure_factor.utils._bin_statistics`
-
         Example:
 
             .. literalinclude:: code/effective_example.py
                 :language: python
                 :lines: 22-27
+
         """
         self.k_norm, self.sf, self.std_sf = _bin_statistics(
             self.k_norm.ravel(), self.sf.ravel(), **params
@@ -76,25 +68,7 @@ class Hyperuniformity:
         return self.k_norm, self.sf, self.std_sf
 
     def effective_hyperuniformity(self, k_norm_stop=None, **kwargs):
-        r"""Estimate the effective hyperuniformity of a stationary isotropic point process :math:`\mathcal{X} \subset \mathbb{R}^d`, by calculating the value of the index :math:`H`.
-
-        :math:`\mathcal{X}` is said to be effectively hyperuniform if :math:`H \leq 10^{-3}` where
-
-        .. math::
-            H = \frac{\hat{S}(\mathbf{0})}{S(\mathbf{k}_{peak})}\cdot
-
-        - :math:`S` is the structure factor of :math:`\mathcal{X}`,
-        - :math:`\hat{S}(\mathbf{0})` is a linear extrapolation of the structure factor at :math:`\mathbf{k}=\mathbf{0}`,
-        - :math:`\mathbf{k}_{peak}` is the location of the first dominant peak value of :math:`S`.
-
-        .. seealso::
-
-            :cite:`Tor18` (Section 11.1.6) and :cite:`Kla+al19` (supplementary Section 8).
-
-        .. important::
-
-            To compute the numerator :math:`\hat{S}(\mathbf{0})` of the index :math:`H`, we fit a line using a linear regression with least square fit of the approximated structure factor :py:attr:`~Hyperuniformity.sf` associated to the values in  :py:attr:`~Hyperuniformity.k_norm`  until the threshhold ``k_norm_stop`` (which must be chosen before the stabilization of the structure factor around 1).
-            If the standard deviations of :py:attr:`~Hyperuniformity.sf` are provided in the attribute :py:attr:`~Hyperuniformity.std_sf` then these values will be considered while fitting the line.
+        r"""Evaluate the H index of the attribute :py:attr:`~Hyperuniformity.sf`. If :math:`H<10^{-3}` the corresponding point process is deemed effectively heyperuniform.
 
         Args:
             k_norm_stop (float, optional): threshhold on :py:attr:`~Hyperuniformity.sf` used for the linear regression. Defaults to None.
@@ -119,6 +93,24 @@ class Hyperuniformity:
             .. plot:: code/effective_example.py
                 :include-source: False
 
+        .. note::
+
+            A stationary isotropic point process :math:`\mathcal{X} \subset \mathbb{R}^d`, is said to be effectively hyperuniform  if :math:`H \leq 10^{-3}` where
+
+            .. math::
+                H = \frac{\hat{S}(\mathbf{0})}{S(\mathbf{k}_{peak})}\cdot
+
+            - :math:`S` is the structure factor of :math:`\mathcal{X}`,
+            - :math:`\hat{S}(\mathbf{0})` is a linear extrapolation of the structure factor at :math:`\mathbf{k}=\mathbf{0}`,
+            - :math:`\mathbf{k}_{peak}` is the location of the first dominant peak value of :math:`S`.
+
+            See :cite:`Tor18` (Section 11.1.6) and :cite:`Kla+al19` (supplementary Section 8).
+
+            .. important::
+
+                To compute the numerator :math:`\hat{S}(\mathbf{0})` of the index :math:`H`, we fit a line using a linear regression with least square fit of the approximated structure factor :py:attr:`~Hyperuniformity.sf` associated to the values in  :py:attr:`~Hyperuniformity.k_norm`  until the threshhold ``k_norm_stop`` (which must be chosen before the stabilization of the structure factor around 1).
+                If the standard deviations of :py:attr:`~Hyperuniformity.sf` are provided in the attribute :py:attr:`~Hyperuniformity.std_sf` then these values will be considered while fitting the line.
+
         """
 
         line = lambda x, a, b: a + b * x
@@ -139,13 +131,7 @@ class Hyperuniformity:
         return s0 / s_first_peak, s0_std
 
     def hyperuniformity_class(self, k_norm_stop=1, **kwargs):
-        r"""Fit a polynomial to the structure factor attribute, :py:attr:`~Hyperuniformity.sf`, of the form :math:`y = c \cdot x^{\alpha}`, where  :math:`\alpha` characterizes the class of hyperuniformity of the underlying point process as explained below.
-
-        For a stationary  hyperuniform point process :math:`\mathcal{X} \subset \mathbb{R}^d` such that :math:`\vert S(\mathbf{k})\vert\sim c \Vert \mathbf{k} \Vert^\alpha` in  the neighborhood of 0, we have(:cite:`Cos21`, Section 4.1)
-
-            - If :math:`\alpha > 1`, then :math:`Var\left [\mathcal{X}(B(0,R))\right ] = O(R^{d-1})`, correpsonding to the class 1 of hyperuniformity.
-            - If :math:`\alpha =1`, then :math:`Var\left [\mathcal{X}(B(0,R))\right ] = O(R^{d-1}\log(R))`, correpsonding to the class 2 of hyperuniformity.
-            - If :math:`\alpha \in ]0,1[`, then :math:`Var \left [\mathcal{X}(B(0,R))\right ] = O(R^{d-\alpha})`, correpsonding to the class 3 of hyperuniformity.
+        r"""Fit a polynomial :math:`y = c \cdot x^{\alpha}` to the attribute :py:attr:`~Hyperuniformity.sf`. :math:`\alpha` is used to specify the possible class of hyperuniformity of the associated point process.
 
         Args:
             k_norm_stop (float, optional): threshhold on :py:attr:`~Hyperuniformity.sf` used for fitting the polynomial. Defaults to None.
@@ -165,6 +151,14 @@ class Hyperuniformity:
             .. testoutput::
 
                 The estimated power of the decay to zero of the approximated structure factor is: 1.93893628269006
+
+        .. note::
+
+            For a stationary  hyperuniform point process :math:`\mathcal{X} \subset \mathbb{R}^d` such that :math:`\vert S(\mathbf{k})\vert\sim c \Vert \mathbf{k} \Vert^\alpha` in  the neighborhood of 0, we have(:cite:`Cos21`, Section 4.1)
+
+            - If :math:`\alpha > 1`, then :math:`Var\left [\mathcal{X}(B(0,R))\right ] = O(R^{d-1})`, correpsonding to the class 1 of hyperuniformity.
+            - If :math:`\alpha =1`, then :math:`Var\left [\mathcal{X}(B(0,R))\right ] = O(R^{d-1}\log(R))`, correpsonding to the class 2 of hyperuniformity.
+            - If :math:`\alpha \in ]0,1[`, then :math:`Var \left [\mathcal{X}(B(0,R))\right ] = O(R^{d-\alpha})`, correpsonding to the class 3 of hyperuniformity.
 
         """
         poly = lambda x, alpha, c: c * x ** alpha
