@@ -1,20 +1,20 @@
 [tool.poetry]
-name = "structure_factor"
+name = "structure-factor"
 version = "0.1.0"
 description = ""
 license = "MIT"
 authors = [
-    "Diala Hawat <diala.hawat@univ-lille.fr>",
+    "Diala Hawat <dialahawat7@gmail.com>",
     "Guillaume Gautier <guillaume.gga@gmail.com>",
 ]
 maintainers = [
-    "Diala Hawat <diala.hawat@univ-lille.fr>",
+    "Diala Hawat <dialahawat7@gmail.com>",
     "Guillaume Gautier <guillaume.gga@gmail.com>",
 ]
 readme = "README.md" # path to README file (.md or .rst)
 homepage = "https://github.com/For-a-few-DPPs-more/structure-factor"
 repository = "https://github.com/For-a-few-DPPs-more/structure-factor"
-documentation = "https://github.com/For-a-few-DPPs-more/structure-factor"
+documentation = "https://for-a-few-dpps-more.github.io/structure-factor/"
 keywords = [] # ["optimization", "gradrient descent"] at most 5 keywords
 classifiers = [
     "Intended Audience :: Science/Research",
