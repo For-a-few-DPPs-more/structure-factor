@@ -210,10 +210,11 @@ If the standard deviations of <code class="xref py py-attr docutils literal notr
 </dd>
 </dl>
 <p class="rubric">Example</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">structure_factor.data</span> <span class="kn">import</span> <span class="n">load_data</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">structure_factor.data</span> <span class="kn">import</span> <span class="n">load_data</span>
 <span class="kn">from</span> <span class="nn">structure_factor.spatial_windows</span> <span class="kn">import</span> <span class="n">BoxWindow</span>
 <span class="kn">from</span> <span class="nn">structure_factor.structure_factor</span> <span class="kn">import</span> <span class="n">StructureFactor</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="c1"># load Ginibre PointPattern</span>
 <span class="n">ginibre_pp</span> <span class="o">=</span> <span class="n">load_data</span><span class="o">.</span><span class="n">load_ginibre</span><span class="p">()</span>
@@ -237,9 +238,9 @@ If the standard deviations of <code class="xref py py-attr docutils literal notr
 <span class="n">hyperuniformity_test</span> <span class="o">=</span> <span class="n">Hyperuniformity</span><span class="p">(</span><span class="n">norm_k</span><span class="p">,</span> <span class="n">si</span><span class="p">)</span>
 <span class="c1"># regularization of the approximated result</span>
 <span class="n">hyperuniformity_test</span><span class="o">.</span><span class="n">bin_data</span><span class="p">(</span><span class="n">bins</span><span class="o">=</span><span class="mi">40</span><span class="p">)</span>
-<span class="c1"># find power decay</span>
-<span class="hll"><span class="n">sf_power_decay</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="n">hyperuniformity_test</span><span class="o">.</span><span class="n">hyperuniformity_class</span><span class="p">(</span><span class="n">norm_k_stop</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-</span><span class="nb">print</span><span class="p">(</span>
+<span class="hll"><span class="c1"># find power decay</span>
+</span><span class="n">sf_power_decay</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="n">hyperuniformity_test</span><span class="o">.</span><span class="n">hyperuniformity_class</span><span class="p">(</span><span class="n">k_norm_stop</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span>
     <span class="s2">&quot;The estimated power of the decay to zero of the approximated structure factor is:&quot;</span><span class="p">,</span>
     <span class="n">sf_power_decay</span><span class="p">,</span>
 <span class="p">)</span>
