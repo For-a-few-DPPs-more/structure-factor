@@ -1,8 +1,9 @@
 # structure_factor
 
-[![CI](https://github.com/For-a-few-DPPs-more/structure-factor/actions/workflows/ci.yml/badge.svg)](https://github.com/For-a-few-DPPs-more/structure-factor/actions/workflows/ci.yml)
+[![CI-tests](https://github.com/For-a-few-DPPs-more/structure-factor/actions/workflows/ci.yml/badge.svg)](https://github.com/For-a-few-DPPs-more/structure-factor/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/For-a-few-DPPs-more/structure-factor/branch/main/graph/badge.svg?token=FUDADJLO2W)](https://codecov.io/gh/For-a-few-DPPs-more/structure-factor)
-[![docs](https://github.com/For-a-few-DPPs-more/structure-factor/actions/workflows/docs.yml/badge.svg)](https://github.com/For-a-few-DPPs-more/structure-factor/actions/workflows/docs.yml)
+[![docs-build](https://github.com/For-a-few-DPPs-more/structure-factor/actions/workflows/docs.yml/badge.svg)](https://github.com/For-a-few-DPPs-more/structure-factor/actions/workflows/docs.yml)
+[![docs-page](https://img.shields.io/badge/docs-latest-blue)](https://for-a-few-dpps-more.github.io/structure-factor/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 > Approximate the structure factor of a stationary point process and test its effective hyperuniformity and identify its class of hyperuniformity.
@@ -86,7 +87,7 @@ The Python package `structure_factor` currently collects
 
 The package can be installed in **editable** mode using [`poetry`](https://python-poetry.org/).
 
-To to this, clone the repository:
+To do this, clone the repository:
 
 - if you considered [forking the repository](https://github.com/For-a-few-DPPs-more/structure-factor/fork)
 
@@ -104,8 +105,7 @@ and install the package in editable mode
 
 ```bash
 cd structure_factor
-# activate your virtual environment and run
-# poetry shell  # to create/activate local .venv (see poetry.toml)
+poetry shell  # to create/activate local .venv (see poetry.toml)
 poetry install
 # poetry install --no-dev  # to avoid installing the development dependencies
 # poetry add -E docs -E notebook  # to install extra dependencies
@@ -113,27 +113,58 @@ poetry install
 
 ## Documentation
 
-The documentation <https://for-a-few-dpps-more.github.io/structure-factor> is
+The documentation [![docs-page](https://img.shields.io/badge/docs-latest-blue)](https://for-a-few-dpps-more.github.io/structure-factor/) is
 
 - generated using [Sphinx](https://www.sphinx-doc.org/en/master/index.html), and
 - published via the GitHub workflow file [.github/workflows/docs.yml](.github/workflows/docs.yml).
 
 ### Build the documentation
 
-Assuming `structure_factor` has been installed, you can simply run
+If you use `poetry`
 
-```bash
-  # activate your virtual environment
+- install the documentation dependencies (see `[tool.poetry.extras]` in [`pyproject.toml`](./pyproject.toml))
+
+  ```bash
+  cd structure_factor
+  poetry shell  # to create/activate local .venv (see poetry.toml)
+  poetry install -E docs  # (see [tool.poetry.extras] in pyproject.toml)
+  ```
+
+- and run
+
+  ```bash
+  # cd structure_factor
+  # poetry shell  # to create/activate local .venv (see poetry.toml)
+  poetry run sphinx-build -b html docs docs/_build/html
+  open _build/html/index.html
+  ```
+
+Otherwise, if you don't use `poetry`
+
+- install the documentation dependencies (listed in `[tool.poetry.extras]` in [`pyproject.toml`](./pyproject.toml)), and
+
+- run
+
+  ```bash
   cd structure_factor
   sphinx-build -b html docs docs/_build/html
-  # poetry run sphinx-build -b html docs docs/_build/html
   open _build/html/index.html
-```
+  ```
 
 ## Getting started
 
 - [Jupyter](https://jupyter.org/) notebooks that showcase `structure_factor` are available in the [./notebooks](./notebooks) folder.
-- See the documentation <https://for-a-few-dpps-more.github.io/structure-factor>
+
+  - if you use `poetry`
+
+    ```bash
+    cd structure_factor
+    poetry shell  # to create/activate local .venv (see poetry.toml)
+    poetry install -E notebook  # (see [tool.poetry.extras] in pyproject.toml)
+    # open a notebook within VSCode for example
+    ```
+
+- See the documentation [![docs-page](https://img.shields.io/badge/docs-latest-blue)](https://for-a-few-dpps-more.github.io/structure-factor/)
 
 ## How to cite this work
 
