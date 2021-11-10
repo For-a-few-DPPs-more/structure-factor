@@ -4,9 +4,14 @@ on:
   push:
     branches:
       - main
-    paths-ignore:
-      - "**.md"
-      - ".github/workflows/docs.yml"
+    paths:
+      - "src/**"
+      - "tests/**"
+      - "pyproject.toml"
+      - "poetry.toml"
+      - "poetry.lock"
+      - "!**.md"
+      - "!.github/workflows/docs.yml"
   pull_request:
     paths-ignore:
       - "**.md"
