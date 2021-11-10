@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Structure factor &#8212; structure_factor  documentation</title>
+    <title>Structure factor &#8212; structure-factor  documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/classic.css" />
     <link rel="stylesheet" type="text/css" href="_static/plot_directive.css" />
@@ -37,7 +37,7 @@
         <li class="right" >
           <a href="spatial_windows.html" title="Spatial window"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">structure_factor  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">structure-factor  documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Structure factor</a></li> 
       </ul>
     </div>  
@@ -349,11 +349,11 @@ These bad data are result of failure of the method of approximating the pair cor
 </dd>
 </dl>
 <p class="rubric">Example</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># interpolate pcf_fv</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>                                <span class="n">spar</span><span class="o">=</span><span class="mf">0.1</span><span class="p">))</span>
+
+<span class="c1"># interpolate pcf_fv</span>
 <span class="n">domain</span><span class="p">,</span> <span class="n">pcf_fv_func</span> <span class="o">=</span> <span class="n">sf_ginibre</span><span class="o">.</span><span class="n">interpolate_pcf</span><span class="p">(</span><span class="n">r</span><span class="o">=</span><span class="n">pcf_fv</span><span class="p">[</span><span class="s2">&quot;r&quot;</span><span class="p">],</span> 
                                                  <span class="n">pcf_r</span><span class="o">=</span><span class="n">pcf_fv</span><span class="p">[</span><span class="s2">&quot;pcf&quot;</span><span class="p">],</span>
-                                                 <span class="n">clean</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
 </pre></div>
 </div>
 </dd></dl>
@@ -433,23 +433,23 @@ These bad data are result of failure of the method of approximating the pair cor
 <span class="n">sf_ginibre</span> <span class="o">=</span> <span class="n">StructureFactor</span><span class="p">(</span><span class="n">ginibre_pp</span><span class="p">)</span>
 
 <span class="c1"># compute pair correlation function</span>
-<span class="n">pcf_fv</span> <span class="o">=</span> <span class="n">sf_ginibre</span><span class="o">.</span><span class="n">compute_pcf</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;fv&quot;</span><span class="p">,</span> <span class="n">Kest</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">rmax</span><span class="o">=</span><span class="mi">45</span><span class="p">),</span> 
-                                <span class="n">fv</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="n">spar</span><span class="o">=</span><span class="mf">0.1</span><span class="p">))</span>
+<span class="n">pcf_fv</span> <span class="o">=</span> <span class="n">sf_ginibre</span><span class="o">.</span><span class="n">compute_pcf</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;fv&quot;</span><span class="p">,</span> 
+                                <span class="n">Kest</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">r_max</span><span class="o">=</span><span class="mi">45</span><span class="p">),</span> 
+                                <span class="n">fv</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;b&quot;</span><span class="p">,</span> 
+                                <span class="n">spar</span><span class="o">=</span><span class="mf">0.1</span><span class="p">))</span>
 
 <span class="c1"># interpolate pcf_fv</span>
 <span class="n">domain</span><span class="p">,</span> <span class="n">pcf_fv_func</span> <span class="o">=</span> <span class="n">sf_ginibre</span><span class="o">.</span><span class="n">interpolate_pcf</span><span class="p">(</span><span class="n">r</span><span class="o">=</span><span class="n">pcf_fv</span><span class="p">[</span><span class="s2">&quot;r&quot;</span><span class="p">],</span> 
                                                  <span class="n">pcf_r</span><span class="o">=</span><span class="n">pcf_fv</span><span class="p">[</span><span class="s2">&quot;pcf&quot;</span><span class="p">],</span>
-                                                 <span class="n">clean</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-<span class="hll"><span class="c1"># structure factor using Baddour Chouinard discrete hankel transform</span>
-</span><span class="hll"><span class="n">rmax</span> <span class="o">=</span> <span class="n">domain</span><span class="p">[</span><span class="s2">&quot;rmax&quot;</span><span class="p">]</span>
+<span class="hll">                                                 <span class="n">clean</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span class="hll">
+</span><span class="hll"><span class="c1"># structure factor using Baddour Chouinard discrete hankel transform</span>
+</span><span class="hll"><span class="n">r_max</span> <span class="o">=</span> <span class="n">domain</span><span class="p">[</span><span class="s2">&quot;r_max&quot;</span><span class="p">]</span>
 </span><span class="hll"><span class="n">k_norm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.3</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">2000</span><span class="p">)</span>
 </span><span class="hll"><span class="n">k_norm</span><span class="p">,</span> <span class="n">sf_BadChou</span> <span class="o">=</span> <span class="n">sf_ginibre</span><span class="o">.</span><span class="n">hankel_quadrature</span><span class="p">(</span> <span class="n">pcf_fv_func</span><span class="p">,</span> 
-</span><span class="hll">                                                        <span class="n">method</span><span class="o">=</span><span class="s2">&quot;BaddourChouinard&quot;</span><span class="p">,</span> 
-</span><span class="hll">                                                        <span class="n">k_norm</span><span class="o">=</span><span class="n">k_norm</span><span class="p">,</span> 
-</span><span class="hll">                                                        <span class="n">rmax</span><span class="o">=</span><span class="n">rmax</span><span class="p">,</span> 
-</span><span class="hll">                                                        <span class="n">nb_points</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
-</span>
+</span><span class="hll">                                                    <span class="n">method</span><span class="o">=</span><span class="s2">&quot;BaddourChouinard&quot;</span><span class="p">,</span> 
+</span><span class="hll">                                                    <span class="n">k_norm</span><span class="o">=</span><span class="n">k_norm</span><span class="p">,</span> 
+</span>                                                    <span class="n">r_max</span><span class="o">=</span><span class="n">r_max</span><span class="p">,</span> 
 </pre></div>
 </div>
 </dd></dl>
@@ -485,15 +485,18 @@ These bad data are result of failure of the method of approximating the pair cor
 </dd>
 </dl>
 <p class="rubric">Example</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># plot</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>                                                    <span class="n">nb_points</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+
+<span class="c1"># plot</span>
 <span class="n">sf_ginibre</span><span class="o">.</span><span class="n">plot_sf_hankel_quadrature</span><span class="p">(</span><span class="n">k_norm</span><span class="p">,</span><span class="n">sf_BadChou</span><span class="p">,</span>
                                     <span class="n">exact_sf</span><span class="o">=</span><span class="n">utils</span><span class="o">.</span><span class="n">structure_factor_ginibre</span><span class="p">,</span>
-                                    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;$S_</span><span class="si">{HBC}</span><span class="s2">(k)$&quot;</span><span class="p">,</span>
-                                    <span class="n">error_bar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                                    <span class="n">bins</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+                                    <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;$S_</span><span class="si">{HBC}</span><span class="s2">(k)$&quot;</span><span class="p">,</span>
 </pre></div>
 </div>
-<p>(<a class="reference external" href="./code/sf_baddour_example.py">Source code</a>)</p>
+<p>(<a class="reference external" href="./code/sf_baddour_example.py">Source code</a>, <a class="reference external" href="./code/sf_baddour_example.png">png</a>, <a class="reference external" href="./code/sf_baddour_example.hires.png">hires.png</a>, <a class="reference external" href="./code/sf_baddour_example.pdf">pdf</a>)</p>
+<figure class="align-default">
+<img alt="_images/sf_baddour_example.png" class="plot-directive" src="_images/sf_baddour_example.png" />
+</figure>
 </dd></dl>
 
 </dd></dl>
@@ -549,7 +552,7 @@ These bad data are result of failure of the method of approximating the pair cor
         <li class="right" >
           <a href="spatial_windows.html" title="Spatial window"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">structure_factor  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">structure-factor  documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Structure factor</a></li> 
       </ul>
     </div>
