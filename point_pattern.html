@@ -15,6 +15,7 @@
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -53,24 +54,52 @@
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">structure_factor.point_pattern.</span></span><span class="sig-name descname"><span class="pre">PointPattern</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intensity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/point_pattern.html#PointPattern"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.point_pattern.PointPattern" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Encapsulate a realization of a point process: the sampled points, the observation window, and the intensity of underlying point process.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>points</strong> (<em>np.ndarray</em>) – <span class="math notranslate nohighlight">\(N \times d\)</span> array collecting <span class="math notranslate nohighlight">\(N\)</span> points in dimension <span class="math notranslate nohighlight">\(d\)</span> consisting of a realization of a point process.</p></li>
+<li><p><strong>window</strong> (<a class="reference internal" href="spatial_windows.html#structure_factor.spatial_windows.AbstractSpatialWindow" title="structure_factor.spatial_windows.AbstractSpatialWindow"><em>AbstractSpatialWindow</em></a><em>, </em><em>optional</em>) – Observation window containing the <code class="docutils literal notranslate"><span class="pre">points</span></code>. Defaults to None.</p></li>
+<li><p><strong>intensity</strong> (<em>float</em><em>, </em><em>optional</em>) – intensity of the point process. Defaults to None.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">structure_factor.point_pattern</span> <span class="kn">import</span> <span class="n">PointPattern</span>
+
+<span class="c1"># Example with Ballwindow</span>
+<span class="kn">from</span> <span class="nn">structure_factor.spatial_windows</span> <span class="kn">import</span> <span class="n">BallWindow</span>
+<span class="c1"># create BallWindow</span>
+<span class="n">window</span> <span class="o">=</span> <span class="n">BallWindow</span><span class="p">(</span><span class="n">center</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">radius</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="c1"># create PointPattern object</span>
+<span class="n">point_pattern</span> <span class="o">=</span> <span class="n">PointPattern</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">window</span><span class="p">)</span>
+
+<span class="c1"># Example with Boxwindow</span>
+<span class="kn">from</span> <span class="nn">structure_factor.spatial_windows</span> <span class="kn">import</span> <span class="n">BoxWindow</span>
+<span class="c1"># create BoxWindow</span>
+<span class="n">L</span> <span class="o">=</span> <span class="mi">70</span>  <span class="c1"># sidelength of the window</span>
+<span class="n">bounds</span> <span class="o">=</span> <span class="p">[[</span><span class="o">-</span><span class="n">L</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">L</span> <span class="o">/</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="n">L</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">L</span> <span class="o">/</span> <span class="mi">2</span><span class="p">]]</span>  <span class="c1"># bounds of the window</span>
+<span class="n">window</span> <span class="o">=</span> <span class="n">BoxWindow</span><span class="p">(</span><span class="n">bounds</span><span class="p">)</span>  <span class="c1"># create a cubic window</span>
+<span class="c1"># create PointPattern object</span>
+<span class="n">point_pattern</span> <span class="o">=</span> <span class="n">PointPattern</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">window</span><span class="p">)</span>
+</pre></div>
+</div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Typical usage:</p>
+<p><strong>This class contains also</strong>:</p>
 <blockquote>
 <div><ul class="simple">
-<li><p>The class <a class="reference internal" href="structure_factor.html#structure_factor.structure_factor.StructureFactor" title="structure_factor.structure_factor.StructureFactor"><code class="xref py py-class docutils literal notranslate"><span class="pre">StructureFactor</span></code></a> gets initialized using a <a class="reference internal" href="#structure_factor.point_pattern.PointPattern" title="structure_factor.point_pattern.PointPattern"><code class="xref py py-class docutils literal notranslate"><span class="pre">PointPattern</span></code></a>,</p></li>
+<li><p><a class="reference internal" href="#structure_factor.point_pattern.PointPattern.restrict_to_window" title="structure_factor.point_pattern.PointPattern.restrict_to_window"><code class="xref py py-meth docutils literal notranslate"><span class="pre">restrict_to_window()</span></code></a>: method allowing to restrict the point pattern to a specific window.</p></li>
+<li><p><a class="reference internal" href="#structure_factor.point_pattern.PointPattern.convert_to_spatstat_ppp" title="structure_factor.point_pattern.PointPattern.convert_to_spatstat_ppp"><code class="xref py py-meth docutils literal notranslate"><span class="pre">convert_to_spatstat_ppp()</span></code></a>: method allowing to convert into a point pattern <code class="docutils literal notranslate"><span class="pre">spatstat.geom.ppp</span></code> R object.</p></li>
+<li><p><a class="reference internal" href="#structure_factor.point_pattern.PointPattern.plot" title="structure_factor.point_pattern.PointPattern.plot"><code class="xref py py-meth docutils literal notranslate"><span class="pre">plot()</span></code></a>: method allowing to plot the point pattern.</p></li>
+</ul>
+</div></blockquote>
+<p><strong>Typical usage</strong>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>The class <a class="reference internal" href="structure_factor.html#structure_factor.structure_factor.StructureFactor" title="structure_factor.structure_factor.StructureFactor"><code class="xref py py-class docutils literal notranslate"><span class="pre">StructureFactor</span></code></a> gets initialized using a <a class="reference internal" href="#structure_factor.point_pattern.PointPattern" title="structure_factor.point_pattern.PointPattern"><code class="xref py py-class docutils literal notranslate"><span class="pre">PointPattern</span></code></a>.</p></li>
 <li><p>Convert Python <a class="reference internal" href="#structure_factor.point_pattern.PointPattern" title="structure_factor.point_pattern.PointPattern"><code class="xref py py-class docutils literal notranslate"><span class="pre">PointPattern</span></code></a> object to a <code class="docutils literal notranslate"><span class="pre">spatstat</span></code> point pattern R object using <a class="reference internal" href="#structure_factor.point_pattern.PointPattern.convert_to_spatstat_ppp" title="structure_factor.point_pattern.PointPattern.convert_to_spatstat_ppp"><code class="xref py py-meth docutils literal notranslate"><span class="pre">convert_to_spatstat_ppp()</span></code></a>.</p></li>
 </ul>
 </div></blockquote>
-</div>
-<p class="rubric">Example</p>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#load points</span>
-<span class="n">points</span> <span class="o">=</span> <span class="n">load_data</span><span class="o">.</span><span class="n">load_ginibre</span><span class="p">()</span><span class="o">.</span><span class="n">points</span>
-<span class="c1">#create BallWindow</span>
-<span class="n">window</span> <span class="o">=</span> <span class="n">BallWindow</span><span class="p">(</span><span class="n">center</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="n">radius</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
-<span class="c1">#create PointPattern object</span>
-<span class="n">ginibre_pp</span> <span class="o">=</span> <span class="n">PointPattern</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">window</span><span class="p">)</span>
-</pre></div>
 </div>
 <dl class="py property">
 <dt class="sig sig-object py" id="structure_factor.point_pattern.PointPattern.dimension">
@@ -169,8 +198,8 @@
 </pre></div>
 </div>
 <p>(<a class="reference external" href="./code/plot_point_pattern.py">Source code</a>, <a class="reference external" href="./code/plot_point_pattern.png">png</a>, <a class="reference external" href="./code/plot_point_pattern.hires.png">hires.png</a>, <a class="reference external" href="./code/plot_point_pattern.pdf">pdf</a>)</p>
-<figure class="align-center">
-<img alt="alternate text" class="plot-directive" src="_images/plot_point_pattern.png" />
+<figure class="align-default">
+<img alt="_images/plot_point_pattern.png" class="plot-directive" src="_images/plot_point_pattern.png" />
 </figure>
 </dd></dl>
 

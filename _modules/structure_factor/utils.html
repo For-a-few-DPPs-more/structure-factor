@@ -50,6 +50,27 @@
 <span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">interpolate</span><span class="p">,</span> <span class="n">stats</span>
 <span class="kn">from</span> <span class="nn">scipy.special</span> <span class="kn">import</span> <span class="n">j0</span><span class="p">,</span> <span class="n">j1</span><span class="p">,</span> <span class="n">jn_zeros</span><span class="p">,</span> <span class="n">jv</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">yv</span>
 
+<span class="c1"># utils for the class Hyperuniformity</span>
+<div class="viewcode-block" id="_sort_vectors"><a class="viewcode-back" href="../../utils.html#structure_factor.utils._sort_vectors">[docs]</a><span class="k">def</span> <span class="nf">_sort_vectors</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">x_k</span><span class="p">,</span> <span class="n">y_k</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;sort ``k`` by increasing order and reorder the associated vectors to ``k``, ``x_k``and ``y_k``.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        k (np.array): vector to be sorted by increasing order.</span>
+<span class="sd">        x_k (np.array): vector of evaluations associated to ``k``.</span>
+<span class="sd">        y_k (np.array): vector of evaluations associated to ``k``.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (np.array, np.array, np.array): ``k`` sorted by increasing order and the associated ``x_k``and ``y_k``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">sort_index_k</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+    <span class="n">k_sorted</span> <span class="o">=</span> <span class="n">k</span><span class="p">[</span><span class="n">sort_index_k</span><span class="p">]</span>
+    <span class="n">x_k_sorted</span> <span class="o">=</span> <span class="n">x_k</span><span class="p">[</span><span class="n">sort_index_k</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">y_k</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">y_k_sorted</span> <span class="o">=</span> <span class="n">y_k</span><span class="p">[</span><span class="n">sort_index_k</span><span class="p">]</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">k_sorted</span><span class="p">,</span> <span class="n">x_k_sorted</span><span class="p">,</span> <span class="n">y_k_sorted</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">k_sorted</span><span class="p">,</span> <span class="n">x_k_sorted</span><span class="p">,</span> <span class="n">y_k</span><span class="p">)</span></div>
+
 
 <div class="viewcode-block" id="set_nan_inf_to_zero"><a class="viewcode-back" href="../../utils.html#structure_factor.utils.set_nan_inf_to_zero">[docs]</a><span class="k">def</span> <span class="nf">set_nan_inf_to_zero</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">nan</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">posinf</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">neginf</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Set nan, posinf and neginf values of ``array`` to 0.&quot;&quot;&quot;</span>
@@ -306,7 +327,7 @@
     <span class="k">return</span> <span class="n">axis</span></div>
 
 
-<div class="viewcode-block" id="plot_approximation"><a class="viewcode-back" href="../../utils.html#structure_factor.utils.plot_approximation">[docs]</a><span class="k">def</span> <span class="nf">plot_approximation</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">color</span><span class="p">,</span> <span class="n">linestyle</span><span class="p">,</span> <span class="n">marker</span><span class="p">,</span> <span class="n">markersize</span><span class="p">):</span>
+<div class="viewcode-block" id="plot_approximation"><a class="viewcode-back" href="../../utils.html#structure_factor.utils.plot_approximation">[docs]</a><span class="k">def</span> <span class="nf">plot_approximation</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">color</span><span class="p">,</span> <span class="n">linestyle</span><span class="p">,</span> <span class="n">marker</span><span class="p">,</span> <span class="n">markersize</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Loglog plot of ``y`` w.r.t. ``x``.&quot;&quot;&quot;</span>
     <span class="n">axis</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span>
         <span class="n">x</span><span class="p">,</span>

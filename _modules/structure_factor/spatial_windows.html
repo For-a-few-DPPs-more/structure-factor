@@ -57,7 +57,12 @@
 
 <span class="sd">    .. note::</span>
 
-<span class="sd">        Typical usage:</span>
+
+<span class="sd">        **This class is a sub-class of**:</span>
+<span class="sd">            - :py:class:`~structure_factor.spatial_windows.BallWindow`</span>
+<span class="sd">            - :py:class:`~structure_factor.spatial_windows.BoxWindow`</span>
+
+<span class="sd">        **Typical usage**:</span>
 
 <span class="sd">        :py:class:`~structure_factor.point_pattern.PointPattern` has a :py:attr:`~structure_factor.point_pattern.PointPattern.window` argument/attribute.</span>
 
@@ -115,7 +120,11 @@
 
 
 <div class="viewcode-block" id="BallWindow"><a class="viewcode-back" href="../../spatial_windows.html#structure_factor.spatial_windows.BallWindow">[docs]</a><span class="k">class</span> <span class="nc">BallWindow</span><span class="p">(</span><span class="n">AbstractSpatialWindow</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Create a :math:`d` dimensional ball window :math:`B(c, r)`, where :math:`c \in \mathbb{R}^d` and :math:`r&gt;0`.</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Create a :math:`d` dimensional ball window :math:`B(c, r)`, where :math:`c \in \mathbb{R}^d` and :math:`r&gt;0`.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        center (numpy.ndarray): center :math:`c` of the ball.</span>
+<span class="sd">        radius (float, optional): radius :math:`r &gt; 0` of the ball. Defaults to 1.0.</span>
 
 <span class="sd">    Example:</span>
 
@@ -199,7 +208,13 @@
 <div class="viewcode-block" id="UnitBallWindow"><a class="viewcode-back" href="../../spatial_windows.html#structure_factor.spatial_windows.UnitBallWindow">[docs]</a><span class="k">class</span> <span class="nc">UnitBallWindow</span><span class="p">(</span><span class="n">BallWindow</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Create a d-dimensional unit ball window :math:`B(c, r=1)`, where :math:`c \in \mathbb{R}^d`.</span>
 
-<span class="sd">    ``UnitBallWindow(center) = BallWindow(center, radius=1.0)``</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        center (numpy.ndarray, optional): center :math:`c` of the ball.</span>
+
+<span class="sd">    .. note::</span>
+
+<span class="sd">        ``UnitBallWindow(center) = BallWindow(center, radius=1.0)``</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">center</span><span class="p">):</span>
@@ -213,6 +228,9 @@
 
 <div class="viewcode-block" id="BoxWindow"><a class="viewcode-back" href="../../spatial_windows.html#structure_factor.spatial_windows.BoxWindow">[docs]</a><span class="k">class</span> <span class="nc">BoxWindow</span><span class="p">(</span><span class="n">AbstractSpatialWindow</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Create a :math:`d` dimensional box window :math:`\prod_{i=1}^{d} [a_i, b_i]`.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        bounds (numpy.ndarray): :math:`d \times 2` array describing the bounds of the box.</span>
 
 <span class="sd">    Example:</span>
 
@@ -296,7 +314,11 @@
 
 
 <div class="viewcode-block" id="UnitBoxWindow"><a class="viewcode-back" href="../../spatial_windows.html#structure_factor.spatial_windows.UnitBoxWindow">[docs]</a><span class="k">class</span> <span class="nc">UnitBoxWindow</span><span class="p">(</span><span class="n">BoxWindow</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Create a :math:`d` dimensional unit box window :math:`\prod_{i=1}^{d} [c_i - \frac{1}{2}, c_i + \frac{1}{2}]` where :math:`c \in \mathbb{R}^d`.&quot;&quot;&quot;</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Create a :math:`d` dimensional unit box window :math:`\prod_{i=1}^{d} [c_i - \frac{1}{2}, c_i + \frac{1}{2}]` where :math:`c \in \mathbb{R}^d`.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        center (numpy.ndarray): center :math:`c` of the box.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">center</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Initialize a :math:`d` dimensional unit box window :math:`\prod_{i=1}^{d} [c_i - \frac{1}{2}, c_i + \frac{1}{2}]`, i.e., a box window with length equal to 1 and prescribed ``center``, such that :math:`c_i=` ``center[i]``.</span>
