@@ -16,6 +16,9 @@ class Hyperuniformity:
 
     .. note::
 
+        **Definition**:
+            A stationary point process :math:`\mathcal{X}` is said to be hyperunifrom if it's structure factor :math:`S`, vanishes at 0.
+
         **This class contains**:
             - :meth:`bin_data` : method for regularizing :py:attr:`~Hyeruniformity.sf`, consisting on dividing the vector of wavenumber :py:attr:`~Hyeruniformity.k_norm` into sub-intervals and taking the mean and the strandard deviation over each sub-interval.
             - :meth:`effective_hyperuniformity` : test of effective hyperuniformity, consisting on evaluating the index H of hyperuniformity used to study if the corresponding point process is effectively hyperuniform :cite:`Kla+al19`.
@@ -110,16 +113,17 @@ class Hyperuniformity:
 
         .. note::
 
-            A stationary isotropic point process :math:`\mathcal{X} \subset \mathbb{R}^d`, is said to be effectively hyperuniform  if :math:`H \leq 10^{-3}` where
+            **Definition**:
+                A stationary isotropic point process :math:`\mathcal{X} \subset \mathbb{R}^d`, is said to be effectively hyperuniform  if :math:`H \leq 10^{-3}` where
 
-            .. math::
-                H = \frac{\hat{S}(\mathbf{0})}{S(\mathbf{k}_{peak})}\cdot
+                .. math::
+                    H = \frac{\hat{S}(\mathbf{0})}{S(\mathbf{k}_{peak})}\cdot
 
-            - :math:`S` is the structure factor of :math:`\mathcal{X}`,
-            - :math:`\hat{S}(\mathbf{0})` is a linear extrapolation of the structure factor at :math:`\mathbf{k}=\mathbf{0}`,
-            - :math:`\mathbf{k}_{peak}` is the location of the first dominant peak value of :math:`S`.
+                - :math:`S` is the structure factor of :math:`\mathcal{X}`,
+                - :math:`\hat{S}(\mathbf{0})` is a linear extrapolation of the structure factor at :math:`\mathbf{k}=\mathbf{0}`,
+                - :math:`\mathbf{k}_{peak}` is the location of the first dominant peak value of :math:`S`.
 
-            See :cite:`Tor18` (Section 11.1.6) and :cite:`Kla+al19` (supplementary Section 8).
+                See :cite:`Tor18` (Section 11.1.6) and :cite:`Kla+al19` (supplementary Section 8).
 
             .. important::
 
@@ -173,11 +177,12 @@ class Hyperuniformity:
 
         .. note::
 
-            For a stationary  hyperuniform point process :math:`\mathcal{X} \subset \mathbb{R}^d` such that :math:`\vert S(\mathbf{k})\vert\sim c \Vert \mathbf{k} \Vert^\alpha` in  the neighborhood of 0, we have(:cite:`Cos21`, Section 4.1)
+            **Definition**:
+                For a stationary  hyperuniform point process :math:`\mathcal{X} \subset \mathbb{R}^d` such that :math:`\vert S(\mathbf{k})\vert\sim c \Vert \mathbf{k} \Vert^\alpha` in  the neighborhood of 0, we have(:cite:`Cos21`, Section 4.1)
 
-            - If :math:`\alpha > 1`, then :math:`Var\left [\mathcal{X}(B(0,R))\right ] = O(R^{d-1})`, correpsonding to the class 1 of hyperuniformity.
-            - If :math:`\alpha =1`, then :math:`Var\left [\mathcal{X}(B(0,R))\right ] = O(R^{d-1}\log(R))`, correpsonding to the class 2 of hyperuniformity.
-            - If :math:`\alpha \in ]0,1[`, then :math:`Var \left [\mathcal{X}(B(0,R))\right ] = O(R^{d-\alpha})`, correpsonding to the class 3 of hyperuniformity.
+                - If :math:`\alpha > 1`, then :math:`Var\left [\mathcal{X}(B(0,R))\right ] = O(R^{d-1})`, correpsonding to the class 1 of hyperuniformity.
+                - If :math:`\alpha =1`, then :math:`Var\left [\mathcal{X}(B(0,R))\right ] = O(R^{d-1}\log(R))`, correpsonding to the class 2 of hyperuniformity.
+                - If :math:`\alpha \in ]0,1[`, then :math:`Var \left [\mathcal{X}(B(0,R))\right ] = O(R^{d-\alpha})`, correpsonding to the class 3 of hyperuniformity.
 
         """
         poly = lambda x, alpha, c: c * x ** alpha

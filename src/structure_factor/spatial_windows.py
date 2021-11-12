@@ -17,8 +17,7 @@ class AbstractSpatialWindow(metaclass=ABCMeta):
     .. note::
 
 
-        This class is a sub-class of the classes:
-
+        **This class is a sub-class of**:
             - :py:class:`~structure_factor.spatial_windows.BallWindow`
             - :py:class:`~structure_factor.spatial_windows.BoxWindow`
 
