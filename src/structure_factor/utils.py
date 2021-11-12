@@ -9,6 +9,27 @@ import numpy as np
 from scipy import interpolate, stats
 from scipy.special import j0, j1, jn_zeros, jv, y0, y1, yv
 
+# utils for the class Hyperuniformity
+def _sort_vectors(k, x_k, y_k):
+    """sort ``k`` by increasing order and reorder the associated vectors to ``k``, ``x_k``and ``y_k``.
+
+    Args:
+        k (np.array): vector to be sorted by increasing order.
+        x_k (np.array): vector of evaluations associated to ``k``.
+        y_k (np.array): vector of evaluations associated to ``k``.
+
+    Returns:
+        (np.array, np.array, np.array): ``k`` sorted by increasing order and the associated ``x_k``and ``y_k``.
+    """
+    sort_index_k = np.argsort(k)
+    k_sorted = k[sort_index_k]
+    x_k_sorted = x_k[sort_index_k]
+    if y_k is not None:
+        y_k_sorted = y_k[sort_index_k]
+        return (k_sorted, x_k_sorted, y_k_sorted)
+    else:
+        return (k_sorted, x_k_sorted, y_k)
+
 
 def set_nan_inf_to_zero(array, nan=0, posinf=0, neginf=0):
     """Set nan, posinf and neginf values of ``array`` to 0."""
