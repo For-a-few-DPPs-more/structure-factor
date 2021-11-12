@@ -22,7 +22,7 @@ class StructureFactor:
 
         S(\mathbf{k}) = 1 + \rho \mathcal{F}(g-1)(\mathbf{k}),
 
-    where :math:`\mathcal{F}` denotes the Fourier transform, :math:`g` the pair correlation function corresponds to :math:`\mathcal{X}`, :math:`\mathbf{k} \in \mathbb{R}^d` is a wave vector  (we denote the associated wavelength by :math:`k` i.e., :math:`k = \| \mathbf{k} \|_2`).
+    where :math:`\mathcal{F}` denotes the Fourier transform, :math:`g` the pair correlation function corresponds to :math:`\mathcal{X}`, :math:`\mathbf{k} \in \mathbb{R}^d` is a wave vector  (we denote the associated wavenumber by :math:`k` i.e., :math:`k = \| \mathbf{k} \|_2`).
 
     .. warning::
 
