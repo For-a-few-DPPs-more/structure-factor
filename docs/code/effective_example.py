@@ -23,32 +23,31 @@ from structure_factor.hyperuniformity import Hyperuniformity
 
 # initialize Hyperuniformity
 hyperuniformity_test = Hyperuniformity(k_norm, si)
-# regularization of the approximated result
-hyperuniformity_test.bin_data(bins=40)
+# regularization of si
+hyperuniformity_test.bin_data(bins=60)
 # find the H index
-H_ginibre, std = hyperuniformity_test.effective_hyperuniformity(k_norm_stop=4)
-print("H_ginibre=", H_ginibre)
+H, std = hyperuniformity_test.effective_hyperuniformity(k_norm_stop=1)
+print("H=", H)
 
 
-# plot
+# plot result of effective_hyperuniformity test
 import matplotlib.pyplot as plt
 import numpy as np
 
-fitted_sf_line = hyperuniformity_test.fitted_line  # fittend ligne
-index_peak = hyperuniformity_test.i_first_peak
-
-
+fitted_sf_line = hyperuniformity_test.fitted_line  # fitted line on sf near zero
+index_peak = hyperuniformity_test.i_first_peak  # index of k_peak
 mean_k_norm = hyperuniformity_test.k_norm
 mean_sf = hyperuniformity_test.sf
 x = np.linspace(0, 5, 300)
 y = np.linspace(0, 15, 500)
 fig = plt.figure(figsize=(10, 6))
-plt.plot(mean_k_norm, mean_sf, "b.", label="approx_sf")
-plt.plot(mean_k_norm, mean_sf, "b", label="approx_sf")
+plt.plot(mean_k_norm, mean_sf, "b.", label="regularized sf")
+plt.plot(mean_k_norm, mean_sf, "b")
 plt.plot(x, fitted_sf_line(x), "r--", label="fitted line")
 plt.plot(y, utils.structure_factor_ginibre(y), "g", label="exact sf")
 plt.plot(mean_k_norm[index_peak], mean_sf[index_peak], "k*", label="first peak")
 plt.legend()
-plt.xlabel("wavelength ($||\mathbf{k}||$)")
+plt.xlabel("wavenumber ($||\mathbf{k}||$)")
 plt.ylabel("Structure factor ($\mathsf{S}(\mathbf{k})$)")
+plt.title("Test of effective hyperuniformity of the Ginibre ensemble.")
 plt.show()
