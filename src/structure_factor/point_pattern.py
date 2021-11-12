@@ -7,32 +7,37 @@ from structure_factor.spatial_windows import AbstractSpatialWindow
 
 
 class PointPattern(object):
-    """Encapsulate a realization of a point process: the sampled points, the observation window, and the intensity of underlying point process.
+    r"""Encapsulate a realization of a point process: the sampled points, the observation window, and the intensity of underlying point process.
 
-    .. note::
+    Args:
+            points (np.ndarray): :math:`N \times d` array collecting :math:`N` points in dimension :math:`d` consisting of a realization of a point process.
 
-        Typical usage:
+            window (AbstractSpatialWindow, optional): Observation window containing the ``points``. Defaults to None.
 
-            - The class :py:class:`~structure_factor.structure_factor.StructureFactor` gets initialized using a :py:class:`~structure_factor.point_pattern.PointPattern`,
-
-            - Convert Python :py:class:`~structure_factor.point_pattern.PointPattern` object to a ``spatstat`` point pattern R object using :py:meth:`~structure_factor.point_pattern.PointPattern.convert_to_spatstat_ppp`.
+            intensity(float, optional): intensity of the point process. Defaults to None.
 
     Example:
 
-            .. testsetup::
+        .. literalinclude:: code/point_pattern.py
+                :language: python
+                :lines: 6-22
 
-                from structure_factor.data import load_data #import data
-                from structure_factor.spatial_windows import BoxWindow
-                from structure_factor.point_pattern import PointPattern
+    .. note::
 
-            .. testcode::
+        **This class contains also**:
 
-                    #load points
-                    points = load_data.load_ginibre().points
-                    #create BallWindow
-                    window = BallWindow(center=[0,0], radius=100)
-                    #create PointPattern object
-                    ginibre_pp = PointPattern(points, window)
+            - :py:meth:`restrict_to_window`: method allowing to restrict the point pattern to a specific window.
+            - :py:meth:`convert_to_spatstat_ppp`: method allowing to convert into a point pattern ``spatstat.geom.ppp`` R object.
+            - :py:meth:`plot`: method allowing to plot the point pattern.
+
+        **Typical usage**:
+
+            - The class :py:class:`~structure_factor.structure_factor.StructureFactor` gets initialized using a :py:class:`~structure_factor.point_pattern.PointPattern`.
+
+            - Convert Python :py:class:`~structure_factor.point_pattern.PointPattern` object to a ``spatstat`` point pattern R object using :py:meth:`~structure_factor.point_pattern.PointPattern.convert_to_spatstat_ppp`.
+
+
+
     """
 
     def __init__(self, points, window=None, intensity=None):
@@ -117,7 +122,6 @@ class PointPattern(object):
             params["window"] = window.to_spatstat_owin()
         return spatstat.geom.ppp(x, y, **params)
 
-    # todo rename window_res to window
     def plot(self, axis=None, window_res=None, file_name="", **kwargs):
         """Display scatter plot of the attribute :py:attr:`~structure_factor.point_pattern.PointPattern.points`.
 
@@ -133,9 +137,6 @@ class PointPattern(object):
 
             .. plot:: code/plot_point_pattern.py
                 :include-source: True
-                :caption:
-                :alt: alternate text
-                :align: center
         """
         if axis is None:
             fig, axis = plt.subplots(figsize=(5, 5))
