@@ -24,7 +24,6 @@ x_2 = np.linspace(0.5, 2, 50)
 )
 def test_effective_hyperuniformity(k, sf_k, expected):
     # verify that the hyperuniformity index for the ginibre ensemble is less than 1e-3
-    # todo rename hyp_test, it reads like hypothesis test
     hyperuniformity_test = Hyperuniformity(k, sf_k)
     index_H, _ = hyperuniformity_test.effective_hyperuniformity(k_norm_stop=4)
     result = index_H < 1e-3

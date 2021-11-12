@@ -286,7 +286,7 @@ def plot_exact(x, y, axis, label):
     return axis
 
 
-def plot_approximation(x, y, label, axis, color, linestyle, marker, markersize):
+def plot_approximation(x, y, axis, label, color, linestyle, marker, markersize):
     """Loglog plot of ``y`` w.r.t. ``x``."""
     axis.loglog(
         x,
