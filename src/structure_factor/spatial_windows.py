@@ -16,7 +16,13 @@ class AbstractSpatialWindow(metaclass=ABCMeta):
 
     .. note::
 
-        Typical usage:
+
+        This class is a sub-class of the classes:
+
+            - :py:class:`~structure_factor.spatial_windows.BallWindow`
+            - :py:class:`~structure_factor.spatial_windows.BoxWindow`
+
+        **Typical usage**:
 
         :py:class:`~structure_factor.point_pattern.PointPattern` has a :py:attr:`~structure_factor.point_pattern.PointPattern.window` argument/attribute.
 
@@ -74,7 +80,11 @@ class AbstractSpatialWindow(metaclass=ABCMeta):
 
 
 class BallWindow(AbstractSpatialWindow):
-    """Create a :math:`d` dimensional ball window :math:`B(c, r)`, where :math:`c \in \mathbb{R}^d` and :math:`r>0`.
+    r"""Create a :math:`d` dimensional ball window :math:`B(c, r)`, where :math:`c \in \mathbb{R}^d` and :math:`r>0`.
+
+    Args:
+        center (numpy.ndarray): center :math:`c` of the ball.
+        radius (float, optional): radius :math:`r > 0` of the ball. Defaults to 1.0.
 
     Example:
 
@@ -158,7 +168,13 @@ class BallWindow(AbstractSpatialWindow):
 class UnitBallWindow(BallWindow):
     r"""Create a d-dimensional unit ball window :math:`B(c, r=1)`, where :math:`c \in \mathbb{R}^d`.
 
-    ``UnitBallWindow(center) = BallWindow(center, radius=1.0)``
+
+    Args:
+        center (numpy.ndarray, optional): center :math:`c` of the ball.
+
+    .. note::
+
+        ``UnitBallWindow(center) = BallWindow(center, radius=1.0)``
     """
 
     def __init__(self, center):
@@ -172,6 +188,9 @@ class UnitBallWindow(BallWindow):
 
 class BoxWindow(AbstractSpatialWindow):
     r"""Create a :math:`d` dimensional box window :math:`\prod_{i=1}^{d} [a_i, b_i]`.
+
+    Args:
+        bounds (numpy.ndarray): :math:`d \times 2` array describing the bounds of the box.
 
     Example:
 
@@ -255,7 +274,11 @@ class BoxWindow(AbstractSpatialWindow):
 
 
 class UnitBoxWindow(BoxWindow):
-    r"""Create a :math:`d` dimensional unit box window :math:`\prod_{i=1}^{d} [c_i - \frac{1}{2}, c_i + \frac{1}{2}]` where :math:`c \in \mathbb{R}^d`."""
+    r"""Create a :math:`d` dimensional unit box window :math:`\prod_{i=1}^{d} [c_i - \frac{1}{2}, c_i + \frac{1}{2}]` where :math:`c \in \mathbb{R}^d`.
+
+    Args:
+        center (numpy.ndarray): center :math:`c` of the box.
+    """
 
     def __init__(self, center):
         r"""Initialize a :math:`d` dimensional unit box window :math:`\prod_{i=1}^{d} [c_i - \frac{1}{2}, c_i + \frac{1}{2}]`, i.e., a box window with length equal to 1 and prescribed ``center``, such that :math:`c_i=` ``center[i]``.
