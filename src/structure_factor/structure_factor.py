@@ -84,8 +84,8 @@ class StructureFactor:
 
         Returns:
             tuple(numpy.ndarray, numpy.ndarray):
-                - k_norm: vector of wavenumbers (i.e. the vector of norms of the wavevectors) on which the scattering intensity was evaluated.
-                - si: evaluations of the scattering intensity corresponding to ``k_norm``.
+                - k_norm: Wavenumber(s) (i.e. the vector of norms of the wavevectors) on which the scattering intensity was evaluated.
+                - si: Evaluation(s) of the scattering intensity corresponding to ``k_norm``.
 
         Example:
 
@@ -173,9 +173,9 @@ class StructureFactor:
         """Visualize the results of the method :py:meth:`scattering_intensity`.
 
         Args:
-            k_norm (numpy.array): vector of norms of the wavevectors .
+            k_norm (numpy.array): Vector of norms of the wavevectors .
 
-            si (numpy.array): approximated scattering intensities associated to `k_norm`.
+            si (numpy.array): Approximated scattering intensities associated to `k_norm`.
 
             plot_type (str, optional): ("radial", "imshow", "all"). Type of the plot to visualize. Defaults to "radial".
 
@@ -184,23 +184,23 @@ class StructureFactor:
                     - If "all" (option available only for 2D point process), the result contains 3 subplots: the point pattern (or a restriction to a specific window if ``window_res`` is set), the loglog radial plot, and the color level 2D plot. Note that the options "imshow" and "all" couldn't be used, if ``k_norm`` is not a meshgrid.
 
 
-            axes (matplotlib.axis, optional): support axis of the plots. Defaults to None.
+            axes (matplotlib.axis, optional): Support axis of the plots. Defaults to None.
 
-            exact_sf (callable, optional): theoretical structure factor of the point process. Defaults to None.
+            exact_sf (callable, optional): Theoretical structure factor of the point process. Defaults to None.
 
-            error_bar (bool, optional): if ``True``, ``k_norm`` is divided into bins and the mean and the standard deviation over each bin are derived and visualized on the plot. Note that each error bar correspond to the mean +/- 3 standard deviation. To specify the number of bins, add it to the kwargs argument ``binning_params``. For more details see :py:meth:`~structure_factor.utils._bin_statistics`. Defaults to False.
+            error_bar (bool, optional): If ``True``, ``k_norm`` is divided into bins and the mean and the standard deviation over each bin are derived and visualized on the plot. Note that each error bar correspond to the mean +/- 3 standard deviation. To specify the number of bins, add it to the kwargs argument ``binning_params``. For more details see :py:meth:`~structure_factor.utils._bin_statistics`. Defaults to False.
 
-            file_name (str, optional): name used to save the figure. The available output formats depend on the backend being used. Defaults to "".
+            file_name (str, optional): Name used to save the figure. The available output formats depend on the backend being used. Defaults to "".
 
             window_res (:py:class:`~structure_factor.spatial_windows.AbstractSpatialWindow`, optional): This could be used when the sample of points is large, so for time and visualization purpose it's better to restrict the plot of the point process to a smaller window. Defaults to None.
 
         Keyword Args:
 
-            binning_params: (dict): useful when ``error_bar=True``, by the method :py:meth:`~structure_factor.utils_bin_statistics` as keyword arguments (except ``"statistic"``) of ``scipy.stats.binned_statistic``.
+            binning_params: (dict): Useful when ``error_bar=True``, by the method :py:meth:`~structure_factor.utils_bin_statistics` as keyword arguments (except ``"statistic"``) of ``scipy.stats.binned_statistic``.
 
 
         Returns:
-            matplotlib.plot: plot of the approximated structure factor.
+            matplotlib.plot: Plot of the approximated structure factor.
 
         Example:
 
@@ -264,23 +264,23 @@ class StructureFactor:
             This function requires the `R programming language <https://cran.r-project.org/>`_ to be installed on your local machine, since it relies on the Python package `spatstat-interface <https://github.com/For-a-few-DPPs-more/spatstat-interface>`_. This doesn't requires any knowledge of the programming language R.
 
         Args:
-            method (str, optional): choose between ``"ppp"`` or ``"fv"`` referring respectively to `spatstat.core.pcf.ppp <https://www.rdocumentation.org/packages/spatstat.core/versions/2.1-2/topics/pcf.ppp>`_ and `spatsta.core.pcf.fv <https://www.rdocumentation.org/packages/spatstat.core/versions/2.1-2/topics/pcf.fv>`_ functions. These 2 methods approximate the pair correlation function of a point process from a realization of the underlying point process using some edge corrections and some basic approximations. For more details see :cite:`Rbook15`. Defaults to ``"fv"``.
+            method (str, optional): Choose between ``"ppp"`` or ``"fv"`` referring respectively to `spatstat.core.pcf.ppp <https://www.rdocumentation.org/packages/spatstat.core/versions/2.1-2/topics/pcf.ppp>`_ and `spatsta.core.pcf.fv <https://www.rdocumentation.org/packages/spatstat.core/versions/2.1-2/topics/pcf.fv>`_ functions. These 2 methods approximate the pair correlation function of a point process from a realization of the underlying point process using some edge corrections and some basic approximations. For more details see :cite:`Rbook15`. Defaults to ``"fv"``.
 
-            install_spatstat (bool, optional): if ``True`` then the `R` package `spatstat <https://github.com/spatstat/spatstat>`_  will be automatically updated or installed (if not present) on your local machine, see also the `spatstat-interface <https://github.com/For-a-few-DPPs-more/spatstat-interface>`_ Python package. Note that this require the installation of the `R programming language <https://cran.r-project.org/>`_ on your local machine.
+            install_spatstat (bool, optional): If ``True`` then the `R` package `spatstat <https://github.com/spatstat/spatstat>`_  will be automatically updated or installed (if not present) on your local machine, see also the `spatstat-interface <https://github.com/For-a-few-DPPs-more/spatstat-interface>`_ Python package. Note that this require the installation of the `R programming language <https://cran.r-project.org/>`_ on your local machine.
 
         Keyword Args:
 
             params (dict):
 
                 - if ``method = "ppp"``
-                    - keyword arguments of `spastat.core.pcf.ppp <https://rdrr.io/cran/spatstat.core/man/pcf.ppp.html>`_
+                    - keyword arguments of `spastat.core.pcf.ppp <https://rdrr.io/cran/spatstat.core/man/pcf.ppp.html>`_,
 
                 - if ``method = "fv"``
                     - Kest = dict(keyword arguments of `spastat.core.Kest <https://rdrr.io/github/spatstat/spatstat.core/man/Kest.html>`_),
-                    - fv = dict( keyword arguments of `spastat.core.pcf.fv <https://rdrr.io/cran/spatstat.core/man/pcf.fv.html>`_)
+                    - fv = dict( keyword arguments of `spastat.core.pcf.fv <https://rdrr.io/cran/spatstat.core/man/pcf.fv.html>`_).
 
         Returns:
-            pandas.DataFrame: version of the output of `spatstat.core.pcf.ppp <https://www.rdocumentation.org/packages/spatstat.core/versions/2.1-2/topics/pcf.ppp>`_ or `spatsta.core.pcf.fv <https://www.rdocumentation.org/packages/spatstat.core/versions/2.1-2/topics/pcf.fv>`_ (table with first column the radius on which the pair correlation function is approximated, the other columns correspond to the approximated pair correlation function with some edge corrections).
+            pandas.DataFrame: Version of the output of `spatstat.core.pcf.ppp <https://www.rdocumentation.org/packages/spatstat.core/versions/2.1-2/topics/pcf.ppp>`_ or `spatsta.core.pcf.fv <https://www.rdocumentation.org/packages/spatstat.core/versions/2.1-2/topics/pcf.fv>`_ (table with first column the radius on which the pair correlation function is approximated, the other columns correspond to the approximated pair correlation function with some edge corrections).
 
         Example:
 
@@ -333,11 +333,11 @@ class StructureFactor:
         """Display the data frame output of the method :py:meth:`compute_pcf`.
 
         Args:
-            pcf_dataframe (pandas.DataFrame): output DataFrame of the method :py:meth:`compute_pcf`.
+            pcf_dataframe (pandas.DataFrame): Output DataFrame of the method :py:meth:`compute_pcf`.
 
-            exact_pcf (callable, optional): function representing the theoretical pair correlation function of the point process. Defaults to None.
+            exact_pcf (callable, optional): Function representing the theoretical pair correlation function of the point process. Defaults to None.
 
-            file_name (str, optional): name used to save the figure. The available output formats depend on the backend being used. Defaults to "".
+            file_name (str, optional): Name used to save the figure. The available output formats depend on the backend being used. Defaults to "".
 
         Keyword Args:
 
@@ -346,7 +346,7 @@ class StructureFactor:
                 Keyword arguments of the function `pandas.DataFrame.plot.line <https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.plot.line.html>`_.
 
         Returns:
-            matplotlib.plot: the data frame output of the method :py:meth:`compute_pcf`.
+            matplotlib.plot: Data frame output of the method :py:meth:`compute_pcf`.
 
         Example:
 
@@ -365,9 +365,9 @@ class StructureFactor:
         """Clean (i.e., replace the possible nan, posinf and neginf by zero) and interpolate the the vector ``pcf_r`` evaluated at ``r``.
 
         Args:
-            r (numpy.ndarray): vector of radius. Typically, the first colomun of the output of the method :py:meth:`compute_pcf`.
+            r (numpy.ndarray): Vector of radius. Typically, the first colomun of the output of the method :py:meth:`compute_pcf`.
 
-            pcf_r (numpy.ndarray): vector of approximation of the pair correlation function. Typically, a colomun from the output of the method :py:meth:`compute_pcf`.
+            pcf_r (numpy.ndarray): Vector of approximations of the pair correlation function. Typically, a colomun from the output of the method :py:meth:`compute_pcf`.
 
             clean (bool, optional): replace nan, posinf, neginf values of ``pcf_r`` by zero before interpolating. Defaults to True.
 
@@ -378,7 +378,7 @@ class StructureFactor:
                 Keyword arguments of the function `scipy.interpolate.interp1d <https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html>`_.
 
         Returns:
-            tuple (dict, callable): dictionary containing the bounds of the support of ``r`` and the function output of the interpolation of ``pcf_r``.
+            tuple (dict, callable): Dictionary containing the bounds of the support of ``r`` and the function output of the interpolation of ``pcf_r``.
 
         Example:
 
@@ -409,9 +409,9 @@ class StructureFactor:
             This method is actually applicable for 2 dimensional point processes.
 
         Args:
-            pcf (callable): radially symmetric pair correlation function.
+            pcf (callable): Radially symmetric pair correlation function.
 
-            k_norm (numpy.ndarray, optional): vector of wavenumbers (i.e. norms of wave vectors) where the structure factor is to be evaluated. Optional if ``method="BaddourChouinard"`` (since this method evaluates the Hankel transform on a specific vector, see :cite:`BaCh15`), but it's **not optional** if ``method="Ogata"``. Defaults to None.
+            k_norm (numpy.ndarray, optional): Vector of wavenumbers (i.e. norms of wave vectors) where the structure factor is to be evaluated. Optional if ``method="BaddourChouinard"`` (since this method evaluates the Hankel transform on a specific vector, see :cite:`BaCh15`), but it's **not optional** if ``method="Ogata"``. Defaults to None.
 
             method (str, optional): Choose between ``"BaddourChouinard"`` or ``"Ogata"``. Defaults to ``"BaddourChouinard"``. Selects the method to be used to compute the Hankel transform corresponding to the the symmetric Fourier transform of ``pcf -1``,
 
@@ -436,8 +436,8 @@ class StructureFactor:
 
         Returns:
             tuple (np.ndarray, np.ndarray):
-                - k_norm: vector of wavenumbers.
-                - sf: evaluations of the structure factor corresponding to ``k_norm``.
+                - k_norm: Vector of wavenumbers.
+                - sf: Evaluations of the structure factor on ``k_norm``.
 
 
 
@@ -508,17 +508,17 @@ class StructureFactor:
         r"""Display the output of :py:meth:`hankel_quadrature`.
 
         Args:
-            k_norm (np.array): vector of wavenumbers (i.e., norms of waves) on which the structure factor is approximated.
+            k_norm (np.array): Vector of wavenumbers (i.e., norms of waves) on which the structure factor is approximated.
 
-            sf (np.array): approximation of the structure factor corresponding to ``k_norm``.
+            sf (np.array): Approximation of the structure factor corresponding to ``k_norm``.
 
-            axis (matplotlib.axis, optional): the support axis of the plots. Defaults to None.
+            axis (matplotlib.axis, optional): Support axis of the plots. Defaults to None.
 
-            k_norm_min (float, optional): estimated upper bound of the wavenumbers (only when ``sf`` was approximated using **Ogata quadrature**). Defaults to None.
+            k_norm_min (float, optional): Estimated upper bound of the wavenumbers (only when ``sf`` was approximated using **Ogata quadrature**). Defaults to None.
 
-            exact_sf (callable, optional): theoretical structure factor of the point process. Defaults to None.
+            exact_sf (callable, optional): Theoretical structure factor of the point process. Defaults to None.
 
-            error_bar (bool, optional): if  ``True``, ``k_norm`` is divided into bins and over each bin, the mean (m) and the standard deviation (std) are derived and visualized on the plot. The error bars represent :math:`m \pm 3 \times std`. See :py:meth:`~structure_factor.utils._bin_statistics`. Defaults to False.
+            error_bar (bool, optional): If  ``True``, ``k_norm`` is divided into bins and over each bin, the mean (m) and the standard deviation (std) are derived and visualized on the plot. The error bars represent :math:`m \pm 3 \times std`. See :py:meth:`~structure_factor.utils._bin_statistics`. Defaults to False.
 
             file_name (str, optional): Name used to save the figure. The available output formats depend on the backend being used. Defaults to "".
 

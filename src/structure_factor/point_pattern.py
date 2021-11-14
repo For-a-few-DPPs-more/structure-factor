@@ -14,7 +14,7 @@ class PointPattern(object):
 
             window (AbstractSpatialWindow, optional): Observation window containing the ``points``. Defaults to None.
 
-            intensity(float, optional): intensity of the point process. Defaults to None.
+            intensity(float, optional): Intensity of the point process. Defaults to None.
 
     Example:
 
@@ -48,7 +48,7 @@ class PointPattern(object):
 
             window (AbstractSpatialWindow, optional): Observation window containing the ``points``. Defaults to None.
 
-            intensity(float, optional): intensity of the point process. Defaults to None.
+            intensity(float, optional): Intensity of the point process. Defaults to None.
         """
         _points = np.array(points)
         assert _points.ndim == 2
@@ -73,15 +73,15 @@ class PointPattern(object):
     def restrict_to_window(self, window):
         """Return a new instance of :py:class:`~structure_factor.point_pattern.PointPattern` with the following attributes.
 
-        - points: points of the original object that fall inside the prescribed ``window``,
+        - points: Points of the original object that fall inside the prescribed ``window``,
         - window: prescribed ``window``,
         - intensity: same intensity as the original object.
 
         Args:
-            window (AbstractSpatialWindow): new observation window to restrict to.
+            window (AbstractSpatialWindow): New observation window to restrict to.
 
         Returns:
-            ~structure_factor.point_pattern.PointPattern: restriction of the ``PointPattern`` to the prescribed ``window``.
+            ~structure_factor.point_pattern.PointPattern: Restriction of the ``PointPattern`` to the prescribed ``window``.
 
 
         .. testsetup::
@@ -104,7 +104,7 @@ class PointPattern(object):
         """Convert the object attributes :py:attr:`~structure_factor.point_pattern.PointPattern.points` and :py:attr:`~structure_factor.point_pattern.PointPattern.window` into a point pattern ``spatstat.geom.ppp`` R object.
 
         Keyword args:
-            params (dict): optional keyword arguments passed to ``spatstat.geom.ppp``.
+            params (dict): Optional keyword arguments passed to ``spatstat.geom.ppp``.
 
         Returns:
             Point pattern R object of type ``spatstat.geom.ppp``.
@@ -126,9 +126,9 @@ class PointPattern(object):
         """Display scatter plot of the attribute :py:attr:`~structure_factor.point_pattern.PointPattern.points`.
 
         Args:
-            axis (matplotlib.axis, optional): support axis of the plot. Defaults to None.
+            axis (matplotlib.axis, optional): Support axis of the plot. Defaults to None.
 
-            window_res (AbstractSpatialWindow, optional): window used to visualized the plot. Defaults to None.
+            window_res (AbstractSpatialWindow, optional): Window used to visualized the plot. Defaults to None.
 
         Returns:
             matplotlib.axis: plot axis.

@@ -14,9 +14,9 @@ def _sort_vectors(k, x_k, y_k):
     """sort ``k`` by increasing order and reorder the associated vectors to ``k``, ``x_k``and ``y_k``.
 
     Args:
-        k (np.array): vector to be sorted by increasing order.
-        x_k (np.array): vector of evaluations associated to ``k``.
-        y_k (np.array): vector of evaluations associated to ``k``.
+        k (np.array): Vector to be sorted by increasing order.
+        x_k (np.array): Vector of evaluations associated to ``k``.
+        y_k (np.array): Vector of evaluations associated to ``k``.
 
     Returns:
         (np.array, np.array, np.array): ``k`` sorted by increasing order and the associated ``x_k``and ``y_k``.
@@ -83,7 +83,7 @@ def _reshape_meshgrid(X):
     r"""reshape list of meshgrids as np.ndarray of columns, where each column is associated to an element (meshgrid) of the list.
 
     Args:
-        X (list): list of meshgrids.
+        X (list): List of meshgrids.
 
     Returns:
         np.ndarray: np.ndarray where each meshgrid of the original list is stacked as a column.
@@ -100,32 +100,34 @@ def _reshape_meshgrid(X):
 
 
 def allowed_wave_vectors(d, L, k_max, meshgrid_shape=None):
-    r"""Given a realization of a point process in a cubic window with length :math:`L`, return a subset of the set of the 'allowed' wave vectors (defined below) :math:`\{\mathbf{k}_i\}_i` at which the the scattering intensity :math:`\widehat{S}_{SI}` is consistently an estimator of the structure factor :math:`S(\mathbf{k}_i)`.
-
-    The allowed wave vectors are :math:`\mathbf{k}_i` s.t.,
-
-    .. math::
-
-        \{\mathbf{k}_i\}_i \subset \{\frac{2 \pi}{L} \mathbf{n} ~ ; ~ \mathbf{n} \in (\mathbb{Z}^d)^\ast \}.
-
-    The maximum and the number of output allowed wave vectors are specified by using the parameters `k_max` and `meshgrid_shape`.
-
+    r"""Return a subset of the d-dimentional allowed wave vectors used by the scattering intensity of a point process realization lying in a cubic window of length ``L``.
 
     Args:
 
-        d (int): dimension of the space containing the point process.
+        d (int): Dimension of the space containing the point process.
 
-        L (float): length of the cubic window containing the sample of points.
+        L (float): Length of the cubic window containing the point process realization.
 
-        k_max (float): maximum component of the waves vectors i.e., for any allowed wave vector :math:`\mathbf{k}=(k_1,...,k_d)`, :math:`k_i \leq k\_max` for all i. This implies that the maximum wave vector will be :math:`(k\_max, ... k\_max)`.
+        k_max (float): Maximum component of the waves vectors i.e., for any allowed wave vector :math:`\mathbf{k}=(k_1,...,k_d)`, :math:`k_i \leq k\_max` for all i. This implies that the maximum wave vector will be :math:`(k\_max, ... k\_max)`.
 
-        meshgrid_shape (tuple, optional): tuple of length `d`, where each element specify the number of components over the corresponding axis. It consists of the associated size of the meshgrid of allowed waves. For example for :math:`d=2`, letting meshgid_shape=(2,3) gives a meshgrid of allowed waves formed by a vector of 2 values over the x-axis and a vectors of 3 values over the y-axis. Defaults to None.
+        meshgrid_shape (tuple, optional): Tuple of length `d`, where each element specify the number of components over the corresponding axis. It consists of the associated size of the meshgrid of allowed waves. For example for :math:`d=2`, letting meshgid_shape=(2,3) gives a meshgrid of allowed waves formed by a vector of 2 values over the x-axis and a vectors of 3 values over the y-axis. Defaults to None.
 
     Returns:
         tuple (np.ndarray, list):
             - k : np.array with ``d`` columns where each row is an allowed wave vector.
             - K : list of meshgrids, (the elements of the list correspond to the 2D respresentation of the components of the wave vectors, i.e., a 2D representation of the vectors of allowed values ``k``). For example in dimension 2, if K =[X,Y] then X is the 2D representation of the x coordinates of the allowed wave vectors ``k`` i.e., the representation as meshgrid.
 
+    .. note::
+
+        **Definition:**
+            Given a realization of a point process in a cubic window of length side :math:`L`, the set of the **allowed wave vectors** :math:`\{\mathbf{k}_i\}_i` at which the the scattering intensity :math:`\widehat{S}_{SI}` is consistently an estimator of the structure factor :math:`S` of the point process is defined by
+
+
+            .. math::
+
+                \{\mathbf{k}_i\}_i = \{\frac{2 \pi}{L} \mathbf{n} ~ ; ~ \mathbf{n} \in (\mathbb{Z}^d)^\ast \}.
+
+            The maximum and the number of output allowed wave vectors returned by :py:meth:`allowed_wave_vectors`, are specified by the input parameters ``k_max`` and ``meshgrid_shape``.
     """
     K = None
     n_max = np.floor(k_max * L / (2 * np.pi))  # maximum of ``n``
@@ -175,27 +177,31 @@ def allowed_wave_vectors(d, L, k_max, meshgrid_shape=None):
 
 
 def compute_scattering_intensity(k, points):
-    r"""Compute the scattering intensity :math:`\widehat{S}_{SI}`, for a realization of points :math:`\{\mathbf{x}_i\}_{i=1}^N` of :math:`\mathbb{R}^d`.
-
-    .. math::
-
-        \widehat{S}_{SI}(\mathbf{k}) =
-             \frac{1}{N}\left\lvert
-                \sum_{j=1}^N
-                    \exp(- i \left\langle \mathbf{k}, \mathbf{x_j} \right\rangle)
-            \right\rvert^2
-
-    where :math:`\mathbf{k} \in \mathbb{R}^d` is a wave vector.
+    r"""Compute the scattering intensity of ``points`` on the wave vector(s) ``k``.
 
     Args:
 
-        k (np.ndarray): np.ndarray of d columns (where d is the dimesion of the space containing the points) where each row correspond to a wave vector.
+        k (np.ndarray): np.ndarray of d columns (where d is the dimesion of the space containing ``points``). Each row is a wave vector on which the scattering intensity to be evaluated.
 
         points (np.ndarray): np.ndarray of d columns where each row is a point from the realization of the point process.
 
     Returns:
-        numpy.ndarray: Vector of evaluations of the scattering intensity on ``k``.
+        numpy.ndarray: Evaluation(s) of the scattering intensity on ``k``.
 
+    .. note::
+
+        **Definition:**
+            The scattering intensity :math:`\widehat{S}_{SI}`, of a realization of points :math:`\{\mathbf{x}_i\}_{i=1}^N` of :math:`\mathbb{R}^d`, is defined by,
+
+            .. math::
+
+                \widehat{S}_{SI}(\mathbf{k}) =
+                    \frac{1}{N}\left\lvert
+                        \sum_{j=1}^N
+                            \exp(- i \left\langle \mathbf{k}, \mathbf{x_j} \right\rangle)
+                    \right\rvert^2
+
+            where :math:`\mathbf{k} \in \mathbb{R}^d` is a wave vector.
     """
     n = points.shape[0]  # number of points
     if points.shape[1] != k.shape[1]:
@@ -213,17 +219,17 @@ def _bin_statistics(x, y, **params):
     """Divide ``x`` into bins and evaluate the mean and the standard deviation of the corresponding elements of ``y`` over each bin.
 
     Args:
-        x (np.ndarray): vector of data.
-        y (np.ndarray): vector of data associated to the vector ``x``.
+        x (np.array): Vector of data.
+        y (np.array): Vector of data associated to the vector ``x``.
 
     Keyword args:
-        params (dict): keyword arguments (except ``"statistic"``) of ``scipy.stats.binned_statistic``.
+        params (dict): Keyword arguments (except ``"statistic"``) of ``scipy.stats.binned_statistic``.
 
     Returns:
         tuple(numpy.ndarray, numpy.ndarray, numpy.ndarray):
-            - ``bin_centers`` vector of centers of the bins associated to ``x``.
-            - ``bin_mean`` vector of means of ``y`` over the bins.
-            - ``std_mean`` vector of standard deviation of ``y`` over the bins.
+            - ``bin_centers``: Vector of centers of the bins associated to ``x``.
+            - ``bin_mean``: Vector of means of ``y`` over the bins.
+            - ``std_mean``: Vector of standard deviation of ``y`` over the bins.
     """
     bin_mean, bin_edges, _ = stats.binned_statistic(x, y, statistic="mean", **params)
     bin_std, _, _ = stats.binned_statistic(x, y, statistic="std", **params)
@@ -235,26 +241,22 @@ def _bin_statistics(x, y, **params):
 
 
 def plot_poisson(x, axis, c="k", linestyle=(0, (5, 10)), label="Poisson"):
-    r"""plot the pair correlation function :math:`g_{poisson}` and the structure factor :math:`S_{poisson}` corresponding to the Poisson point process.
-
-    .. math::
-
-        g_{poisson} = S_{poisson} = 1
-
+    r"""Plot the pair correlation function :math:`g_{poisson}` and the structure factor :math:`S_{poisson}` corresponding to the Poisson point process.
 
     Args:
         x (np.array): x coordinate.
 
-        axis (matplotlib.axis): axis on which to add the plot.
+        axis (matplotlib.axis): Axis on which to add the plot.
 
-        c (str, optional): color of the plot. see `matplotlib <https://matplotlib.org/2.1.1/api/_as_gen/matplotlib.pyplot.plot.html>`_ . Defaults to "k".
+        c (str, optional): Color of the plot. see `matplotlib <https://matplotlib.org/2.1.1/api/_as_gen/matplotlib.pyplot.plot.html>`_ . Defaults to "k".
 
-        linestyle (tuple, optional): linstyle of the plot. see `linestyle <https://matplotlib.org/stable/gallery/lines_bars_and_markers/linestyles.html>`_. Defaults to (0, (5, 10)).
+        linestyle (tuple, optional): Linstyle of the plot. see `linestyle <https://matplotlib.org/stable/gallery/lines_bars_and_markers/linestyles.html>`_. Defaults to (0, (5, 10)).
 
-        label (str, optional): specification of the label of the plot. Defaults to "Poisson".
+        label (str, optional): Specification of the label of the plot. Defaults to "Poisson".
 
     Returns:
-        matplotlib.plot: plot of the pair correlation function and the structure factor of the Poisson point process over ``x``.
+        matplotlib.plot: Plot of the pair correlation function and the structure factor of the Poisson point process over ``x``.
+
     """
     axis.plot(x, np.ones_like(x), c=c, linestyle=linestyle, label=label)
     return axis
@@ -403,15 +405,15 @@ def plot_si_all(
 
 
 def _compute_k_min(r_max, step_size):
-    """estimate threshold of confidence for the approximation of the Hankel transform using Ogata method. i.e., minimum confidence k for which the approximation of the Hankel transform by Ogata quadrature is doable :cite:`Oga05`.
-    # todo add our paper ref
+    """Estimate threshold of confidence for the approximation of the Hankel transform using Ogata method. i.e., minimum confidence k for which the approximation of the Hankel transform by Ogata quadrature is doable :cite:`Oga05`.
 
     Args:
-        r_max (float): maximum radius on which the the function looking for its Hankel transform was approximated
-        step_size (float): stepsize used in the quadrature of Ogata.
+        r_max (float): Maximum radius on which the input function :math:`f` to be Hankel transformed was evaluated before the interpolation.
+
+        step_size (float): Stepsize used in the quadrature of Ogata.
 
     Returns:
-        float: the threshold on k.
+        float: Upper bound of k.
     """
     return (2.7 * np.pi) / (r_max * step_size)
 

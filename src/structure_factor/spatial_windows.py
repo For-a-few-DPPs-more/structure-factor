@@ -43,7 +43,7 @@ class AbstractSpatialWindow(metaclass=ABCMeta):
 
     @abstractmethod
     def __contains__(self, point):
-        """Return True if :math:`d` dimensional vector ``point`` falls inside the corresponding :math:`d` dimensional window, otherwise return False.
+        r"""Return True if :math:`d` dimensional vector ``point`` falls inside the corresponding :math:`d` dimensional window, otherwise return False.
 
         Args:
             point (numpy.ndarray): :math:`d` dimensional vector to test.
@@ -53,7 +53,7 @@ class AbstractSpatialWindow(metaclass=ABCMeta):
         r"""Return the indicator function of the corresponding window evaluated at each of the :math:`n` ``points``.
 
         Args:
-            points (numpy.ndarray): vector of size :math:`d` or array of size :math:`n \times d` containing point(s) to be tested.
+            points (numpy.ndarray): Vector of size :math:`d` or array of size :math:`n \times d` containing point(s) to be tested.
         Returns:
             bool or numpy.ndarray:
             - If :math:`n=1`, bool,
@@ -82,8 +82,8 @@ class BallWindow(AbstractSpatialWindow):
     r"""Create a :math:`d` dimensional ball window :math:`B(c, r)`, where :math:`c \in \mathbb{R}^d` and :math:`r>0`.
 
     Args:
-        center (numpy.ndarray): center :math:`c` of the ball.
-        radius (float, optional): radius :math:`r > 0` of the ball. Defaults to 1.0.
+        center (numpy.ndarray): Center :math:`c` of the ball.
+        radius (float, optional): Radius :math:`r > 0` of the ball. Defaults to 1.0.
 
     Example:
 
@@ -100,8 +100,8 @@ class BallWindow(AbstractSpatialWindow):
         """Initialize a :math:`d` dimensional ball window :math:`B(c, r)` from the prescribed ``center`` and ``radius``.
 
         Args:
-            center (numpy.ndarray): center :math:`c` of the ball.
-            radius (float, optional): radius :math:`r > 0` of the ball. Defaults to 1.0.
+            center (numpy.ndarray): Center :math:`c` of the ball.
+            radius (float, optional): Radius :math:`r > 0` of the ball. Defaults to 1.0.
         """
         _center = np.array(center)
         if not _center.ndim == 1:
@@ -148,7 +148,7 @@ class BallWindow(AbstractSpatialWindow):
         """Convert the object to a ``spatstat.geom.disc`` R object of type ``disc``, which is a subtype of ``owin``.
 
         Args:
-            params (dict): optional keyword arguments passed to ``spatstat.geom.disc``.
+            params (dict): Optional keyword arguments passed to ``spatstat.geom.disc``.
 
         Returns:
             spatstat.geom.disc: R object.
@@ -169,7 +169,7 @@ class UnitBallWindow(BallWindow):
 
 
     Args:
-        center (numpy.ndarray, optional): center :math:`c` of the ball.
+        center (numpy.ndarray, optional): Center :math:`c` of the ball.
 
     .. note::
 
@@ -180,7 +180,7 @@ class UnitBallWindow(BallWindow):
         """Initialize a :math:`d` dimensional unit ball window :math:`B(c, r=1)` from the prescribed ``center``.
 
         Args:
-            center (numpy.ndarray, optional): center :math:`c` of the ball.
+            center (numpy.ndarray, optional): Center :math:`c` of the ball.
         """
         super().__init__(center, radius=1.0)
 
@@ -253,7 +253,7 @@ class BoxWindow(AbstractSpatialWindow):
         """Convert the object to a ``spatstat.geom.owin`` R object of type  ``owin``.
 
         Args:
-            params (dict): optional keyword arguments passed to ``spatstat.geom.owin``.
+            params (dict): Optional keyword arguments passed to ``spatstat.geom.owin``.
 
         Returns:
             spatstat.geom.owin: R object.
@@ -276,14 +276,14 @@ class UnitBoxWindow(BoxWindow):
     r"""Create a :math:`d` dimensional unit box window :math:`\prod_{i=1}^{d} [c_i - \frac{1}{2}, c_i + \frac{1}{2}]` where :math:`c \in \mathbb{R}^d`.
 
     Args:
-        center (numpy.ndarray): center :math:`c` of the box.
+        center (numpy.ndarray): Center :math:`c` of the box.
     """
 
     def __init__(self, center):
         r"""Initialize a :math:`d` dimensional unit box window :math:`\prod_{i=1}^{d} [c_i - \frac{1}{2}, c_i + \frac{1}{2}]`, i.e., a box window with length equal to 1 and prescribed ``center``, such that :math:`c_i=` ``center[i]``.
 
         Args:
-            center (numpy.ndarray): center :math:`c` of the box.
+            center (numpy.ndarray): Center :math:`c` of the box.
         """
         if np.ndim(center) != 1:
             raise ValueError("center must be 1D array.")
@@ -297,7 +297,7 @@ def check_cubic_window(window):
 
     Args:
 
-        window (AbstractSpatialWindow): window.
+        window (AbstractSpatialWindow): Window.
     """
     if not isinstance(window, BoxWindow):
         raise TypeError("window must be an instance of BoxWindow.")

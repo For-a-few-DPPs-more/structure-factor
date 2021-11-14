@@ -12,7 +12,7 @@ class RadiallySymmetricFourierTransform:
     r"""Compute the Fourier transform of a radially symmetric function using the `correspondence with the Hankel transform <https://en.wikipedia.org/wiki/Hankel_transform#Fourier_transform_in_d_dimensions_(radially_symmetric_case)>`_.
 
     Args:
-        dimension (int): dimension of the space. Default to 0.
+        dimension (int): Dimension of the space. Default to 0.
     """
 
     def __init__(self, dimension=0):
@@ -25,18 +25,20 @@ class RadiallySymmetricFourierTransform:
         r"""Evaluate the Fourier transform of the radially symmetric function :math:`f` at :math:`k` using the correspondence with the Hankel transform.
 
         Args:
-            f (callable): function to transform
-            k (scalar or numpy.ndarray): point(s) where the Fourier tranform is to evaluated.
-            method (str, optional): name of the method used to compute the underlying Hankel transform: ``"Ogata"`` or ``"BaddourChouinard"``. Defaults to ``"Ogata"``.
+            f (callable): Function to transform.
+
+            k (scalar or numpy.ndarray): Point(s) where the Fourier tranform is to evaluated.
+
+            method (str, optional): Name of the method used to compute the underlying Hankel transform: ``"Ogata"`` or ``"BaddourChouinard"``. Defaults to ``"Ogata"``.
 
         Keyword Args:
             params (dict):
 
-                - if ``method="BaddourChouinard"``:
+                - If ``method="BaddourChouinard"``:
 
                     - r_max (float): Threshold radius. Considering that the input function :math:`f` to be Hankel transformed is space-limited, then ``r_max`` satisfies :math:`f(r)=0` for r > r_max.
                     - nb_points (int, optional): Number of quadrature nodes. Defaults to 300.
-                - if ``method="Ogata"``:
+                - If ``method="Ogata"``:
 
                     - r_max (float, optional): Maximum radius on which the input function :math:`f` to be Hankel transformed was evaluated before the interpolation. Parameter used to conclude an upper bound on :math:`k` on which :math:`f` to be Hankel transformed. Defaults to None.
 
@@ -47,7 +49,7 @@ class RadiallySymmetricFourierTransform:
 
         Returns:
             tuple (np.array, np.array):
-                - k: point(s) where the Fourier tranform is to evaluated.
+                - k: Point(s) where the Fourier tranform is to evaluated.
                 - F_k: Fourier transform of ``f`` at ``k``.
 
         .. note::
@@ -102,7 +104,7 @@ class HankelTransform:
     r"""Compute the `Hankel transform <https://en.wikipedia.org/wiki/Hankel_transform>`_ of order :math:`\nu`.
 
     Args:
-            order (int, optional): order of the Hankel transfrom. Defaults to 0.
+            order (int, optional): Order of the Hankel transfrom. Defaults to 0.
 
     .. seealso::
 
@@ -120,7 +122,7 @@ class HankelTransformBaddourChouinard(HankelTransform):
     r"""Computation of the Hankel transform, using the method of :cite:`BaCh15` considering that the input function is space-limited, i.e., :math:`f(r)=0` for :math:`r>r_{max}`.
 
     Args:
-        order (int, optional): order of the Hankel transfrom. Defaults to 0.
+        order (int, optional): Order of the Hankel transfrom. Defaults to 0.
 
     .. seealso::
 
@@ -146,6 +148,7 @@ class HankelTransformBaddourChouinard(HankelTransform):
 
         Args:
             r_max (float): Threshold radius. Considering that the input function :math:`f` to be Hankel transformed is space-limited, then ``r_max`` satisfies :math:`f(r)=0` for r > r_max.
+
             nb_points (int, optional): Number of quadrature nodes. Defaults to 300.
         """
         n = self.order
@@ -171,7 +174,7 @@ class HankelTransformBaddourChouinard(HankelTransform):
                 - If ``k`` is provided, the Hankel transform is first computed at the above k values (case k is None), then interpolated using :py:func:`scipy.interpolate.interp1d` with ``interpolation_params`` and finally evaluated at the provided ``k`` values.
 
         Keyword Args:
-            interpolation_params (dict): keyword arguments of :py:func:`scipy.interpolate.interp1d`.
+            interpolation_params (dict): Keyword arguments of :py:func:`scipy.interpolate.interp1d`.
 
         Returns:
             tuple (scalar or np.array, scalar or np.array): ``k`` and the evaluations of the Hankel transform of ``f`` at ``k``.
@@ -196,7 +199,7 @@ class HankelTransformOgata(HankelTransform):
     r"""Computation of the Hankel transform using Ogata quadrature :cite:`Oga05`, Section 5.
 
     Args:
-        order (int, optional): order of the Hankel transfrom. Defaults to 0.
+        order (int, optional): Order of the Hankel transfrom. Defaults to 0.
 
     .. seealso::
 
@@ -221,7 +224,7 @@ class HankelTransformOgata(HankelTransform):
             nb_points (int, optional): Number of quadrature nodes. Defaults to 300.
 
         Returns:
-            tuple (np.ndarray, np.ndarray): quadrature nodes and weights
+            tuple (np.ndarray, np.ndarray): Quadrature nodes and weights.
         """
         n = self.order
         h = step_size
