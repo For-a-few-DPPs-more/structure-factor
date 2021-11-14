@@ -20,8 +20,8 @@ class Hyperuniformity:
             A stationary point process :math:`\mathcal{X}` is said to be hyperunifrom if it's structure factor :math:`S`, vanishes at 0.
 
         **This class contains**:
-            - :meth:`bin_data` : method for regularizing :py:attr:`~Hyeruniformity.sf`, consisting on dividing the vector of wavenumber :py:attr:`~Hyeruniformity.k_norm` into sub-intervals and taking the mean and the strandard deviation over each sub-interval.
-            - :meth:`effective_hyperuniformity` : test of effective hyperuniformity, consisting on evaluating the index H of hyperuniformity used to study if the corresponding point process is effectively hyperuniform :cite:`Kla+al19`.
+            - :meth:`bin_data`: method for regularizing :py:attr:`~Hyeruniformity.sf`, consisting on dividing the vector of wavenumber :py:attr:`~Hyeruniformity.k_norm` into sub-intervals and taking the mean and the strandard deviation over each sub-interval.
+            - :meth:`effective_hyperuniformity`: test of effective hyperuniformity, consisting on evaluating the index H of hyperuniformity used to study if the corresponding point process is effectively hyperuniform :cite:`Kla+al19`.
             - :meth:`hyperuniformity_class`: test of the possible class of hyperuniformity, consisting on studying the power decay of the structure factor near zero :cite:`Cos21`.
 
         **Typical usage**:
