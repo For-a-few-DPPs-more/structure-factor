@@ -36,8 +36,8 @@ class StructureFactor:
         **This class contains:**
             - Three estimators of the structure factor:
                 - :meth:`scattering_intensity`: the scattering intensity estimator.
-                - :meth:`hankel_quadrature` with ``method="Ogata"``: estimator using Ogata quadrature for approximating the Hankel transform   :cite:`Oga05`.
-                - :meth:`hankel_quadrature` with ``method="BaddourChouinard"``: estimator using Baddour and Chouinard Discrete Hankel transform  :cite:`BaCh15`.
+                - :meth:`hankel_quadrature` with ``method="Ogata"``: estimator using Ogata quadrature for approximating the Hankel transform :cite:`Oga05`.
+                - :meth:`hankel_quadrature` with ``method="BaddourChouinard"``: estimator using Baddour and Chouinard Discrete Hankel transform :cite:`BaCh15`.
             - Two estimators of the pair correlation function :
                 - :meth:`compute_pcf` with ``method="ppp"``: estimator using Epanechnikov kernel and a bandwidth selected by Stoyan's rule of thumb.
                 - :meth:`compute_pcf` with ``method="fv"``: estimator using the derivative of Ripley's K function.
