@@ -55,7 +55,7 @@
 
 <span class="sd">            window (AbstractSpatialWindow, optional): Observation window containing the ``points``. Defaults to None.</span>
 
-<span class="sd">            intensity(float, optional): intensity of the point process. Defaults to None.</span>
+<span class="sd">            intensity(float, optional): Intensity of the point process. Defaults to None.</span>
 
 <span class="sd">    Example:</span>
 
@@ -89,7 +89,7 @@
 
 <span class="sd">            window (AbstractSpatialWindow, optional): Observation window containing the ``points``. Defaults to None.</span>
 
-<span class="sd">            intensity(float, optional): intensity of the point process. Defaults to None.</span>
+<span class="sd">            intensity(float, optional): Intensity of the point process. Defaults to None.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
         <span class="k">assert</span> <span class="n">_points</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span>
@@ -114,15 +114,15 @@
 <div class="viewcode-block" id="PointPattern.restrict_to_window"><a class="viewcode-back" href="../../point_pattern.html#structure_factor.point_pattern.PointPattern.restrict_to_window">[docs]</a>    <span class="k">def</span> <span class="nf">restrict_to_window</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">window</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return a new instance of :py:class:`~structure_factor.point_pattern.PointPattern` with the following attributes.</span>
 
-<span class="sd">        - points: points of the original object that fall inside the prescribed ``window``,</span>
+<span class="sd">        - points: Points of the original object that fall inside the prescribed ``window``,</span>
 <span class="sd">        - window: prescribed ``window``,</span>
 <span class="sd">        - intensity: same intensity as the original object.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            window (AbstractSpatialWindow): new observation window to restrict to.</span>
+<span class="sd">            window (AbstractSpatialWindow): New observation window to restrict to.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            ~structure_factor.point_pattern.PointPattern: restriction of the ``PointPattern`` to the prescribed ``window``.</span>
+<span class="sd">            ~structure_factor.point_pattern.PointPattern: Restriction of the ``PointPattern`` to the prescribed ``window``.</span>
 
 
 <span class="sd">        .. testsetup::</span>
@@ -145,7 +145,7 @@
         <span class="sd">&quot;&quot;&quot;Convert the object attributes :py:attr:`~structure_factor.point_pattern.PointPattern.points` and :py:attr:`~structure_factor.point_pattern.PointPattern.window` into a point pattern ``spatstat.geom.ppp`` R object.</span>
 
 <span class="sd">        Keyword args:</span>
-<span class="sd">            params (dict): optional keyword arguments passed to ``spatstat.geom.ppp``.</span>
+<span class="sd">            params (dict): Optional keyword arguments passed to ``spatstat.geom.ppp``.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Point pattern R object of type ``spatstat.geom.ppp``.</span>
@@ -167,9 +167,9 @@
         <span class="sd">&quot;&quot;&quot;Display scatter plot of the attribute :py:attr:`~structure_factor.point_pattern.PointPattern.points`.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            axis (matplotlib.axis, optional): support axis of the plot. Defaults to None.</span>
+<span class="sd">            axis (matplotlib.axis, optional): Support axis of the plot. Defaults to None.</span>
 
-<span class="sd">            window_res (AbstractSpatialWindow, optional): window used to visualized the plot. Defaults to None.</span>
+<span class="sd">            window_res (AbstractSpatialWindow, optional): Window used to visualized the plot. Defaults to None.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            matplotlib.axis: plot axis.</span>

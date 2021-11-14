@@ -56,9 +56,9 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>k</strong> (<em>np.array</em>) – vector to be sorted by increasing order.</p></li>
-<li><p><strong>x_k</strong> (<em>np.array</em>) – vector of evaluations associated to <code class="docutils literal notranslate"><span class="pre">k</span></code>.</p></li>
-<li><p><strong>y_k</strong> (<em>np.array</em>) – vector of evaluations associated to <code class="docutils literal notranslate"><span class="pre">k</span></code>.</p></li>
+<li><p><strong>k</strong> (<em>np.array</em>) – Vector to be sorted by increasing order.</p></li>
+<li><p><strong>x_k</strong> (<em>np.array</em>) – Vector of evaluations associated to <code class="docutils literal notranslate"><span class="pre">k</span></code>.</p></li>
+<li><p><strong>y_k</strong> (<em>np.array</em>) – Vector of evaluations associated to <code class="docutils literal notranslate"><span class="pre">k</span></code>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -106,7 +106,7 @@
 <dd><p>reshape list of meshgrids as np.ndarray of columns, where each column is associated to an element (meshgrid) of the list.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>X</strong> (<em>list</em>) – list of meshgrids.</p>
+<dd class="field-odd"><p><strong>X</strong> (<em>list</em>) – List of meshgrids.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>np.ndarray where each meshgrid of the original list is stacked as a column.</p>
@@ -120,18 +120,14 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="structure_factor.utils.allowed_wave_vectors">
 <span class="sig-prename descclassname"><span class="pre">structure_factor.utils.</span></span><span class="sig-name descname"><span class="pre">allowed_wave_vectors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k_max</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meshgrid_shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/utils.html#allowed_wave_vectors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.utils.allowed_wave_vectors" title="Permalink to this definition">¶</a></dt>
-<dd><p>Given a realization of a point process in a cubic window with length <span class="math notranslate nohighlight">\(L\)</span>, return a subset of the set of the ‘allowed’ wave vectors (defined below) <span class="math notranslate nohighlight">\(\{\mathbf{k}_i\}_i\)</span> at which the the scattering intensity <span class="math notranslate nohighlight">\(\widehat{S}_{SI}\)</span> is consistently an estimator of the structure factor <span class="math notranslate nohighlight">\(S(\mathbf{k}_i)\)</span>.</p>
-<p>The allowed wave vectors are <span class="math notranslate nohighlight">\(\mathbf{k}_i\)</span> s.t.,</p>
-<div class="math notranslate nohighlight">
-\[\{\mathbf{k}_i\}_i \subset \{\frac{2 \pi}{L} \mathbf{n} ~ ; ~ \mathbf{n} \in (\mathbb{Z}^d)^\ast \}.\]</div>
-<p>The maximum and the number of output allowed wave vectors are specified by using the parameters <cite>k_max</cite> and <cite>meshgrid_shape</cite>.</p>
+<dd><p>Return a subset of the d-dimentional allowed wave vectors used by the scattering intensity of a point process realization lying in a cubic window of length <code class="docutils literal notranslate"><span class="pre">L</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>d</strong> (<em>int</em>) – dimension of the space containing the point process.</p></li>
-<li><p><strong>L</strong> (<em>float</em>) – length of the cubic window containing the sample of points.</p></li>
-<li><p><strong>k_max</strong> (<em>float</em>) – maximum component of the waves vectors i.e., for any allowed wave vector <span class="math notranslate nohighlight">\(\mathbf{k}=(k_1,...,k_d)\)</span>, <span class="math notranslate nohighlight">\(k_i \leq k\_max\)</span> for all i. This implies that the maximum wave vector will be <span class="math notranslate nohighlight">\((k\_max, ... k\_max)\)</span>.</p></li>
-<li><p><strong>meshgrid_shape</strong> (<em>tuple</em><em>, </em><em>optional</em>) – tuple of length <cite>d</cite>, where each element specify the number of components over the corresponding axis. It consists of the associated size of the meshgrid of allowed waves. For example for <span class="math notranslate nohighlight">\(d=2\)</span>, letting meshgid_shape=(2,3) gives a meshgrid of allowed waves formed by a vector of 2 values over the x-axis and a vectors of 3 values over the y-axis. Defaults to None.</p></li>
+<li><p><strong>d</strong> (<em>int</em>) – Dimension of the space containing the point process.</p></li>
+<li><p><strong>L</strong> (<em>float</em>) – Length of the cubic window containing the point process realization.</p></li>
+<li><p><strong>k_max</strong> (<em>float</em>) – Maximum component of the waves vectors i.e., for any allowed wave vector <span class="math notranslate nohighlight">\(\mathbf{k}=(k_1,...,k_d)\)</span>, <span class="math notranslate nohighlight">\(k_i \leq k\_max\)</span> for all i. This implies that the maximum wave vector will be <span class="math notranslate nohighlight">\((k\_max, ... k\_max)\)</span>.</p></li>
+<li><p><strong>meshgrid_shape</strong> (<em>tuple</em><em>, </em><em>optional</em>) – Tuple of length <cite>d</cite>, where each element specify the number of components over the corresponding axis. It consists of the associated size of the meshgrid of allowed waves. For example for <span class="math notranslate nohighlight">\(d=2\)</span>, letting meshgid_shape=(2,3) gives a meshgrid of allowed waves formed by a vector of 2 values over the x-axis and a vectors of 3 values over the y-axis. Defaults to None.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -145,33 +141,50 @@
 <dd class="field-odd"><p>tuple (np.ndarray, list)</p>
 </dd>
 </dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<dl>
+<dt><strong>Definition:</strong></dt><dd><p>Given a realization of a point process in a cubic window of length side <span class="math notranslate nohighlight">\(L\)</span>, the set of the <strong>allowed wave vectors</strong> <span class="math notranslate nohighlight">\(\{\mathbf{k}_i\}_i\)</span> at which the the scattering intensity <span class="math notranslate nohighlight">\(\widehat{S}_{SI}\)</span> is consistently an estimator of the structure factor <span class="math notranslate nohighlight">\(S\)</span> of the point process is defined by</p>
+<div class="math notranslate nohighlight">
+\[\{\mathbf{k}_i\}_i = \{\frac{2 \pi}{L} \mathbf{n} ~ ; ~ \mathbf{n} \in (\mathbb{Z}^d)^\ast \}.\]</div>
+<p>The maximum and the number of output allowed wave vectors returned by <a class="reference internal" href="#structure_factor.utils.allowed_wave_vectors" title="structure_factor.utils.allowed_wave_vectors"><code class="xref py py-meth docutils literal notranslate"><span class="pre">allowed_wave_vectors()</span></code></a>, are specified by the input parameters <code class="docutils literal notranslate"><span class="pre">k_max</span></code> and <code class="docutils literal notranslate"><span class="pre">meshgrid_shape</span></code>.</p>
+</dd>
+</dl>
+</div>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="structure_factor.utils.compute_scattering_intensity">
 <span class="sig-prename descclassname"><span class="pre">structure_factor.utils.</span></span><span class="sig-name descname"><span class="pre">compute_scattering_intensity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">points</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/utils.html#compute_scattering_intensity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.utils.compute_scattering_intensity" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute the scattering intensity <span class="math notranslate nohighlight">\(\widehat{S}_{SI}\)</span>, for a realization of points <span class="math notranslate nohighlight">\(\{\mathbf{x}_i\}_{i=1}^N\)</span> of <span class="math notranslate nohighlight">\(\mathbb{R}^d\)</span>.</p>
-<div class="math notranslate nohighlight">
-\[\widehat{S}_{SI}(\mathbf{k}) =
-     \frac{1}{N}\left\lvert
-        \sum_{j=1}^N
-            \exp(- i \left\langle \mathbf{k}, \mathbf{x_j} \right\rangle)
-    \right\rvert^2\]</div>
-<p>where <span class="math notranslate nohighlight">\(\mathbf{k} \in \mathbb{R}^d\)</span> is a wave vector.</p>
+<dd><p>Compute the scattering intensity of <code class="docutils literal notranslate"><span class="pre">points</span></code> on the wave vector(s) <code class="docutils literal notranslate"><span class="pre">k</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>k</strong> (<em>np.ndarray</em>) – np.ndarray of d columns (where d is the dimesion of the space containing the points) where each row correspond to a wave vector.</p></li>
+<li><p><strong>k</strong> (<em>np.ndarray</em>) – np.ndarray of d columns (where d is the dimesion of the space containing <code class="docutils literal notranslate"><span class="pre">points</span></code>). Each row is a wave vector on which the scattering intensity to be evaluated.</p></li>
 <li><p><strong>points</strong> (<em>np.ndarray</em>) – np.ndarray of d columns where each row is a point from the realization of the point process.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Vector of evaluations of the scattering intensity on <code class="docutils literal notranslate"><span class="pre">k</span></code>.</p>
+<dd class="field-even"><p>Evaluation(s) of the scattering intensity on <code class="docutils literal notranslate"><span class="pre">k</span></code>.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>numpy.ndarray</p>
 </dd>
 </dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<dl>
+<dt><strong>Definition:</strong></dt><dd><p>The scattering intensity <span class="math notranslate nohighlight">\(\widehat{S}_{SI}\)</span>, of a realization of points <span class="math notranslate nohighlight">\(\{\mathbf{x}_i\}_{i=1}^N\)</span> of <span class="math notranslate nohighlight">\(\mathbb{R}^d\)</span>, is defined by,</p>
+<div class="math notranslate nohighlight">
+\[\widehat{S}_{SI}(\mathbf{k}) =
+    \frac{1}{N}\left\lvert
+        \sum_{j=1}^N
+            \exp(- i \left\langle \mathbf{k}, \mathbf{x_j} \right\rangle)
+    \right\rvert^2\]</div>
+<p>where <span class="math notranslate nohighlight">\(\mathbf{k} \in \mathbb{R}^d\)</span> is a wave vector.</p>
+</dd>
+</dl>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -181,18 +194,18 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<em>np.ndarray</em>) – vector of data.</p></li>
-<li><p><strong>y</strong> (<em>np.ndarray</em>) – vector of data associated to the vector <code class="docutils literal notranslate"><span class="pre">x</span></code>.</p></li>
+<li><p><strong>x</strong> (<em>np.array</em>) – Vector of data.</p></li>
+<li><p><strong>y</strong> (<em>np.array</em>) – Vector of data associated to the vector <code class="docutils literal notranslate"><span class="pre">x</span></code>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Keyword Arguments</dt>
-<dd class="field-even"><p><strong>params</strong> (<em>dict</em>) – keyword arguments (except <code class="docutils literal notranslate"><span class="pre">&quot;statistic&quot;</span></code>) of <code class="docutils literal notranslate"><span class="pre">scipy.stats.binned_statistic</span></code>.</p>
+<dd class="field-even"><p><strong>params</strong> (<em>dict</em>) – Keyword arguments (except <code class="docutils literal notranslate"><span class="pre">&quot;statistic&quot;</span></code>) of <code class="docutils literal notranslate"><span class="pre">scipy.stats.binned_statistic</span></code>.</p>
 </dd>
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p><ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">bin_centers</span></code> vector of centers of the bins associated to <code class="docutils literal notranslate"><span class="pre">x</span></code>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">bin_mean</span></code> vector of means of <code class="docutils literal notranslate"><span class="pre">y</span></code> over the bins.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">std_mean</span></code> vector of standard deviation of <code class="docutils literal notranslate"><span class="pre">y</span></code> over the bins.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bin_centers</span></code>: Vector of centers of the bins associated to <code class="docutils literal notranslate"><span class="pre">x</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bin_mean</span></code>: Vector of means of <code class="docutils literal notranslate"><span class="pre">y</span></code> over the bins.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">std_mean</span></code>: Vector of standard deviation of <code class="docutils literal notranslate"><span class="pre">y</span></code> over the bins.</p></li>
 </ul>
 </p>
 </dd>
@@ -205,21 +218,19 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="structure_factor.utils.plot_poisson">
 <span class="sig-prename descclassname"><span class="pre">structure_factor.utils.</span></span><span class="sig-name descname"><span class="pre">plot_poisson</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'k'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linestyle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(0,</span> <span class="pre">(5,</span> <span class="pre">10))</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Poisson'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/utils.html#plot_poisson"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.utils.plot_poisson" title="Permalink to this definition">¶</a></dt>
-<dd><p>plot the pair correlation function <span class="math notranslate nohighlight">\(g_{poisson}\)</span> and the structure factor <span class="math notranslate nohighlight">\(S_{poisson}\)</span> corresponding to the Poisson point process.</p>
-<div class="math notranslate nohighlight">
-\[g_{poisson} = S_{poisson} = 1\]</div>
+<dd><p>Plot the pair correlation function <span class="math notranslate nohighlight">\(g_{poisson}\)</span> and the structure factor <span class="math notranslate nohighlight">\(S_{poisson}\)</span> corresponding to the Poisson point process.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x</strong> (<em>np.array</em>) – x coordinate.</p></li>
-<li><p><strong>axis</strong> (<em>matplotlib.axis</em>) – axis on which to add the plot.</p></li>
-<li><p><strong>c</strong> (<em>str</em><em>, </em><em>optional</em>) – color of the plot. see <a class="reference external" href="https://matplotlib.org/2.1.1/api/_as_gen/matplotlib.pyplot.plot.html">matplotlib</a> . Defaults to “k”.</p></li>
-<li><p><strong>linestyle</strong> (<em>tuple</em><em>, </em><em>optional</em>) – linstyle of the plot. see <a class="reference external" href="https://matplotlib.org/stable/gallery/lines_bars_and_markers/linestyles.html">linestyle</a>. Defaults to (0, (5, 10)).</p></li>
-<li><p><strong>label</strong> (<em>str</em><em>, </em><em>optional</em>) – specification of the label of the plot. Defaults to “Poisson”.</p></li>
+<li><p><strong>axis</strong> (<em>matplotlib.axis</em>) – Axis on which to add the plot.</p></li>
+<li><p><strong>c</strong> (<em>str</em><em>, </em><em>optional</em>) – Color of the plot. see <a class="reference external" href="https://matplotlib.org/2.1.1/api/_as_gen/matplotlib.pyplot.plot.html">matplotlib</a> . Defaults to “k”.</p></li>
+<li><p><strong>linestyle</strong> (<em>tuple</em><em>, </em><em>optional</em>) – Linstyle of the plot. see <a class="reference external" href="https://matplotlib.org/stable/gallery/lines_bars_and_markers/linestyles.html">linestyle</a>. Defaults to (0, (5, 10)).</p></li>
+<li><p><strong>label</strong> (<em>str</em><em>, </em><em>optional</em>) – Specification of the label of the plot. Defaults to “Poisson”.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>plot of the pair correlation function and the structure factor of the Poisson point process over <code class="docutils literal notranslate"><span class="pre">x</span></code>.</p>
+<dd class="field-even"><p>Plot of the pair correlation function and the structure factor of the Poisson point process over <code class="docutils literal notranslate"><span class="pre">x</span></code>.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>matplotlib.plot</p>
@@ -266,17 +277,16 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="structure_factor.utils._compute_k_min">
 <span class="sig-prename descclassname"><span class="pre">structure_factor.utils.</span></span><span class="sig-name descname"><span class="pre">_compute_k_min</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r_max</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step_size</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/utils.html#_compute_k_min"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.utils._compute_k_min" title="Permalink to this definition">¶</a></dt>
-<dd><p>estimate threshold of confidence for the approximation of the Hankel transform using Ogata method. i.e., minimum confidence k for which the approximation of the Hankel transform by Ogata quadrature is doable <span id="id2">[<a class="reference internal" href="bibliography/index.html#id6" title="H. Ogata. A numerical integration formula based on the bessel functions. Research Institute for Mathematical Sciences, 2005. doi:10.2977/prims/1145474602.">Oga05</a>]</span>.
-# todo add our paper ref</p>
+<dd><p>Estimate threshold of confidence for the approximation of the Hankel transform using Ogata method. i.e., minimum confidence k for which the approximation of the Hankel transform by Ogata quadrature is doable <span id="id2">[<a class="reference internal" href="bibliography/index.html#id6" title="H. Ogata. A numerical integration formula based on the bessel functions. Research Institute for Mathematical Sciences, 2005. doi:10.2977/prims/1145474602.">Oga05</a>]</span>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>r_max</strong> (<em>float</em>) – maximum radius on which the the function looking for its Hankel transform was approximated</p></li>
-<li><p><strong>step_size</strong> (<em>float</em>) – stepsize used in the quadrature of Ogata.</p></li>
+<li><p><strong>r_max</strong> (<em>float</em>) – Maximum radius on which the input function <span class="math notranslate nohighlight">\(f\)</span> to be Hankel transformed was evaluated before the interpolation.</p></li>
+<li><p><strong>step_size</strong> (<em>float</em>) – Stepsize used in the quadrature of Ogata.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>the threshold on k.</p>
+<dd class="field-even"><p>Upper bound of k.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>float</p>

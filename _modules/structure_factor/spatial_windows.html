@@ -84,7 +84,7 @@
 
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">point</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return True if :math:`d` dimensional vector ``point`` falls inside the corresponding :math:`d` dimensional window, otherwise return False.</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return True if :math:`d` dimensional vector ``point`` falls inside the corresponding :math:`d` dimensional window, otherwise return False.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            point (numpy.ndarray): :math:`d` dimensional vector to test.</span>
@@ -94,7 +94,7 @@
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the indicator function of the corresponding window evaluated at each of the :math:`n` ``points``.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            points (numpy.ndarray): vector of size :math:`d` or array of size :math:`n \times d` containing point(s) to be tested.</span>
+<span class="sd">            points (numpy.ndarray): Vector of size :math:`d` or array of size :math:`n \times d` containing point(s) to be tested.</span>
 <span class="sd">        Returns:</span>
 <span class="sd">            bool or numpy.ndarray:</span>
 <span class="sd">            - If :math:`n=1`, bool,</span>
@@ -123,8 +123,8 @@
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Create a :math:`d` dimensional ball window :math:`B(c, r)`, where :math:`c \in \mathbb{R}^d` and :math:`r&gt;0`.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        center (numpy.ndarray): center :math:`c` of the ball.</span>
-<span class="sd">        radius (float, optional): radius :math:`r &gt; 0` of the ball. Defaults to 1.0.</span>
+<span class="sd">        center (numpy.ndarray): Center :math:`c` of the ball.</span>
+<span class="sd">        radius (float, optional): Radius :math:`r &gt; 0` of the ball. Defaults to 1.0.</span>
 
 <span class="sd">    Example:</span>
 
@@ -141,8 +141,8 @@
         <span class="sd">&quot;&quot;&quot;Initialize a :math:`d` dimensional ball window :math:`B(c, r)` from the prescribed ``center`` and ``radius``.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            center (numpy.ndarray): center :math:`c` of the ball.</span>
-<span class="sd">            radius (float, optional): radius :math:`r &gt; 0` of the ball. Defaults to 1.0.</span>
+<span class="sd">            center (numpy.ndarray): Center :math:`c` of the ball.</span>
+<span class="sd">            radius (float, optional): Radius :math:`r &gt; 0` of the ball. Defaults to 1.0.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">_center</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">center</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">_center</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
@@ -189,7 +189,7 @@
         <span class="sd">&quot;&quot;&quot;Convert the object to a ``spatstat.geom.disc`` R object of type ``disc``, which is a subtype of ``owin``.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            params (dict): optional keyword arguments passed to ``spatstat.geom.disc``.</span>
+<span class="sd">            params (dict): Optional keyword arguments passed to ``spatstat.geom.disc``.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            spatstat.geom.disc: R object.</span>
@@ -210,7 +210,7 @@
 
 
 <span class="sd">    Args:</span>
-<span class="sd">        center (numpy.ndarray, optional): center :math:`c` of the ball.</span>
+<span class="sd">        center (numpy.ndarray, optional): Center :math:`c` of the ball.</span>
 
 <span class="sd">    .. note::</span>
 
@@ -221,7 +221,7 @@
         <span class="sd">&quot;&quot;&quot;Initialize a :math:`d` dimensional unit ball window :math:`B(c, r=1)` from the prescribed ``center``.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            center (numpy.ndarray, optional): center :math:`c` of the ball.</span>
+<span class="sd">            center (numpy.ndarray, optional): Center :math:`c` of the ball.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">center</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span></div>
 
@@ -294,7 +294,7 @@
         <span class="sd">&quot;&quot;&quot;Convert the object to a ``spatstat.geom.owin`` R object of type  ``owin``.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            params (dict): optional keyword arguments passed to ``spatstat.geom.owin``.</span>
+<span class="sd">            params (dict): Optional keyword arguments passed to ``spatstat.geom.owin``.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            spatstat.geom.owin: R object.</span>
@@ -317,14 +317,14 @@
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Create a :math:`d` dimensional unit box window :math:`\prod_{i=1}^{d} [c_i - \frac{1}{2}, c_i + \frac{1}{2}]` where :math:`c \in \mathbb{R}^d`.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        center (numpy.ndarray): center :math:`c` of the box.</span>
+<span class="sd">        center (numpy.ndarray): Center :math:`c` of the box.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">center</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Initialize a :math:`d` dimensional unit box window :math:`\prod_{i=1}^{d} [c_i - \frac{1}{2}, c_i + \frac{1}{2}]`, i.e., a box window with length equal to 1 and prescribed ``center``, such that :math:`c_i=` ``center[i]``.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            center (numpy.ndarray): center :math:`c` of the box.</span>
+<span class="sd">            center (numpy.ndarray): Center :math:`c` of the box.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">center</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;center must be 1D array.&quot;</span><span class="p">)</span>
@@ -338,7 +338,7 @@
 
 <span class="sd">    Args:</span>
 
-<span class="sd">        window (AbstractSpatialWindow): window.</span>
+<span class="sd">        window (AbstractSpatialWindow): Window.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">window</span><span class="p">,</span> <span class="n">BoxWindow</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;window must be an instance of BoxWindow.&quot;</span><span class="p">)</span>

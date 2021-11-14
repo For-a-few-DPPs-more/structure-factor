@@ -57,9 +57,9 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>k_norm</strong> (<em>numpy.array</em>) – vector of wavenumbers (i.e. norms of the wave vectors).</p></li>
-<li><p><strong>sf</strong> (<em>numpy.array</em>) – vector of evaluations of the structure factor, of the given point process, at <code class="xref py py-attr docutils literal notranslate"><span class="pre">k_norm</span></code>.</p></li>
-<li><p><strong>std</strong> (<em>np.array</em><em>, </em><em>optional</em>) – vector of standard deviations associated to <code class="xref py py-attr docutils literal notranslate"><span class="pre">sf</span></code>. Defaults to None.</p></li>
+<li><p><strong>k_norm</strong> (<em>numpy.array</em>) – Vector of wavenumbers (i.e. norms of the wave vectors).</p></li>
+<li><p><strong>sf</strong> (<em>numpy.array</em>) – Vector of evaluations of the structure factor, of the given point process, at <code class="xref py py-attr docutils literal notranslate"><span class="pre">k_norm</span></code>.</p></li>
+<li><p><strong>std</strong> (<em>np.array</em><em>, </em><em>optional</em>) – Vector of standard deviations associated to <code class="xref py py-attr docutils literal notranslate"><span class="pre">sf</span></code>. Defaults to None.</p></li>
 </ul>
 </dd>
 </dl>
@@ -69,8 +69,8 @@
 <dt><strong>Definition</strong>:</dt><dd><p>A stationary point process <span class="math notranslate nohighlight">\(\mathcal{X}\)</span> is said to be hyperunifrom if it’s structure factor <span class="math notranslate nohighlight">\(S\)</span>, vanishes at 0.</p>
 </dd>
 <dt><strong>This class contains</strong>:</dt><dd><ul class="simple">
-<li><p><a class="reference internal" href="#structure_factor.hyperuniformity.Hyperuniformity.bin_data" title="structure_factor.hyperuniformity.Hyperuniformity.bin_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">bin_data()</span></code></a> : method for regularizing <code class="xref py py-attr docutils literal notranslate"><span class="pre">sf</span></code>, consisting on dividing the vector of wavenumber <code class="xref py py-attr docutils literal notranslate"><span class="pre">k_norm</span></code> into sub-intervals and taking the mean and the strandard deviation over each sub-interval.</p></li>
-<li><p><a class="reference internal" href="#structure_factor.hyperuniformity.Hyperuniformity.effective_hyperuniformity" title="structure_factor.hyperuniformity.Hyperuniformity.effective_hyperuniformity"><code class="xref py py-meth docutils literal notranslate"><span class="pre">effective_hyperuniformity()</span></code></a> : test of effective hyperuniformity, consisting on evaluating the index H of hyperuniformity used to study if the corresponding point process is effectively hyperuniform <span id="id1">[<a class="reference internal" href="bibliography/index.html#id4" title="M. Klatt, J. LovriÄ, D. Chen, C. Kapfer Sebastian, M. Schaller Fabian, W. A. SchÃ¶nhÃ¶fer Philipp, S. Gardiner Bruce, A. Smith, E. Gerd, and S. Torquato. Universal hidden order in amorphous cellular geometries. ature Communications, 2019.">KLovriAC+19</a>]</span>.</p></li>
+<li><p><a class="reference internal" href="#structure_factor.hyperuniformity.Hyperuniformity.bin_data" title="structure_factor.hyperuniformity.Hyperuniformity.bin_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">bin_data()</span></code></a>: method for regularizing <code class="xref py py-attr docutils literal notranslate"><span class="pre">sf</span></code>, consisting on dividing the vector of wavenumber <code class="xref py py-attr docutils literal notranslate"><span class="pre">k_norm</span></code> into sub-intervals and taking the mean and the strandard deviation over each sub-interval.</p></li>
+<li><p><a class="reference internal" href="#structure_factor.hyperuniformity.Hyperuniformity.effective_hyperuniformity" title="structure_factor.hyperuniformity.Hyperuniformity.effective_hyperuniformity"><code class="xref py py-meth docutils literal notranslate"><span class="pre">effective_hyperuniformity()</span></code></a>: test of effective hyperuniformity, consisting on evaluating the index H of hyperuniformity used to study if the corresponding point process is effectively hyperuniform <span id="id1">[<a class="reference internal" href="bibliography/index.html#id4" title="M. Klatt, J. LovriÄ, D. Chen, C. Kapfer Sebastian, M. Schaller Fabian, W. A. SchÃ¶nhÃ¶fer Philipp, S. Gardiner Bruce, A. Smith, E. Gerd, and S. Torquato. Universal hidden order in amorphous cellular geometries. ature Communications, 2019.">KLovriAC+19</a>]</span>.</p></li>
 <li><p><a class="reference internal" href="#structure_factor.hyperuniformity.Hyperuniformity.hyperuniformity_class" title="structure_factor.hyperuniformity.Hyperuniformity.hyperuniformity_class"><code class="xref py py-meth docutils literal notranslate"><span class="pre">hyperuniformity_class()</span></code></a>: test of the possible class of hyperuniformity, consisting on studying the power decay of the structure factor near zero <span id="id2">[<a class="reference internal" href="bibliography/index.html#id3" title="S. Coste. Order, fluctuations, rigidities. arXiv preprint, 2021. URL: https://scoste.fr/assets/survey_hyperuniformity.pdf.">Cos21</a>]</span>.</p></li>
 </ul>
 </dd>
@@ -87,13 +87,13 @@
 <dd><p>Split the vector attribute <code class="xref py py-attr docutils literal notranslate"><span class="pre">k_norm</span></code> into sub-intervals (or bins) and evaluate over each sub-interval the mean and the standard deviation of the corresponding values of the vector attribute <code class="xref py py-attr docutils literal notranslate"><span class="pre">sf</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>params</strong> (<em>dict</em>) – parameters associated to <a class="reference internal" href="utils.html#structure_factor.utils._bin_statistics" title="structure_factor.utils._bin_statistics"><code class="xref py py-func docutils literal notranslate"><span class="pre">_bin_statistics()</span></code></a>.</p>
+<dd class="field-odd"><p><strong>params</strong> (<em>dict</em>) – Parameters associated to <a class="reference internal" href="utils.html#structure_factor.utils._bin_statistics" title="structure_factor.utils._bin_statistics"><code class="xref py py-func docutils literal notranslate"><span class="pre">_bin_statistics()</span></code></a>.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><ul class="simple">
-<li><p>self.k_norm: vector of centers of the bins, representing the new vector attribute <code class="xref py py-attr docutils literal notranslate"><span class="pre">k_norm</span></code>.</p></li>
-<li><p>self.sf: vector of means of the structure factor over the bins, representing the new vector attribute <code class="xref py py-attr docutils literal notranslate"><span class="pre">sf</span></code>.</p></li>
-<li><p>self.std_sf: vector of standard deviations of the structure factor over the bins, representing the new vector attribute <code class="xref py py-attr docutils literal notranslate"><span class="pre">std_sf</span></code>.</p></li>
+<li><p>self.k_norm: Vector of centers of the bins, representing the new vector attribute <code class="xref py py-attr docutils literal notranslate"><span class="pre">k_norm</span></code>.</p></li>
+<li><p>self.sf: Vector of means of the structure factor over the bins, representing the new vector attribute <code class="xref py py-attr docutils literal notranslate"><span class="pre">sf</span></code>.</p></li>
+<li><p>self.std_sf: Vector of standard deviations of the structure factor over the bins, representing the new vector attribute <code class="xref py py-attr docutils literal notranslate"><span class="pre">std_sf</span></code>.</p></li>
 </ul>
 </p>
 </dd>
@@ -122,15 +122,15 @@
 <dd><p>Evaluate the index H of hyperuniformity using the attribute <code class="xref py py-attr docutils literal notranslate"><span class="pre">sf</span></code>. If <span class="math notranslate nohighlight">\(H&lt;10^{-3}\)</span> the corresponding point process is deemed effectively heyperuniform.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>k_norm_stop</strong> (<em>float</em><em>, </em><em>optional</em>) – threshold on <code class="xref py py-attr docutils literal notranslate"><span class="pre">sf</span></code> used for the linear regression. Defaults to None.</p>
+<dd class="field-odd"><p><strong>k_norm_stop</strong> (<em>float</em><em>, </em><em>optional</em>) – Threshold on <code class="xref py py-attr docutils literal notranslate"><span class="pre">sf</span></code> used for the linear regression. Defaults to None.</p>
 </dd>
 <dt class="field-even">Keyword Arguments</dt>
-<dd class="field-even"><p><strong>kwargs</strong> (<em>dict</em>) – keyword arguments (except <code class="docutils literal notranslate"><span class="pre">&quot;sigma&quot;</span></code>) of <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.curve_fit.html">scipy.scipy.optimize.curve_fit</a> parameters.</p>
+<dd class="field-even"><p><strong>kwargs</strong> (<em>dict</em>) – Keyword arguments (except <code class="docutils literal notranslate"><span class="pre">&quot;sigma&quot;</span></code>) of <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.curve_fit.html">scipy.scipy.optimize.curve_fit</a> parameters.</p>
 </dd>
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p><ul class="simple">
-<li><p>H: the value of the index <span class="math notranslate nohighlight">\(H\)</span>.</p></li>
-<li><p>s0_std: standard deviation of the numerator of <span class="math notranslate nohighlight">\(H\)</span>.</p></li>
+<li><p>H: Value of the index <span class="math notranslate nohighlight">\(H\)</span>.</p></li>
+<li><p>s0_std: Standard deviation of the numerator of <span class="math notranslate nohighlight">\(H\)</span>.</p></li>
 </ul>
 </p>
 </dd>
@@ -185,10 +185,10 @@ If the standard deviations of <code class="xref py py-attr docutils literal notr
 <dd><p>Fit a polynomial <span class="math notranslate nohighlight">\(y = c \cdot x^{\alpha}\)</span> to the attribute <code class="xref py py-attr docutils literal notranslate"><span class="pre">sf</span></code>. <span class="math notranslate nohighlight">\(\alpha\)</span> is used to specify the possible class of hyperuniformity of the associated point process (as described bellow).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>k_norm_stop</strong> (<em>float</em><em>, </em><em>optional</em>) – threshold on <code class="xref py py-attr docutils literal notranslate"><span class="pre">sf</span></code> used for fitting the polynomial. Defaults to None.</p>
+<dd class="field-odd"><p><strong>k_norm_stop</strong> (<em>float</em><em>, </em><em>optional</em>) – Threshold on <code class="xref py py-attr docutils literal notranslate"><span class="pre">sf</span></code> used for fitting the polynomial. Defaults to None.</p>
 </dd>
 <dt class="field-even">Keyword Arguments</dt>
-<dd class="field-even"><p><strong>kwargs</strong> (<em>dict</em>) – <p>keyword arguments (except <code class="docutils literal notranslate"><span class="pre">&quot;sigma&quot;</span></code>) of <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.curve_fit.html">scipy.scipy.optimize.curve_fit</a> parameters.</p>
+<dd class="field-even"><p><strong>kwargs</strong> (<em>dict</em>) – <p>Keyword arguments (except <code class="docutils literal notranslate"><span class="pre">&quot;sigma&quot;</span></code>) of <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.curve_fit.html">scipy.scipy.optimize.curve_fit</a> parameters.</p>
 </p>
 </dd>
 <dt class="field-odd">Returns</dt>
