@@ -22,7 +22,7 @@ def test_effective_hyperuniformity(sf, expected):
     assert result == expected
 
 
-# todo: apply the hyperuniformity_class to "real" point process as done for effective_hyperuniformity
+# todo: apply the hyperuniformity_class to "real" example as done for effective_hyperuniformity
 
 # def f(c, alpha, x):
 #     return c * x ** alpha
