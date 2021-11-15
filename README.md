@@ -1,4 +1,4 @@
-# structure_factor
+# structure-factor
 
 [![CI-tests](https://github.com/For-a-few-DPPs-more/structure-factor/actions/workflows/ci.yml/badge.svg)](https://github.com/For-a-few-DPPs-more/structure-factor/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/For-a-few-DPPs-more/structure-factor/branch/main/graph/badge.svg?token=FUDADJLO2W)](https://codecov.io/gh/For-a-few-DPPs-more/structure-factor)
@@ -8,7 +8,7 @@
 
 > Approximate the structure factor of a stationary point process and test its effective hyperuniformity and identify its class of hyperuniformity.
 
-- [structure_factor](#structure_factor)
+- [structure-factor](#structure-factor)
   - [Introduction](#introduction)
   - [Dependencies](#dependencies)
   - [Installation](#installation)
@@ -31,7 +31,7 @@ Classes of hyperuniform point processes are then defined based on the decay of t
 
 ---
 
-The Python package `structure_factor` currently collects
+`structure-factor` is an open-source Python project which currently collects
 
 - Three estimators of the structure factor:
     1. the scattering intensity,
@@ -63,16 +63,21 @@ The Python package `structure_factor` currently collects
 
 ## Installation
 
-`structure_factor` works with [Python 3.8+](https://www.python.org/downloads/release/python-380/).
+`structure-factor` works with [Python 3.8+](https://www.python.org/).
+
+Once installed it can be called from
+
+- `import structure_factor`
+- `from structure_factor import ...`
 
 ### Install the project as a dependency
 
-<!-- - Install the latest version published on [![PyPi version](https://badgen.net/pypi/v/structure_factor/)](https://pypi.org/project/structure_factor/)
+<!-- - Install the latest version published on [![PyPi version](https://badgen.net/pypi/v/structure-factor/)](https://pypi.org/project/structure-factor/)
 
   ```bash
   # activate your virtual environment an run
-  poetry add structure_factor
-  # pip install structure_factor
+  poetry add structure-factor
+  # pip install structure-factor
   ``` -->
 
 - Install from source (this may be broken)
@@ -104,7 +109,7 @@ To do this, clone the repository:
 and install the package in editable mode
 
 ```bash
-cd structure_factor
+cd structure-factor
 poetry shell  # to create/activate local .venv (see poetry.toml)
 poetry install
 # poetry install --no-dev  # to avoid installing the development dependencies
@@ -125,7 +130,7 @@ If you use `poetry`
 - install the documentation dependencies (see `[tool.poetry.extras]` in [`pyproject.toml`](./pyproject.toml))
 
   ```bash
-  cd structure_factor
+  cd structure-factor
   poetry shell  # to create/activate local .venv (see poetry.toml)
   poetry install -E docs  # (see [tool.poetry.extras] in pyproject.toml)
   ```
@@ -133,7 +138,7 @@ If you use `poetry`
 - and run
 
   ```bash
-  # cd structure_factor
+  # cd structure-factor
   # poetry shell  # to create/activate local .venv (see poetry.toml)
   poetry run sphinx-build -b html docs docs/_build/html
   open _build/html/index.html
@@ -146,19 +151,19 @@ Otherwise, if you don't use `poetry`
 - run
 
   ```bash
-  cd structure_factor
+  cd structure-factor
   sphinx-build -b html docs docs/_build/html
   open _build/html/index.html
   ```
 
 ## Getting started
 
-- [Jupyter](https://jupyter.org/) notebooks that showcase `structure_factor` are available in the [./notebooks](./notebooks) folder.
+- [Jupyter](https://jupyter.org/) notebooks that showcase `structure-factor` are available in the [./notebooks](./notebooks) folder.
 
   - if you use `poetry`
 
     ```bash
-    cd structure_factor
+    cd structure-factor
     poetry shell  # to create/activate local .venv (see poetry.toml)
     poetry install -E notebook  # (see [tool.poetry.extras] in pyproject.toml)
     # open a notebook within VSCode for example
@@ -172,10 +177,10 @@ Otherwise, if you don't use `poetry`
 
 A companion paper is being written
 
-> Exploring the hyperuniformity of a point process using structure_factor
+> Exploring the hyperuniformity of a point process using structure-factor
 
-where we provide rigorous mathematical derivations of the different estimators of the structure factor and showcase `structure_factor` on three different point processes.
+where we provide rigorous mathematical derivations of the different estimators of the structure factor and showcase `structure-factor` on three different point processes.
 
-If you use the `structure_factor` package, please consider citing it with this piece of BibTeX:
+If you use `structure-factor`, please consider citing it with this piece of BibTeX:
 
-TBC
+TODO
