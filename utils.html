@@ -9,13 +9,15 @@
     <title>Utils &#8212; structure-factor  documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    <link rel="stylesheet" type="text/css" href="_static/proof.css" />
     <link rel="stylesheet" type="text/css" href="_static/plot_directive.css" />
     
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
-    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="_static/proof.js"></script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -51,14 +53,14 @@
 <span id="utils"></span><h1>Utils<a class="headerlink" href="#module-structure_factor.utils" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="structure_factor.utils._sort_vectors">
-<span class="sig-prename descclassname"><span class="pre">structure_factor.utils.</span></span><span class="sig-name descname"><span class="pre">_sort_vectors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_k</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/utils.html#_sort_vectors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.utils._sort_vectors" title="Permalink to this definition">¶</a></dt>
-<dd><p>sort <code class="docutils literal notranslate"><span class="pre">k</span></code> by increasing order and reorder the associated vectors to <code class="docutils literal notranslate"><span class="pre">k</span></code>, <code class="docutils literal notranslate"><span class="pre">x_k``and</span> <span class="pre">``y_k</span></code>.</p>
+<span class="sig-prename descclassname"><span class="pre">structure_factor.utils.</span></span><span class="sig-name descname"><span class="pre">_sort_vectors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/utils.html#_sort_vectors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.utils._sort_vectors" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sort <code class="docutils literal notranslate"><span class="pre">k</span></code> by increasing order and reorder the associated vectors to <code class="docutils literal notranslate"><span class="pre">k</span></code>, <code class="docutils literal notranslate"><span class="pre">x_k``and</span> <span class="pre">``y_k</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>k</strong> (<em>np.array</em>) – Vector to be sorted by increasing order.</p></li>
 <li><p><strong>x_k</strong> (<em>np.array</em>) – Vector of evaluations associated to <code class="docutils literal notranslate"><span class="pre">k</span></code>.</p></li>
-<li><p><strong>y_k</strong> (<em>np.array</em>) – Vector of evaluations associated to <code class="docutils literal notranslate"><span class="pre">k</span></code>.</p></li>
+<li><p><strong>y_k</strong> (<em>np.array</em><em>, </em><em>optional</em>) – Defaults to None. Vector of evaluations associated to <code class="docutils literal notranslate"><span class="pre">k</span></code>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -103,7 +105,7 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="structure_factor.utils._reshape_meshgrid">
 <span class="sig-prename descclassname"><span class="pre">structure_factor.utils.</span></span><span class="sig-name descname"><span class="pre">_reshape_meshgrid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/utils.html#_reshape_meshgrid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.utils._reshape_meshgrid" title="Permalink to this definition">¶</a></dt>
-<dd><p>reshape list of meshgrids as np.ndarray of columns, where each column is associated to an element (meshgrid) of the list.</p>
+<dd><p>Reshape list of meshgrids as np.ndarray of columns, where each column is associated to an element (meshgrid) of the list.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>X</strong> (<em>list</em>) – List of meshgrids.</p>
@@ -141,17 +143,17 @@
 <dd class="field-odd"><p>tuple (np.ndarray, list)</p>
 </dd>
 </dl>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<dl>
-<dt><strong>Definition:</strong></dt><dd><p>Given a realization of a point process in a cubic window of length side <span class="math notranslate nohighlight">\(L\)</span>, the set of the <strong>allowed wave vectors</strong> <span class="math notranslate nohighlight">\(\{\mathbf{k}_i\}_i\)</span> at which the the scattering intensity <span class="math notranslate nohighlight">\(\widehat{S}_{SI}\)</span> is consistently an estimator of the structure factor <span class="math notranslate nohighlight">\(S\)</span> of the point process is defined by</p>
+<div class="proof proof-type-definition" id="id3">
+
+    <div class="proof-title">
+        <span class="proof-type">Definition </span>
+        
+    </div><div class="proof-content">
+<p>Given a realization of a point process in a cubic window of length side <span class="math notranslate nohighlight">\(L\)</span>, the set of the <strong>allowed wave vectors</strong> <span class="math notranslate nohighlight">\(\{\mathbf{k}_i\}_i\)</span> at which the the scattering intensity <span class="math notranslate nohighlight">\(\widehat{S}_{SI}\)</span> is consistently an estimator of the structure factor <span class="math notranslate nohighlight">\(S\)</span> of the point process is defined by</p>
 <div class="math notranslate nohighlight">
 \[\{\mathbf{k}_i\}_i = \{\frac{2 \pi}{L} \mathbf{n} ~ ; ~ \mathbf{n} \in (\mathbb{Z}^d)^\ast \}.\]</div>
 <p>The maximum and the number of output allowed wave vectors returned by <a class="reference internal" href="#structure_factor.utils.allowed_wave_vectors" title="structure_factor.utils.allowed_wave_vectors"><code class="xref py py-meth docutils literal notranslate"><span class="pre">allowed_wave_vectors()</span></code></a>, are specified by the input parameters <code class="docutils literal notranslate"><span class="pre">k_max</span></code> and <code class="docutils literal notranslate"><span class="pre">meshgrid_shape</span></code>.</p>
-</dd>
-</dl>
-</div>
-</dd></dl>
+</div></div></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="structure_factor.utils.compute_scattering_intensity">
@@ -171,10 +173,13 @@
 <dd class="field-odd"><p>numpy.ndarray</p>
 </dd>
 </dl>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<dl>
-<dt><strong>Definition:</strong></dt><dd><p>The scattering intensity <span class="math notranslate nohighlight">\(\widehat{S}_{SI}\)</span>, of a realization of points <span class="math notranslate nohighlight">\(\{\mathbf{x}_i\}_{i=1}^N\)</span> of <span class="math notranslate nohighlight">\(\mathbb{R}^d\)</span>, is defined by,</p>
+<div class="proof proof-type-definition" id="id4">
+
+    <div class="proof-title">
+        <span class="proof-type">Definition </span>
+        
+    </div><div class="proof-content">
+<p>The scattering intensity <span class="math notranslate nohighlight">\(\widehat{S}_{SI}\)</span>, of a realization of points <span class="math notranslate nohighlight">\(\{\mathbf{x}_i\}_{i=1}^N\)</span> of <span class="math notranslate nohighlight">\(\mathbb{R}^d\)</span>, is defined by,</p>
 <div class="math notranslate nohighlight">
 \[\widehat{S}_{SI}(\mathbf{k}) =
     \frac{1}{N}\left\lvert
@@ -182,10 +187,7 @@
             \exp(- i \left\langle \mathbf{k}, \mathbf{x_j} \right\rangle)
     \right\rvert^2\]</div>
 <p>where <span class="math notranslate nohighlight">\(\mathbf{k} \in \mathbb{R}^d\)</span> is a wave vector.</p>
-</dd>
-</dl>
-</div>
-</dd></dl>
+</div></div></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="structure_factor.utils._bin_statistics">
@@ -363,7 +365,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2021, Diala Hawat.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.2.0.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.0.
     </div>
   </body>
 </html>

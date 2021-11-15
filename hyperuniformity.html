@@ -9,18 +9,20 @@
     <title>Hyperuniformity &#8212; structure-factor  documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    <link rel="stylesheet" type="text/css" href="_static/proof.css" />
     <link rel="stylesheet" type="text/css" href="_static/plot_directive.css" />
     
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
-    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="_static/proof.js"></script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Point pattern" href="point_pattern.html" />
-    <link rel="prev" title="Welcome to structure_factor’s documentation:" href="index.html" /> 
+    <link rel="prev" title="Welcome to structure-factor’s documentation:" href="index.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -35,7 +37,7 @@
           <a href="point_pattern.html" title="Point pattern"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="index.html" title="Welcome to structure_factor’s documentation:"
+          <a href="index.html" title="Welcome to structure-factor’s documentation:"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">structure-factor  documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Hyperuniformity</a></li> 
@@ -51,7 +53,7 @@
 <span id="hyperuniformity"></span><h1>Hyperuniformity<a class="headerlink" href="#module-structure_factor.hyperuniformity" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="structure_factor.hyperuniformity.Hyperuniformity">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">structure_factor.hyperuniformity.</span></span><span class="sig-name descname"><span class="pre">Hyperuniformity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k_norm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">std_sf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/hyperuniformity.html#Hyperuniformity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.hyperuniformity.Hyperuniformity" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">structure_factor.hyperuniformity.</span></span><span class="sig-name descname"><span class="pre">Hyperuniformity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k_norm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">std_sf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/hyperuniformity.html#Hyperuniformity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.hyperuniformity.Hyperuniformity" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Compute indicator of hyperuniformity of a stationary isotropic (or effectively isotropic) point process <span class="math notranslate nohighlight">\(\mathcal{X} \subset \mathbb{R}^d\)</span>, given the evaluation of its structure factor.</p>
 <dl class="field-list simple">
@@ -63,21 +65,28 @@
 </ul>
 </dd>
 </dl>
-<div class="admonition note">
+<div class="proof proof-type-definition" id="id7">
+
+    <div class="proof-title">
+        <span class="proof-type">Definition </span>
+        
+    </div><div class="proof-content">
+<p>A stationary point process <span class="math notranslate nohighlight">\(\mathcal{X}\)</span> is said to be hyperunifrom if it’s structure factor <span class="math notranslate nohighlight">\(S\)</span>, vanishes at 0.</p>
+</div></div><div class="admonition note">
 <p class="admonition-title">Note</p>
-<dl>
-<dt><strong>Definition</strong>:</dt><dd><p>A stationary point process <span class="math notranslate nohighlight">\(\mathcal{X}\)</span> is said to be hyperunifrom if it’s structure factor <span class="math notranslate nohighlight">\(S\)</span>, vanishes at 0.</p>
-</dd>
+<dl class="simple">
 <dt><strong>This class contains</strong>:</dt><dd><ul class="simple">
 <li><p><a class="reference internal" href="#structure_factor.hyperuniformity.Hyperuniformity.bin_data" title="structure_factor.hyperuniformity.Hyperuniformity.bin_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">bin_data()</span></code></a>: method for regularizing <code class="xref py py-attr docutils literal notranslate"><span class="pre">sf</span></code>, consisting on dividing the vector of wavenumber <code class="xref py py-attr docutils literal notranslate"><span class="pre">k_norm</span></code> into sub-intervals and taking the mean and the strandard deviation over each sub-interval.</p></li>
 <li><p><a class="reference internal" href="#structure_factor.hyperuniformity.Hyperuniformity.effective_hyperuniformity" title="structure_factor.hyperuniformity.Hyperuniformity.effective_hyperuniformity"><code class="xref py py-meth docutils literal notranslate"><span class="pre">effective_hyperuniformity()</span></code></a>: test of effective hyperuniformity, consisting on evaluating the index H of hyperuniformity used to study if the corresponding point process is effectively hyperuniform <span id="id1">[<a class="reference internal" href="bibliography/index.html#id4" title="M. Klatt, J. LovriÄ, D. Chen, C. Kapfer Sebastian, M. Schaller Fabian, W. A. SchÃ¶nhÃ¶fer Philipp, S. Gardiner Bruce, A. Smith, E. Gerd, and S. Torquato. Universal hidden order in amorphous cellular geometries. ature Communications, 2019.">KLovriAC+19</a>]</span>.</p></li>
 <li><p><a class="reference internal" href="#structure_factor.hyperuniformity.Hyperuniformity.hyperuniformity_class" title="structure_factor.hyperuniformity.Hyperuniformity.hyperuniformity_class"><code class="xref py py-meth docutils literal notranslate"><span class="pre">hyperuniformity_class()</span></code></a>: test of the possible class of hyperuniformity, consisting on studying the power decay of the structure factor near zero <span id="id2">[<a class="reference internal" href="bibliography/index.html#id3" title="S. Coste. Order, fluctuations, rigidities. arXiv preprint, 2021. URL: https://scoste.fr/assets/survey_hyperuniformity.pdf.">Cos21</a>]</span>.</p></li>
 </ul>
 </dd>
-<dt><strong>Typical usage</strong>:</dt><dd><p>1- Estimate the structure factor of a point process by one of the methods of <a class="reference internal" href="structure_factor.html#structure_factor.structure_factor.StructureFactor" title="structure_factor.structure_factor.StructureFactor"><code class="xref py py-class docutils literal notranslate"><span class="pre">StructureFactor</span></code></a>.</p>
-<p>2- Regularize the results using <a class="reference internal" href="#structure_factor.hyperuniformity.Hyperuniformity.bin_data" title="structure_factor.hyperuniformity.Hyperuniformity.bin_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">bin_data()</span></code></a>.</p>
-<p>3- Test the effective hyperuniformity using <a class="reference internal" href="#structure_factor.hyperuniformity.Hyperuniformity.effective_hyperuniformity" title="structure_factor.hyperuniformity.Hyperuniformity.effective_hyperuniformity"><code class="xref py py-meth docutils literal notranslate"><span class="pre">effective_hyperuniformity()</span></code></a>.</p>
-<p>4- If the results of <a class="reference internal" href="#structure_factor.hyperuniformity.Hyperuniformity.effective_hyperuniformity" title="structure_factor.hyperuniformity.Hyperuniformity.effective_hyperuniformity"><code class="xref py py-meth docutils literal notranslate"><span class="pre">effective_hyperuniformity()</span></code></a> approve the effective hyperuniformity hypothesis, find the possible class of hyperuniformity using <a class="reference internal" href="#structure_factor.hyperuniformity.Hyperuniformity.hyperuniformity_class" title="structure_factor.hyperuniformity.Hyperuniformity.hyperuniformity_class"><code class="xref py py-meth docutils literal notranslate"><span class="pre">hyperuniformity_class()</span></code></a>.</p>
+<dt><strong>Typical usage</strong>:</dt><dd><ol class="arabic simple">
+<li><p>Estimate the structure factor of a point process by one of the methods of <a class="reference internal" href="structure_factor.html#structure_factor.structure_factor.StructureFactor" title="structure_factor.structure_factor.StructureFactor"><code class="xref py py-class docutils literal notranslate"><span class="pre">StructureFactor</span></code></a>.</p></li>
+<li><p>Regularize the results using <a class="reference internal" href="#structure_factor.hyperuniformity.Hyperuniformity.bin_data" title="structure_factor.hyperuniformity.Hyperuniformity.bin_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">bin_data()</span></code></a>.</p></li>
+<li><p>Test the effective hyperuniformity using <a class="reference internal" href="#structure_factor.hyperuniformity.Hyperuniformity.effective_hyperuniformity" title="structure_factor.hyperuniformity.Hyperuniformity.effective_hyperuniformity"><code class="xref py py-meth docutils literal notranslate"><span class="pre">effective_hyperuniformity()</span></code></a>.</p></li>
+<li><p>If the results of <a class="reference internal" href="#structure_factor.hyperuniformity.Hyperuniformity.effective_hyperuniformity" title="structure_factor.hyperuniformity.Hyperuniformity.effective_hyperuniformity"><code class="xref py py-meth docutils literal notranslate"><span class="pre">effective_hyperuniformity()</span></code></a> approve the effective hyperuniformity hypothesis, find the possible class of hyperuniformity using <a class="reference internal" href="#structure_factor.hyperuniformity.Hyperuniformity.hyperuniformity_class" title="structure_factor.hyperuniformity.Hyperuniformity.hyperuniformity_class"><code class="xref py py-meth docutils literal notranslate"><span class="pre">hyperuniformity_class()</span></code></a>.</p></li>
+</ol>
 </dd>
 </dl>
 </div>
@@ -157,10 +166,13 @@
 <figure class="align-default">
 <img alt="_images/effective_example.png" class="plot-directive" src="_images/effective_example.png" />
 </figure>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<dl>
-<dt><strong>Definition</strong>:</dt><dd><p>A stationary isotropic point process <span class="math notranslate nohighlight">\(\mathcal{X} \subset \mathbb{R}^d\)</span>, is said to be effectively hyperuniform  if <span class="math notranslate nohighlight">\(H \leq 10^{-3}\)</span> where</p>
+<div class="proof proof-type-definition" id="id8">
+
+    <div class="proof-title">
+        <span class="proof-type">Definition </span>
+        
+    </div><div class="proof-content">
+<p>A stationary isotropic point process <span class="math notranslate nohighlight">\(\mathcal{X} \subset \mathbb{R}^d\)</span>, is said to be effectively hyperuniform  if <span class="math notranslate nohighlight">\(H \leq 10^{-3}\)</span> where</p>
 <div class="math notranslate nohighlight">
 \[H = \frac{\hat{S}(\mathbf{0})}{S(\mathbf{k}_{peak})}\cdot\]</div>
 <ul class="simple">
@@ -169,13 +181,10 @@
 <li><p><span class="math notranslate nohighlight">\(\mathbf{k}_{peak}\)</span> is the location of the first dominant peak value of <span class="math notranslate nohighlight">\(S\)</span>.</p></li>
 </ul>
 <p>See <span id="id3">[<a class="reference internal" href="bibliography/index.html#id9" title="S. Torquato. Hyperuniform states of matter. Physics Reports, 2018. URL: https://doi.org/10.1016/j.physrep.2018.03.001, doi:10.1016/j.physrep.2018.03.001.">Tor18</a>]</span> (Section 11.1.6) and <span id="id4">[<a class="reference internal" href="bibliography/index.html#id4" title="M. Klatt, J. LovriÄ, D. Chen, C. Kapfer Sebastian, M. Schaller Fabian, W. A. SchÃ¶nhÃ¶fer Philipp, S. Gardiner Bruce, A. Smith, E. Gerd, and S. Torquato. Universal hidden order in amorphous cellular geometries. ature Communications, 2019.">KLovriAC+19</a>]</span> (supplementary Section 8).</p>
-</dd>
-</dl>
-<div class="admonition important">
+</div></div><div class="admonition important">
 <p class="admonition-title">Important</p>
-<p>To compute the numerator <span class="math notranslate nohighlight">\(\hat{S}(\mathbf{0})\)</span> of <span class="math notranslate nohighlight">\(H\)</span>, a line is fitted using a linear regression with least square fit on the values of <code class="xref py py-attr docutils literal notranslate"><span class="pre">sf</span></code> associated to the sub-vector of <code class="xref py py-attr docutils literal notranslate"><span class="pre">k_norm</span></code> truncated around the threshold <code class="docutils literal notranslate"><span class="pre">k_norm_stop</span></code>. <code class="docutils literal notranslate"><span class="pre">k_norm_stop</span></code> must satisfy a good compromise of being close to zero but also allowing to fit the line on sufficient number of points.
+<p>T werwero compute the numerator <span class="math notranslate nohighlight">\(\hat{S}(\mathbf{0})\)</span> of <span class="math notranslate nohighlight">\(H\)</span>, a line is fitted using a linear regression with least square fit on the values of <code class="xref py py-attr docutils literal notranslate"><span class="pre">sf</span></code> associated to the sub-vector of <code class="xref py py-attr docutils literal notranslate"><span class="pre">k_norm</span></code> truncated around the threshold <code class="docutils literal notranslate"><span class="pre">k_norm_stop</span></code>. <code class="docutils literal notranslate"><span class="pre">k_norm_stop</span></code> must satisfy a good compromise of being close to zero but also allowing to fit the line on sufficient number of points.
 If the standard deviations of <code class="xref py py-attr docutils literal notranslate"><span class="pre">sf</span></code> are provided in the attribute <code class="xref py py-attr docutils literal notranslate"><span class="pre">std_sf</span></code> then these values will be considered while fitting the line.</p>
-</div>
 </div>
 </dd></dl>
 
@@ -205,6 +214,9 @@ If the standard deviations of <code class="xref py py-attr docutils literal notr
 <span class="c1"># find power decay</span>
 <span class="n">sf_power_decay</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="n">hyperuniformity_test</span><span class="o">.</span><span class="n">hyperuniformity_class</span><span class="p">(</span><span class="n">k_norm_stop</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span>
+    <span class="s2">&quot;The estimated power of the decay to zero of the approximated structure factor is:&quot;</span><span class="p">,</span>
+    <span class="n">sf_power_decay</span><span class="p">,</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>The estimated power of the decay to zero of the approximated structure factor is: 1.93893628269006
@@ -214,19 +226,41 @@ If the standard deviations of <code class="xref py py-attr docutils literal notr
 <figure class="align-default">
 <img alt="_images/power_decay_example.png" class="plot-directive" src="_images/power_decay_example.png" />
 </figure>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<dl class="simple">
-<dt><strong>Definition</strong>:</dt><dd><p>For a stationary  hyperuniform point process <span class="math notranslate nohighlight">\(\mathcal{X} \subset \mathbb{R}^d\)</span> such that <span class="math notranslate nohighlight">\(\vert S(\mathbf{k})\vert\sim c \Vert \mathbf{k} \Vert^\alpha\)</span> in  the neighborhood of 0, we have(<span id="id6">[<a class="reference internal" href="bibliography/index.html#id3" title="S. Coste. Order, fluctuations, rigidities. arXiv preprint, 2021. URL: https://scoste.fr/assets/survey_hyperuniformity.pdf.">Cos21</a>]</span>, Section 4.1)</p>
-<ul class="simple">
-<li><p>If <span class="math notranslate nohighlight">\(\alpha &gt; 1\)</span>, then <span class="math notranslate nohighlight">\(Var\left [\mathcal{X}(B(0,R))\right ] = O(R^{d-1})\)</span>, correpsonding to the class 1 of hyperuniformity.</p></li>
-<li><p>If <span class="math notranslate nohighlight">\(\alpha =1\)</span>, then <span class="math notranslate nohighlight">\(Var\left [\mathcal{X}(B(0,R))\right ] = O(R^{d-1}\log(R))\)</span>, correpsonding to the class 2 of hyperuniformity.</p></li>
-<li><p>If <span class="math notranslate nohighlight">\(\alpha \in ]0,1[\)</span>, then <span class="math notranslate nohighlight">\(Var \left [\mathcal{X}(B(0,R))\right ] = O(R^{d-\alpha})\)</span>, correpsonding to the class 3 of hyperuniformity.</p></li>
-</ul>
-</dd>
-</dl>
-</div>
-</dd></dl>
+<div class="proof proof-type-definition" id="id9">
+
+    <div class="proof-title">
+        <span class="proof-type">Definition </span>
+        
+    </div><div class="proof-content">
+<p>For a stationary  hyperuniform point process <span class="math notranslate nohighlight">\(\mathcal{X} \subset \mathbb{R}^d\)</span> such that <span class="math notranslate nohighlight">\(\vert S(\mathbf{k})\vert\sim c \Vert \mathbf{k} \Vert^\alpha\)</span> in the neighborhood of 0, see <span id="id6">[<a class="reference internal" href="bibliography/index.html#id3" title="S. Coste. Order, fluctuations, rigidities. arXiv preprint, 2021. URL: https://scoste.fr/assets/survey_hyperuniformity.pdf.">Cos21</a>]</span> Section 4.1.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 8%" />
+<col style="width: 19%" />
+<col style="width: 73%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Class</p></th>
+<th class="head"><p><span class="math notranslate nohighlight">\(\alpha\)</span></p></th>
+<th class="head"><p><span class="math notranslate nohighlight">\(\mathbb{V}\text{ar}\left[\mathcal{X}(B(0, R)) \right]\)</span></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>I</p></td>
+<td><p><span class="math notranslate nohighlight">\(&gt; 1\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\mathcal{O}(R^{d-1})\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p>II</p></td>
+<td><p><span class="math notranslate nohighlight">\(= 1\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\mathcal{O}(R^{d-1}\log(R))\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p>III</p></td>
+<td><p><span class="math notranslate nohighlight">\(]0, 1[\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(\mathcal{O}(R^{d-\alpha})\)</span></p></td>
+</tr>
+</tbody>
+</table>
+</div></div></dd></dl>
 
 </dd></dl>
 
@@ -241,7 +275,7 @@ If the standard deviations of <code class="xref py py-attr docutils literal notr
         <div class="sphinxsidebarwrapper">
   <h4>Previous topic</h4>
   <p class="topless"><a href="index.html"
-                        title="previous chapter">Welcome to structure_factor’s documentation:</a></p>
+                        title="previous chapter">Welcome to structure-factor’s documentation:</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="point_pattern.html"
                         title="next chapter">Point pattern</a></p>
@@ -279,7 +313,7 @@ If the standard deviations of <code class="xref py py-attr docutils literal notr
           <a href="point_pattern.html" title="Point pattern"
              >next</a> |</li>
         <li class="right" >
-          <a href="index.html" title="Welcome to structure_factor’s documentation:"
+          <a href="index.html" title="Welcome to structure-factor’s documentation:"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">structure-factor  documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Hyperuniformity</a></li> 
@@ -287,7 +321,7 @@ If the standard deviations of <code class="xref py py-attr docutils literal notr
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2021, Diala Hawat.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.2.0.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.0.
     </div>
   </body>
 </html>

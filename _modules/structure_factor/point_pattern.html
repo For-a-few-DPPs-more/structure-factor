@@ -8,12 +8,14 @@
     <title>structure_factor.point_pattern &#8212; structure-factor  documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/classic.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/proof.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
     
     <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/proof.js"></script>
     
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -51,17 +53,16 @@
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Encapsulate a realization of a point process: the sampled points, the observation window, and the intensity of underlying point process.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">            points (np.ndarray): :math:`N \times d` array collecting :math:`N` points in dimension :math:`d` consisting of a realization of a point process.</span>
+<span class="sd">        points (np.ndarray): :math:`N \times d` array collecting :math:`N` points in dimension :math:`d` consisting of a realization of a point process.</span>
 
-<span class="sd">            window (AbstractSpatialWindow, optional): Observation window containing the ``points``. Defaults to None.</span>
+<span class="sd">        window (AbstractSpatialWindow, optional): Observation window containing the ``points``. Defaults to None.</span>
 
-<span class="sd">            intensity(float, optional): Intensity of the point process. Defaults to None.</span>
+<span class="sd">        intensity(float, optional): Intensity of the point process. Defaults to None.</span>
 
 <span class="sd">    Example:</span>
-
 <span class="sd">        .. literalinclude:: code/point_pattern.py</span>
-<span class="sd">                :language: python</span>
-<span class="sd">                :lines: 6-22</span>
+<span class="sd">            :language: python</span>
+<span class="sd">            :lines: 6-22</span>
 
 <span class="sd">    .. note::</span>
 
@@ -76,9 +77,6 @@
 <span class="sd">            - The class :py:class:`~structure_factor.structure_factor.StructureFactor` gets initialized using a :py:class:`~structure_factor.point_pattern.PointPattern`.</span>
 
 <span class="sd">            - Convert Python :py:class:`~structure_factor.point_pattern.PointPattern` object to a ``spatstat`` point pattern R object using :py:meth:`~structure_factor.point_pattern.PointPattern.convert_to_spatstat_ppp`.</span>
-
-
-
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">intensity</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -124,13 +122,11 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            ~structure_factor.point_pattern.PointPattern: Restriction of the ``PointPattern`` to the prescribed ``window``.</span>
 
-
 <span class="sd">        .. testsetup::</span>
 
-<span class="sd">                from structure_factor.data import load_data #import data</span>
+<span class="sd">            from structure_factor.data import load_data #import data</span>
 
 <span class="sd">        Example:</span>
-
 <span class="sd">            .. plot:: code/restrict_pp.py</span>
 <span class="sd">                :include-source: True</span>
 <span class="sd">                :caption:</span>
@@ -175,7 +171,6 @@
 <span class="sd">            matplotlib.axis: plot axis.</span>
 
 <span class="sd">        Example:</span>
-
 <span class="sd">            .. plot:: code/plot_point_pattern.py</span>
 <span class="sd">                :include-source: True</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -235,7 +230,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2021, Diala Hawat.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.2.0.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.0.
     </div>
   </body>
 </html>

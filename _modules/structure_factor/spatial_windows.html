@@ -8,12 +8,14 @@
     <title>structure_factor.spatial_windows &#8212; structure-factor  documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/classic.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/proof.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
     
     <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/proof.js"></script>
     
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -127,7 +129,6 @@
 <span class="sd">        radius (float, optional): Radius :math:`r &gt; 0` of the ball. Defaults to 1.0.</span>
 
 <span class="sd">    Example:</span>
-
 <span class="sd">        .. literalinclude:: code/spatial_window_example.py</span>
 <span class="sd">            :language: python</span>
 <span class="sd">            :lines: 1-4</span>
@@ -208,7 +209,6 @@
 <div class="viewcode-block" id="UnitBallWindow"><a class="viewcode-back" href="../../spatial_windows.html#structure_factor.spatial_windows.UnitBallWindow">[docs]</a><span class="k">class</span> <span class="nc">UnitBallWindow</span><span class="p">(</span><span class="n">BallWindow</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Create a d-dimensional unit ball window :math:`B(c, r=1)`, where :math:`c \in \mathbb{R}^d`.</span>
 
-
 <span class="sd">    Args:</span>
 <span class="sd">        center (numpy.ndarray, optional): Center :math:`c` of the ball.</span>
 
@@ -233,7 +233,6 @@
 <span class="sd">        bounds (numpy.ndarray): :math:`d \times 2` array describing the bounds of the box.</span>
 
 <span class="sd">    Example:</span>
-
 <span class="sd">        .. literalinclude:: code/spatial_window_example.py</span>
 <span class="sd">            :language: python</span>
 <span class="sd">            :lines: 6-10</span>
@@ -337,7 +336,6 @@
     <span class="sd">&quot;&quot;&quot;Check if a window is a cubic window.</span>
 
 <span class="sd">    Args:</span>
-
 <span class="sd">        window (AbstractSpatialWindow): Window.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">window</span><span class="p">,</span> <span class="n">BoxWindow</span><span class="p">):</span>
@@ -387,7 +385,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2021, Diala Hawat.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.2.0.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.0.
     </div>
   </body>
 </html>

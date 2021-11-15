@@ -9,13 +9,15 @@
     <title>Spatial window &#8212; structure-factor  documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    <link rel="stylesheet" type="text/css" href="_static/proof.css" />
     <link rel="stylesheet" type="text/css" href="_static/plot_directive.css" />
     
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
-    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="_static/proof.js"></script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -51,7 +53,7 @@
 <span id="spatial-window"></span><h1>Spatial window<a class="headerlink" href="#module-structure_factor.spatial_windows" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="structure_factor.spatial_windows.AbstractSpatialWindow">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">structure_factor.spatial_windows.</span></span><span class="sig-name descname"><span class="pre">AbstractSpatialWindow</span></span><a class="reference internal" href="_modules/structure_factor/spatial_windows.html#AbstractSpatialWindow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.spatial_windows.AbstractSpatialWindow" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">structure_factor.spatial_windows.</span></span><span class="sig-name descname"><span class="pre">AbstractSpatialWindow</span></span><a class="reference internal" href="_modules/structure_factor/spatial_windows.html#AbstractSpatialWindow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.spatial_windows.AbstractSpatialWindow" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Encapsulate the notion of spatial window in <span class="math notranslate nohighlight">\(\mathbb{R}^d\)</span>.</p>
 <div class="admonition note">
@@ -75,13 +77,13 @@
 </div>
 <dl class="py property">
 <dt class="sig sig-object py" id="structure_factor.spatial_windows.AbstractSpatialWindow.dimension">
-<em class="property"><span class="pre">abstract</span> <span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">dimension</span></span><a class="headerlink" href="#structure_factor.spatial_windows.AbstractSpatialWindow.dimension" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dimension</span></span><a class="headerlink" href="#structure_factor.spatial_windows.AbstractSpatialWindow.dimension" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the ambient dimension of the corresponding window.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="structure_factor.spatial_windows.AbstractSpatialWindow.volume">
-<em class="property"><span class="pre">abstract</span> <span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">volume</span></span><a class="headerlink" href="#structure_factor.spatial_windows.AbstractSpatialWindow.volume" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">volume</span></span><a class="headerlink" href="#structure_factor.spatial_windows.AbstractSpatialWindow.volume" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the volume of the corresponding window.</p>
 </dd></dl>
 
@@ -108,7 +110,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="structure_factor.spatial_windows.AbstractSpatialWindow.rand">
-<em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">rand</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/spatial_windows.html#AbstractSpatialWindow.rand"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.spatial_windows.AbstractSpatialWindow.rand" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">rand</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/spatial_windows.html#AbstractSpatialWindow.rand"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.spatial_windows.AbstractSpatialWindow.rand" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate <cite>n</cite> points uniformly at random in the corresponding spatial window.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -134,7 +136,7 @@
 
 <dl class="py class">
 <dt class="sig sig-object py" id="structure_factor.spatial_windows.BallWindow">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">structure_factor.spatial_windows.</span></span><span class="sig-name descname"><span class="pre">BallWindow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">center</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/spatial_windows.html#BallWindow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.spatial_windows.BallWindow" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">structure_factor.spatial_windows.</span></span><span class="sig-name descname"><span class="pre">BallWindow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">center</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/spatial_windows.html#BallWindow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.spatial_windows.BallWindow" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#structure_factor.spatial_windows.AbstractSpatialWindow" title="structure_factor.spatial_windows.AbstractSpatialWindow"><code class="xref py py-class docutils literal notranslate"><span class="pre">structure_factor.spatial_windows.AbstractSpatialWindow</span></code></a></p>
 <p>Create a <span class="math notranslate nohighlight">\(d\)</span> dimensional ball window <span class="math notranslate nohighlight">\(B(c, r)\)</span>, where <span class="math notranslate nohighlight">\(c \in \mathbb{R}^d\)</span> and <span class="math notranslate nohighlight">\(r&gt;0\)</span>.</p>
 <dl class="field-list simple">
@@ -157,13 +159,13 @@
 </div>
 <dl class="py property">
 <dt class="sig sig-object py" id="structure_factor.spatial_windows.BallWindow.dimension">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">dimension</span></span><a class="headerlink" href="#structure_factor.spatial_windows.BallWindow.dimension" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dimension</span></span><a class="headerlink" href="#structure_factor.spatial_windows.BallWindow.dimension" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the ambient dimension of the corresponding window.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="structure_factor.spatial_windows.BallWindow.volume">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">volume</span></span><a class="headerlink" href="#structure_factor.spatial_windows.BallWindow.volume" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">volume</span></span><a class="headerlink" href="#structure_factor.spatial_windows.BallWindow.volume" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the volume of the corresponding window.</p>
 </dd></dl>
 
@@ -237,7 +239,7 @@
 
 <dl class="py class">
 <dt class="sig sig-object py" id="structure_factor.spatial_windows.UnitBallWindow">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">structure_factor.spatial_windows.</span></span><span class="sig-name descname"><span class="pre">UnitBallWindow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">center</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/spatial_windows.html#UnitBallWindow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.spatial_windows.UnitBallWindow" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">structure_factor.spatial_windows.</span></span><span class="sig-name descname"><span class="pre">UnitBallWindow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">center</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/spatial_windows.html#UnitBallWindow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.spatial_windows.UnitBallWindow" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#structure_factor.spatial_windows.BallWindow" title="structure_factor.spatial_windows.BallWindow"><code class="xref py py-class docutils literal notranslate"><span class="pre">structure_factor.spatial_windows.BallWindow</span></code></a></p>
 <p>Create a d-dimensional unit ball window <span class="math notranslate nohighlight">\(B(c, r=1)\)</span>, where <span class="math notranslate nohighlight">\(c \in \mathbb{R}^d\)</span>.</p>
 <dl class="field-list simple">
@@ -251,7 +253,7 @@
 </div>
 <dl class="py property">
 <dt class="sig sig-object py" id="structure_factor.spatial_windows.UnitBallWindow.dimension">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">dimension</span></span><a class="headerlink" href="#structure_factor.spatial_windows.UnitBallWindow.dimension" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dimension</span></span><a class="headerlink" href="#structure_factor.spatial_windows.UnitBallWindow.dimension" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the ambient dimension of the corresponding window.</p>
 </dd></dl>
 
@@ -323,7 +325,7 @@
 
 <dl class="py property">
 <dt class="sig sig-object py" id="structure_factor.spatial_windows.UnitBallWindow.volume">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">volume</span></span><a class="headerlink" href="#structure_factor.spatial_windows.UnitBallWindow.volume" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">volume</span></span><a class="headerlink" href="#structure_factor.spatial_windows.UnitBallWindow.volume" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the volume of the corresponding window.</p>
 </dd></dl>
 
@@ -331,7 +333,7 @@
 
 <dl class="py class">
 <dt class="sig sig-object py" id="structure_factor.spatial_windows.BoxWindow">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">structure_factor.spatial_windows.</span></span><span class="sig-name descname"><span class="pre">BoxWindow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bounds</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/spatial_windows.html#BoxWindow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.spatial_windows.BoxWindow" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">structure_factor.spatial_windows.</span></span><span class="sig-name descname"><span class="pre">BoxWindow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bounds</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/spatial_windows.html#BoxWindow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.spatial_windows.BoxWindow" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#structure_factor.spatial_windows.AbstractSpatialWindow" title="structure_factor.spatial_windows.AbstractSpatialWindow"><code class="xref py py-class docutils literal notranslate"><span class="pre">structure_factor.spatial_windows.AbstractSpatialWindow</span></code></a></p>
 <p>Create a <span class="math notranslate nohighlight">\(d\)</span> dimensional box window <span class="math notranslate nohighlight">\(\prod_{i=1}^{d} [a_i, b_i]\)</span>.</p>
 <dl class="field-list simple">
@@ -352,20 +354,20 @@
 </div>
 <dl class="py property">
 <dt class="sig sig-object py" id="structure_factor.spatial_windows.BoxWindow.bounds">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">bounds</span></span><a class="headerlink" href="#structure_factor.spatial_windows.BoxWindow.bounds" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">bounds</span></span><a class="headerlink" href="#structure_factor.spatial_windows.BoxWindow.bounds" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the bounds decribing the BoxWindow.</p>
 <p><code class="docutils literal notranslate"><span class="pre">bounds[i,</span> <span class="pre">:]</span></code> <span class="math notranslate nohighlight">\(=[a_i, b_i]\)</span>.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="structure_factor.spatial_windows.BoxWindow.dimension">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">dimension</span></span><a class="headerlink" href="#structure_factor.spatial_windows.BoxWindow.dimension" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dimension</span></span><a class="headerlink" href="#structure_factor.spatial_windows.BoxWindow.dimension" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the ambient dimension of the corresponding window.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="structure_factor.spatial_windows.BoxWindow.volume">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">volume</span></span><a class="headerlink" href="#structure_factor.spatial_windows.BoxWindow.volume" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">volume</span></span><a class="headerlink" href="#structure_factor.spatial_windows.BoxWindow.volume" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the volume of the corresponding window.</p>
 </dd></dl>
 
@@ -439,7 +441,7 @@
 
 <dl class="py class">
 <dt class="sig sig-object py" id="structure_factor.spatial_windows.UnitBoxWindow">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">structure_factor.spatial_windows.</span></span><span class="sig-name descname"><span class="pre">UnitBoxWindow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">center</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/spatial_windows.html#UnitBoxWindow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.spatial_windows.UnitBoxWindow" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">structure_factor.spatial_windows.</span></span><span class="sig-name descname"><span class="pre">UnitBoxWindow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">center</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/spatial_windows.html#UnitBoxWindow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.spatial_windows.UnitBoxWindow" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#structure_factor.spatial_windows.BoxWindow" title="structure_factor.spatial_windows.BoxWindow"><code class="xref py py-class docutils literal notranslate"><span class="pre">structure_factor.spatial_windows.BoxWindow</span></code></a></p>
 <p>Create a <span class="math notranslate nohighlight">\(d\)</span> dimensional unit box window <span class="math notranslate nohighlight">\(\prod_{i=1}^{d} [c_i - \frac{1}{2}, c_i + \frac{1}{2}]\)</span> where <span class="math notranslate nohighlight">\(c \in \mathbb{R}^d\)</span>.</p>
 <dl class="field-list simple">
@@ -449,14 +451,14 @@
 </dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="structure_factor.spatial_windows.UnitBoxWindow.bounds">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">bounds</span></span><a class="headerlink" href="#structure_factor.spatial_windows.UnitBoxWindow.bounds" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">bounds</span></span><a class="headerlink" href="#structure_factor.spatial_windows.UnitBoxWindow.bounds" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the bounds decribing the BoxWindow.</p>
 <p><code class="docutils literal notranslate"><span class="pre">bounds[i,</span> <span class="pre">:]</span></code> <span class="math notranslate nohighlight">\(=[a_i, b_i]\)</span>.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="structure_factor.spatial_windows.UnitBoxWindow.dimension">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">dimension</span></span><a class="headerlink" href="#structure_factor.spatial_windows.UnitBoxWindow.dimension" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dimension</span></span><a class="headerlink" href="#structure_factor.spatial_windows.UnitBoxWindow.dimension" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the ambient dimension of the corresponding window.</p>
 </dd></dl>
 
@@ -528,7 +530,7 @@
 
 <dl class="py property">
 <dt class="sig sig-object py" id="structure_factor.spatial_windows.UnitBoxWindow.volume">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">volume</span></span><a class="headerlink" href="#structure_factor.spatial_windows.UnitBoxWindow.volume" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">volume</span></span><a class="headerlink" href="#structure_factor.spatial_windows.UnitBoxWindow.volume" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the volume of the corresponding window.</p>
 </dd></dl>
 
@@ -602,7 +604,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2021, Diala Hawat.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.2.0.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.0.
     </div>
   </body>
 </html>

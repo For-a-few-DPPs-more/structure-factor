@@ -8,12 +8,14 @@
     <title>structure_factor.utils &#8212; structure-factor  documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/classic.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/proof.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
     
     <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/proof.js"></script>
     
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -50,14 +52,15 @@
 <span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">interpolate</span><span class="p">,</span> <span class="n">stats</span>
 <span class="kn">from</span> <span class="nn">scipy.special</span> <span class="kn">import</span> <span class="n">j0</span><span class="p">,</span> <span class="n">j1</span><span class="p">,</span> <span class="n">jn_zeros</span><span class="p">,</span> <span class="n">jv</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">yv</span>
 
+
 <span class="c1"># utils for the class Hyperuniformity</span>
-<div class="viewcode-block" id="_sort_vectors"><a class="viewcode-back" href="../../utils.html#structure_factor.utils._sort_vectors">[docs]</a><span class="k">def</span> <span class="nf">_sort_vectors</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">x_k</span><span class="p">,</span> <span class="n">y_k</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;sort ``k`` by increasing order and reorder the associated vectors to ``k``, ``x_k``and ``y_k``.</span>
+<div class="viewcode-block" id="_sort_vectors"><a class="viewcode-back" href="../../utils.html#structure_factor.utils._sort_vectors">[docs]</a><span class="k">def</span> <span class="nf">_sort_vectors</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">x_k</span><span class="p">,</span> <span class="n">y_k</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Sort ``k`` by increasing order and reorder the associated vectors to ``k``, ``x_k``and ``y_k``.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        k (np.array): Vector to be sorted by increasing order.</span>
 <span class="sd">        x_k (np.array): Vector of evaluations associated to ``k``.</span>
-<span class="sd">        y_k (np.array): Vector of evaluations associated to ``k``.</span>
+<span class="sd">        y_k (np.array, optional): Defaults to None. Vector of evaluations associated to ``k``.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        (np.array, np.array, np.array): ``k`` sorted by increasing order and the associated ``x_k``and ``y_k``.</span>
@@ -67,9 +70,8 @@
     <span class="n">x_k_sorted</span> <span class="o">=</span> <span class="n">x_k</span><span class="p">[</span><span class="n">sort_index_k</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">y_k</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">y_k_sorted</span> <span class="o">=</span> <span class="n">y_k</span><span class="p">[</span><span class="n">sort_index_k</span><span class="p">]</span>
-        <span class="k">return</span> <span class="p">(</span><span class="n">k_sorted</span><span class="p">,</span> <span class="n">x_k_sorted</span><span class="p">,</span> <span class="n">y_k_sorted</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="p">(</span><span class="n">k_sorted</span><span class="p">,</span> <span class="n">x_k_sorted</span><span class="p">,</span> <span class="n">y_k</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">k_sorted</span><span class="p">,</span> <span class="n">x_k_sorted</span><span class="p">,</span> <span class="n">y_k_sorted</span>
+    <span class="k">return</span> <span class="n">k_sorted</span><span class="p">,</span> <span class="n">x_k_sorted</span><span class="p">,</span> <span class="n">y_k</span></div>
 
 
 <div class="viewcode-block" id="set_nan_inf_to_zero"><a class="viewcode-back" href="../../utils.html#structure_factor.utils.set_nan_inf_to_zero">[docs]</a><span class="k">def</span> <span class="nf">set_nan_inf_to_zero</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">nan</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">posinf</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">neginf</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
@@ -121,7 +123,7 @@
 
 
 <div class="viewcode-block" id="_reshape_meshgrid"><a class="viewcode-back" href="../../utils.html#structure_factor.utils._reshape_meshgrid">[docs]</a><span class="k">def</span> <span class="nf">_reshape_meshgrid</span><span class="p">(</span><span class="n">X</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;reshape list of meshgrids as np.ndarray of columns, where each column is associated to an element (meshgrid) of the list.</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Reshape list of meshgrids as np.ndarray of columns, where each column is associated to an element (meshgrid) of the list.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        X (list): List of meshgrids.</span>
@@ -158,17 +160,16 @@
 <span class="sd">            - k : np.array with ``d`` columns where each row is an allowed wave vector.</span>
 <span class="sd">            - K : list of meshgrids, (the elements of the list correspond to the 2D respresentation of the components of the wave vectors, i.e., a 2D representation of the vectors of allowed values ``k``). For example in dimension 2, if K =[X,Y] then X is the 2D representation of the x coordinates of the allowed wave vectors ``k`` i.e., the representation as meshgrid.</span>
 
-<span class="sd">    .. note::</span>
+<span class="sd">    .. proof:definition::</span>
 
-<span class="sd">        **Definition:**</span>
-<span class="sd">            Given a realization of a point process in a cubic window of length side :math:`L`, the set of the **allowed wave vectors** :math:`\{\mathbf{k}_i\}_i` at which the the scattering intensity :math:`\widehat{S}_{SI}` is consistently an estimator of the structure factor :math:`S` of the point process is defined by</span>
+<span class="sd">        Given a realization of a point process in a cubic window of length side :math:`L`, the set of the **allowed wave vectors** :math:`\{\mathbf{k}_i\}_i` at which the the scattering intensity :math:`\widehat{S}_{SI}` is consistently an estimator of the structure factor :math:`S` of the point process is defined by</span>
 
 
-<span class="sd">            .. math::</span>
+<span class="sd">        .. math::</span>
 
-<span class="sd">                \{\mathbf{k}_i\}_i = \{\frac{2 \pi}{L} \mathbf{n} ~ ; ~ \mathbf{n} \in (\mathbb{Z}^d)^\ast \}.</span>
+<span class="sd">            \{\mathbf{k}_i\}_i = \{\frac{2 \pi}{L} \mathbf{n} ~ ; ~ \mathbf{n} \in (\mathbb{Z}^d)^\ast \}.</span>
 
-<span class="sd">            The maximum and the number of output allowed wave vectors returned by :py:meth:`allowed_wave_vectors`, are specified by the input parameters ``k_max`` and ``meshgrid_shape``.</span>
+<span class="sd">        The maximum and the number of output allowed wave vectors returned by :py:meth:`allowed_wave_vectors`, are specified by the input parameters ``k_max`` and ``meshgrid_shape``.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">K</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">n_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">k_max</span> <span class="o">*</span> <span class="n">L</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">))</span>  <span class="c1"># maximum of ``n``</span>
@@ -229,20 +230,19 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        numpy.ndarray: Evaluation(s) of the scattering intensity on ``k``.</span>
 
-<span class="sd">    .. note::</span>
+<span class="sd">    .. proof:definition::</span>
 
-<span class="sd">        **Definition:**</span>
-<span class="sd">            The scattering intensity :math:`\widehat{S}_{SI}`, of a realization of points :math:`\{\mathbf{x}_i\}_{i=1}^N` of :math:`\mathbb{R}^d`, is defined by,</span>
+<span class="sd">        The scattering intensity :math:`\widehat{S}_{SI}`, of a realization of points :math:`\{\mathbf{x}_i\}_{i=1}^N` of :math:`\mathbb{R}^d`, is defined by,</span>
 
-<span class="sd">            .. math::</span>
+<span class="sd">        .. math::</span>
 
-<span class="sd">                \widehat{S}_{SI}(\mathbf{k}) =</span>
-<span class="sd">                    \frac{1}{N}\left\lvert</span>
-<span class="sd">                        \sum_{j=1}^N</span>
-<span class="sd">                            \exp(- i \left\langle \mathbf{k}, \mathbf{x_j} \right\rangle)</span>
-<span class="sd">                    \right\rvert^2</span>
+<span class="sd">            \widehat{S}_{SI}(\mathbf{k}) =</span>
+<span class="sd">                \frac{1}{N}\left\lvert</span>
+<span class="sd">                    \sum_{j=1}^N</span>
+<span class="sd">                        \exp(- i \left\langle \mathbf{k}, \mathbf{x_j} \right\rangle)</span>
+<span class="sd">                \right\rvert^2</span>
 
-<span class="sd">            where :math:`\mathbf{k} \in \mathbb{R}^d` is a wave vector.</span>
+<span class="sd">        where :math:`\mathbf{k} \in \mathbb{R}^d` is a wave vector.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">n</span> <span class="o">=</span> <span class="n">points</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># number of points</span>
     <span class="k">if</span> <span class="n">points</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">k</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
@@ -388,7 +388,6 @@
 
 <div class="viewcode-block" id="plot_si_imshow"><a class="viewcode-back" href="../../utils.html#structure_factor.utils.plot_si_imshow">[docs]</a><span class="k">def</span> <span class="nf">plot_si_imshow</span><span class="p">(</span><span class="n">norm_k</span><span class="p">,</span> <span class="n">si</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">file_name</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Color level plot, centered on zero.&quot;&quot;&quot;</span>
-
     <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">_</span><span class="p">,</span> <span class="n">axis</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">norm_k</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
@@ -567,7 +566,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2021, Diala Hawat.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.2.0.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.0.
     </div>
   </body>
 </html>
