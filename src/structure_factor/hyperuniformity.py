@@ -1,6 +1,7 @@
 import numpy as np
 from scipy.optimize import curve_fit
 from scipy.signal import find_peaks
+
 from structure_factor.utils import _bin_statistics, _sort_vectors
 
 
@@ -98,7 +99,6 @@ class Hyperuniformity:
                 - s0_std: Standard deviation of the numerator of :math:`H`.
 
         Example:
-
             .. literalinclude:: code/effective_example.py
                 :language: python
                 :lines: 22-30
@@ -106,7 +106,6 @@ class Hyperuniformity:
             .. testoutput::
 
                 H_ginibre= -0.055816051215869376
-
 
             .. plot:: code/effective_example.py
                 :include-source: False
@@ -129,9 +128,7 @@ class Hyperuniformity:
 
                 To compute the numerator :math:`\hat{S}(\mathbf{0})` of :math:`H`, a line is fitted using a linear regression with least square fit on the values of :py:attr:`~Hyperuniformity.sf` associated to the sub-vector of :py:attr:`~Hyperuniformity.k_norm` truncated around the threshold ``k_norm_stop``. ``k_norm_stop`` must satisfy a good compromise of being close to zero but also allowing to fit the line on sufficient number of points.
                 If the standard deviations of :py:attr:`~Hyperuniformity.sf` are provided in the attribute :py:attr:`~Hyperuniformity.std_sf` then these values will be considered while fitting the line.
-
         """
-
         line = lambda x, a, b: a + b * x
         (intercept, slope), cov = self._fit(line, k_norm_stop, **kwargs)
 

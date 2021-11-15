@@ -3,8 +3,8 @@
 
 import numpy as np
 from scipy import interpolate
-import structure_factor.utils as utils
 
+import structure_factor.utils as utils
 from structure_factor.utils import bessel1, bessel1_zeros, bessel2
 
 

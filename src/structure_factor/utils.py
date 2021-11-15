@@ -9,14 +9,15 @@ import numpy as np
 from scipy import interpolate, stats
 from scipy.special import j0, j1, jn_zeros, jv, y0, y1, yv
 
+
 # utils for the class Hyperuniformity
-def _sort_vectors(k, x_k, y_k):
-    """sort ``k`` by increasing order and reorder the associated vectors to ``k``, ``x_k``and ``y_k``.
+def _sort_vectors(k, x_k, y_k=None):
+    """Sort ``k`` by increasing order and reorder the associated vectors to ``k``, ``x_k``and ``y_k``.
 
     Args:
         k (np.array): Vector to be sorted by increasing order.
         x_k (np.array): Vector of evaluations associated to ``k``.
-        y_k (np.array): Vector of evaluations associated to ``k``.
+        y_k (np.array, optional): Defaults to None. Vector of evaluations associated to ``k``.
 
     Returns:
         (np.array, np.array, np.array): ``k`` sorted by increasing order and the associated ``x_k``and ``y_k``.
@@ -26,9 +27,8 @@ def _sort_vectors(k, x_k, y_k):
     x_k_sorted = x_k[sort_index_k]
     if y_k is not None:
         y_k_sorted = y_k[sort_index_k]
-        return (k_sorted, x_k_sorted, y_k_sorted)
-    else:
-        return (k_sorted, x_k_sorted, y_k)
+        return k_sorted, x_k_sorted, y_k_sorted
+    return k_sorted, x_k_sorted, y_k
 
 
 def set_nan_inf_to_zero(array, nan=0, posinf=0, neginf=0):
@@ -80,7 +80,7 @@ def structure_factor_ginibre(k):
 
 
 def _reshape_meshgrid(X):
-    r"""reshape list of meshgrids as np.ndarray of columns, where each column is associated to an element (meshgrid) of the list.
+    r"""Reshape list of meshgrids as np.ndarray of columns, where each column is associated to an element (meshgrid) of the list.
 
     Args:
         X (list): List of meshgrids.
@@ -347,7 +347,6 @@ def plot_si_showcase(
 
 def plot_si_imshow(norm_k, si, axis, file_name):
     """Color level plot, centered on zero."""
-
     if axis is None:
         _, axis = plt.subplots(figsize=(14, 8))
     if len(norm_k.shape) < 2:

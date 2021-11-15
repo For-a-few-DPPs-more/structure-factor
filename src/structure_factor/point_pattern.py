@@ -10,14 +10,13 @@ class PointPattern(object):
     r"""Encapsulate a realization of a point process: the sampled points, the observation window, and the intensity of underlying point process.
 
     Args:
-            points (np.ndarray): :math:`N \times d` array collecting :math:`N` points in dimension :math:`d` consisting of a realization of a point process.
+        points (np.ndarray): :math:`N \times d` array collecting :math:`N` points in dimension :math:`d` consisting of a realization of a point process.
 
-            window (AbstractSpatialWindow, optional): Observation window containing the ``points``. Defaults to None.
+        window (AbstractSpatialWindow, optional): Observation window containing the ``points``. Defaults to None.
 
-            intensity(float, optional): Intensity of the point process. Defaults to None.
+        intensity(float, optional): Intensity of the point process. Defaults to None.
 
     Example:
-
         .. literalinclude:: code/point_pattern.py
                 :language: python
                 :lines: 6-22
@@ -35,9 +34,6 @@ class PointPattern(object):
             - The class :py:class:`~structure_factor.structure_factor.StructureFactor` gets initialized using a :py:class:`~structure_factor.point_pattern.PointPattern`.
 
             - Convert Python :py:class:`~structure_factor.point_pattern.PointPattern` object to a ``spatstat`` point pattern R object using :py:meth:`~structure_factor.point_pattern.PointPattern.convert_to_spatstat_ppp`.
-
-
-
     """
 
     def __init__(self, points, window=None, intensity=None):
@@ -83,13 +79,11 @@ class PointPattern(object):
         Returns:
             ~structure_factor.point_pattern.PointPattern: Restriction of the ``PointPattern`` to the prescribed ``window``.
 
-
         .. testsetup::
 
-                from structure_factor.data import load_data #import data
+            from structure_factor.data import load_data #import data
 
         Example:
-
             .. plot:: code/restrict_pp.py
                 :include-source: True
                 :caption:
@@ -134,7 +128,6 @@ class PointPattern(object):
             matplotlib.axis: plot axis.
 
         Example:
-
             .. plot:: code/plot_point_pattern.py
                 :include-source: True
         """
