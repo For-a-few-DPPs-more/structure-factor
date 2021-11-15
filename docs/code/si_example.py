@@ -1,8 +1,7 @@
+import structure_factor.utils as utils
 from structure_factor.data import load_data
 from structure_factor.spatial_windows import BoxWindow
 from structure_factor.structure_factor import StructureFactor
-import structure_factor.utils as utils
-
 
 # load Ginibre PointPattern
 ginibre_pp = load_data.load_ginibre()
