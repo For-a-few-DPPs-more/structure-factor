@@ -402,7 +402,7 @@ class StructureFactor:
                 - ``method == "BaddourChouinard"``, see :py:meth:`~structure_factor.transforms.HankelTransformBaddourChouinard.compute_transformation_parameters`
                     - ``r_max``
                     - ``nb_points``
-                    - ``interpolotation`` dictonnary containing the keyword arguments of `scipy.integrate.interp1d <https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html>`_ parameters.
+                    - ``interpolotation`` dictionnary containing the keyword arguments of `scipy.integrate.interp1d <https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html>`_ parameters.
 
         Returns:
             tuple (np.ndarray, np.ndarray):
@@ -420,7 +420,9 @@ class StructureFactor:
 
             .. math::
 
-                S(\|\mathbf{k}\|) = 1 + \rho \frac{(2 \pi)^{d/2}}{\|\mathbf{k}\|^{d/2 -1}} \mathcal{H}_{d/2 -1}(\tilde g -1)(\|\mathbf{k}\|), \quad \tilde g:x \mapsto  g(x)x^{d/2 -1},
+                S(\|\mathbf{k}\|)
+                = 1 + \rho \frac{(2 \pi)^{d/2}}{\|\mathbf{k}\|^{d/2 -1}} \mathcal{H}_{d/2 -1}(\tilde g -1)(\|\mathbf{k}\|),
+                \quad \tilde g: x \mapsto g(x) x^{d/2 -1},
 
             where, :math:`g` is the pair correlation function of :math:`\mathcal{X}`.
             This is a result of the relation between the Symmetric Fourier transform and the Hankel Transform.
@@ -428,11 +430,11 @@ class StructureFactor:
         .. note::
 
             **Typical usage**:
-                1- Estimate the pair correlation function using :py:meth:`compute_pcf`.
+                1. Estimate the pair correlation function using :py:meth:`compute_pcf`.
 
-                2- Clean and interpolated the resulting estimation using :py:meth:`interpolate_pcf` to get a **function**.
+                2. Clean and interpolated the resulting estimation using :py:meth:`interpolate_pcf` to get a **function**.
 
-                3- Use the resulting **function** as the input argument (``pcf``) of :py:meth:`hankel_quadrature` to get an approximation of the structure factor of the point process encapsulated in ``point_pattern``.
+                3. Use the resulting **function** as the input argument (``pcf``) of :py:meth:`hankel_quadrature` to get an approximation of the structure factor of the point process encapsulated in ``point_pattern``.
         """
         if self.dimension != 2:
             warnings.warn(

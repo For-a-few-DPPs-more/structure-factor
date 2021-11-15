@@ -100,7 +100,7 @@ def _reshape_meshgrid(X):
 
 
 def allowed_wave_vectors(d, L, k_max, meshgrid_shape=None):
-    r"""Return a subset of the d-dimentional allowed wave vectors used by the scattering intensity of a point process realization lying in a cubic window of length ``L``.
+    r"""Return a subset of the d-dimensional allowed wave vectors used by the scattering intensity of a point process realization lying in a cubic window of length ``L``.
 
     Args:
 

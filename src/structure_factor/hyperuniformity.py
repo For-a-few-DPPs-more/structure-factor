@@ -11,9 +11,9 @@ class Hyperuniformity:
     Args:
         k_norm (numpy.array): Vector of wavenumbers (i.e. norms of the wave vectors).
 
-        sf (numpy.array): Vector of evaluations of the structure factor, of the given point process, at :py:attr:`~Hyeruniformity.k_norm`.
+        sf (numpy.array): Vector of evaluations of the structure factor, of the given point process, at :py:attr:`~Hyperuniformity.k_norm`.
 
-        std (np.array, optional): Vector of standard deviations associated to :py:attr:`~Hyeruniformity.sf`. Defaults to None.
+        std (np.array, optional): Vector of standard deviations associated to :py:attr:`~Hyperuniformity.sf`. Defaults to None.
 
     .. proof:definition::
 
@@ -22,7 +22,7 @@ class Hyperuniformity:
     .. note::
 
         **This class contains**:
-            - :meth:`bin_data`: method for regularizing :py:attr:`~Hyeruniformity.sf`, consisting on dividing the vector of wavenumber :py:attr:`~Hyeruniformity.k_norm` into sub-intervals and taking the mean and the strandard deviation over each sub-interval.
+            - :meth:`bin_data`: method for regularizing :py:attr:`~Hyperuniformity.sf`, consisting on dividing the vector of wavenumber :py:attr:`~Hyperuniformity.k_norm` into sub-intervals and taking the mean and the strandard deviation over each sub-interval.
             - :meth:`effective_hyperuniformity`: test of effective hyperuniformity, consisting on evaluating the index H of hyperuniformity used to study if the corresponding point process is effectively hyperuniform :cite:`Kla+al19`.
             - :meth:`hyperuniformity_class`: test of the possible class of hyperuniformity, consisting on studying the power decay of the structure factor near zero :cite:`Cos21`.
 
@@ -42,9 +42,9 @@ class Hyperuniformity:
         Args:
             k_norm (numpy.array): Vector of wavenumbers (i.e. norms of the wave vectors).
 
-            sf (numpy.array): Vector of evaluations of the structure factor, of the given point process, at :py:attr:`~Hyeruniformity.k_norm`.
+            sf (numpy.array): Vector of evaluations of the structure factor, of the given point process, at :py:attr:`~Hyperuniformity.k_norm`.
 
-            std (np.array, optional): Vector of standard deviations associated to :py:attr:`~Hyeruniformity.sf`. Defaults to None.
+            std (np.array, optional): Vector of standard deviations associated to :py:attr:`~Hyperuniformity.sf`. Defaults to None.
 
         """
         assert isinstance(k_norm, np.ndarray)
@@ -125,7 +125,7 @@ class Hyperuniformity:
 
         .. important::
 
-            T werwero compute the numerator :math:`\hat{S}(\mathbf{0})` of :math:`H`, a line is fitted using a linear regression with least square fit on the values of :py:attr:`~Hyperuniformity.sf` associated to the sub-vector of :py:attr:`~Hyperuniformity.k_norm` truncated around the threshold ``k_norm_stop``. ``k_norm_stop`` must satisfy a good compromise of being close to zero but also allowing to fit the line on sufficient number of points.
+            To compute the numerator :math:`\hat{S}(\mathbf{0})` of :math:`H`, a line is fitted using a linear regression with least square fit on the values of :py:attr:`~Hyperuniformity.sf` associated to the sub-vector of :py:attr:`~Hyperuniformity.k_norm` truncated around the threshold ``k_norm_stop``. ``k_norm_stop`` must satisfy a good compromise of being close to zero but also allowing to fit the line on sufficient number of points.
             If the standard deviations of :py:attr:`~Hyperuniformity.sf` are provided in the attribute :py:attr:`~Hyperuniformity.std_sf` then these values will be considered while fitting the line.
         """
         line = lambda x, a, b: a + b * x
@@ -200,7 +200,7 @@ class Hyperuniformity:
             kwargs (dict): Keyword arguments (except ``"sigma"``) of `scipy.scipy.optimize.curve_fit <https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.curve_fit.html>`_ parameters.
 
         Returns:
-            tuple: See ouput of `scipy.scipy.optimize.curve_fit <https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.curve_fit.html>`_.
+            tuple: See output of `scipy.scipy.optimize.curve_fit <https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.curve_fit.html>`_.
         """
         k_norm = self.k_norm
         sf = self.sf
