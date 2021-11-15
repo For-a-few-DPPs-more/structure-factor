@@ -52,32 +52,30 @@ class RadiallySymmetricFourierTransform:
                 - k: Point(s) where the Fourier tranform is to evaluated.
                 - F_k: Fourier transform of ``f`` at ``k``.
 
-        .. note::
+        .. proof:definition::
 
-            **Definition:**
-                The Hankel transform :math:`\mathcal{H}_{\nu}` of order :math:`\nu` of :math:`f`
+            The Hankel transform :math:`\mathcal{H}_{\nu}` of order :math:`\nu` of :math:`f`
 
-                .. math::
+            .. math::
 
-                    \mathcal{H}_{\nu -1}(f)(k) = \int_0^\infty f(r) J_{\nu}(kr)r \mathrm{d}k,
+                \mathcal{H}_{\nu -1}(f)(k) = \int_0^\infty f(r) J_{\nu}(kr)r \mathrm{d}k,
 
-                where :math:`J_{\nu}` is the Bessel function of first kind.
+            where :math:`J_{\nu}` is the Bessel function of first kind.
 
-                The d dimensional Fourier transform :math:`\mathcal{F}` of the radially symmetric function :math:`f` at :math:`k` could be defined using the Hankel transform of :math:`x \rightarrow x^{d/2 -1}f(x)` of order :math:`d/2 -1` as follows,
+            The d dimensional Fourier transform :math:`\mathcal{F}` of the radially symmetric function :math:`f` at :math:`k` could be defined using the Hankel transform of :math:`x \rightarrow x^{d/2 -1}f(x)` of order :math:`d/2 -1` as follows,
 
-                .. math::
+            .. math::
 
-                    k^{d/2-1} \mathcal{F}[f](k)
-                    = (2 \pi)^{d/2}
-                    \int_{0}^{+\infty}
-                        r^{d/2-1}
-                        f(r)
-                        J_{d/2-1}(kr)
-                        r
-                        \mathrm{d}r
-                    = (2 \pi)^{d/2}
-                    \mathcal{H}_{d/2-1}[\cdot^{d/2-1} f(\cdot)](k).
-
+                k^{d/2-1} \mathcal{F}[f](k)
+                = (2 \pi)^{d/2}
+                \int_{0}^{+\infty}
+                    r^{d/2-1}
+                    f(r)
+                    J_{d/2-1}(kr)
+                    r
+                    \mathrm{d}r
+                = (2 \pi)^{d/2}
+                \mathcal{H}_{d/2-1}[\cdot^{d/2-1} f(\cdot)](k).
         """
         d = self.d
         order = d // 2 - 1

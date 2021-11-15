@@ -117,17 +117,16 @@ def allowed_wave_vectors(d, L, k_max, meshgrid_shape=None):
             - k : np.array with ``d`` columns where each row is an allowed wave vector.
             - K : list of meshgrids, (the elements of the list correspond to the 2D respresentation of the components of the wave vectors, i.e., a 2D representation of the vectors of allowed values ``k``). For example in dimension 2, if K =[X,Y] then X is the 2D representation of the x coordinates of the allowed wave vectors ``k`` i.e., the representation as meshgrid.
 
-    .. note::
+    .. proof:definition::
 
-        **Definition:**
-            Given a realization of a point process in a cubic window of length side :math:`L`, the set of the **allowed wave vectors** :math:`\{\mathbf{k}_i\}_i` at which the the scattering intensity :math:`\widehat{S}_{SI}` is consistently an estimator of the structure factor :math:`S` of the point process is defined by
+        Given a realization of a point process in a cubic window of length side :math:`L`, the set of the **allowed wave vectors** :math:`\{\mathbf{k}_i\}_i` at which the the scattering intensity :math:`\widehat{S}_{SI}` is consistently an estimator of the structure factor :math:`S` of the point process is defined by
 
 
-            .. math::
+        .. math::
 
-                \{\mathbf{k}_i\}_i = \{\frac{2 \pi}{L} \mathbf{n} ~ ; ~ \mathbf{n} \in (\mathbb{Z}^d)^\ast \}.
+            \{\mathbf{k}_i\}_i = \{\frac{2 \pi}{L} \mathbf{n} ~ ; ~ \mathbf{n} \in (\mathbb{Z}^d)^\ast \}.
 
-            The maximum and the number of output allowed wave vectors returned by :py:meth:`allowed_wave_vectors`, are specified by the input parameters ``k_max`` and ``meshgrid_shape``.
+        The maximum and the number of output allowed wave vectors returned by :py:meth:`allowed_wave_vectors`, are specified by the input parameters ``k_max`` and ``meshgrid_shape``.
     """
     K = None
     n_max = np.floor(k_max * L / (2 * np.pi))  # maximum of ``n``
@@ -188,20 +187,19 @@ def compute_scattering_intensity(k, points):
     Returns:
         numpy.ndarray: Evaluation(s) of the scattering intensity on ``k``.
 
-    .. note::
+    .. proof:definition::
 
-        **Definition:**
-            The scattering intensity :math:`\widehat{S}_{SI}`, of a realization of points :math:`\{\mathbf{x}_i\}_{i=1}^N` of :math:`\mathbb{R}^d`, is defined by,
+        The scattering intensity :math:`\widehat{S}_{SI}`, of a realization of points :math:`\{\mathbf{x}_i\}_{i=1}^N` of :math:`\mathbb{R}^d`, is defined by,
 
-            .. math::
+        .. math::
 
-                \widehat{S}_{SI}(\mathbf{k}) =
-                    \frac{1}{N}\left\lvert
-                        \sum_{j=1}^N
-                            \exp(- i \left\langle \mathbf{k}, \mathbf{x_j} \right\rangle)
-                    \right\rvert^2
+            \widehat{S}_{SI}(\mathbf{k}) =
+                \frac{1}{N}\left\lvert
+                    \sum_{j=1}^N
+                        \exp(- i \left\langle \mathbf{k}, \mathbf{x_j} \right\rangle)
+                \right\rvert^2
 
-            where :math:`\mathbf{k} \in \mathbb{R}^d` is a wave vector.
+        where :math:`\mathbf{k} \in \mathbb{R}^d` is a wave vector.
     """
     n = points.shape[0]  # number of points
     if points.shape[1] != k.shape[1]:

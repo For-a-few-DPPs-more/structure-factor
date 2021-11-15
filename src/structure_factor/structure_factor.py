@@ -18,17 +18,17 @@ class StructureFactor:
     Args:
         point_pattern (:py:class:`~structure_factor.point_pattern.PointPattern`): Object of type PointPattern containing a realization ``point_pattern.points`` of a point process, the window where the points were simulated ``point_pattern.window`` and (optionally) the intensity of the point process ``point_pattern.intensity``.
 
+    .. proof:definition::
+
+        The structure factor :math:`S` of a d dimensional stationary ergodic point process :math:`\mathcal{X}` with intensity :math:`\rho`, is defined by,
+
+        .. math::
+
+            S(\mathbf{k}) = 1 + \rho \mathcal{F}(g-1)(\mathbf{k}),
+
+        where :math:`\mathcal{F}` denotes the Fourier transform, :math:`g` the pair correlation function corresponds to :math:`\mathcal{X}`, :math:`\mathbf{k} \in \mathbb{R}^d` is a wave vector  (we denote the associated wavenumber by :math:`k` i.e., :math:`k = \| \mathbf{k} \|_2`) :cite:`Tor18`, Section 2.1, equation (13).
+
     .. note::
-
-        **Definition:**
-            The structure factor :math:`S` of a d dimensional stationary ergodic point process :math:`\mathcal{X}` with intensity :math:`\rho`, is defined by,
-
-            .. math::
-
-                S(\mathbf{k}) = 1 + \rho \mathcal{F}(g-1)(\mathbf{k}),
-
-            where :math:`\mathcal{F}` denotes the Fourier transform, :math:`g` the pair correlation function corresponds to :math:`\mathcal{X}`, :math:`\mathbf{k} \in \mathbb{R}^d` is a wave vector  (we denote the associated wavenumber by :math:`k` i.e., :math:`k = \| \mathbf{k} \|_2`) :cite:`Tor18`, Section 2.1, equation (13).
-
 
         **This class contains:**
             - Three estimators of the structure factor:
@@ -83,39 +83,40 @@ class StructureFactor:
                 - si: Evaluation(s) of the scattering intensity corresponding to ``k_norm``.
 
         Example:
-
             .. literalinclude:: code/si_example.py
                 :language: python
-                :lines: 1-21
-                :emphasize-lines: 19-21
+                :lines: 1-19
+                :emphasize-lines: 17-19
+
+        .. proof:definition::
+
+            The scattering intensity :math:`\widehat{S}_{SI}` is an ensemble estimator of the structure factor :math:`S` of an ergodic stationary point process :math:`\mathcal{X} \subset \mathbb{R}^d`. It's accessible from a realization :math:`\mathcal{X}\cap W =\{\mathbf{x}_i\}_{i=1}^N` of :math:`\mathcal{X}` within a **cubic** window :math:`W=[-L/2, L/2]^d`.
+
+            .. math::
+
+                \widehat{S}_{SI}(\mathbf{k}) =
+                \frac{1}{N}\left\lvert
+                    \sum_{j=1}^N
+                        \exp(- i \left\langle \mathbf{k}, \mathbf{x_j} \right\rangle)
+                \right\rvert^2
+
+            for a specific sef of wavevectors
+
+            .. math::
+                \mathbf{k} \in \{
+                \frac{2 \pi}{L} \mathbf{n},\,
+                \text{for} \; \mathbf{n} \in (\mathbb{Z}^d)^\ast \}
+
+            called in the physics literature **allowed wavevectors** or dual lattice :cite:`KlaLasYog20`.
 
         .. note::
-
-            **Definition:**
-                The scattering intensity :math:`\widehat{S}_{SI}` is an ensemble estimator of the structure factor :math:`S` of an ergodic stationary point process :math:`\mathcal{X} \subset \mathbb{R}^d`. It's accessible from a realization :math:`\mathcal{X}\cap W =\{\mathbf{x}_i\}_{i=1}^N` of :math:`\mathcal{X}` within a **cubic** window :math:`W=[-L/2, L/2]^d`.
-
-                .. math::
-
-                    \widehat{S}_{SI}(\mathbf{k}) =
-                    \frac{1}{N}\left\lvert
-                        \sum_{j=1}^N
-                            \exp(- i \left\langle \mathbf{k}, \mathbf{x_j} \right\rangle)
-                    \right\rvert^2
-
-                for a specific sef of wavevectors
-
-                .. math::
-                    \mathbf{k} \in \{
-                    \frac{2 \pi}{L} \mathbf{n},\,
-                    \text{for} \; \mathbf{n} \in (\mathbb{Z}^d)^\ast \}
-
-                called in the physics literature **allowed wavevectors** or dual lattice :cite:`KlaLasYog20`.
 
             **Typical usage**:
                 - If the realization of the point process :math:`\{\mathbf{x}_j\}_{j=1}^N` does note lies in a cubic window, use the method :py:class:`~structure_factor.point_pattern.PointPattern.restrict_to_window` to extract a sub-sample within a cubic window before using :meth:`scattering_intensity`.
                 - Do not specify the input argument ``k``. It's rather recommended to specify the argument ``k_max`` and/or ``meshgrid_shape`` if needed. This allow :meth:`scattering_intensity` to operate automatically on a set of allowed wavevectors (see :py:meth:`~structure_factor.utils.allowed_wave_vectors`).
 
-            **Important:**
+            .. important::
+
                 Specifying the meshgrid argument ``meshgrid_shape`` is usefull if the number of points of the realization is big since in this case the evaluation of :math:`\widehat{S}_{SI}` on **all** the allowed wavevectors may be time consuming.
         """
         point_pattern = self.point_pattern
@@ -195,7 +196,7 @@ class StructureFactor:
         Example:
             .. literalinclude:: code/si_example.py
                 :language: python
-                :lines: 23-30
+                :lines: 22-29
 
             .. plot:: code/si_example.py
                 :include-source: False
@@ -271,20 +272,19 @@ class StructureFactor:
         Example:
             .. literalinclude:: code/pcf_example.py
                 :language: python
-                :lines: 1-13
-                :emphasize-lines: 12-13
+                :lines: 1-14
+                :emphasize-lines: 12-14
 
-        .. note::
+        .. proof:definition::
 
-            **Definition**:
-                The pair correlation function of a stationary point process :math:`\mathcal{X}` of intensity :math:`\rho` is the function :math:`g` satisfying (when it exists),
+            The pair correlation function of a stationary point process :math:`\mathcal{X}` of intensity :math:`\rho` is the function :math:`g` satisfying (when it exists),
 
-                .. math::
+            .. math::
 
-                   \mathbb{E} \bigg[ \sum_{\mathbf{x}, \mathbf{y} \in \mathcal{X}}^{\neq}
-                    f(\mathbf{x}, \mathbf{y}) \bigg] = \int_{\mathbb{R}^d \times \mathbb{R}^d} f(\mathbf{x}+\mathbf{y}, \mathbf{y})\rho^{2} g(\mathbf{x}) \mathrm{d} \mathbf{x} \mathrm{d}\mathbf{y},
+                \mathbb{E} \bigg[ \sum_{\mathbf{x}, \mathbf{y} \in \mathcal{X}}^{\neq}
+                f(\mathbf{x}, \mathbf{y}) \bigg] = \int_{\mathbb{R}^d \times \mathbb{R}^d} f(\mathbf{x}+\mathbf{y}, \mathbf{y})\rho^{2} g(\mathbf{x}) \mathrm{d} \mathbf{x} \mathrm{d}\mathbf{y},
 
-                for any non-negative smooth function :math:`f`  with compact support.
+            for any non-negative smooth function :math:`f`  with compact support.
         """
         assert self.point_pattern.dimension == 2 or self.point_pattern.dimension == 3
 
@@ -331,7 +331,7 @@ class StructureFactor:
         Example:
             .. literalinclude:: code/pcf_example.py
                 :language: python
-                :lines: 15-20
+                :lines: 16-
 
             .. plot:: code/pcf_example.py
                 :include-source: False
@@ -411,20 +411,21 @@ class StructureFactor:
 
         Example:
             .. literalinclude:: code/sf_baddour_example.py
-                :lines: 1-29
-                :emphasize-lines: 23-29
+                :lines: 1-28
+                :emphasize-lines: 23-28
+
+        .. proof:definition::
+
+            The structure factor :math:`S` of a **stationary isotropic** point process :math:`\mathcal{X} \subset \mathbb{R}^d` of intensity :math:`\rho`, can be defined via the Hankel transform :math:`\mathcal{H}_{d/2 -1}` of order :math:`d/2 -1` as follows,
+
+            .. math::
+
+                S(\|\mathbf{k}\|) = 1 + \rho \frac{(2 \pi)^{d/2}}{\|\mathbf{k}\|^{d/2 -1}} \mathcal{H}_{d/2 -1}(\tilde g -1)(\|\mathbf{k}\|), \quad \tilde g:x \mapsto  g(x)x^{d/2 -1},
+
+            where, :math:`g` is the pair correlation function of :math:`\mathcal{X}`.
+            This is a result of the relation between the Symmetric Fourier transform and the Hankel Transform.
 
         .. note::
-
-            **Definition**:
-                The structure factor :math:`S` of a **stationary isotropic** point process :math:`\mathcal{X} \subset \mathbb{R}^d` of intensity :math:`\rho`, can be defined via the Hankel transform :math:`\mathcal{H}_{d/2 -1}` of order :math:`d/2 -1` as follows,
-
-                .. math::
-
-                    S(\|\mathbf{k}\|) = 1 + \rho \frac{(2 \pi)^{d/2}}{\|\mathbf{k}\|^{d/2 -1}} \mathcal{H}_{d/2 -1}(\tilde g -1)(\|\mathbf{k}\|), \quad \tilde g:x \mapsto  g(x)x^{d/2 -1},
-
-                where, :math:`g` is the pair correlation function of :math:`\mathcal{X}`.
-                This is a result of the relation between the Symmetric Fourier transform and the Hankel Transform.
 
             **Typical usage**:
                 1- Estimate the pair correlation function using :py:meth:`compute_pcf`.
@@ -493,7 +494,7 @@ class StructureFactor:
 
         Example:
             .. literalinclude:: code/sf_baddour_example.py
-                :lines: 31-36
+                :lines: 31-
 
             .. plot:: code/sf_baddour_example.py
                 :include-source: False
