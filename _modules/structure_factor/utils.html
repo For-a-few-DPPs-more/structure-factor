@@ -85,7 +85,7 @@
 
 
 <div class="viewcode-block" id="bessel1"><a class="viewcode-back" href="../../utils.html#structure_factor.utils.bessel1">[docs]</a><span class="k">def</span> <span class="nf">bessel1</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Evaluate `first kind bessel function &lt;https://en.wikipedia.org/wiki/Bessel_function&gt;`_.&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Evaluate `Bessel function of the first kind &lt;https://en.wikipedia.org/wiki/Bessel_function&gt;`_.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">order</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">j0</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">order</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
@@ -94,12 +94,12 @@
 
 
 <div class="viewcode-block" id="bessel1_zeros"><a class="viewcode-back" href="../../utils.html#structure_factor.utils.bessel1_zeros">[docs]</a><span class="k">def</span> <span class="nf">bessel1_zeros</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="n">nb_zeros</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Evaluate zeros of the `first kind bessel function &lt;https://en.wikipedia.org/wiki/Bessel_function&gt;`_.&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Evaluate zeros of the `Bessel function of the first kind &lt;https://en.wikipedia.org/wiki/Bessel_function&gt;`_.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">jn_zeros</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="n">nb_zeros</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="bessel2"><a class="viewcode-back" href="../../utils.html#structure_factor.utils.bessel2">[docs]</a><span class="k">def</span> <span class="nf">bessel2</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Evaluate `second kind bessel function &lt;https://en.wikipedia.org/wiki/Bessel_function&gt;`_.&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Evaluate `Bessel function of the second kind &lt;https://en.wikipedia.org/wiki/Bessel_function&gt;`_.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">order</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">y0</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">order</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
@@ -143,7 +143,7 @@
 
 
 <div class="viewcode-block" id="allowed_wave_vectors"><a class="viewcode-back" href="../../utils.html#structure_factor.utils.allowed_wave_vectors">[docs]</a><span class="k">def</span> <span class="nf">allowed_wave_vectors</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">k_max</span><span class="p">,</span> <span class="n">meshgrid_shape</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return a subset of the d-dimentional allowed wave vectors used by the scattering intensity of a point process realization lying in a cubic window of length ``L``.</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return a subset of the d-dimentional allowed wave vectors corresponding to a cubic window of length ``L``.</span>
 
 <span class="sd">    Args:</span>
 
@@ -162,14 +162,13 @@
 
 <span class="sd">    .. proof:definition::</span>
 
-<span class="sd">        Given a realization of a point process in a cubic window of length side :math:`L`, the set of the **allowed wave vectors** :math:`\{\mathbf{k}_i\}_i` at which the the scattering intensity :math:`\widehat{S}_{SI}` is consistently an estimator of the structure factor :math:`S` of the point process is defined by</span>
-
+<span class="sd">        The set of the allowed wavevectors :math:`\{\mathbf{k}_i\}_i` is defined by</span>
 
 <span class="sd">        .. math::</span>
 
 <span class="sd">            \{\mathbf{k}_i\}_i = \{\frac{2 \pi}{L} \mathbf{n} ~ ; ~ \mathbf{n} \in (\mathbb{Z}^d)^\ast \}.</span>
 
-<span class="sd">        The maximum and the number of output allowed wave vectors returned by :py:meth:`allowed_wave_vectors`, are specified by the input parameters ``k_max`` and ``meshgrid_shape``.</span>
+<span class="sd">        For plotting purposes, we typically use a subset of allowed wavevectors. The maximum norm and the number of output allowed wavevectors returned by :py:meth:`allowed_wave_vectors`, are specified by the input parameters ``k_max`` and ``meshgrid_shape``.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">K</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">n_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">k_max</span> <span class="o">*</span> <span class="n">L</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">))</span>  <span class="c1"># maximum of ``n``</span>
@@ -179,7 +178,7 @@
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="s2">&quot;Taking all allowed wave vectors may be time consuming.&quot;</span><span class="p">)</span>
     <span class="k">elif</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">meshgrid_shape</span><span class="p">)</span> <span class="o">&gt;</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">n_max</span><span class="p">))</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-            <span class="n">message</span><span class="o">=</span><span class="s2">&quot;meshgrid_shape should be less than the shape of meshgrid of the total allowed wave of points.&quot;</span>
+            <span class="n">message</span><span class="o">=</span><span class="s2">&quot;meshgrid_shape should be smaller than that of the complete meshgrid of allowed wavevectors.&quot;</span>
         <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">meshgrid_shape</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">meshgrid_shape</span><span class="p">)</span> <span class="o">&gt;</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">n_max</span><span class="p">))</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
@@ -219,7 +218,7 @@
 
 
 <div class="viewcode-block" id="compute_scattering_intensity"><a class="viewcode-back" href="../../utils.html#structure_factor.utils.compute_scattering_intensity">[docs]</a><span class="k">def</span> <span class="nf">compute_scattering_intensity</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">points</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the scattering intensity of ``points`` on the wave vector(s) ``k``.</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the scattering intensity of ``points`` at each wavevector in ``k``.</span>
 
 <span class="sd">    Args:</span>
 
