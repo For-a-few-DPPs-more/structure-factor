@@ -42,7 +42,7 @@ def get_random_number_generator(seed=None):
 
 
 def bessel1(order, x):
-    """Evaluate `first kind bessel function <https://en.wikipedia.org/wiki/Bessel_function>`_."""
+    """Evaluate `Bessel function of the first kind <https://en.wikipedia.org/wiki/Bessel_function>`_."""
     if order == 0:
         return j0(x)
     if order == 1:
@@ -51,12 +51,12 @@ def bessel1(order, x):
 
 
 def bessel1_zeros(order, nb_zeros):
-    """Evaluate zeros of the `first kind bessel function <https://en.wikipedia.org/wiki/Bessel_function>`_."""
+    """Evaluate zeros of the `Bessel function of the first kind <https://en.wikipedia.org/wiki/Bessel_function>`_."""
     return jn_zeros(order, nb_zeros)
 
 
 def bessel2(order, x):
-    """Evaluate `second kind bessel function <https://en.wikipedia.org/wiki/Bessel_function>`_."""
+    """Evaluate `Bessel function of the second kind <https://en.wikipedia.org/wiki/Bessel_function>`_."""
     if order == 0:
         return y0(x)
     if order == 1:
@@ -100,7 +100,7 @@ def _reshape_meshgrid(X):
 
 
 def allowed_wave_vectors(d, L, k_max, meshgrid_shape=None):
-    r"""Return a subset of the d-dimensional allowed wave vectors used by the scattering intensity of a point process realization lying in a cubic window of length ``L``.
+    r"""Return a subset of the d-dimentional allowed wave vectors corresponding to a cubic window of length ``L``.
 
     Args:
 
@@ -119,14 +119,13 @@ def allowed_wave_vectors(d, L, k_max, meshgrid_shape=None):
 
     .. proof:definition::
 
-        Given a realization of a point process in a cubic window of length side :math:`L`, the set of the **allowed wave vectors** :math:`\{\mathbf{k}_i\}_i` at which the the scattering intensity :math:`\widehat{S}_{SI}` is consistently an estimator of the structure factor :math:`S` of the point process is defined by
-
+        The set of the allowed wavevectors :math:`\{\mathbf{k}_i\}_i` is defined by
 
         .. math::
 
             \{\mathbf{k}_i\}_i = \{\frac{2 \pi}{L} \mathbf{n} ~ ; ~ \mathbf{n} \in (\mathbb{Z}^d)^\ast \}.
 
-        The maximum and the number of output allowed wave vectors returned by :py:meth:`allowed_wave_vectors`, are specified by the input parameters ``k_max`` and ``meshgrid_shape``.
+        For plotting purposes, we typically use a subset of allowed wavevectors. The maximum norm and the number of output allowed wavevectors returned by :py:meth:`allowed_wave_vectors`, are specified by the input parameters ``k_max`` and ``meshgrid_shape``.
     """
     K = None
     n_max = np.floor(k_max * L / (2 * np.pi))  # maximum of ``n``
@@ -136,7 +135,7 @@ def allowed_wave_vectors(d, L, k_max, meshgrid_shape=None):
         warnings.warn(message="Taking all allowed wave vectors may be time consuming.")
     elif (np.array(meshgrid_shape) > (2 * n_max)).any():
         warnings.warn(
-            message="meshgrid_shape should be less than the shape of meshgrid of the total allowed wave of points."
+            message="meshgrid_shape should be smaller than that of the complete meshgrid of allowed wavevectors."
         )
 
     if meshgrid_shape is None or (np.array(meshgrid_shape) > (2 * n_max)).any():
@@ -176,7 +175,7 @@ def allowed_wave_vectors(d, L, k_max, meshgrid_shape=None):
 
 
 def compute_scattering_intensity(k, points):
-    r"""Compute the scattering intensity of ``points`` on the wave vector(s) ``k``.
+    r"""Compute the scattering intensity of ``points`` at each wavevector in ``k``.
 
     Args:
 
