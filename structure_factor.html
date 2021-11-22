@@ -419,7 +419,7 @@ f(\mathbf{x}, \mathbf{y}) \bigg] = \int_{\mathbb{R}^d \times \mathbb{R}^d} f(\ma
 <dt><code class="docutils literal notranslate"><span class="pre">method</span> <span class="pre">==</span> <span class="pre">&quot;BaddourChouinard&quot;</span></code>, see <a class="reference internal" href="transforms.html#structure_factor.transforms.HankelTransformBaddourChouinard.compute_transformation_parameters" title="structure_factor.transforms.HankelTransformBaddourChouinard.compute_transformation_parameters"><code class="xref py py-meth docutils literal notranslate"><span class="pre">compute_transformation_parameters()</span></code></a></dt><dd><ul>
 <li><p><code class="docutils literal notranslate"><span class="pre">r_max</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">nb_points</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">interpolotation</span></code> dictonnary containing the keyword arguments of <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html">scipy.integrate.interp1d</a> parameters.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">interpolotation</span></code> dictionnary containing the keyword arguments of <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html">scipy.integrate.interp1d</a> parameters.</p></li>
 </ul>
 </dd>
 </dl>
@@ -477,15 +477,19 @@ f(\mathbf{x}, \mathbf{y}) \bigg] = \int_{\mathbb{R}^d \times \mathbb{R}^d} f(\ma
     </div><div class="proof-content">
 <p>The structure factor <span class="math notranslate nohighlight">\(S\)</span> of a <strong>stationary isotropic</strong> point process <span class="math notranslate nohighlight">\(\mathcal{X} \subset \mathbb{R}^d\)</span> of intensity <span class="math notranslate nohighlight">\(\rho\)</span>, can be defined via the Hankel transform <span class="math notranslate nohighlight">\(\mathcal{H}_{d/2 -1}\)</span> of order <span class="math notranslate nohighlight">\(d/2 -1\)</span> as follows,</p>
 <div class="math notranslate nohighlight">
-\[S(\|\mathbf{k}\|) = 1 + \rho \frac{(2 \pi)^{d/2}}{\|\mathbf{k}\|^{d/2 -1}} \mathcal{H}_{d/2 -1}(\tilde g -1)(\|\mathbf{k}\|), \quad \tilde g:x \mapsto  g(x)x^{d/2 -1},\]</div>
+\[S(\|\mathbf{k}\|)
+= 1 + \rho \frac{(2 \pi)^{d/2}}{\|\mathbf{k}\|^{d/2 -1}} \mathcal{H}_{d/2 -1}(\tilde g -1)(\|\mathbf{k}\|),
+\quad \tilde g: x \mapsto g(x) x^{d/2 -1},\]</div>
 <p>where, <span class="math notranslate nohighlight">\(g\)</span> is the pair correlation function of <span class="math notranslate nohighlight">\(\mathcal{X}\)</span>.
 This is a result of the relation between the Symmetric Fourier transform and the Hankel Transform.</p>
 </div></div><div class="admonition note">
 <p class="admonition-title">Note</p>
-<dl>
-<dt><strong>Typical usage</strong>:</dt><dd><p>1- Estimate the pair correlation function using <a class="reference internal" href="#structure_factor.structure_factor.StructureFactor.compute_pcf" title="structure_factor.structure_factor.StructureFactor.compute_pcf"><code class="xref py py-meth docutils literal notranslate"><span class="pre">compute_pcf()</span></code></a>.</p>
-<p>2- Clean and interpolated the resulting estimation using <a class="reference internal" href="#structure_factor.structure_factor.StructureFactor.interpolate_pcf" title="structure_factor.structure_factor.StructureFactor.interpolate_pcf"><code class="xref py py-meth docutils literal notranslate"><span class="pre">interpolate_pcf()</span></code></a> to get a <strong>function</strong>.</p>
-<p>3- Use the resulting <strong>function</strong> as the input argument (<code class="docutils literal notranslate"><span class="pre">pcf</span></code>) of <a class="reference internal" href="#structure_factor.structure_factor.StructureFactor.hankel_quadrature" title="structure_factor.structure_factor.StructureFactor.hankel_quadrature"><code class="xref py py-meth docutils literal notranslate"><span class="pre">hankel_quadrature()</span></code></a> to get an approximation of the structure factor of the point process encapsulated in <code class="docutils literal notranslate"><span class="pre">point_pattern</span></code>.</p>
+<dl class="simple">
+<dt><strong>Typical usage</strong>:</dt><dd><ol class="arabic simple">
+<li><p>Estimate the pair correlation function using <a class="reference internal" href="#structure_factor.structure_factor.StructureFactor.compute_pcf" title="structure_factor.structure_factor.StructureFactor.compute_pcf"><code class="xref py py-meth docutils literal notranslate"><span class="pre">compute_pcf()</span></code></a>.</p></li>
+<li><p>Clean and interpolate the resulting estimation using <a class="reference internal" href="#structure_factor.structure_factor.StructureFactor.interpolate_pcf" title="structure_factor.structure_factor.StructureFactor.interpolate_pcf"><code class="xref py py-meth docutils literal notranslate"><span class="pre">interpolate_pcf()</span></code></a> to get a <strong>function</strong>.</p></li>
+<li><p>Pass the resulting interpolated function to <a class="reference internal" href="#structure_factor.structure_factor.StructureFactor.hankel_quadrature" title="structure_factor.structure_factor.StructureFactor.hankel_quadrature"><code class="xref py py-meth docutils literal notranslate"><span class="pre">hankel_quadrature()</span></code></a> to get an approximation of the structure factor of the point process.</p></li>
+</ol>
 </dd>
 </dl>
 </div>

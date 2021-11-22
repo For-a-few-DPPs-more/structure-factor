@@ -207,7 +207,8 @@
         <span class="n">window_res</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">binning_params</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Visualize the results of the method :py:meth:`scattering_intensity`.</span>
+        <span class="sd">&quot;&quot;&quot;Visualize the results of the method :py:meth:`~structure_factor.structure_factor.StructureFactor.scattering_intensity`.</span>
+
 
 <span class="sd">        Args:</span>
 <span class="sd">            k_norm (numpy.array): Vector of norms of the wavevectors .</span>
@@ -356,10 +357,10 @@
         <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">pcf</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">pcf</span><span class="o">.</span><span class="n">names</span><span class="p">)</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s2">&quot;theo&quot;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="StructureFactor.plot_pcf"><a class="viewcode-back" href="../../structure_factor.html#structure_factor.structure_factor.StructureFactor.plot_pcf">[docs]</a>    <span class="k">def</span> <span class="nf">plot_pcf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pcf_dataframe</span><span class="p">,</span> <span class="n">exact_pcf</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">file_name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Display the data frame output of the method :py:meth:`compute_pcf`.</span>
+        <span class="sd">&quot;&quot;&quot;Display the data frame output of the method :py:meth:`~structure_factor.structure_factor.StructureFactor.compute_pcf`.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            pcf_dataframe (pandas.DataFrame): Output DataFrame of the method :py:meth:`compute_pcf`.</span>
+<span class="sd">            pcf_dataframe (pandas.DataFrame): Output DataFrame of the method :py:meth:`~structure_factor.structure_factor.StructureFactor.compute_pcf`.</span>
 
 <span class="sd">            exact_pcf (callable, optional): Function representing the theoretical pair correlation function of the point process. Defaults to None.</span>
 
@@ -369,7 +370,7 @@
 <span class="sd">            kwargs (dict): Keyword arguments of the function `pandas.DataFrame.plot.line &lt;https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.plot.line.html&gt;`_.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            matplotlib.plot: Data frame output of the method :py:meth:`compute_pcf`.</span>
+<span class="sd">            matplotlib.plot: Data frame output of the method :py:meth:`~structure_factor.structure_factor.StructureFactor.compute_pcf`.</span>
 
 <span class="sd">        Example:</span>
 <span class="sd">            .. literalinclude:: code/pcf_example.py</span>
@@ -387,9 +388,9 @@
         <span class="sd">&quot;&quot;&quot;Clean (i.e., replace the possible nan, posinf and neginf by zero) and interpolate the the vector ``pcf_r`` evaluated at ``r``.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            r (numpy.ndarray): Vector of radius. Typically, the first colomun of the output of the method :py:meth:`compute_pcf`.</span>
+<span class="sd">            r (numpy.ndarray): Vector of radius. Typically, the first colomun of the output of the method :py:meth:`~structure_factor.structure_factor.StructureFactor.compute_pcf`.</span>
 
-<span class="sd">            pcf_r (numpy.ndarray): Vector of approximations of the pair correlation function. Typically, a colomun from the output of the method :py:meth:`compute_pcf`.</span>
+<span class="sd">            pcf_r (numpy.ndarray): Vector of approximations of the pair correlation function. Typically, a colomun from the output of the method :py:meth:`~structure_factor.structure_factor.StructureFactor.compute_pcf`.</span>
 
 <span class="sd">            clean (bool, optional): replace nan, posinf, neginf values of ``pcf_r`` by zero before interpolating. Defaults to True.</span>
 
@@ -405,7 +406,7 @@
 <span class="sd">                :lines: 18-21</span>
 
 <span class="sd">        .. note::</span>
-<span class="sd">            Typically ``pcf_r`` is an approximation of the pair correlation function using the method :py:meth:`compute_pcf`. The failure of the approximation  method on some specific radius may lead to some bad data like nan, posinf, neginf. Typically this happen for small radius, the reason of replacing them with zero. see :cite:`Rbook15`.</span>
+<span class="sd">            Typically ``pcf_r`` is an approximation of the pair correlation function using the method :py:meth:`~structure_factor.structure_factor.StructureFactor.compute_pcf`. The failure of the approximation  method on some specific radius may lead to some bad data like nan, posinf, neginf. Typically this happen for small radius, the reason of replacing them with zero. see :cite:`Rbook15`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">params</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;fill_value&quot;</span><span class="p">,</span> <span class="s2">&quot;extrapolate&quot;</span><span class="p">)</span>
         <span class="n">params</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;kind&quot;</span><span class="p">,</span> <span class="s2">&quot;cubic&quot;</span><span class="p">)</span>
@@ -445,7 +446,7 @@
 <span class="sd">                - ``method == &quot;BaddourChouinard&quot;``, see :py:meth:`~structure_factor.transforms.HankelTransformBaddourChouinard.compute_transformation_parameters`</span>
 <span class="sd">                    - ``r_max``</span>
 <span class="sd">                    - ``nb_points``</span>
-<span class="sd">                    - ``interpolotation`` dictonnary containing the keyword arguments of `scipy.integrate.interp1d &lt;https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html&gt;`_ parameters.</span>
+<span class="sd">                    - ``interpolotation`` dictionnary containing the keyword arguments of `scipy.integrate.interp1d &lt;https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html&gt;`_ parameters.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            tuple (np.ndarray, np.ndarray):</span>
@@ -463,7 +464,9 @@
 
 <span class="sd">            .. math::</span>
 
-<span class="sd">                S(\|\mathbf{k}\|) = 1 + \rho \frac{(2 \pi)^{d/2}}{\|\mathbf{k}\|^{d/2 -1}} \mathcal{H}_{d/2 -1}(\tilde g -1)(\|\mathbf{k}\|), \quad \tilde g:x \mapsto  g(x)x^{d/2 -1},</span>
+<span class="sd">                S(\|\mathbf{k}\|)</span>
+<span class="sd">                = 1 + \rho \frac{(2 \pi)^{d/2}}{\|\mathbf{k}\|^{d/2 -1}} \mathcal{H}_{d/2 -1}(\tilde g -1)(\|\mathbf{k}\|),</span>
+<span class="sd">                \quad \tilde g: x \mapsto g(x) x^{d/2 -1},</span>
 
 <span class="sd">            where, :math:`g` is the pair correlation function of :math:`\mathcal{X}`.</span>
 <span class="sd">            This is a result of the relation between the Symmetric Fourier transform and the Hankel Transform.</span>
@@ -471,11 +474,11 @@
 <span class="sd">        .. note::</span>
 
 <span class="sd">            **Typical usage**:</span>
-<span class="sd">                1- Estimate the pair correlation function using :py:meth:`compute_pcf`.</span>
+<span class="sd">                1. Estimate the pair correlation function using :py:meth:`compute_pcf`.</span>
 
-<span class="sd">                2- Clean and interpolated the resulting estimation using :py:meth:`interpolate_pcf` to get a **function**.</span>
+<span class="sd">                2. Clean and interpolate the resulting estimation using :py:meth:`interpolate_pcf` to get a **function**.</span>
 
-<span class="sd">                3- Use the resulting **function** as the input argument (``pcf``) of :py:meth:`hankel_quadrature` to get an approximation of the structure factor of the point process encapsulated in ``point_pattern``.</span>
+<span class="sd">                3. Pass the resulting interpolated function to :py:meth:`hankel_quadrature` to get an approximation of the structure factor of the point process.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dimension</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
@@ -533,7 +536,7 @@
 <span class="sd">            file_name (str, optional): Name used to save the figure. The available output formats depend on the backend being used. Defaults to &quot;&quot;.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            matplotlib.plot: plot the output of :py:meth:`hankel_quadrature`.</span>
+<span class="sd">            matplotlib.plot: plot the output of :py:meth:`~structure_factor.structure_factor.StructureFactor.hankel_quadrature`.</span>
 
 <span class="sd">        Example:</span>
 <span class="sd">            .. literalinclude:: code/sf_baddour_example.py</span>
