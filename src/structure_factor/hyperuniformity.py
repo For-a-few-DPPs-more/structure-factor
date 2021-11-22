@@ -11,9 +11,9 @@ class Hyperuniformity:
     Args:
         k_norm (numpy.array): Vector of wavenumbers (i.e. norms of the wave vectors).
 
-        sf (numpy.array): Vector of evaluations of the structure factor, of the given point process, at :py:attr:`~Hyperuniformity.k_norm`.
+        sf (numpy.array): Vector of evaluations of the structure factor, of the given point process, at :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.k_norm`.
 
-        std (np.array, optional): Vector of standard deviations associated to :py:attr:`~Hyperuniformity.sf`. Defaults to None.
+        std (np.array, optional): Vector of standard deviations associated to :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.sf`. Defaults to None.
 
     .. proof:definition::
 
@@ -22,7 +22,7 @@ class Hyperuniformity:
     .. note::
 
         **This class contains**:
-            - :meth:`bin_data`: method for regularizing :py:attr:`~Hyperuniformity.sf`, consisting on dividing the vector of wavenumber :py:attr:`~Hyperuniformity.k_norm` into sub-intervals and taking the mean and the strandard deviation over each sub-interval.
+            - :meth:`bin_data`: method for regularizing :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.sf`, consisting on dividing the vector of wavenumber :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.k_norm` into sub-intervals and taking the mean and the strandard deviation over each sub-interval.
             - :meth:`effective_hyperuniformity`: test of effective hyperuniformity, consisting on evaluating the index H of hyperuniformity used to study if the corresponding point process is effectively hyperuniform :cite:`Kla+al19`.
             - :meth:`hyperuniformity_class`: test of the possible class of hyperuniformity, consisting on studying the power decay of the structure factor near zero :cite:`Cos21`.
 
@@ -31,7 +31,7 @@ class Hyperuniformity:
 
             2. Regularize the results using :meth:`bin_data`.
 
-            3. Test the effective hyperuniformity using :py:meth:`effective_hyperuniformity`.
+            3. Test the effective hyperuniformity using :py:meth:`~structure_factor.hyperuniformity.Hyperuniformity.effective_hyperuniformity`.
 
             4. If the results of :meth:`effective_hyperuniformity` approve the effective hyperuniformity hypothesis, find the possible class of hyperuniformity using :meth:`hyperuniformity_class`.
     """
@@ -42,9 +42,9 @@ class Hyperuniformity:
         Args:
             k_norm (numpy.array): Vector of wavenumbers (i.e. norms of the wave vectors).
 
-            sf (numpy.array): Vector of evaluations of the structure factor, of the given point process, at :py:attr:`~Hyperuniformity.k_norm`.
+            sf (numpy.array): Vector of evaluations of the structure factor, of the given point process, at :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.k_norm`.
 
-            std (np.array, optional): Vector of standard deviations associated to :py:attr:`~Hyperuniformity.sf`. Defaults to None.
+            std (np.array, optional): Vector of standard deviations associated to :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.sf`. Defaults to None.
 
         """
         assert isinstance(k_norm, np.ndarray)
@@ -67,8 +67,8 @@ class Hyperuniformity:
         Returns:
             tuple(np.array, np.array, np.array):
                 - self.k_norm: Vector of centers of the bins, representing the new vector attribute :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.k_norm`.
-                - self.sf: Vector of means of the structure factor over the bins, representing the new vector attribute :py:attr:`~Hyperuniformity.sf`.
-                - self.std_sf: Vector of standard deviations of the structure factor over the bins, representing the new vector attribute :py:attr:`~Hyperuniformity.std_sf`.
+                - self.sf: Vector of means of the structure factor over the bins, representing the new vector attribute :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.sf`.
+                - self.std_sf: Vector of standard deviations of the structure factor over the bins, representing the new vector attribute :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.std_sf`.
 
         Example:
             .. literalinclude:: code/bin_data.py
@@ -85,10 +85,10 @@ class Hyperuniformity:
         return self.k_norm, self.sf, self.std_sf
 
     def effective_hyperuniformity(self, k_norm_stop=None, **kwargs):
-        r"""Evaluate the index H of hyperuniformity using the attribute :py:attr:`~Hyperuniformity.sf`. If :math:`H<10^{-3}` the corresponding point process is deemed effectively heyperuniform.
+        r"""Evaluate the index H of hyperuniformity using the attribute :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.sf`. If :math:`H<10^{-3}` the corresponding point process is deemed effectively heyperuniform.
 
         Args:
-            k_norm_stop (float, optional): Threshold on :py:attr:`~Hyperuniformity.sf` used for the linear regression. Defaults to None.
+            k_norm_stop (float, optional): Threshold on :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.sf` used for the linear regression. Defaults to None.
 
         Keyword args:
             kwargs (dict): Keyword arguments (except ``"sigma"``) of `scipy.scipy.optimize.curve_fit <https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.curve_fit.html>`_ parameters.
@@ -125,8 +125,8 @@ class Hyperuniformity:
 
         .. important::
 
-            To compute the numerator :math:`\hat{S}(\mathbf{0})` of :math:`H`, a line is fitted using a linear regression with least square fit on the values of :py:attr:`~Hyperuniformity.sf` associated to the sub-vector of :py:attr:`~Hyperuniformity.k_norm` truncated around the threshold ``k_norm_stop``. ``k_norm_stop`` must satisfy a good compromise of being close to zero but also allowing to fit the line on sufficient number of points.
-            If the standard deviations of :py:attr:`~Hyperuniformity.sf` are provided in the attribute :py:attr:`~Hyperuniformity.std_sf` then these values will be considered while fitting the line.
+            To compute the numerator :math:`\hat{S}(\mathbf{0})` of :math:`H`, a line is fitted using a linear regression with least square fit on the values of :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.sf` associated to the sub-vector of :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.k_norm` truncated around the threshold ``k_norm_stop``. ``k_norm_stop`` must satisfy a good compromise of being close to zero but also allowing to fit the line on sufficient number of points.
+            If the standard deviations of :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.sf` are provided in the attribute :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.std_sf` then these values will be considered while fitting the line.
         """
         line = lambda x, a, b: a + b * x
         (intercept, slope), cov = self._fit(line, k_norm_stop, **kwargs)
@@ -147,10 +147,10 @@ class Hyperuniformity:
         return H, s0_std
 
     def hyperuniformity_class(self, k_norm_stop=1, **kwargs):
-        r"""Fit a polynomial :math:`y = c \cdot x^{\alpha}` to the attribute :py:attr:`~Hyperuniformity.sf`. :math:`\alpha` is used to specify the possible class of hyperuniformity of the associated point process (as described bellow).
+        r"""Fit a polynomial :math:`y = c \cdot x^{\alpha}` to the attribute :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.sf`. :math:`\alpha` is used to specify the possible class of hyperuniformity of the associated point process (as described bellow).
 
         Args:
-            k_norm_stop (float, optional): Threshold on :py:attr:`~Hyperuniformity.sf` used for fitting the polynomial. Defaults to None.
+            k_norm_stop (float, optional): Threshold on :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.sf` used for fitting the polynomial. Defaults to None.
 
         Keyword args:
             kwargs (dict): Keyword arguments (except ``"sigma"``) of `scipy.scipy.optimize.curve_fit <https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.curve_fit.html>`_ parameters.
