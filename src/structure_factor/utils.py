@@ -230,11 +230,11 @@ def _bin_statistics(x, y, **params):
             - ``std_mean``: Vector of standard deviation of ``y`` over the bins.
     """
     bin_mean, bin_edges, _ = stats.binned_statistic(x, y, statistic="mean", **params)
-    bin_std, _, _ = stats.binned_statistic(x, y, statistic="std", **params)
+    bin_centers = np.convolve(bin_edges, np.ones(2), "valid")
+    bin_centers /= 2
     count, _, _ = stats.binned_statistic(x, y, statistic="count", **params)
-    bin_std = bin_std / np.sqrt(count)
-    bin_centers = bin_edges[:-1] + np.diff(bin_edges) / 2
-
+    bin_std, _, _ = stats.binned_statistic(x, y, statistic="std", **params)
+    bin_std /= np.sqrt(count)
     return bin_centers, bin_mean, bin_std
 
 
@@ -261,7 +261,7 @@ def plot_poisson(x, axis, c="k", linestyle=(0, (5, 10)), label="Poisson"):
 
 
 def plot_summary(x, y, axis, label=r"mean $\pm$ 3 $\cdot$ std", **binning_params):
-    """Loglog plot the summary results of :py:meth:`_bin_statistics` i.e., means and errors bars (3 standard deviations)."""
+    """Loglog plot the summary results of :py:func:`~structure_factor.utils._bin_statistics` i.e., means and errors bars (3 standard deviations)."""
     bin_centers, bin_mean, bin_std = _bin_statistics(x, y, **binning_params)
     axis.loglog(bin_centers, bin_mean, "b.")
     axis.errorbar(
@@ -309,7 +309,7 @@ def plot_si_showcase(
     file_name="",
     **binning_params
 ):
-    """Loglog plot of the results of the scattering intensity :py:meth:`StructureFactor.scattering_intensity`, with the means and error bars over specific number of bins found via :py:meth:`~structure_factor.utils._bin_statistics`."""
+    """Loglog plot of the results of the scattering intensity :py:meth:`~structure_factor.structure_factor.StructureFactor.scattering_intensity`, with the means and error bars over specific number of bins found via :py:func:`~structure_factor.utils._bin_statistics`."""
     norm_k = norm_k.ravel()
     si = si.ravel()
     if axis is None:
