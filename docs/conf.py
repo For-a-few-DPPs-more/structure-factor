@@ -30,16 +30,17 @@ author = "Diala Hawat, Guillaume Gautier, Rémi Bardenet, and Raphael Lachieze-R
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    "sphinx.ext.autodoc",
-    "sphinx.ext.doctest",
-    "sphinx.ext.mathjax",  # LaTeX math rendering
-    "sphinx.ext.napoleon",  # support google and numpy docstring style
-    "sphinx.ext.todo",  # to-do snippet
-    "sphinx.ext.viewcode",
-    "sphinx.ext.githubpages",
-    "sphinxcontrib.bibtex",  # Bibliography management
-    "sphinxcontrib.proof",
-    "matplotlib.sphinxext.plot_directive",  # Matplotlib plots rendering
+    "sphinx.ext.autodoc",  # Include documentation from docstrings
+    "sphinx.ext.coverage",  # Collect doc coverage stats
+    "sphinx.ext.doctest",  # Test snippets in the documentation
+    "sphinx.ext.githubpages",  # Publish HTML docs in GitHub Pages
+    "sphinx.ext.mathjax",  # Render math via JavaScript
+    "sphinx.ext.napoleon",  # Support for NumPy and Google style docstrings
+    "sphinx.ext.todo",  # .. todo:: directive
+    "sphinx.ext.viewcode",  # Add links to highlighted source code
+    "sphinxcontrib.bibtex",  # Sphinx extension for BibTeX style citations
+    "sphinxcontrib.proof",  # Sphinx extension to typeset theorems, proofs
+    "matplotlib.sphinxext.plot_directive",  # .. plot:: directive for matplotlib plot
 ]
 
 # The suffix(es) of source filenames.
