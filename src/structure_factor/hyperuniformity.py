@@ -5,24 +5,24 @@ from structure_factor.utils import _bin_statistics, _sort_vectors
 
 
 class Hyperuniformity:
-    r"""Compute indicator of hyperuniformity of a stationary isotropic (or effectively isotropic) point process :math:`\mathcal{X} \subset \mathbb{R}^d`, given the evaluation of its structure factor.
+    r"""Compute indicator of hyperuniformity of a stationary isotropic (or effectively isotropic) point process :math:`\mathcal{X} \subset \mathbb{R}^d`, given its structure factor.
 
     Args:
-            k_norm (numpy.array): Vector of wavenumbers (i.e. norms of the wave vectors).
+            k_norm (numpy.array): Vector of wavenumbers (i.e., norms of the wavevectors).
 
-            sf (numpy.array): Vector of evaluations of the structure factor, of the given point process, at :py:attr:`~Hyeruniformity.k_norm`.
+            sf (numpy.array): Vector of evaluations of the structure factor at :py:attr:`~Hyeruniformity.k_norm`.
 
             std (np.array, optional): Vector of standard deviations associated to :py:attr:`~Hyeruniformity.sf`. Defaults to None.
 
     .. note::
 
         **Definition**:
-            A stationary point process :math:`\mathcal{X}` is said to be hyperunifrom if it's structure factor :math:`S`, vanishes at 0.
+            A stationary point process :math:`\mathcal{X}` is said to be hyperunifrom if its structure factor :math:`S`, vanishes at 0.
 
         **This class contains**:
-            - :meth:`bin_data`: method for regularizing :py:attr:`~Hyeruniformity.sf`, consisting on dividing the vector of wavenumber :py:attr:`~Hyeruniformity.k_norm` into sub-intervals and taking the mean and the strandard deviation over each sub-interval.
-            - :meth:`effective_hyperuniformity`: test of effective hyperuniformity, consisting on evaluating the index H of hyperuniformity used to study if the corresponding point process is effectively hyperuniform :cite:`Kla+al19`.
-            - :meth:`hyperuniformity_class`: test of the possible class of hyperuniformity, consisting on studying the power decay of the structure factor near zero :cite:`Cos21`.
+            - :meth:`bin_data`: method for regularizing :py:attr:`~Hyeruniformity.sf`.
+            - :meth:`effective_hyperuniformity`: test of effective hyperuniformity, :cite:`Kla+al19`.
+            - :meth:`hyperuniformity_class`: test of the possible class of hyperuniformity, :cite:`Cos21`.
 
         **Typical usage**:
                 1- Estimate the structure factor of a point process by one of the methods of :py:class:`~structure_factor.structure_factor.StructureFactor`.
@@ -31,7 +31,7 @@ class Hyperuniformity:
 
                 3- Test the effective hyperuniformity using :py:meth:`effective_hyperuniformity`.
 
-                4- If the results of :meth:`effective_hyperuniformity` approve the effective hyperuniformity hypothesis, find the possible class of hyperuniformity using :meth:`hyperuniformity_class`.
+                4- If the result of :meth:`effective_hyperuniformity` approves the effective hyperuniformity hypothesis, estimate the possible class of hyperuniformity using :meth:`hyperuniformity_class`.
     """
 
     def __init__(self, k_norm, sf, std_sf=None):
@@ -57,16 +57,16 @@ class Hyperuniformity:
         self.fitted_poly = None  # fitted polynomial to sf near zero
 
     def bin_data(self, **params):
-        """Split the vector attribute :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.k_norm` into sub-intervals (or bins) and evaluate over each sub-interval the mean and the standard deviation of the corresponding values of the vector attribute :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.sf`.
+        """Split the vector attribute :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.k_norm` into sub-intervals (or bins) and evaluate, over each sub-interval, the mean and the standard deviation of the corresponding values in the vector attribute :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.sf`.
 
         Args:
-            params(dict): Parameters associated to :py:func:`~structure_factor.utils._bin_statistics`.
+            params(dict): Keyword arguments (except ``"statistic"``) of ``scipy.stats.binned_statistic``.
 
         Returns:
             tuple(np.array, np.array, np.array):
-                - self.k_norm: Vector of centers of the bins, representing the new vector attribute :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.k_norm`.
-                - self.sf: Vector of means of the structure factor over the bins, representing the new vector attribute :py:attr:`~Hyperuniformity.sf`.
-                - self.std_sf: Vector of standard deviations of the structure factor over the bins, representing the new vector attribute :py:attr:`~Hyperuniformity.std_sf`.
+                - self.k_norm: Centers of the bins, (updates the vector attribute :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.k_norm`).
+                - self.sf: Means of the structure factor over the bins, (updates the vector attribute :py:attr:`~Hyperuniformity.sf`).
+                - self.std_sf: Standard deviations of the structure factor over the bins, (updates the vector attribute :py:attr:`~Hyperuniformity.std_sf`).
 
         Example:
 
@@ -84,10 +84,10 @@ class Hyperuniformity:
         return self.k_norm, self.sf, self.std_sf
 
     def effective_hyperuniformity(self, k_norm_stop=None, **kwargs):
-        r"""Evaluate the index H of hyperuniformity using the attribute :py:attr:`~Hyperuniformity.sf`. If :math:`H<10^{-3}` the corresponding point process is deemed effectively heyperuniform.
+        r"""Compute the index :math:`H` of hyperuniformity using the attribute :py:attr:`~Hyperuniformity.sf`. If :math:`H<10^{-3}` the corresponding point process is deemed effectively heyperuniform.
 
         Args:
-            k_norm_stop (float, optional): Threshold on :py:attr:`~Hyperuniformity.sf` used for the linear regression. Defaults to None.
+            k_norm_stop (float, optional): Threshold on :py:attr:`~Hyperuniformity.sf` used for the linear regression, used to estimate the numerator of H. Defaults to None.
 
         Keyword args:
             kwargs (dict): Keyword arguments (except ``"sigma"``) of `scipy.scipy.optimize.curve_fit <https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.curve_fit.html>`_ parameters.
@@ -178,7 +178,7 @@ class Hyperuniformity:
         .. note::
 
             **Definition**:
-                For a stationary  hyperuniform point process :math:`\mathcal{X} \subset \mathbb{R}^d` such that :math:`\vert S(\mathbf{k})\vert\sim c \Vert \mathbf{k} \Vert^\alpha` in  the neighborhood of 0, we have(:cite:`Cos21`, Section 4.1)
+                For a stationary  hyperuniform point process :math:`\mathcal{X} \subset \mathbb{R}^d` such that :math:`\vert S(\mathbf{k})\vert\sim c \Vert \mathbf{k} \Vert^\alpha` in  the neighborhood of 0, we have (:cite:`Cos21`, Section 4.1)
 
                 - If :math:`\alpha > 1`, then :math:`Var\left [\mathcal{X}(B(0,R))\right ] = O(R^{d-1})`, correpsonding to the class 1 of hyperuniformity.
                 - If :math:`\alpha =1`, then :math:`Var\left [\mathcal{X}(B(0,R))\right ] = O(R^{d-1}\log(R))`, correpsonding to the class 2 of hyperuniformity.
@@ -201,7 +201,7 @@ class Hyperuniformity:
             kwargs (dict): Keyword arguments (except ``"sigma"``) of `scipy.scipy.optimize.curve_fit <https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.curve_fit.html>`_ parameters.
 
         Returns:
-            tuple: See ouput of `scipy.scipy.optimize.curve_fit <https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.curve_fit.html>`_.
+            tuple: See output of `scipy.scipy.optimize.curve_fit <https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.curve_fit.html>`_.
         """
         k_norm = self.k_norm
         sf = self.sf

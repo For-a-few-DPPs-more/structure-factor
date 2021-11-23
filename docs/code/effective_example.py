@@ -25,7 +25,7 @@ from structure_factor.hyperuniformity import Hyperuniformity
 hyperuniformity_test = Hyperuniformity(k_norm, si)
 # regularization of si
 hyperuniformity_test.bin_data(bins=60)
-# find the H index
+# find H
 H, std = hyperuniformity_test.effective_hyperuniformity(k_norm_stop=1)
 print("H=", H)
 
