@@ -49,7 +49,7 @@
 
 
 <div class="viewcode-block" id="Hyperuniformity"><a class="viewcode-back" href="../../hyperuniformity.html#structure_factor.hyperuniformity.Hyperuniformity">[docs]</a><span class="k">class</span> <span class="nc">Hyperuniformity</span><span class="p">:</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute indicator of hyperuniformity of a stationary isotropic (or effectively isotropic) point process :math:`\mathcal{X} \subset \mathbb{R}^d`, given the evaluation of its structure factor.</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute indicator of hyperuniformity of a stationary isotropic (or effectively isotropic) point process :math:`\mathcal{X} \subset \mathbb{R}^d`, given its structure factor.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        k_norm (numpy.array): Vector of wavenumbers (i.e. norms of the wave vectors).</span>
@@ -102,10 +102,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">fitted_poly</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># fitted polynomial to sf near zero</span>
 
 <div class="viewcode-block" id="Hyperuniformity.bin_data"><a class="viewcode-back" href="../../hyperuniformity.html#structure_factor.hyperuniformity.Hyperuniformity.bin_data">[docs]</a>    <span class="k">def</span> <span class="nf">bin_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Split the vector attribute :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.k_norm` into sub-intervals (or bins) and evaluate over each sub-interval the mean and the standard deviation of the corresponding values of the vector attribute :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.sf`.</span>
+        <span class="sd">&quot;&quot;&quot;Split the vector attribute :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.k_norm` into sub-intervals (or bins) and evaluate, over each sub-interval, the mean and the standard deviation of the corresponding values in the vector attribute :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.sf`.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            params(dict): Parameters associated to :py:func:`~structure_factor.utils._bin_statistics`.</span>
+<span class="sd">            params(dict): Keyword arguments (except ``&quot;statistic&quot;``) of ``scipy.stats.binned_statistic``.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            tuple(np.array, np.array, np.array):</span>
