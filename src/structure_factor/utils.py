@@ -9,14 +9,15 @@ import numpy as np
 from scipy import interpolate, stats
 from scipy.special import j0, j1, jn_zeros, jv, y0, y1, yv
 
+
 # utils for the class Hyperuniformity
-def _sort_vectors(k, x_k, y_k):
-    """sort ``k`` by increasing order and reorder the associated vectors to ``k``, ``x_k``and ``y_k``.
+def _sort_vectors(k, x_k, y_k=None):
+    """Sort ``k`` by increasing order and reorder the associated vectors to ``k``, ``x_k``and ``y_k``.
 
     Args:
         k (np.array): Vector to be sorted by increasing order.
         x_k (np.array): Vector of evaluations associated to ``k``.
-        y_k (np.array): Vector of evaluations associated to ``k``.
+        y_k (np.array, optional): Defaults to None. Vector of evaluations associated to ``k``.
 
     Returns:
         (np.array, np.array, np.array): ``k`` sorted by increasing order and the associated ``x_k``and ``y_k``.
@@ -26,9 +27,8 @@ def _sort_vectors(k, x_k, y_k):
     x_k_sorted = x_k[sort_index_k]
     if y_k is not None:
         y_k_sorted = y_k[sort_index_k]
-        return (k_sorted, x_k_sorted, y_k_sorted)
-    else:
-        return (k_sorted, x_k_sorted, y_k)
+        return k_sorted, x_k_sorted, y_k_sorted
+    return k_sorted, x_k_sorted, y_k
 
 
 def set_nan_inf_to_zero(array, nan=0, posinf=0, neginf=0):
@@ -42,7 +42,7 @@ def get_random_number_generator(seed=None):
 
 
 def bessel1(order, x):
-    """Evaluate `first kind bessel function <https://en.wikipedia.org/wiki/Bessel_function>`_."""
+    """Evaluate `Bessel function of the first kind <https://en.wikipedia.org/wiki/Bessel_function>`_."""
     if order == 0:
         return j0(x)
     if order == 1:
@@ -51,12 +51,12 @@ def bessel1(order, x):
 
 
 def bessel1_zeros(order, nb_zeros):
-    """Evaluate zeros of the `first kind bessel function <https://en.wikipedia.org/wiki/Bessel_function>`_."""
+    """Evaluate zeros of the `Bessel function of the first kind <https://en.wikipedia.org/wiki/Bessel_function>`_."""
     return jn_zeros(order, nb_zeros)
 
 
 def bessel2(order, x):
-    """Evaluate `second kind bessel function <https://en.wikipedia.org/wiki/Bessel_function>`_."""
+    """Evaluate `Bessel function of the second kind <https://en.wikipedia.org/wiki/Bessel_function>`_."""
     if order == 0:
         return y0(x)
     if order == 1:
@@ -80,7 +80,7 @@ def structure_factor_ginibre(k):
 
 
 def _reshape_meshgrid(X):
-    r"""reshape list of meshgrids as np.ndarray of columns, where each column is associated to an element (meshgrid) of the list.
+    r"""Reshape list of meshgrids as np.ndarray of columns, where each column is associated to an element (meshgrid) of the list.
 
     Args:
         X (list): List of meshgrids.
@@ -100,7 +100,7 @@ def _reshape_meshgrid(X):
 
 
 def allowed_wave_vectors(d, L, k_max, meshgrid_shape=None):
-    r"""Return a subset of the d-dimentional allowed wave vectors used by the scattering intensity of a point process realization lying in a cubic window of length ``L``.
+    r"""Return a subset of the d-dimentional allowed wave vectors corresponding to a cubic window of length ``L``.
 
     Args:
 
@@ -117,17 +117,15 @@ def allowed_wave_vectors(d, L, k_max, meshgrid_shape=None):
             - k : np.array with ``d`` columns where each row is an allowed wave vector.
             - K : list of meshgrids, (the elements of the list correspond to the 2D respresentation of the components of the wave vectors, i.e., a 2D representation of the vectors of allowed values ``k``). For example in dimension 2, if K =[X,Y] then X is the 2D representation of the x coordinates of the allowed wave vectors ``k`` i.e., the representation as meshgrid.
 
-    .. note::
+    .. proof:definition::
 
-        **Definition:**
-            Given a realization of a point process in a cubic window of length side :math:`L`, the set of the **allowed wave vectors** :math:`\{\mathbf{k}_i\}_i` at which the the scattering intensity :math:`\widehat{S}_{SI}` is consistently an estimator of the structure factor :math:`S` of the point process is defined by
+        The set of the allowed wavevectors :math:`\{\mathbf{k}_i\}_i` is defined by
 
+        .. math::
 
-            .. math::
+            \{\mathbf{k}_i\}_i = \{\frac{2 \pi}{L} \mathbf{n} ~ ; ~ \mathbf{n} \in (\mathbb{Z}^d)^\ast \}.
 
-                \{\mathbf{k}_i\}_i = \{\frac{2 \pi}{L} \mathbf{n} ~ ; ~ \mathbf{n} \in (\mathbb{Z}^d)^\ast \}.
-
-            The maximum and the number of output allowed wave vectors returned by :py:meth:`allowed_wave_vectors`, are specified by the input parameters ``k_max`` and ``meshgrid_shape``.
+        For plotting purposes, we typically use a subset of allowed wavevectors. The maximum norm and the number of output allowed wavevectors returned by :py:meth:`allowed_wave_vectors`, are specified by the input parameters ``k_max`` and ``meshgrid_shape``.
     """
     K = None
     n_max = np.floor(k_max * L / (2 * np.pi))  # maximum of ``n``
@@ -137,7 +135,7 @@ def allowed_wave_vectors(d, L, k_max, meshgrid_shape=None):
         warnings.warn(message="Taking all allowed wave vectors may be time consuming.")
     elif (np.array(meshgrid_shape) > (2 * n_max)).any():
         warnings.warn(
-            message="meshgrid_shape should be less than the shape of meshgrid of the total allowed wave of points."
+            message="meshgrid_shape should be smaller than that of the complete meshgrid of allowed wavevectors."
         )
 
     if meshgrid_shape is None or (np.array(meshgrid_shape) > (2 * n_max)).any():
@@ -177,7 +175,7 @@ def allowed_wave_vectors(d, L, k_max, meshgrid_shape=None):
 
 
 def compute_scattering_intensity(k, points):
-    r"""Compute the scattering intensity of ``points`` on the wave vector(s) ``k``.
+    r"""Compute the scattering intensity of ``points`` at each wavevector in ``k``.
 
     Args:
 
@@ -188,20 +186,19 @@ def compute_scattering_intensity(k, points):
     Returns:
         numpy.ndarray: Evaluation(s) of the scattering intensity on ``k``.
 
-    .. note::
+    .. proof:definition::
 
-        **Definition:**
-            The scattering intensity :math:`\widehat{S}_{SI}`, of a realization of points :math:`\{\mathbf{x}_i\}_{i=1}^N` of :math:`\mathbb{R}^d`, is defined by,
+        The scattering intensity :math:`\widehat{S}_{SI}`, of a realization of points :math:`\{\mathbf{x}_i\}_{i=1}^N` of :math:`\mathbb{R}^d`, is defined by,
 
-            .. math::
+        .. math::
 
-                \widehat{S}_{SI}(\mathbf{k}) =
-                    \frac{1}{N}\left\lvert
-                        \sum_{j=1}^N
-                            \exp(- i \left\langle \mathbf{k}, \mathbf{x_j} \right\rangle)
-                    \right\rvert^2
+            \widehat{S}_{SI}(\mathbf{k}) =
+                \frac{1}{N}\left\lvert
+                    \sum_{j=1}^N
+                        \exp(- i \left\langle \mathbf{k}, \mathbf{x_j} \right\rangle)
+                \right\rvert^2
 
-            where :math:`\mathbf{k} \in \mathbb{R}^d` is a wave vector.
+        where :math:`\mathbf{k} \in \mathbb{R}^d` is a wave vector.
     """
     n = points.shape[0]  # number of points
     if points.shape[1] != k.shape[1]:
@@ -232,11 +229,11 @@ def _bin_statistics(x, y, **params):
             - ``std_mean``: Vector of standard deviation of ``y`` over the bins.
     """
     bin_mean, bin_edges, _ = stats.binned_statistic(x, y, statistic="mean", **params)
-    bin_std, _, _ = stats.binned_statistic(x, y, statistic="std", **params)
+    bin_centers = np.convolve(bin_edges, np.ones(2), "valid")
+    bin_centers /= 2
     count, _, _ = stats.binned_statistic(x, y, statistic="count", **params)
-    bin_std = bin_std / np.sqrt(count)
-    bin_centers = bin_edges[:-1] + np.diff(bin_edges) / 2
-
+    bin_std, _, _ = stats.binned_statistic(x, y, statistic="std", **params)
+    bin_std /= np.sqrt(count)
     return bin_centers, bin_mean, bin_std
 
 
@@ -263,7 +260,7 @@ def plot_poisson(x, axis, c="k", linestyle=(0, (5, 10)), label="Poisson"):
 
 
 def plot_summary(x, y, axis, label=r"mean $\pm$ 3 $\cdot$ std", **binning_params):
-    """Loglog plot the summary results of :py:meth:`_bin_statistics` i.e., means and errors bars (3 standard deviations)."""
+    """Loglog plot the summary results of :py:func:`~structure_factor.utils._bin_statistics` i.e., means and errors bars (3 standard deviations)."""
     bin_centers, bin_mean, bin_std = _bin_statistics(x, y, **binning_params)
     axis.loglog(bin_centers, bin_mean, "b.")
     axis.errorbar(
@@ -311,7 +308,7 @@ def plot_si_showcase(
     file_name="",
     **binning_params
 ):
-    """Loglog plot of the results of the scattering intensity :py:meth:`StructureFactor.scattering_intensity`, with the means and error bars over specific number of bins found via :py:meth:`~structure_factor.utils._bin_statistics`."""
+    """Loglog plot of the results of the scattering intensity :py:meth:`~structure_factor.structure_factor.StructureFactor.scattering_intensity`, with the means and error bars over specific number of bins found via :py:func:`~structure_factor.utils._bin_statistics`."""
     norm_k = norm_k.ravel()
     si = si.ravel()
     if axis is None:
@@ -347,7 +344,6 @@ def plot_si_showcase(
 
 def plot_si_imshow(norm_k, si, axis, file_name):
     """Color level plot, centered on zero."""
-
     if axis is None:
         _, axis = plt.subplots(figsize=(14, 8))
     if len(norm_k.shape) < 2:

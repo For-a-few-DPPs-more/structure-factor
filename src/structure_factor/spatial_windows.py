@@ -86,7 +86,6 @@ class BallWindow(AbstractSpatialWindow):
         radius (float, optional): Radius :math:`r > 0` of the ball. Defaults to 1.0.
 
     Example:
-
         .. literalinclude:: code/spatial_window_example.py
             :language: python
             :lines: 1-4
@@ -167,7 +166,6 @@ class BallWindow(AbstractSpatialWindow):
 class UnitBallWindow(BallWindow):
     r"""Create a d-dimensional unit ball window :math:`B(c, r=1)`, where :math:`c \in \mathbb{R}^d`.
 
-
     Args:
         center (numpy.ndarray, optional): Center :math:`c` of the ball.
 
@@ -192,7 +190,6 @@ class BoxWindow(AbstractSpatialWindow):
         bounds (numpy.ndarray): :math:`d \times 2` array describing the bounds of the box.
 
     Example:
-
         .. literalinclude:: code/spatial_window_example.py
             :language: python
             :lines: 6-10
@@ -296,7 +293,6 @@ def check_cubic_window(window):
     """Check if a window is a cubic window.
 
     Args:
-
         window (AbstractSpatialWindow): Window.
     """
     if not isinstance(window, BoxWindow):

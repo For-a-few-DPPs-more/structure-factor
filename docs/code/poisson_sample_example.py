@@ -8,5 +8,6 @@ poisson_sample = poisson.generate_sample(window)
 
 # plot
 import matplotlib.pyplot as plt
-plt.plot(poisson_sample[:,0], poisson_sample[:,1], 'k.')
+
+plt.plot(poisson_sample[:, 0], poisson_sample[:, 1], "k.")
 plt.show()

@@ -1,7 +1,5 @@
-import unittest
-
 import numpy as np
-from scipy.special import k0
+import pytest
 
 from structure_factor.transforms import HankelTransformBaddourChouinard
 
@@ -50,36 +48,38 @@ def ht_sinc_modified(n, x, a):
     return ht
 
 
-class TestHankelTransformWithBaddourChouinard(unittest.TestCase):
-
+@pytest.fixture
+def ht():
     order = 0
-    ht = HankelTransformBaddourChouinard(order)
+    return HankelTransformBaddourChouinard(order)
 
-    def test_f1(self):
-        a = 5
-        f = lambda r: modified_gaussian(r, a, self.order)
-        ht_f = lambda k: ht_modified_gaussian(self.order, k, a)
 
-        r_max = 2
-        nb_points = 64
-        self.ht.compute_transformation_parameters(r_max, nb_points)
-        k, actual = self.ht.transform(f)
-        desired = ht_f(k)
-        np.testing.assert_almost_equal(actual, desired)
+def test_hankel_transform_f1(ht):
+    a = 5
+    f = lambda r: modified_gaussian(r, a, ht.order)
+    ht_f = lambda k: ht_modified_gaussian(ht.order, k, a)
 
-    def test_f2(self):
-        a = 5
-        f = lambda r: sinc(r, a)
-        ht_f = lambda k: ht_sinc(self.order, k, a)
+    r_max = 2
+    nb_points = 64
+    ht.compute_transformation_parameters(r_max, nb_points)
+    k, actual = ht.transform(f)
+    desired = ht_f(k)
+    np.testing.assert_almost_equal(actual, desired)
 
-        r_max = 30
-        nb_points = 256
-        self.ht.compute_transformation_parameters(r_max, nb_points)
-        k, actual = self.ht.transform(f)
-        desired = ht_f(k)
-        np.testing.assert_almost_equal(
-            actual,
-            desired,
-            decimal=0,
-            err_msg="No worries if test fails, approximation wiggles around true transform (Gibbs phenomenon)",
-        )
+
+def test_hankel_transform_f2(ht):
+    a = 5
+    f = lambda r: sinc(r, a)
+    ht_f = lambda k: ht_sinc(ht.order, k, a)
+
+    r_max = 30
+    nb_points = 256
+    ht.compute_transformation_parameters(r_max, nb_points)
+    k, actual = ht.transform(f)
+    desired = ht_f(k)
+    np.testing.assert_almost_equal(
+        actual,
+        desired,
+        decimal=0,
+        err_msg="No worries if test fails, approximation wiggles around true transform (Gibbs phenomenon)",
+    )

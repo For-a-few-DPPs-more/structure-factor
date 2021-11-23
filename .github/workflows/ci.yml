@@ -67,9 +67,7 @@ jobs:
       - name: Test with pytest
         # Configuration of pytest [tool.pytest.ini_options] in pyproject.toml
         # https://docs.pytest.org/en/latest/reference/customize.html#pyproject-toml
-        # In the template repository options passed are
-        # -ra -q -vv --cov=spatstat_interface --cov-report=xml
-        run: poetry run pytest
+        run: poetry run pytest --cov-report=xml
 
       - name: Upload coverage to Codecov
         # https://docs.codecov.com/docs
