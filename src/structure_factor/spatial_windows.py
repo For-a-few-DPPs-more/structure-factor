@@ -53,10 +53,10 @@ class AbstractSpatialWindow(metaclass=ABCMeta):
         r"""Return the indicator function of the corresponding window evaluated at each of the :math:`n` ``points``.
 
         Args:
-            points (numpy.ndarray): Vector of size :math:`d` or array of size :math:`n \times d` containing point(s) to be tested.
+            points (numpy.ndarray): Vector of size :math:`d` or array of size :math:`n \times d` containing the point(s) to be tested.
         Returns:
             bool or numpy.ndarray:
-            - If :math:`n=1`, bool,
+            - If :math:`n=1`, bool.
             - If :math:`n>1`, :math:`n` dimensional boolean array.
         """
         if points.ndim == 1 and points.size == self.dimension:
@@ -73,7 +73,7 @@ class AbstractSpatialWindow(metaclass=ABCMeta):
 
         Returns:
             numpy.ndarray:
-            - If :math:`n=1`, :math:`d` dimensional vector
+            - If :math:`n=1`, :math:`d` dimensional vector.
             - If :math:`n>1`, :math:`n \times d` array containing the points.
         """
 

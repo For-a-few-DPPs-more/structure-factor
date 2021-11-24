@@ -10,7 +10,7 @@ class PointPattern(object):
     r"""Encapsulate a realization of a point process: the sampled points, the observation window, and the intensity of underlying point process.
 
     Args:
-        points (np.ndarray): :math:`N \times d` array collecting :math:`N` points in dimension :math:`d` consisting of a realization of a point process.
+        points (np.ndarray): :math:`N \times d` array collecting :math:`N` points in dimension :math:`d`, consisting of a realization of a point process.
 
         window (AbstractSpatialWindow, optional): Observation window containing the ``points``. Defaults to None.
 
@@ -25,9 +25,9 @@ class PointPattern(object):
 
         **This class contains also**:
 
-            - :py:meth:`restrict_to_window`: method allowing to restrict the point pattern to a specific window.
-            - :py:meth:`convert_to_spatstat_ppp`: method allowing to convert into a point pattern ``spatstat.geom.ppp`` R object.
-            - :py:meth:`plot`: method allowing to plot the point pattern.
+            - :py:meth:`restrict_to_window`: Restricts the point pattern to a specific window.
+            - :py:meth:`convert_to_spatstat_ppp`: Converts the point pattern into a ``spatstat.geom.ppp`` R object.
+            - :py:meth:`plot`: Plots the point pattern.
 
         **Typical usage**:
 
@@ -67,9 +67,9 @@ class PointPattern(object):
         return self.points.shape[1]
 
     def restrict_to_window(self, window):
-        """Return a new instance of :py:class:`~structure_factor.point_pattern.PointPattern` with the following attributes.
+        """Return a new instance of :py:class:`~structure_factor.point_pattern.PointPattern` with the following attributes,
 
-        - points: Points of the original object that fall inside the prescribed ``window``,
+        - points: points of the original object that fall inside the prescribed ``window``,
         - window: prescribed ``window``,
         - intensity: same intensity as the original object.
 

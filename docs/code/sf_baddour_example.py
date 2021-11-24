@@ -10,7 +10,7 @@ ginibre_pp = load_data.load_ginibre()
 # initialize the class StructureFactor
 sf_ginibre = StructureFactor(ginibre_pp)
 
-# compute pair correlation function
+# approximate the pair correlation function
 pcf_fv = sf_ginibre.compute_pcf(
     method="fv", Kest=dict(r_max=45), fv=dict(method="b", spar=0.1)
 )
@@ -20,7 +20,7 @@ domain, pcf_fv_func = sf_ginibre.interpolate_pcf(
     r=pcf_fv["r"], pcf_r=pcf_fv["pcf"], clean=True
 )
 
-# structure factor using Baddour Chouinard discrete hankel transform
+# structure factor using Baddour Chouinard discrete Hankel transform
 r_max = domain["r_max"]
 k_norm = np.linspace(0.3, 30, 2000)
 k_norm, sf_BadChou = sf_ginibre.hankel_quadrature(

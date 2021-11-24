@@ -22,9 +22,9 @@ class Hyperuniformity:
     .. note::
 
         **This class contains**:
-            - :meth:`bin_data`: method for regularizing :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.sf`.
-            - :meth:`effective_hyperuniformity`: test of effective hyperuniformity :cite:`Kla+al19`.
-            - :meth:`hyperuniformity_class`: test of the possible class of hyperuniformity :cite:`Cos21`.
+            - :meth:`bin_data`: Method for regularizing :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.sf`.
+            - :meth:`effective_hyperuniformity`: Test of effective hyperuniformity :cite:`Kla+al19`.
+            - :meth:`hyperuniformity_class`: Test of the possible class of hyperuniformity :cite:`Cos21`.
 
         **Typical usage**:
             1. Estimate the structure factor of a point process by one of the methods of :py:class:`~structure_factor.structure_factor.StructureFactor`.
