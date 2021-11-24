@@ -96,10 +96,10 @@
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the indicator function of the corresponding window evaluated at each of the :math:`n` ``points``.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            points (numpy.ndarray): Vector of size :math:`d` or array of size :math:`n \times d` containing point(s) to be tested.</span>
+<span class="sd">            points (numpy.ndarray): Vector of size :math:`d` or array of size :math:`n \times d` containing the point(s) to be tested.</span>
 <span class="sd">        Returns:</span>
 <span class="sd">            bool or numpy.ndarray:</span>
-<span class="sd">            - If :math:`n=1`, bool,</span>
+<span class="sd">            - If :math:`n=1`, bool.</span>
 <span class="sd">            - If :math:`n&gt;1`, :math:`n` dimensional boolean array.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">points</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">points</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">dimension</span><span class="p">:</span>
@@ -116,7 +116,7 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            numpy.ndarray:</span>
-<span class="sd">            - If :math:`n=1`, :math:`d` dimensional vector</span>
+<span class="sd">            - If :math:`n=1`, :math:`d` dimensional vector.</span>
 <span class="sd">            - If :math:`n&gt;1`, :math:`n \times d` array containing the points.</span>
 <span class="sd">        &quot;&quot;&quot;</span></div></div>
 

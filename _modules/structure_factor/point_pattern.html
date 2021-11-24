@@ -53,7 +53,7 @@
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Encapsulate a realization of a point process: the sampled points, the observation window, and the intensity of underlying point process.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        points (np.ndarray): :math:`N \times d` array collecting :math:`N` points in dimension :math:`d` consisting of a realization of a point process.</span>
+<span class="sd">        points (np.ndarray): :math:`N \times d` array collecting :math:`N` points in dimension :math:`d`, consisting of a realization of a point process.</span>
 
 <span class="sd">        window (AbstractSpatialWindow, optional): Observation window containing the ``points``. Defaults to None.</span>
 
@@ -68,9 +68,9 @@
 
 <span class="sd">        **This class contains also**:</span>
 
-<span class="sd">            - :py:meth:`restrict_to_window`: method allowing to restrict the point pattern to a specific window.</span>
-<span class="sd">            - :py:meth:`convert_to_spatstat_ppp`: method allowing to convert into a point pattern ``spatstat.geom.ppp`` R object.</span>
-<span class="sd">            - :py:meth:`plot`: method allowing to plot the point pattern.</span>
+<span class="sd">            - :py:meth:`restrict_to_window`: Restricts the point pattern to a specific window.</span>
+<span class="sd">            - :py:meth:`convert_to_spatstat_ppp`: Converts the point pattern into a ``spatstat.geom.ppp`` R object.</span>
+<span class="sd">            - :py:meth:`plot`: Plots the point pattern.</span>
 
 <span class="sd">        **Typical usage**:</span>
 
@@ -110,9 +110,9 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
 
 <div class="viewcode-block" id="PointPattern.restrict_to_window"><a class="viewcode-back" href="../../point_pattern.html#structure_factor.point_pattern.PointPattern.restrict_to_window">[docs]</a>    <span class="k">def</span> <span class="nf">restrict_to_window</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">window</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return a new instance of :py:class:`~structure_factor.point_pattern.PointPattern` with the following attributes.</span>
+        <span class="sd">&quot;&quot;&quot;Return a new instance of :py:class:`~structure_factor.point_pattern.PointPattern` with the following attributes,</span>
 
-<span class="sd">        - points: Points of the original object that fall inside the prescribed ``window``,</span>
+<span class="sd">        - points: points of the original object that fall inside the prescribed ``window``,</span>
 <span class="sd">        - window: prescribed ``window``,</span>
 <span class="sd">        - intensity: same intensity as the original object.</span>
 

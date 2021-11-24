@@ -59,7 +59,7 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>points</strong> (<em>np.ndarray</em>) – <span class="math notranslate nohighlight">\(N \times d\)</span> array collecting <span class="math notranslate nohighlight">\(N\)</span> points in dimension <span class="math notranslate nohighlight">\(d\)</span> consisting of a realization of a point process.</p></li>
+<li><p><strong>points</strong> (<em>np.ndarray</em>) – <span class="math notranslate nohighlight">\(N \times d\)</span> array collecting <span class="math notranslate nohighlight">\(N\)</span> points in dimension <span class="math notranslate nohighlight">\(d\)</span>, consisting of a realization of a point process.</p></li>
 <li><p><strong>window</strong> (<a class="reference internal" href="spatial_windows.html#structure_factor.spatial_windows.AbstractSpatialWindow" title="structure_factor.spatial_windows.AbstractSpatialWindow"><em>AbstractSpatialWindow</em></a><em>, </em><em>optional</em>) – Observation window containing the <code class="docutils literal notranslate"><span class="pre">points</span></code>. Defaults to None.</p></li>
 <li><p><strong>intensity</strong> (<em>float</em><em>, </em><em>optional</em>) – Intensity of the point process. Defaults to None.</p></li>
 </ul>
@@ -90,9 +90,9 @@
 <p><strong>This class contains also</strong>:</p>
 <blockquote>
 <div><ul class="simple">
-<li><p><a class="reference internal" href="#structure_factor.point_pattern.PointPattern.restrict_to_window" title="structure_factor.point_pattern.PointPattern.restrict_to_window"><code class="xref py py-meth docutils literal notranslate"><span class="pre">restrict_to_window()</span></code></a>: method allowing to restrict the point pattern to a specific window.</p></li>
-<li><p><a class="reference internal" href="#structure_factor.point_pattern.PointPattern.convert_to_spatstat_ppp" title="structure_factor.point_pattern.PointPattern.convert_to_spatstat_ppp"><code class="xref py py-meth docutils literal notranslate"><span class="pre">convert_to_spatstat_ppp()</span></code></a>: method allowing to convert into a point pattern <code class="docutils literal notranslate"><span class="pre">spatstat.geom.ppp</span></code> R object.</p></li>
-<li><p><a class="reference internal" href="#structure_factor.point_pattern.PointPattern.plot" title="structure_factor.point_pattern.PointPattern.plot"><code class="xref py py-meth docutils literal notranslate"><span class="pre">plot()</span></code></a>: method allowing to plot the point pattern.</p></li>
+<li><p><a class="reference internal" href="#structure_factor.point_pattern.PointPattern.restrict_to_window" title="structure_factor.point_pattern.PointPattern.restrict_to_window"><code class="xref py py-meth docutils literal notranslate"><span class="pre">restrict_to_window()</span></code></a>: Restricts the point pattern to a specific window.</p></li>
+<li><p><a class="reference internal" href="#structure_factor.point_pattern.PointPattern.convert_to_spatstat_ppp" title="structure_factor.point_pattern.PointPattern.convert_to_spatstat_ppp"><code class="xref py py-meth docutils literal notranslate"><span class="pre">convert_to_spatstat_ppp()</span></code></a>: Converts the point pattern into a <code class="docutils literal notranslate"><span class="pre">spatstat.geom.ppp</span></code> R object.</p></li>
+<li><p><a class="reference internal" href="#structure_factor.point_pattern.PointPattern.plot" title="structure_factor.point_pattern.PointPattern.plot"><code class="xref py py-meth docutils literal notranslate"><span class="pre">plot()</span></code></a>: Plots the point pattern.</p></li>
 </ul>
 </div></blockquote>
 <p><strong>Typical usage</strong>:</p>
@@ -112,9 +112,9 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="structure_factor.point_pattern.PointPattern.restrict_to_window">
 <span class="sig-name descname"><span class="pre">restrict_to_window</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">window</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/point_pattern.html#PointPattern.restrict_to_window"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.point_pattern.PointPattern.restrict_to_window" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a new instance of <a class="reference internal" href="#structure_factor.point_pattern.PointPattern" title="structure_factor.point_pattern.PointPattern"><code class="xref py py-class docutils literal notranslate"><span class="pre">PointPattern</span></code></a> with the following attributes.</p>
+<dd><p>Return a new instance of <a class="reference internal" href="#structure_factor.point_pattern.PointPattern" title="structure_factor.point_pattern.PointPattern"><code class="xref py py-class docutils literal notranslate"><span class="pre">PointPattern</span></code></a> with the following attributes,</p>
 <ul class="simple">
-<li><p>points: Points of the original object that fall inside the prescribed <code class="docutils literal notranslate"><span class="pre">window</span></code>,</p></li>
+<li><p>points: points of the original object that fall inside the prescribed <code class="docutils literal notranslate"><span class="pre">window</span></code>,</p></li>
 <li><p>window: prescribed <code class="docutils literal notranslate"><span class="pre">window</span></code>,</p></li>
 <li><p>intensity: same intensity as the original object.</p></li>
 </ul>
