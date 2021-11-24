@@ -70,20 +70,20 @@
 <span class="sd">        Args:</span>
 <span class="sd">            f (callable): Function to transform.</span>
 
-<span class="sd">            k (scalar or numpy.ndarray): Point(s) where the Fourier tranform is to evaluated.</span>
+<span class="sd">            k (scalar or numpy.ndarray): Point(s) where the Fourier transform is to be evaluated.</span>
 
-<span class="sd">            method (str, optional): Name of the method used to compute the underlying Hankel transform: ``&quot;Ogata&quot;`` or ``&quot;BaddourChouinard&quot;``. Defaults to ``&quot;Ogata&quot;``.</span>
+<span class="sd">            method (str): Name of the method used to compute the underlying Hankel transform: ``&quot;Ogata&quot;`` (see :cite:`Oga05`) or ``&quot;BaddourChouinard&quot;`` (see :cite:`BaCh15`).</span>
 
 <span class="sd">        Keyword Args:</span>
 <span class="sd">            params (dict):</span>
 
-<span class="sd">                - If ``method=&quot;BaddourChouinard&quot;``:</span>
+<span class="sd">                - If ``method=&quot;BaddourChouinard&quot;`` (see :cite:`BaCh15`):</span>
 
-<span class="sd">                    - r_max (float): Threshold radius. Considering that the input function :math:`f` to be Hankel transformed is space-limited, then ``r_max`` satisfies :math:`f(r)=0` for r &gt; r_max.</span>
+<span class="sd">                    - r_max (float): Threshold radius. Considering that the input function :math:`f` to be Hankel transformed is space-limited, then ``r_max`` is such that :math:`f(r)=0` for r &gt; r_max.</span>
 <span class="sd">                    - nb_points (int, optional): Number of quadrature nodes. Defaults to 300.</span>
-<span class="sd">                - If ``method=&quot;Ogata&quot;``:</span>
+<span class="sd">                - If ``method=&quot;Ogata&quot;`` (see :cite:`Oga05`):</span>
 
-<span class="sd">                    - r_max (float, optional): Maximum radius on which the input function :math:`f` to be Hankel transformed was evaluated before the interpolation. Parameter used to conclude an upper bound on :math:`k` on which :math:`f` to be Hankel transformed. Defaults to None.</span>
+<span class="sd">                    - r_max (float, optional): Maximum radius on which the input function :math:`f` to be Hankel transformed was evaluated before the interpolation. Parameter used to conclude a lower bound on :math:`k` on which :math:`f` to be Hankel transformed. Defaults to None.</span>
 
 <span class="sd">                    - step_size (float, optional): Step size of the discretization scheme. Defaults to 0.01.</span>
 
@@ -92,12 +92,12 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            tuple (np.array, np.array):</span>
-<span class="sd">                - k: Point(s) where the Fourier tranform is to evaluated.</span>
+<span class="sd">                - k: Point(s) where the Fourier transform is to be evaluated.</span>
 <span class="sd">                - F_k: Fourier transform of ``f`` at ``k``.</span>
 
 <span class="sd">        .. proof:definition::</span>
 
-<span class="sd">            The Hankel transform :math:`\mathcal{H}_{\nu}` of order :math:`\nu` of :math:`f`</span>
+<span class="sd">            The Hankel transform :math:`\mathcal{H}_{\nu}` of order :math:`\nu` of :math:`f` is defined by</span>
 
 <span class="sd">            .. math::</span>
 
@@ -145,7 +145,7 @@
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the `Hankel transform &lt;https://en.wikipedia.org/wiki/Hankel_transform&gt;`_ of order :math:`\nu`.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">            order (int, optional): Order of the Hankel transfrom. Defaults to 0.</span>
+<span class="sd">        order (int, optional): Order of the Hankel transfrom. Defaults to 0.</span>
 
 <span class="sd">    .. seealso::</span>
 
@@ -160,14 +160,14 @@
 
 
 <div class="viewcode-block" id="HankelTransformBaddourChouinard"><a class="viewcode-back" href="../../transforms.html#structure_factor.transforms.HankelTransformBaddourChouinard">[docs]</a><span class="k">class</span> <span class="nc">HankelTransformBaddourChouinard</span><span class="p">(</span><span class="n">HankelTransform</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Computation of the Hankel transform, using the method of :cite:`BaCh15` considering that the input function is space-limited, i.e., :math:`f(r)=0` for :math:`r&gt;r_{max}`.</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the Hankel transform, using the method of :cite:`BaCh15` considering that the input function is space-limited, i.e., :math:`f(r)=0` for :math:`r&gt;r_{max}`.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        order (int, optional): Order of the Hankel transfrom. Defaults to 0.</span>
 
 <span class="sd">    .. seealso::</span>
 
-<span class="sd">        - MatLab code of Baddour Chouinard https://openresearchsoftware.metajnl.com/articles/10.5334/jors.82/,</span>
+<span class="sd">        - `MatLab code of Baddour Chouinard &lt;https://openresearchsoftware.metajnl.com/articles/10.5334/jors.82/&gt;`_,</span>
 <span class="sd">        - `Pyhank Python package &lt;https://pypi.org/project/pyhank/&gt;`_.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -190,7 +190,7 @@
 <span class="sd">        Args:</span>
 <span class="sd">            r_max (float): Threshold radius. Considering that the input function :math:`f` to be Hankel transformed is space-limited, then ``r_max`` satisfies :math:`f(r)=0` for r &gt; r_max.</span>
 
-<span class="sd">            nb_points (int, optional): Number of quadrature nodes. Defaults to 300.</span>
+<span class="sd">            nb_points (int): Number of quadrature nodes.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">order</span>
         <span class="n">bessel_zeros</span> <span class="o">=</span> <span class="n">bessel1_zeros</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">nb_points</span><span class="p">)</span>
@@ -237,7 +237,7 @@
 
 
 <div class="viewcode-block" id="HankelTransformOgata"><a class="viewcode-back" href="../../transforms.html#structure_factor.transforms.HankelTransformOgata">[docs]</a><span class="k">class</span> <span class="nc">HankelTransformOgata</span><span class="p">(</span><span class="n">HankelTransform</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Computation of the Hankel transform using Ogata quadrature :cite:`Oga05`, Section 5.</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the Hankel transform using Ogata quadrature :cite:`Oga05`, (Section 5).</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        order (int, optional): Order of the Hankel transfrom. Defaults to 0.</span>
@@ -255,10 +255,10 @@
 <div class="viewcode-block" id="HankelTransformOgata.compute_transformation_parameters"><a class="viewcode-back" href="../../transforms.html#structure_factor.transforms.HankelTransformOgata.compute_transformation_parameters">[docs]</a>    <span class="k">def</span> <span class="nf">compute_transformation_parameters</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">r_max</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">nb_points</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="n">step_size</span><span class="o">=</span><span class="mf">0.01</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Compute the quadrature nodes and weights used by :cite:`Oga05` Equation (5.2), to evaluate the corresponding Hankel-type transform.</span>
+        <span class="sd">&quot;&quot;&quot;Compute the quadrature nodes and weights used by :cite:`Oga05` (Equation (5.2)), to evaluate the corresponding Hankel-type transform.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            r_max (float, optional): Maximum radius on which the input function :math:`f` to be Hankel transformed was evaluated before the interpolation. Parameter used to conclude an upper bound on :math:`k` on which :math:`f` to be Hankel transformed. Defaults to None.</span>
+<span class="sd">            r_max (float, optional): Maximum radius on which the input function :math:`f`, to be Hankel transformed, was evaluated before the interpolation. Parameter used to conclude a lower bound on :math:`k` on which :math:`f` to be Hankel transformed. Defaults to None.</span>
 
 <span class="sd">            step_size (float, optional): Step size of the discretization scheme. Defaults to 0.01.</span>
 
@@ -282,7 +282,7 @@
         <span class="k">return</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">weights</span></div>
 
 <div class="viewcode-block" id="HankelTransformOgata.transform"><a class="viewcode-back" href="../../transforms.html#structure_factor.transforms.HankelTransformOgata.transform">[docs]</a>    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute Hankel transform of ``f`` evaluated at ``k``, following the work of :cite:`Oga05` Section 5.</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the Hankel transform of ``f`` evaluated at ``k``, following the work of :cite:`Oga05` (Section 5).</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            f (callable): Function to be Hankel transformed.</span>
@@ -292,7 +292,7 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            tuple(np.ndarray, np.ndarray):</span>
 <span class="sd">                - k: Points of evaluation of the Hankel transform.</span>
-<span class="sd">                - H_k: Evaluations of Hankel transform of ``f`` on ``k``.</span>
+<span class="sd">                - H_k: Evaluations of the Hankel transform of ``f`` on ``k``.</span>
 
 <span class="sd">        .. important::</span>
 

@@ -14,9 +14,19 @@ This is the documentation of the ``structure-factor`` project: an open source Py
 Introduction
 ------------
 
-In condensed matter physics, it has been observed for some particle systems that, the variance of the number of points in a large window is lower than expected, a phenomenon called hyperuniformity.
-To study the hyperuniformity of a given point process, common practice in statistical physics is to estimate a spectral measure called the `structure factor <https://en.wikipedia.org/wiki/Structure_factor>`_, the behavior of which around zero is a indicator of hyperuniformity.
-The structure factor of a point process is defined via the Fourier transform of its total correlation function; see :cite:`Cos21` for more details.
+Hyperuniformity is the study of stationary point processes with a sub-Poisson variance of the number of points in a large window. For the homogeneous Poisson point process, the variance of the number of points that fall in a large window is of the order of the window volume. In contrast, for hyperuniform (HU) point processes, the corresponding variance is much lower than the volume of that window, with a ratio going to zero :cite:`Tor18`.
+
+In the context of amorphous structures, hyperuniformity
+implies a hidden form of order, in which the system remains
+macroscopically uniform, despite not being crystalline. The
+concept of hyperuniformity sheds light on a variety of seemingly
+unrelated fields, including density fluctuations in the early universe, biological tissue, statistical physics, colloidal
+or granular packings, micro fluids, driven nonequilibrium
+systems... :cite:`KlaAl19`.
+
+There are many candidate HU processes in the physics literature, but rigorously proving that a point process is HU is usually difficult. It is thus desirable to have standardized numerical tests of hyperuniformity. A common practice in statistical physics is to estimate a spectral measure called the structure factor, the behavior of which around zero is a sign of hyperuniformity :cite:`Cos21`.
+
+This Python toolbox gathers many estimators of the structure factor, along with a numerical test of effective hyperuniformity and the corresponding possible class of hyperuniformity.
 
 Installation
 ------------
