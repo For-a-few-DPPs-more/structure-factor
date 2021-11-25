@@ -6,7 +6,7 @@
 [![docs-page](https://img.shields.io/badge/docs-latest-blue)](https://for-a-few-dpps-more.github.io/structure-factor/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-> Approximate the structure factor of a stationary point process and test its effective hyperuniformity and identify its class of hyperuniformity.
+> Approximate the structure factor of a stationary point process, test its effective hyperuniformity, and identify its class of hyperuniformity.
 
 - [structure-factor](#structure-factor)
   - [Introduction](#introduction)
@@ -17,17 +17,12 @@
   - [Documentation](#documentation)
     - [Build the documentation](#build-the-documentation)
   - [Getting started](#getting-started)
-  - [How to cite this work](#how-to-cite-this-work)
-    - [Companion paper](#companion-paper)
 
 ## Introduction
 
-In condensed matter physics, it has been observed for some particle systems that, the variance of the number of points in a large window is lower than expected, a phenomenon called hyperuniformity.
-To study the hyperuniformity of a given point process, common practice in statistical physics is to estimate a spectral measure called the **structure factor**, the behavior of which around zero is a sign of hyperuniformity. The structure factor of a point process is defined via the Fourier transform of its total correlation function. For more details [see](https://scoste.fr/assets/survey_hyperuniformity.pdf).
-
-A point process is also called hyperuniform if its structure factor vanishes at zero.
-
-Classes of hyperuniform point processes are then defined based on the decay of the structure factor around zero.
+Hyperuniformity is the study of stationary point processes with a sub-Poisson variance of the number of points in a large window.
+To study the hyperuniformity of a given point process, a common practice in statistical physics is to estimate a spectral measure called the **structure factor**, the behavior of which around zero is a sign of hyperuniformity. The structure factor of a point process is defined via the Fourier transform of its total correlation function, and a point process is hyperuniform if its structure factor vanishes at zero.
+This Python toolbox gathers many estimators of the structure factor, along with a numerical test of effective hyperuniformity and the corresponding possible class of hyperuniformity.
 
 ---
 
@@ -72,13 +67,13 @@ Once installed it can be called from
 
 ### Install the project as a dependency
 
-<!-- - Install the latest version published on [![PyPi version](https://badgen.net/pypi/v/structure-factor/)](https://pypi.org/project/structure-factor/)
+- Install the latest version published on [![PyPi version](https://badgen.net/pypi/v/structure-factor/)](https://pypi.org/project/structure-factor/)
 
   ```bash
   # activate your virtual environment an run
   poetry add structure-factor
   # pip install structure-factor
-  ``` -->
+  ```
 
 - Install from source (this may be broken)
 
@@ -171,6 +166,7 @@ Otherwise, if you don't use `poetry`
 
 - See the documentation [![docs-page](https://img.shields.io/badge/docs-latest-blue)](https://for-a-few-dpps-more.github.io/structure-factor/)
 
+<!--
 ## How to cite this work
 
 ### Companion paper
@@ -183,4 +179,4 @@ where we provide rigorous mathematical derivations of the different estimators o
 
 If you use `structure-factor`, please consider citing it with this piece of BibTeX:
 
-TODO
+  ``` -->
