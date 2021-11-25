@@ -23,7 +23,7 @@ class Hyperuniformity:
 
         **This class contains**:
             - :meth:`bin_data`: Method for regularizing :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.sf`.
-            - :meth:`effective_hyperuniformity`: Test of effective hyperuniformity :cite:`Kla+al19`.
+            - :meth:`effective_hyperuniformity`: Test of effective hyperuniformity :cite:`KlaAl19`.
             - :meth:`hyperuniformity_class`: Test of the possible class of hyperuniformity :cite:`Cos21`.
 
         **Typical usage**:
@@ -62,7 +62,7 @@ class Hyperuniformity:
         """Split the vector attribute :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.k_norm` into sub-intervals (or bins) and evaluate, over each sub-interval, the mean and the standard deviation of the corresponding values in the vector attribute :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.sf`.
 
         Args:
-            params(dict): Keyword arguments (except ``"statistic"``) of ``scipy.stats.binned_statistic``.
+            params(dict): Keyword arguments (except ``"x"``, ``"values"`` and ``"statistic"``) of `scipy.stats.binned_statistic <https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.binned_statistic.html>`_.
 
         Returns:
             tuple(np.array, np.array, np.array):
@@ -121,7 +121,7 @@ class Hyperuniformity:
             - :math:`\hat{S}(\mathbf{0})` is a linear extrapolation of the structure factor at :math:`\mathbf{k}=\mathbf{0}`,
             - :math:`\mathbf{k}_{peak}` is the location of the first dominant peak value of :math:`S`.
 
-            See :cite:`Tor18` (Section 11.1.6) and :cite:`Kla+al19` (supplementary Section 8).
+            See :cite:`Tor18` (Section 11.1.6) and :cite:`KlaAl19` (supplementary Section 8).
 
         .. important::
 

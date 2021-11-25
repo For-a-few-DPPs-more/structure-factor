@@ -10,17 +10,39 @@ from scipy import interpolate, stats
 from scipy.special import j0, j1, jn_zeros, jv, y0, y1, yv
 
 
-# utils for the class Hyperuniformity
+def get_random_number_generator(seed=None):
+    """Turn seed into a np.random.Generator instance."""
+    return np.random.default_rng(seed)
+
+
+# theoretical structure factors and pair correlation functions
+
+
+def pair_correlation_function_ginibre(x):
+    return 1.0 - np.exp(-(x ** 2))
+
+
+def structure_factor_poisson(k):
+    return np.ones_like(k)
+
+
+def structure_factor_ginibre(k):
+    return 1.0 - np.exp(-(k ** 2) / 4)
+
+
+# utils for hyperuniformity.py
+
+
 def _sort_vectors(k, x_k, y_k=None):
-    """Sort ``k`` by increasing order and reorder the associated vectors to ``k``, ``x_k``and ``y_k``.
+    """Sort ``k`` by increasing order and rearranging the associated vectors to ``k``, ``x_k``and ``y_k``.
 
     Args:
         k (np.array): Vector to be sorted by increasing order.
-        x_k (np.array): Vector of evaluations associated to ``k``.
-        y_k (np.array, optional): Defaults to None. Vector of evaluations associated to ``k``.
+        x_k (np.array): Vector of evaluations associated with ``k``.
+        y_k (np.array, optional): Vector of evaluations associated with ``k``. Defaults to None.
 
     Returns:
-        (np.array, np.array, np.array): ``k`` sorted by increasing order and the associated ``x_k``and ``y_k``.
+        (np.array, np.array, np.array): ``k`` sorted by increasing order and the associated vectors ``x_k``and ``y_k``.
     """
     sort_index_k = np.argsort(k)
     k_sorted = k[sort_index_k]
@@ -31,14 +53,35 @@ def _sort_vectors(k, x_k, y_k=None):
     return k_sorted, x_k_sorted, y_k
 
 
-def set_nan_inf_to_zero(array, nan=0, posinf=0, neginf=0):
-    """Set nan, posinf and neginf values of ``array`` to 0."""
-    return np.nan_to_num(array, nan=nan, posinf=posinf, neginf=neginf)
+# utils for hyperuniformity.py and structure_factor.py
 
 
-def get_random_number_generator(seed=None):
-    """Turn seed into a np.random.Generator instance."""
-    return np.random.default_rng(seed)
+def _bin_statistics(x, y, **params):
+    """Divide ``x`` into bins and evaluate the mean and the standard deviation of the corresponding elements of ``y`` over each bin.
+
+    Args:
+        x (np.array): Vector of data.
+        y (np.array): Vector of data associated with the vector ``x``.
+
+    Keyword args:
+        params (dict): Keyword arguments (except ``"x"``, ``"values"`` and ``"statistic"``) of `scipy.stats.binned_statistic <https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.binned_statistic.html>`_.
+
+    Returns:
+        tuple(numpy.ndarray, numpy.ndarray, numpy.ndarray):
+            - ``bin_centers``: Vector of centers of the bins associated to ``x``.
+            - ``bin_mean``: Vector of means of ``y`` over the bins.
+            - ``std_mean``: Vector of standard deviations of ``y`` over the bins.
+    """
+    bin_mean, bin_edges, _ = stats.binned_statistic(x, y, statistic="mean", **params)
+    bin_centers = np.convolve(bin_edges, np.ones(2), "valid")
+    bin_centers /= 2
+    count, _, _ = stats.binned_statistic(x, y, statistic="count", **params)
+    bin_std, _, _ = stats.binned_statistic(x, y, statistic="std", **params)
+    bin_std /= np.sqrt(count)
+    return bin_centers, bin_mean, bin_std
+
+
+# utils for tranform.py
 
 
 def bessel1(order, x):
@@ -64,29 +107,36 @@ def bessel2(order, x):
     return yv(order, x)
 
 
-####### Theoretical structure factors
+def _compute_k_norm_min(r_max, step_size):
+    """Estimate a lower bound of the wavenumbers for which the approximation of the Hankel Transform by Ogata's quadrature is confident. See :cite:`Oga05`.
+
+    Args:
+        r_max (float): Maximum radius, on which the input function :math:`f` to be Hankel transformed, was evaluated before the interpolation.
+
+        step_size (float): Stepsize used in the quadrature of Ogata.
+
+    Returns:
+        float: Wavenumbers lower bound's.
+    """
+    return (2.7 * np.pi) / (r_max * step_size)
 
 
-def pair_correlation_function_ginibre(x):
-    return 1.0 - np.exp(-(x ** 2))
+# utils for structure_factor.py
 
 
-def structure_factor_poisson(k):
-    return np.ones_like(k)
-
-
-def structure_factor_ginibre(k):
-    return 1.0 - np.exp(-(k ** 2) / 4)
+def set_nan_inf_to_zero(array, nan=0, posinf=0, neginf=0):
+    """Set nan, posinf, and neginf values of ``array`` to 0."""
+    return np.nan_to_num(array, nan=nan, posinf=posinf, neginf=neginf)
 
 
 def _reshape_meshgrid(X):
-    r"""Reshape list of meshgrids as np.ndarray of columns, where each column is associated to an element (meshgrid) of the list.
+    r"""Reshape the list of meshgrids ``X`` as np.ndarray, where each column is associated to an element (meshgrid) of the list `X``.
 
     Args:
         X (list): List of meshgrids.
 
     Returns:
-        np.ndarray: np.ndarray where each meshgrid of the original list is stacked as a column.
+        n: np.ndarray where each meshgrid of the original list ``X`` is stacked as a column.
     """
     T = []
     d = len(X)
@@ -96,11 +146,8 @@ def _reshape_meshgrid(X):
     return n
 
 
-###### utils for the class StructureFactor
-
-
 def allowed_wave_vectors(d, L, k_max, meshgrid_shape=None):
-    r"""Return a subset of the d-dimentional allowed wave vectors corresponding to a cubic window of length ``L``.
+    r"""Return a subset of the d-dimensional allowed wave vectors corresponding to a cubic window of length ``L``.
 
     Args:
 
@@ -108,14 +155,14 @@ def allowed_wave_vectors(d, L, k_max, meshgrid_shape=None):
 
         L (float): Length of the cubic window containing the point process realization.
 
-        k_max (float): Maximum component of the waves vectors i.e., for any allowed wave vector :math:`\mathbf{k}=(k_1,...,k_d)`, :math:`k_i \leq k\_max` for all i. This implies that the maximum wave vector will be :math:`(k\_max, ... k\_max)`.
+        k_max (float): Supremum of the components of the allowed wavevectors on which the scattering intensity to be evaluated; i.e., for any allowed wavevector :math:`\mathbf{k}=(k_1,...,k_d)`, :math:`k_i \leq k\_max` for all i. This implies that the maximum of the output vector ``k_norm`` will be approximately equal to the norm of the vector :math:`(k\_max, ... k\_max)`.
 
-        meshgrid_shape (tuple, optional): Tuple of length `d`, where each element specify the number of components over the corresponding axis. It consists of the associated size of the meshgrid of allowed waves. For example for :math:`d=2`, letting meshgid_shape=(2,3) gives a meshgrid of allowed waves formed by a vector of 2 values over the x-axis and a vectors of 3 values over the y-axis. Defaults to None.
+        meshgrid_shape (tuple, optional): Tuple of length `d`, where each element specifies the number of components over an axis. These axes are crossed to form a subset of :math:`\mathbb{Z}^d` used to construct a set of allowed wavevectors. i.g., if d=2, setting meshgid_shape=(2,3) will construct a meshgrid of allowed wavevectors formed by a vector of 2 values over the x-axis and a vector of 3 values over the y-axis. Defaults to None, which will run the calculation over **all** the allowed wavevectors. Defaults to None.
 
     Returns:
         tuple (np.ndarray, list):
             - k : np.array with ``d`` columns where each row is an allowed wave vector.
-            - K : list of meshgrids, (the elements of the list correspond to the 2D respresentation of the components of the wave vectors, i.e., a 2D representation of the vectors of allowed values ``k``). For example in dimension 2, if K =[X,Y] then X is the 2D representation of the x coordinates of the allowed wave vectors ``k`` i.e., the representation as meshgrid.
+            - K : List of meshgrids, (the elements of the list correspond to the 2D representation of the components of the wavevectors, i.e., a 2D representation of the vectors of allowed waves ``k``). i.g., in dimension 2, if K =[X,Y] then X is the 2D representation of the x coordinates of the allowed wavevectors ``k`` (representation as a meshgrid).
 
     .. proof:definition::
 
@@ -125,17 +172,19 @@ def allowed_wave_vectors(d, L, k_max, meshgrid_shape=None):
 
             \{\mathbf{k}_i\}_i = \{\frac{2 \pi}{L} \mathbf{n} ~ ; ~ \mathbf{n} \in (\mathbb{Z}^d)^\ast \}.
 
-        For plotting purposes, we typically use a subset of allowed wavevectors. The maximum norm and the number of output allowed wavevectors returned by :py:meth:`allowed_wave_vectors`, are specified by the input parameters ``k_max`` and ``meshgrid_shape``.
+        Note that the maximum ``n`` and the number of output allowed wavevectors returned by :py:meth:`allowed_wave_vectors`, are specified by the input parameters ``k_max`` and ``meshgrid_shape``.
     """
     K = None
     n_max = np.floor(k_max * L / (2 * np.pi))  # maximum of ``n``
 
     # warnings
     if meshgrid_shape is None:
-        warnings.warn(message="Taking all allowed wave vectors may be time consuming.")
+        warnings.warn(
+            message="The computation on all allowed wave vectors may be time-consuming."
+        )
     elif (np.array(meshgrid_shape) > (2 * n_max)).any():
         warnings.warn(
-            message="meshgrid_shape should be smaller than that of the complete meshgrid of allowed wavevectors."
+            message="Each component of the argument 'meshgrid_shape' should be less than or equal to the cardinality of the (total) set of allowed wavevectors."
         )
 
     if meshgrid_shape is None or (np.array(meshgrid_shape) > (2 * n_max)).any():
@@ -144,8 +193,8 @@ def allowed_wave_vectors(d, L, k_max, meshgrid_shape=None):
         n_i = n_i[n_i != 0]
         n_all = (n_i for i in range(0, d))
         X = np.meshgrid(*n_all, copy=False)
-        K = [X_i * 2 * np.pi / L for X_i in X]  # meshgrid of allowed wave vectors
-        n = _reshape_meshgrid(X)  # reshape allowed vectors as d columns
+        K = [X_i * 2 * np.pi / L for X_i in X]  # meshgrid of allowed wavevectors
+        n = _reshape_meshgrid(X)  # reshape as d columns
 
     else:
         if d == 1:
@@ -167,8 +216,8 @@ def allowed_wave_vectors(d, L, k_max, meshgrid_shape=None):
                 n_all.append(n_i)
 
             X = np.meshgrid(*n_all, copy=False)
-            K = [X_i * 2 * np.pi / L for X_i in X]  # meshgrid of allowed wave vectors
-            n = _reshape_meshgrid(X)  # reshape allowed vectors as d columns
+            K = [X_i * 2 * np.pi / L for X_i in X]  # meshgrid of allowed wavevectors
+            n = _reshape_meshgrid(X)  # reshape as d columns
 
     k = 2 * np.pi * n / L
     return k, K
@@ -179,7 +228,7 @@ def compute_scattering_intensity(k, points):
 
     Args:
 
-        k (np.ndarray): np.ndarray of d columns (where d is the dimesion of the space containing ``points``). Each row is a wave vector on which the scattering intensity to be evaluated.
+        k (np.ndarray): np.ndarray of d columns (where d is the dimension of the space containing ``points``). Each row is a wave vector on which the scattering intensity is to be evaluated.
 
         points (np.ndarray): np.ndarray of d columns where each row is a point from the realization of the point process.
 
@@ -212,31 +261,6 @@ def compute_scattering_intensity(k, points):
     return si
 
 
-def _bin_statistics(x, y, **params):
-    """Divide ``x`` into bins and evaluate the mean and the standard deviation of the corresponding elements of ``y`` over each bin.
-
-    Args:
-        x (np.array): Vector of data.
-        y (np.array): Vector of data associated to the vector ``x``.
-
-    Keyword args:
-        params (dict): Keyword arguments (except ``"statistic"``) of ``scipy.stats.binned_statistic``.
-
-    Returns:
-        tuple(numpy.ndarray, numpy.ndarray, numpy.ndarray):
-            - ``bin_centers``: Vector of centers of the bins associated to ``x``.
-            - ``bin_mean``: Vector of means of ``y`` over the bins.
-            - ``std_mean``: Vector of standard deviation of ``y`` over the bins.
-    """
-    bin_mean, bin_edges, _ = stats.binned_statistic(x, y, statistic="mean", **params)
-    bin_centers = np.convolve(bin_edges, np.ones(2), "valid")
-    bin_centers /= 2
-    count, _, _ = stats.binned_statistic(x, y, statistic="count", **params)
-    bin_std, _, _ = stats.binned_statistic(x, y, statistic="std", **params)
-    bin_std /= np.sqrt(count)
-    return bin_centers, bin_mean, bin_std
-
-
 def plot_poisson(x, axis, c="k", linestyle=(0, (5, 10)), label="Poisson"):
     r"""Plot the pair correlation function :math:`g_{poisson}` and the structure factor :math:`S_{poisson}` corresponding to the Poisson point process.
 
@@ -249,7 +273,7 @@ def plot_poisson(x, axis, c="k", linestyle=(0, (5, 10)), label="Poisson"):
 
         linestyle (tuple, optional): Linstyle of the plot. see `linestyle <https://matplotlib.org/stable/gallery/lines_bars_and_markers/linestyles.html>`_. Defaults to (0, (5, 10)).
 
-        label (str, optional): Specification of the label of the plot. Defaults to "Poisson".
+        label (regexp, optional): Label of the plot. Defaults to "Poisson".
 
     Returns:
         matplotlib.plot: Plot of the pair correlation function and the structure factor of the Poisson point process over ``x``.
@@ -260,7 +284,19 @@ def plot_poisson(x, axis, c="k", linestyle=(0, (5, 10)), label="Poisson"):
 
 
 def plot_summary(x, y, axis, label=r"mean $\pm$ 3 $\cdot$ std", **binning_params):
-    """Loglog plot the summary results of :py:func:`~structure_factor.utils._bin_statistics` i.e., means and errors bars (3 standard deviations)."""
+    r"""Loglog plot the summary results of :py:func:`~structure_factor.utils._bin_statistics` i.e., means and errors bars (3 standard deviations).
+
+    [extended_summary]
+
+    Args:
+        x (np.ndarray): x coordinate.
+        y (np.ndarray): y coordinate.
+        axis (matplotlib.axis): Axis on which to add the plot.
+        label (regexp, optional):  Label of the plot. Defaults to r"mean $\pm$ 3 $\cdot$ std".
+
+    Returns:
+        matplotlib.plot: Plot of the results of :py:meth:`~structure_factor.utils._bin_statistics` applied on ``x`` and ``y`` .
+    """
     bin_centers, bin_mean, bin_std = _bin_statistics(x, y, **binning_params)
     axis.loglog(bin_centers, bin_mean, "b.")
     axis.errorbar(
@@ -280,13 +316,37 @@ def plot_summary(x, y, axis, label=r"mean $\pm$ 3 $\cdot$ std", **binning_params
 
 
 def plot_exact(x, y, axis, label):
-    """Loglog plot of a callable function ``y`` evaluated on the vector ``x``."""
+    r"""Loglog plot of a callable function ``y`` evaluated on the vector ``x``.
+
+    Args:
+        x (np.ndarray): x coordinate.
+        y (callable): Function to evaluate on ``x``.
+        axis (matplotlib.axis): Axis on which to add the plot.
+        label (regexp, optional):  Label of the plot.
+
+    Returns:
+        matplotlib.plot: Plot of ``y`` with respect to ``x``.
+    """
     axis.loglog(x, y(x), "g", label=label)
     return axis
 
 
 def plot_approximation(x, y, axis, label, color, linestyle, marker, markersize):
-    """Loglog plot of ``y`` w.r.t. ``x``."""
+    r"""Loglog plot of ``y`` w.r.t. ``x``.
+
+    Args:
+        x (np.ndarray): x coordinate.
+        y (np.ndarray): y coordinate.
+        axis (matplotlib.axis): Axis on which to add the plot.
+        label (regexp, optional):  Label of the plot.
+        color (matplotlib.color): Color of the plot. see `color <https://matplotlib.org/2.1.1/api/_as_gen/matplotlib.pyplot.plot.html>`_ .
+        linestyle (tuple): Style of the plot. see `linestyle <https://matplotlib.org/stable/gallery/lines_bars_and_markers/linestyles.html>`_.
+        marker (matplotlib.marker): Marker of `marker <https://matplotlib.org/stable/api/markers_api.html>`_.
+        markersize (float): Marker size.
+
+    Returns:
+        matplotlib.plot: Loglog plot of ``y`` w.r.t. ``x``
+    """
     axis.loglog(
         x,
         y,
@@ -300,7 +360,7 @@ def plot_approximation(x, y, axis, label, color, linestyle, marker, markersize):
 
 
 def plot_si_showcase(
-    norm_k,
+    k_norm,
     si,
     axis=None,
     exact_sf=None,
@@ -308,18 +368,33 @@ def plot_si_showcase(
     file_name="",
     **binning_params
 ):
-    """Loglog plot of the results of the scattering intensity :py:meth:`~structure_factor.structure_factor.StructureFactor.scattering_intensity`, with the means and error bars over specific number of bins found via :py:func:`~structure_factor.utils._bin_statistics`."""
-    norm_k = norm_k.ravel()
+    r"""Loglog plot of the results of the scattering intensity :py:meth:`~structure_factor.structure_factor.StructureFactor.scattering_intensity`, with the means and error bars over specific number of bins found via :py:func:`~structure_factor.utils._bin_statistics`.
+
+    Args:
+
+        k_norm (np.ndarray): Wavenumbers.
+
+        si (np.ndarray): Scattering intensity corresponding to ``k_norm``.
+
+        axis (matplotlib.axis, optional): Axis on which to add the plot. Defaults to None.
+
+        exact_sf (callable, optional): Structure factor of the point process. Defaults to None.
+
+        error_bar (bool, optional): If ``True``, ``k_norm`` and correspondingly ``si`` are divided into sub-intervals (bins). Over each bin, the mean and the standard deviation of ``si`` are derived and visualized on the plot. Note that each error bar corresponds to the mean +/- 3 standard deviation. To specify the number of bins, add it to the kwargs argument ``binning_params``. For more details see :py:meth:`~structure_factor.utils._bin_statistics`. Defaults to False.
+
+        file_name (str, optional): Name used to save the figure. The available output formats depend on the backend being used. Defaults to "".
+    """
+    k_norm = k_norm.ravel()
     si = si.ravel()
     if axis is None:
         _, axis = plt.subplots(figsize=(8, 6))
 
-    plot_poisson(norm_k, axis=axis)
+    plot_poisson(k_norm, axis=axis)
     if exact_sf is not None:
-        plot_exact(norm_k, exact_sf, axis=axis, label=r"Exact $S(k)$")
+        plot_exact(k_norm, exact_sf, axis=axis, label=r"Exact $S(k)$")
 
     plot_approximation(
-        norm_k,
+        k_norm,
         si,
         axis=axis,
         label=r"$\widehat{S}_{SI}$",
@@ -330,7 +405,7 @@ def plot_si_showcase(
     )
 
     if error_bar:
-        plot_summary(norm_k, si, axis=axis, **binning_params)
+        plot_summary(k_norm, si, axis=axis, **binning_params)
 
     axis.set_xlabel(r"Wavenumber ($||\mathbf{k}||$)")
     axis.set_ylabel(r"Structure factor ($S(k)$)")
@@ -342,11 +417,18 @@ def plot_si_showcase(
     return axis
 
 
-def plot_si_imshow(norm_k, si, axis, file_name):
-    """Color level plot, centered on zero."""
+def plot_si_imshow(k_norm, si, axis, file_name):
+    r"""Color level 2D plot, centered on zero.
+
+    Args:
+        k_norm (np.ndarray): Wavenumbers.
+        si (np.ndarray): Scattering intensity corresponding to ``k_norm``.
+        axis (matplotlib.axis): Axis on which to add the plot.
+        file_name (str, optional): Name used to save the figure. The available output formats depend on the backend being used. Defaults to "".
+    """
     if axis is None:
         _, axis = plt.subplots(figsize=(14, 8))
-    if len(norm_k.shape) < 2:
+    if len(k_norm.shape) < 2:
         raise ValueError(
             "the scattering intensity should be evaluated on a meshgrid or choose plot_type = 'plot'. "
         )
@@ -371,7 +453,7 @@ def plot_si_imshow(norm_k, si, axis, file_name):
 
 def plot_si_all(
     point_pattern,
-    norm_k,
+    k_norm,
     si,
     exact_sf=None,
     error_bar=False,
@@ -379,12 +461,22 @@ def plot_si_all(
     window_res=None,
     **binning_params
 ):
-    """Construct 3 subplots: point pattern, associated scattering intensity plot, associated scattering intensity color level (only for 2D point processes)."""
+    r"""Construct 3 subplots: point pattern, associated scattering intensity plot, associated scattering intensity color level (only for 2D point processes).
+
+    Args:
+        point_pattern (:py:class:`~structure_factor.point_pattern.PointPattern`): Object of type PointPattern containing a realization ``point_pattern.points`` of a point process, the window where the points were simulated ``point_pattern.window`` and (optionally) the intensity of the point process ``point_pattern.intensity``
+        k_norm (np.ndarray): Wavenumbers.
+        si (np.ndarray): Scattering intensity corresponding to ``k_norm``.
+        exact_sf (callable, optional): Structure factor of the point process. Defaults to None.
+        error_bar (bool, optional): If ``True``, ``k_norm`` and correspondingly ``si`` are divided into sub-intervals (bins). Over each bin, the mean and the standard deviation of ``si`` are derived and visualized on the plot. Note that each error bar corresponds to the mean +/- 3 standard deviation. To specify the number of bins, add it to the kwargs argument ``binning_params``. For more details see :py:meth:`~structure_factor.utils._bin_statistics`. Defaults to False.
+        file_name (str, optional): Name used to save the figure. The available output formats depend on the backend being used. Defaults to "".
+        window_res (:py:class:`~structure_factor.spatial_windows.AbstractSpatialWindow`, optional): New restriction window. It is useful when the sample of points is large, so for time and visualization purposes, it is better to restrict the plot of the point process to a smaller window. Defaults to None.
+    """
     figure, axes = plt.subplots(1, 3, figsize=(24, 6))
 
     point_pattern.plot(axis=axes[0], window_res=window_res)
     plot_si_showcase(
-        norm_k,
+        k_norm,
         si,
         axes[1],
         exact_sf,
@@ -392,7 +484,7 @@ def plot_si_all(
         file_name="",
         **binning_params,
     )
-    plot_si_imshow(norm_k, si, axes[2], file_name="")
+    plot_si_imshow(k_norm, si, axes[2], file_name="")
 
     if file_name:
         figure.savefig(file_name, bbox_inches="tight")
@@ -400,22 +492,20 @@ def plot_si_all(
     return axes
 
 
-def _compute_k_min(r_max, step_size):
-    """Estimate threshold of confidence for the approximation of the Hankel transform using Ogata method. i.e., minimum confidence k for which the approximation of the Hankel transform by Ogata quadrature is doable :cite:`Oga05`.
+def plot_pcf(pcf_dataframe, exact_pcf, file_name, **kwargs):
+    r"""Plot the columns a DataFrame (excluding the first) with respect to the first columns.
 
     Args:
-        r_max (float): Maximum radius on which the input function :math:`f` to be Hankel transformed was evaluated before the interpolation.
+        pcf_dataframe (pandas.DataFrame): Output DataFrame of the method :py:meth:`~structure_factor.structure_factor.StructureFactor.compute_pcf`.
 
-        step_size (float): Stepsize used in the quadrature of Ogata.
+        exact_pcf (callable): Function representing the theoretical pair correlation function of the point process.
 
-    Returns:
-        float: Upper bound of k.
+        file_name (str): Name used to save the figure. The available output formats depend on the backend being used.
+
+        Keyword Args:
+            kwargs (dict): Keyword arguments of the function `pandas.DataFrame.plot.line <https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.plot.line.html>`_.
+
     """
-    return (2.7 * np.pi) / (r_max * step_size)
-
-
-def plot_pcf(pcf_dataframe, exact_pcf, file_name, **kwargs):
-    """Plot DataFrame result."""
     axis = pcf_dataframe.plot.line(x="r", **kwargs)
     if exact_pcf is not None:
         axis.plot(
@@ -437,22 +527,45 @@ def plot_pcf(pcf_dataframe, exact_pcf, file_name, **kwargs):
 
 
 def plot_sf_hankel_quadrature(
-    norm_k,
+    k_norm,
     sf,
     axis,
-    k_min,
+    k_norm_min,
     exact_sf,
     error_bar,
     file_name,
     label=r"$\widehat{S}_{H}$",
     **binning_params
 ):
-    """Plot the approximations of the structure factor (results of :py:meth:`~structure_factor.hankel_quadrature`) with means and error bars over bins, see :py:meth:`~structure_factor.utils._bin_statistics`."""
+    r"""Plot the approximations of the structure factor (results of :py:meth:`~structure_factor.hankel_quadrature`) with means and error bars over bins, see :py:meth:`~structure_factor.utils._bin_statistics`.
+
+    Args:
+
+        k_norm (np.array): Vector of wavenumbers (i.e., norms of waves) on which the structure factor has been approximated.
+
+        sf (np.array): Approximation of the structure factor corresponding to ``k_norm``.
+
+        axis (matplotlib.axis): Support axis of the plots.
+
+        k_norm_min (float): Estimated lower bound of the wavenumbers (only when ``sf`` was approximated using **Ogata quadrature**).
+
+        exact_sf (callable): Theoretical structure factor of the point process.
+
+        error_bar (bool): If ``True``, ``k_norm`` and correspondingly ``si`` are divided into sub-intervals (bins). Over each bin, the mean and the standard deviation of ``si`` are derived and visualized on the plot. Note that each error bar corresponds to the mean +/- 3 standard deviation. To specify the number of bins, add it to the kwargs argument ``binning_params``. For more details see :py:meth:`~structure_factor.utils._bin_statistics`. Defaults to False.
+
+        file_name (str): Name used to save the figure. The available output formats depend on the backend being used.
+
+        label (regexp, optional):  Label of the plot. Default to r"$\widehat{S}_{H}$".
+
+    Keyword Args:
+        binning_params: (dict): Used when ``error_bar=True``, by the method :py:meth:`~structure_factor.utils_bin_statistics` as keyword arguments (except ``"statistic"``) of ``scipy.stats.binned_statistic``.
+
+    """
     if axis is None:
         fig, axis = plt.subplots(figsize=(8, 5))
 
     plot_approximation(
-        norm_k,
+        k_norm,
         sf,
         axis=axis,
         label=label,
@@ -462,17 +575,17 @@ def plot_sf_hankel_quadrature(
         markersize=4,
     )
     if exact_sf is not None:
-        plot_exact(norm_k, exact_sf, axis=axis, label=r"Exact $\mathcal{S}(k)$")
+        plot_exact(k_norm, exact_sf, axis=axis, label=r"Exact $\mathcal{S}(k)$")
     if error_bar:
-        plot_summary(norm_k, sf, axis=axis, **binning_params)
-    plot_poisson(norm_k, axis=axis)
-    if k_min is not None:
+        plot_summary(k_norm, sf, axis=axis, **binning_params)
+    plot_poisson(k_norm, axis=axis)
+    if k_norm_min is not None:
         sf_interpolate = interpolate.interp1d(
-            norm_k, sf, axis=0, fill_value="extrapolate", kind="cubic"
+            k_norm, sf, axis=0, fill_value="extrapolate", kind="cubic"
         )
         axis.loglog(
-            k_min,
-            sf_interpolate(k_min),
+            k_norm_min,
+            sf_interpolate(k_norm_min),
             "ro",
             label=r"$k_{\min}$",
         )
