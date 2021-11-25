@@ -107,7 +107,7 @@ def bessel2(order, x):
     return yv(order, x)
 
 
-def _compute_k_norm_min(r_max, step_size):
+def _compute_k_min(r_max, step_size):
     """Estimate a lower bound of the wavenumbers for which the approximation of the Hankel Transform by Ogata's quadrature is confident. See :cite:`Oga05`.
 
     Args:
