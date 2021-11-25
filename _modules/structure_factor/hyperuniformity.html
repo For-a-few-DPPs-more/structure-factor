@@ -66,7 +66,7 @@
 
 <span class="sd">        **This class contains**:</span>
 <span class="sd">            - :meth:`bin_data`: Method for regularizing :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.sf`.</span>
-<span class="sd">            - :meth:`effective_hyperuniformity`: Test of effective hyperuniformity :cite:`Kla+al19`.</span>
+<span class="sd">            - :meth:`effective_hyperuniformity`: Test of effective hyperuniformity :cite:`KlaAl19`.</span>
 <span class="sd">            - :meth:`hyperuniformity_class`: Test of the possible class of hyperuniformity :cite:`Cos21`.</span>
 
 <span class="sd">        **Typical usage**:</span>
@@ -105,7 +105,7 @@
         <span class="sd">&quot;&quot;&quot;Split the vector attribute :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.k_norm` into sub-intervals (or bins) and evaluate, over each sub-interval, the mean and the standard deviation of the corresponding values in the vector attribute :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.sf`.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            params(dict): Keyword arguments (except ``&quot;statistic&quot;``) of ``scipy.stats.binned_statistic``.</span>
+<span class="sd">            params(dict): Keyword arguments (except ``&quot;x&quot;``, ``&quot;values&quot;`` and ``&quot;statistic&quot;``) of `scipy.stats.binned_statistic &lt;https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.binned_statistic.html&gt;`_.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            tuple(np.array, np.array, np.array):</span>
@@ -164,7 +164,7 @@
 <span class="sd">            - :math:`\hat{S}(\mathbf{0})` is a linear extrapolation of the structure factor at :math:`\mathbf{k}=\mathbf{0}`,</span>
 <span class="sd">            - :math:`\mathbf{k}_{peak}` is the location of the first dominant peak value of :math:`S`.</span>
 
-<span class="sd">            See :cite:`Tor18` (Section 11.1.6) and :cite:`Kla+al19` (supplementary Section 8).</span>
+<span class="sd">            See :cite:`Tor18` (Section 11.1.6) and :cite:`KlaAl19` (supplementary Section 8).</span>
 
 <span class="sd">        .. important::</span>
 

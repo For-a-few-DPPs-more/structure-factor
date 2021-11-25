@@ -52,19 +52,25 @@
   <section id="module-structure_factor.utils">
 <span id="utils"></span><h1>Utils<a class="headerlink" href="#module-structure_factor.utils" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
+<dt class="sig sig-object py" id="structure_factor.utils.get_random_number_generator">
+<span class="sig-prename descclassname"><span class="pre">structure_factor.utils.</span></span><span class="sig-name descname"><span class="pre">get_random_number_generator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/utils.html#get_random_number_generator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.utils.get_random_number_generator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Turn seed into a np.random.Generator instance.</p>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="structure_factor.utils._sort_vectors">
 <span class="sig-prename descclassname"><span class="pre">structure_factor.utils.</span></span><span class="sig-name descname"><span class="pre">_sort_vectors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/utils.html#_sort_vectors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.utils._sort_vectors" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sort <code class="docutils literal notranslate"><span class="pre">k</span></code> by increasing order and reorder the associated vectors to <code class="docutils literal notranslate"><span class="pre">k</span></code>, <code class="docutils literal notranslate"><span class="pre">x_k``and</span> <span class="pre">``y_k</span></code>.</p>
+<dd><p>Sort <code class="docutils literal notranslate"><span class="pre">k</span></code> by increasing order and rearranging the associated vectors to <code class="docutils literal notranslate"><span class="pre">k</span></code>, <code class="docutils literal notranslate"><span class="pre">x_k``and</span> <span class="pre">``y_k</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>k</strong> (<em>np.array</em>) – Vector to be sorted by increasing order.</p></li>
-<li><p><strong>x_k</strong> (<em>np.array</em>) – Vector of evaluations associated to <code class="docutils literal notranslate"><span class="pre">k</span></code>.</p></li>
-<li><p><strong>y_k</strong> (<em>np.array</em><em>, </em><em>optional</em>) – Defaults to None. Vector of evaluations associated to <code class="docutils literal notranslate"><span class="pre">k</span></code>.</p></li>
+<li><p><strong>x_k</strong> (<em>np.array</em>) – Vector of evaluations associated with <code class="docutils literal notranslate"><span class="pre">k</span></code>.</p></li>
+<li><p><strong>y_k</strong> (<em>np.array</em><em>, </em><em>optional</em>) – Vector of evaluations associated with <code class="docutils literal notranslate"><span class="pre">k</span></code>. Defaults to None.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">k</span></code> sorted by increasing order and the associated <code class="docutils literal notranslate"><span class="pre">x_k``and</span> <span class="pre">``y_k</span></code>.</p>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">k</span></code> sorted by increasing order and the associated vectors <code class="docutils literal notranslate"><span class="pre">x_k``and</span> <span class="pre">``y_k</span></code>.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>(np.array, np.array, np.array)</p>
@@ -73,15 +79,31 @@
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="structure_factor.utils.set_nan_inf_to_zero">
-<span class="sig-prename descclassname"><span class="pre">structure_factor.utils.</span></span><span class="sig-name descname"><span class="pre">set_nan_inf_to_zero</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nan</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">posinf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">neginf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/utils.html#set_nan_inf_to_zero"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.utils.set_nan_inf_to_zero" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set nan, posinf and neginf values of <code class="docutils literal notranslate"><span class="pre">array</span></code> to 0.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="structure_factor.utils.get_random_number_generator">
-<span class="sig-prename descclassname"><span class="pre">structure_factor.utils.</span></span><span class="sig-name descname"><span class="pre">get_random_number_generator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/utils.html#get_random_number_generator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.utils.get_random_number_generator" title="Permalink to this definition">¶</a></dt>
-<dd><p>Turn seed into a np.random.Generator instance.</p>
+<dt class="sig sig-object py" id="structure_factor.utils._bin_statistics">
+<span class="sig-prename descclassname"><span class="pre">structure_factor.utils.</span></span><span class="sig-name descname"><span class="pre">_bin_statistics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/utils.html#_bin_statistics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.utils._bin_statistics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Divide <code class="docutils literal notranslate"><span class="pre">x</span></code> into bins and evaluate the mean and the standard deviation of the corresponding elements of <code class="docutils literal notranslate"><span class="pre">y</span></code> over each bin.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>np.array</em>) – Vector of data.</p></li>
+<li><p><strong>y</strong> (<em>np.array</em>) – Vector of data associated with the vector <code class="docutils literal notranslate"><span class="pre">x</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><p><strong>params</strong> (<em>dict</em>) – Keyword arguments (except <code class="docutils literal notranslate"><span class="pre">&quot;x&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;values&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;statistic&quot;</span></code>) of <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.binned_statistic.html">scipy.stats.binned_statistic</a>.</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">bin_centers</span></code>: Vector of centers of the bins associated to <code class="docutils literal notranslate"><span class="pre">x</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bin_mean</span></code>: Vector of means of <code class="docutils literal notranslate"><span class="pre">y</span></code> over the bins.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">std_mean</span></code>: Vector of standard deviations of <code class="docutils literal notranslate"><span class="pre">y</span></code> over the bins.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>tuple(numpy.ndarray, numpy.ndarray, numpy.ndarray)</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -103,18 +125,44 @@
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="structure_factor.utils._compute_k_norm_min">
+<span class="sig-prename descclassname"><span class="pre">structure_factor.utils.</span></span><span class="sig-name descname"><span class="pre">_compute_k_norm_min</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r_max</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step_size</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/utils.html#_compute_k_norm_min"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.utils._compute_k_norm_min" title="Permalink to this definition">¶</a></dt>
+<dd><p>Estimate a lower bound of the wavenumbers for which the approximation of the Hankel Transform by Ogata’s quadrature is confident. See <span id="id2">[<a class="reference internal" href="bibliography/index.html#id6" title="H. Ogata. A numerical integration formula based on the bessel functions. Research Institute for Mathematical Sciences, 2005. doi:10.2977/prims/1145474602.">Oga05</a>]</span>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>r_max</strong> (<em>float</em>) – Maximum radius, on which the input function <span class="math notranslate nohighlight">\(f\)</span> to be Hankel transformed, was evaluated before the interpolation.</p></li>
+<li><p><strong>step_size</strong> (<em>float</em>) – Stepsize used in the quadrature of Ogata.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Wavenumbers lower bound’s.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="structure_factor.utils.set_nan_inf_to_zero">
+<span class="sig-prename descclassname"><span class="pre">structure_factor.utils.</span></span><span class="sig-name descname"><span class="pre">set_nan_inf_to_zero</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nan</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">posinf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">neginf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/utils.html#set_nan_inf_to_zero"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.utils.set_nan_inf_to_zero" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set nan, posinf, and neginf values of <code class="docutils literal notranslate"><span class="pre">array</span></code> to 0.</p>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="structure_factor.utils._reshape_meshgrid">
 <span class="sig-prename descclassname"><span class="pre">structure_factor.utils.</span></span><span class="sig-name descname"><span class="pre">_reshape_meshgrid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/utils.html#_reshape_meshgrid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.utils._reshape_meshgrid" title="Permalink to this definition">¶</a></dt>
-<dd><p>Reshape list of meshgrids as np.ndarray of columns, where each column is associated to an element (meshgrid) of the list.</p>
+<dd><p>Reshape the list of meshgrids <code class="docutils literal notranslate"><span class="pre">X</span></code> as np.ndarray, where each column is associated to an element (meshgrid) of the list <cite>X`</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>X</strong> (<em>list</em>) – List of meshgrids.</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>np.ndarray where each meshgrid of the original list is stacked as a column.</p>
+<dd class="field-even"><p>np.ndarray where each meshgrid of the original list <code class="docutils literal notranslate"><span class="pre">X</span></code> is stacked as a column.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>np.ndarray</p>
+<dd class="field-odd"><p>n</p>
 </dd>
 </dl>
 </dd></dl>
@@ -122,20 +170,20 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="structure_factor.utils.allowed_wave_vectors">
 <span class="sig-prename descclassname"><span class="pre">structure_factor.utils.</span></span><span class="sig-name descname"><span class="pre">allowed_wave_vectors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k_max</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meshgrid_shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/utils.html#allowed_wave_vectors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.utils.allowed_wave_vectors" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a subset of the d-dimentional allowed wave vectors corresponding to a cubic window of length <code class="docutils literal notranslate"><span class="pre">L</span></code>.</p>
+<dd><p>Return a subset of the d-dimensional allowed wave vectors corresponding to a cubic window of length <code class="docutils literal notranslate"><span class="pre">L</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>d</strong> (<em>int</em>) – Dimension of the space containing the point process.</p></li>
 <li><p><strong>L</strong> (<em>float</em>) – Length of the cubic window containing the point process realization.</p></li>
-<li><p><strong>k_max</strong> (<em>float</em>) – Maximum component of the waves vectors i.e., for any allowed wave vector <span class="math notranslate nohighlight">\(\mathbf{k}=(k_1,...,k_d)\)</span>, <span class="math notranslate nohighlight">\(k_i \leq k\_max\)</span> for all i. This implies that the maximum wave vector will be <span class="math notranslate nohighlight">\((k\_max, ... k\_max)\)</span>.</p></li>
-<li><p><strong>meshgrid_shape</strong> (<em>tuple</em><em>, </em><em>optional</em>) – Tuple of length <cite>d</cite>, where each element specify the number of components over the corresponding axis. It consists of the associated size of the meshgrid of allowed waves. For example for <span class="math notranslate nohighlight">\(d=2\)</span>, letting meshgid_shape=(2,3) gives a meshgrid of allowed waves formed by a vector of 2 values over the x-axis and a vectors of 3 values over the y-axis. Defaults to None.</p></li>
+<li><p><strong>k_max</strong> (<em>float</em>) – Supremum of the components of the allowed wavevectors on which the scattering intensity to be evaluated; i.e., for any allowed wavevector <span class="math notranslate nohighlight">\(\mathbf{k}=(k_1,...,k_d)\)</span>, <span class="math notranslate nohighlight">\(k_i \leq k\_max\)</span> for all i. This implies that the maximum of the output vector <code class="docutils literal notranslate"><span class="pre">k_norm</span></code> will be approximately equal to the norm of the vector <span class="math notranslate nohighlight">\((k\_max, ... k\_max)\)</span>.</p></li>
+<li><p><strong>meshgrid_shape</strong> (<em>tuple</em><em>, </em><em>optional</em>) – Tuple of length <cite>d</cite>, where each element specifies the number of components over an axis. These axes are crossed to form a subset of <span class="math notranslate nohighlight">\(\mathbb{Z}^d\)</span> used to construct a set of allowed wavevectors. i.g., if d=2, setting meshgid_shape=(2,3) will construct a meshgrid of allowed wavevectors formed by a vector of 2 values over the x-axis and a vector of 3 values over the y-axis. Defaults to None, which will run the calculation over <strong>all</strong> the allowed wavevectors. Defaults to None.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><ul class="simple">
 <li><p>k : np.array with <code class="docutils literal notranslate"><span class="pre">d</span></code> columns where each row is an allowed wave vector.</p></li>
-<li><p>K : list of meshgrids, (the elements of the list correspond to the 2D respresentation of the components of the wave vectors, i.e., a 2D representation of the vectors of allowed values <code class="docutils literal notranslate"><span class="pre">k</span></code>). For example in dimension 2, if K =[X,Y] then X is the 2D representation of the x coordinates of the allowed wave vectors <code class="docutils literal notranslate"><span class="pre">k</span></code> i.e., the representation as meshgrid.</p></li>
+<li><p>K : List of meshgrids, (the elements of the list correspond to the 2D representation of the components of the wavevectors, i.e., a 2D representation of the vectors of allowed waves <code class="docutils literal notranslate"><span class="pre">k</span></code>). i.g., in dimension 2, if K =[X,Y] then X is the 2D representation of the x coordinates of the allowed wavevectors <code class="docutils literal notranslate"><span class="pre">k</span></code> (representation as a meshgrid).</p></li>
 </ul>
 </p>
 </dd>
@@ -143,7 +191,7 @@
 <dd class="field-odd"><p>tuple (np.ndarray, list)</p>
 </dd>
 </dl>
-<div class="proof proof-type-definition" id="id3">
+<div class="proof proof-type-definition" id="id4">
 
     <div class="proof-title">
         <span class="proof-type">Definition </span>
@@ -152,7 +200,7 @@
 <p>The set of the allowed wavevectors <span class="math notranslate nohighlight">\(\{\mathbf{k}_i\}_i\)</span> is defined by</p>
 <div class="math notranslate nohighlight">
 \[\{\mathbf{k}_i\}_i = \{\frac{2 \pi}{L} \mathbf{n} ~ ; ~ \mathbf{n} \in (\mathbb{Z}^d)^\ast \}.\]</div>
-<p>For plotting purposes, we typically use a subset of allowed wavevectors. The maximum norm and the number of output allowed wavevectors returned by <a class="reference internal" href="#structure_factor.utils.allowed_wave_vectors" title="structure_factor.utils.allowed_wave_vectors"><code class="xref py py-meth docutils literal notranslate"><span class="pre">allowed_wave_vectors()</span></code></a>, are specified by the input parameters <code class="docutils literal notranslate"><span class="pre">k_max</span></code> and <code class="docutils literal notranslate"><span class="pre">meshgrid_shape</span></code>.</p>
+<p>Note that the maximum <code class="docutils literal notranslate"><span class="pre">n</span></code> and the number of output allowed wavevectors returned by <a class="reference internal" href="#structure_factor.utils.allowed_wave_vectors" title="structure_factor.utils.allowed_wave_vectors"><code class="xref py py-meth docutils literal notranslate"><span class="pre">allowed_wave_vectors()</span></code></a>, are specified by the input parameters <code class="docutils literal notranslate"><span class="pre">k_max</span></code> and <code class="docutils literal notranslate"><span class="pre">meshgrid_shape</span></code>.</p>
 </div></div></dd></dl>
 
 <dl class="py function">
@@ -162,7 +210,7 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>k</strong> (<em>np.ndarray</em>) – np.ndarray of d columns (where d is the dimesion of the space containing <code class="docutils literal notranslate"><span class="pre">points</span></code>). Each row is a wave vector on which the scattering intensity to be evaluated.</p></li>
+<li><p><strong>k</strong> (<em>np.ndarray</em>) – np.ndarray of d columns (where d is the dimension of the space containing <code class="docutils literal notranslate"><span class="pre">points</span></code>). Each row is a wave vector on which the scattering intensity is to be evaluated.</p></li>
 <li><p><strong>points</strong> (<em>np.ndarray</em>) – np.ndarray of d columns where each row is a point from the realization of the point process.</p></li>
 </ul>
 </dd>
@@ -173,7 +221,7 @@
 <dd class="field-odd"><p>numpy.ndarray</p>
 </dd>
 </dl>
-<div class="proof proof-type-definition" id="id4">
+<div class="proof proof-type-definition" id="id5">
 
     <div class="proof-title">
         <span class="proof-type">Definition </span>
@@ -190,34 +238,6 @@
 </div></div></dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="structure_factor.utils._bin_statistics">
-<span class="sig-prename descclassname"><span class="pre">structure_factor.utils.</span></span><span class="sig-name descname"><span class="pre">_bin_statistics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/utils.html#_bin_statistics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.utils._bin_statistics" title="Permalink to this definition">¶</a></dt>
-<dd><p>Divide <code class="docutils literal notranslate"><span class="pre">x</span></code> into bins and evaluate the mean and the standard deviation of the corresponding elements of <code class="docutils literal notranslate"><span class="pre">y</span></code> over each bin.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<em>np.array</em>) – Vector of data.</p></li>
-<li><p><strong>y</strong> (<em>np.array</em>) – Vector of data associated to the vector <code class="docutils literal notranslate"><span class="pre">x</span></code>.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Keyword Arguments</dt>
-<dd class="field-even"><p><strong>params</strong> (<em>dict</em>) – Keyword arguments (except <code class="docutils literal notranslate"><span class="pre">&quot;statistic&quot;</span></code>) of <code class="docutils literal notranslate"><span class="pre">scipy.stats.binned_statistic</span></code>.</p>
-</dd>
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">bin_centers</span></code>: Vector of centers of the bins associated to <code class="docutils literal notranslate"><span class="pre">x</span></code>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">bin_mean</span></code>: Vector of means of <code class="docutils literal notranslate"><span class="pre">y</span></code> over the bins.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">std_mean</span></code>: Vector of standard deviation of <code class="docutils literal notranslate"><span class="pre">y</span></code> over the bins.</p></li>
-</ul>
-</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>tuple(numpy.ndarray, numpy.ndarray, numpy.ndarray)</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
 <dt class="sig sig-object py" id="structure_factor.utils.plot_poisson">
 <span class="sig-prename descclassname"><span class="pre">structure_factor.utils.</span></span><span class="sig-name descname"><span class="pre">plot_poisson</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'k'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linestyle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(0,</span> <span class="pre">(5,</span> <span class="pre">10))</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Poisson'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/utils.html#plot_poisson"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.utils.plot_poisson" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot the pair correlation function <span class="math notranslate nohighlight">\(g_{poisson}\)</span> and the structure factor <span class="math notranslate nohighlight">\(S_{poisson}\)</span> corresponding to the Poisson point process.</p>
@@ -228,7 +248,7 @@
 <li><p><strong>axis</strong> (<em>matplotlib.axis</em>) – Axis on which to add the plot.</p></li>
 <li><p><strong>c</strong> (<em>str</em><em>, </em><em>optional</em>) – Color of the plot. see <a class="reference external" href="https://matplotlib.org/2.1.1/api/_as_gen/matplotlib.pyplot.plot.html">matplotlib</a> . Defaults to “k”.</p></li>
 <li><p><strong>linestyle</strong> (<em>tuple</em><em>, </em><em>optional</em>) – Linstyle of the plot. see <a class="reference external" href="https://matplotlib.org/stable/gallery/lines_bars_and_markers/linestyles.html">linestyle</a>. Defaults to (0, (5, 10)).</p></li>
-<li><p><strong>label</strong> (<em>str</em><em>, </em><em>optional</em>) – Specification of the label of the plot. Defaults to “Poisson”.</p></li>
+<li><p><strong>label</strong> (<em>regexp</em><em>, </em><em>optional</em>) – Label of the plot. Defaults to “Poisson”.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -244,54 +264,123 @@
 <dt class="sig sig-object py" id="structure_factor.utils.plot_summary">
 <span class="sig-prename descclassname"><span class="pre">structure_factor.utils.</span></span><span class="sig-name descname"><span class="pre">plot_summary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mean</span> <span class="pre">$\\pm$</span> <span class="pre">3</span> <span class="pre">$\\cdot$</span> <span class="pre">std'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">binning_params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/utils.html#plot_summary"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.utils.plot_summary" title="Permalink to this definition">¶</a></dt>
 <dd><p>Loglog plot the summary results of <a class="reference internal" href="#structure_factor.utils._bin_statistics" title="structure_factor.utils._bin_statistics"><code class="xref py py-func docutils literal notranslate"><span class="pre">_bin_statistics()</span></code></a> i.e., means and errors bars (3 standard deviations).</p>
+<p>[extended_summary]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>np.ndarray</em>) – x coordinate.</p></li>
+<li><p><strong>y</strong> (<em>np.ndarray</em>) – y coordinate.</p></li>
+<li><p><strong>axis</strong> (<em>matplotlib.axis</em>) – Axis on which to add the plot.</p></li>
+<li><p><strong>label</strong> (<em>regexp</em><em>, </em><em>optional</em>) – Label of the plot. Defaults to r”mean $pm$ 3 $cdot$ std”.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Plot of the results of <a class="reference internal" href="#structure_factor.utils._bin_statistics" title="structure_factor.utils._bin_statistics"><code class="xref py py-meth docutils literal notranslate"><span class="pre">_bin_statistics()</span></code></a> applied on <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code> .</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>matplotlib.plot</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="structure_factor.utils.plot_exact">
 <span class="sig-prename descclassname"><span class="pre">structure_factor.utils.</span></span><span class="sig-name descname"><span class="pre">plot_exact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/utils.html#plot_exact"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.utils.plot_exact" title="Permalink to this definition">¶</a></dt>
 <dd><p>Loglog plot of a callable function <code class="docutils literal notranslate"><span class="pre">y</span></code> evaluated on the vector <code class="docutils literal notranslate"><span class="pre">x</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>np.ndarray</em>) – x coordinate.</p></li>
+<li><p><strong>y</strong> (<em>callable</em>) – Function to evaluate on <code class="docutils literal notranslate"><span class="pre">x</span></code>.</p></li>
+<li><p><strong>axis</strong> (<em>matplotlib.axis</em>) – Axis on which to add the plot.</p></li>
+<li><p><strong>label</strong> (<em>regexp</em><em>, </em><em>optional</em>) – Label of the plot.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Plot of <code class="docutils literal notranslate"><span class="pre">y</span></code> with respect to <code class="docutils literal notranslate"><span class="pre">x</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>matplotlib.plot</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="structure_factor.utils.plot_approximation">
 <span class="sig-prename descclassname"><span class="pre">structure_factor.utils.</span></span><span class="sig-name descname"><span class="pre">plot_approximation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linestyle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">marker</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">markersize</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/utils.html#plot_approximation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.utils.plot_approximation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Loglog plot of <code class="docutils literal notranslate"><span class="pre">y</span></code> w.r.t. <code class="docutils literal notranslate"><span class="pre">x</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>np.ndarray</em>) – x coordinate.</p></li>
+<li><p><strong>y</strong> (<em>np.ndarray</em>) – y coordinate.</p></li>
+<li><p><strong>axis</strong> (<em>matplotlib.axis</em>) – Axis on which to add the plot.</p></li>
+<li><p><strong>label</strong> (<em>regexp</em><em>, </em><em>optional</em>) – Label of the plot.</p></li>
+<li><p><strong>color</strong> (<em>matplotlib.color</em>) – Color of the plot. see <a class="reference external" href="https://matplotlib.org/2.1.1/api/_as_gen/matplotlib.pyplot.plot.html">color</a> .</p></li>
+<li><p><strong>linestyle</strong> (<em>tuple</em>) – <p>Style of the plot. see <a class="reference external" href="https://matplotlib.org/stable/gallery/lines_bars_and_markers/linestyles.html">linestyle</a>.</p>
+</p></li>
+<li><p><strong>marker</strong> (<em>matplotlib.marker</em>) – Marker of <a class="reference external" href="https://matplotlib.org/stable/api/markers_api.html">marker</a>.</p></li>
+<li><p><strong>markersize</strong> (<em>float</em>) – Marker size.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Loglog plot of <code class="docutils literal notranslate"><span class="pre">y</span></code> w.r.t. <code class="docutils literal notranslate"><span class="pre">x</span></code></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>matplotlib.plot</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="structure_factor.utils.plot_si_showcase">
-<span class="sig-prename descclassname"><span class="pre">structure_factor.utils.</span></span><span class="sig-name descname"><span class="pre">plot_si_showcase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">norm_k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">si</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exact_sf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error_bar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">binning_params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/utils.html#plot_si_showcase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.utils.plot_si_showcase" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">structure_factor.utils.</span></span><span class="sig-name descname"><span class="pre">plot_si_showcase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k_norm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">si</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exact_sf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error_bar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">binning_params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/utils.html#plot_si_showcase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.utils.plot_si_showcase" title="Permalink to this definition">¶</a></dt>
 <dd><p>Loglog plot of the results of the scattering intensity <a class="reference internal" href="structure_factor.html#structure_factor.structure_factor.StructureFactor.scattering_intensity" title="structure_factor.structure_factor.StructureFactor.scattering_intensity"><code class="xref py py-meth docutils literal notranslate"><span class="pre">scattering_intensity()</span></code></a>, with the means and error bars over specific number of bins found via <a class="reference internal" href="#structure_factor.utils._bin_statistics" title="structure_factor.utils._bin_statistics"><code class="xref py py-func docutils literal notranslate"><span class="pre">_bin_statistics()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>k_norm</strong> (<em>np.ndarray</em>) – Wavenumbers.</p></li>
+<li><p><strong>si</strong> (<em>np.ndarray</em>) – Scattering intensity corresponding to <code class="docutils literal notranslate"><span class="pre">k_norm</span></code>.</p></li>
+<li><p><strong>axis</strong> (<em>matplotlib.axis</em><em>, </em><em>optional</em>) – Axis on which to add the plot. Defaults to None.</p></li>
+<li><p><strong>exact_sf</strong> (<em>callable</em><em>, </em><em>optional</em>) – Structure factor of the point process. Defaults to None.</p></li>
+<li><p><strong>error_bar</strong> (<em>bool</em><em>, </em><em>optional</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, <code class="docutils literal notranslate"><span class="pre">k_norm</span></code> and correspondingly <code class="docutils literal notranslate"><span class="pre">si</span></code> are divided into sub-intervals (bins). Over each bin, the mean and the standard deviation of <code class="docutils literal notranslate"><span class="pre">si</span></code> are derived and visualized on the plot. Note that each error bar corresponds to the mean +/- 3 standard deviation. To specify the number of bins, add it to the kwargs argument <code class="docutils literal notranslate"><span class="pre">binning_params</span></code>. For more details see <a class="reference internal" href="#structure_factor.utils._bin_statistics" title="structure_factor.utils._bin_statistics"><code class="xref py py-meth docutils literal notranslate"><span class="pre">_bin_statistics()</span></code></a>. Defaults to False.</p></li>
+<li><p><strong>file_name</strong> (<em>str</em><em>, </em><em>optional</em>) – Name used to save the figure. The available output formats depend on the backend being used. Defaults to “”.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="structure_factor.utils.plot_si_imshow">
-<span class="sig-prename descclassname"><span class="pre">structure_factor.utils.</span></span><span class="sig-name descname"><span class="pre">plot_si_imshow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">norm_k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">si</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/utils.html#plot_si_imshow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.utils.plot_si_imshow" title="Permalink to this definition">¶</a></dt>
-<dd><p>Color level plot, centered on zero.</p>
+<span class="sig-prename descclassname"><span class="pre">structure_factor.utils.</span></span><span class="sig-name descname"><span class="pre">plot_si_imshow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k_norm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">si</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/utils.html#plot_si_imshow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.utils.plot_si_imshow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Color level 2D plot, centered on zero.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>k_norm</strong> (<em>np.ndarray</em>) – Wavenumbers.</p></li>
+<li><p><strong>si</strong> (<em>np.ndarray</em>) – Scattering intensity corresponding to <code class="docutils literal notranslate"><span class="pre">k_norm</span></code>.</p></li>
+<li><p><strong>axis</strong> (<em>matplotlib.axis</em>) – Axis on which to add the plot.</p></li>
+<li><p><strong>file_name</strong> (<em>str</em><em>, </em><em>optional</em>) – Name used to save the figure. The available output formats depend on the backend being used. Defaults to “”.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="structure_factor.utils.plot_si_all">
-<span class="sig-prename descclassname"><span class="pre">structure_factor.utils.</span></span><span class="sig-name descname"><span class="pre">plot_si_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">point_pattern</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">norm_k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">si</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exact_sf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error_bar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_res</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">binning_params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/utils.html#plot_si_all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.utils.plot_si_all" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">structure_factor.utils.</span></span><span class="sig-name descname"><span class="pre">plot_si_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">point_pattern</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k_norm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">si</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exact_sf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error_bar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_res</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">binning_params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/utils.html#plot_si_all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.utils.plot_si_all" title="Permalink to this definition">¶</a></dt>
 <dd><p>Construct 3 subplots: point pattern, associated scattering intensity plot, associated scattering intensity color level (only for 2D point processes).</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="structure_factor.utils._compute_k_min">
-<span class="sig-prename descclassname"><span class="pre">structure_factor.utils.</span></span><span class="sig-name descname"><span class="pre">_compute_k_min</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r_max</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step_size</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/utils.html#_compute_k_min"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.utils._compute_k_min" title="Permalink to this definition">¶</a></dt>
-<dd><p>Estimate threshold of confidence for the approximation of the Hankel transform using Ogata method. i.e., minimum confidence k for which the approximation of the Hankel transform by Ogata quadrature is doable <span id="id2">[<a class="reference internal" href="bibliography/index.html#id6" title="H. Ogata. A numerical integration formula based on the bessel functions. Research Institute for Mathematical Sciences, 2005. doi:10.2977/prims/1145474602.">Oga05</a>]</span>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>r_max</strong> (<em>float</em>) – Maximum radius on which the input function <span class="math notranslate nohighlight">\(f\)</span> to be Hankel transformed was evaluated before the interpolation.</p></li>
-<li><p><strong>step_size</strong> (<em>float</em>) – Stepsize used in the quadrature of Ogata.</p></li>
+<li><p><strong>point_pattern</strong> (<a class="reference internal" href="point_pattern.html#structure_factor.point_pattern.PointPattern" title="structure_factor.point_pattern.PointPattern"><code class="xref py py-class docutils literal notranslate"><span class="pre">PointPattern</span></code></a>) – Object of type PointPattern containing a realization <code class="docutils literal notranslate"><span class="pre">point_pattern.points</span></code> of a point process, the window where the points were simulated <code class="docutils literal notranslate"><span class="pre">point_pattern.window</span></code> and (optionally) the intensity of the point process <code class="docutils literal notranslate"><span class="pre">point_pattern.intensity</span></code></p></li>
+<li><p><strong>k_norm</strong> (<em>np.ndarray</em>) – Wavenumbers.</p></li>
+<li><p><strong>si</strong> (<em>np.ndarray</em>) – Scattering intensity corresponding to <code class="docutils literal notranslate"><span class="pre">k_norm</span></code>.</p></li>
+<li><p><strong>exact_sf</strong> (<em>callable</em><em>, </em><em>optional</em>) – Structure factor of the point process. Defaults to None.</p></li>
+<li><p><strong>error_bar</strong> (<em>bool</em><em>, </em><em>optional</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, <code class="docutils literal notranslate"><span class="pre">k_norm</span></code> and correspondingly <code class="docutils literal notranslate"><span class="pre">si</span></code> are divided into sub-intervals (bins). Over each bin, the mean and the standard deviation of <code class="docutils literal notranslate"><span class="pre">si</span></code> are derived and visualized on the plot. Note that each error bar corresponds to the mean +/- 3 standard deviation. To specify the number of bins, add it to the kwargs argument <code class="docutils literal notranslate"><span class="pre">binning_params</span></code>. For more details see <a class="reference internal" href="#structure_factor.utils._bin_statistics" title="structure_factor.utils._bin_statistics"><code class="xref py py-meth docutils literal notranslate"><span class="pre">_bin_statistics()</span></code></a>. Defaults to False.</p></li>
+<li><p><strong>file_name</strong> (<em>str</em><em>, </em><em>optional</em>) – Name used to save the figure. The available output formats depend on the backend being used. Defaults to “”.</p></li>
+<li><p><strong>window_res</strong> (<a class="reference internal" href="spatial_windows.html#structure_factor.spatial_windows.AbstractSpatialWindow" title="structure_factor.spatial_windows.AbstractSpatialWindow"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractSpatialWindow</span></code></a>, optional) – New restriction window. It is useful when the sample of points is large, so for time and visualization purposes, it is better to restrict the plot of the point process to a smaller window. Defaults to None.</p></li>
 </ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Upper bound of k.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>float</p>
 </dd>
 </dl>
 </dd></dl>
@@ -299,13 +388,40 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="structure_factor.utils.plot_pcf">
 <span class="sig-prename descclassname"><span class="pre">structure_factor.utils.</span></span><span class="sig-name descname"><span class="pre">plot_pcf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pcf_dataframe</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exact_pcf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/utils.html#plot_pcf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.utils.plot_pcf" title="Permalink to this definition">¶</a></dt>
-<dd><p>Plot DataFrame result.</p>
+<dd><p>Plot the columns a DataFrame (excluding the first) with respect to the first columns.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pcf_dataframe</strong> (<em>pandas.DataFrame</em>) – Output DataFrame of the method <a class="reference internal" href="structure_factor.html#structure_factor.structure_factor.StructureFactor.compute_pcf" title="structure_factor.structure_factor.StructureFactor.compute_pcf"><code class="xref py py-meth docutils literal notranslate"><span class="pre">compute_pcf()</span></code></a>.</p></li>
+<li><p><strong>exact_pcf</strong> (<em>callable</em>) – Function representing the theoretical pair correlation function of the point process.</p></li>
+<li><p><strong>file_name</strong> (<em>str</em>) – Name used to save the figure. The available output formats depend on the backend being used.</p></li>
+<li><p><strong>Args</strong> (<em>Keyword</em>) – kwargs (dict): Keyword arguments of the function <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.plot.line.html">pandas.DataFrame.plot.line</a>.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="structure_factor.utils.plot_sf_hankel_quadrature">
-<span class="sig-prename descclassname"><span class="pre">structure_factor.utils.</span></span><span class="sig-name descname"><span class="pre">plot_sf_hankel_quadrature</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">norm_k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k_min</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exact_sf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error_bar</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'$\\widehat{S}_{H}$'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">binning_params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/utils.html#plot_sf_hankel_quadrature"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.utils.plot_sf_hankel_quadrature" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">structure_factor.utils.</span></span><span class="sig-name descname"><span class="pre">plot_sf_hankel_quadrature</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k_norm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k_norm_min</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exact_sf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error_bar</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'$\\widehat{S}_{H}$'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">binning_params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/utils.html#plot_sf_hankel_quadrature"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.utils.plot_sf_hankel_quadrature" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot the approximations of the structure factor (results of <code class="xref py py-meth docutils literal notranslate"><span class="pre">hankel_quadrature()</span></code>) with means and error bars over bins, see <a class="reference internal" href="#structure_factor.utils._bin_statistics" title="structure_factor.utils._bin_statistics"><code class="xref py py-meth docutils literal notranslate"><span class="pre">_bin_statistics()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>k_norm</strong> (<em>np.array</em>) – Vector of wavenumbers (i.e., norms of waves) on which the structure factor has been approximated.</p></li>
+<li><p><strong>sf</strong> (<em>np.array</em>) – Approximation of the structure factor corresponding to <code class="docutils literal notranslate"><span class="pre">k_norm</span></code>.</p></li>
+<li><p><strong>axis</strong> (<em>matplotlib.axis</em>) – Support axis of the plots.</p></li>
+<li><p><strong>k_norm_min</strong> (<em>float</em>) – Estimated lower bound of the wavenumbers (only when <code class="docutils literal notranslate"><span class="pre">sf</span></code> was approximated using <strong>Ogata quadrature</strong>).</p></li>
+<li><p><strong>exact_sf</strong> (<em>callable</em>) – Theoretical structure factor of the point process.</p></li>
+<li><p><strong>error_bar</strong> (<em>bool</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, <code class="docutils literal notranslate"><span class="pre">k_norm</span></code> and correspondingly <code class="docutils literal notranslate"><span class="pre">si</span></code> are divided into sub-intervals (bins). Over each bin, the mean and the standard deviation of <code class="docutils literal notranslate"><span class="pre">si</span></code> are derived and visualized on the plot. Note that each error bar corresponds to the mean +/- 3 standard deviation. To specify the number of bins, add it to the kwargs argument <code class="docutils literal notranslate"><span class="pre">binning_params</span></code>. For more details see <a class="reference internal" href="#structure_factor.utils._bin_statistics" title="structure_factor.utils._bin_statistics"><code class="xref py py-meth docutils literal notranslate"><span class="pre">_bin_statistics()</span></code></a>. Defaults to False.</p></li>
+<li><p><strong>file_name</strong> (<em>str</em>) – Name used to save the figure. The available output formats depend on the backend being used.</p></li>
+<li><p><strong>label</strong> (<em>regexp</em><em>, </em><em>optional</em>) – Label of the plot. Default to r”$widehat{S}_{H}$”.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><p><strong>binning_params</strong> – (dict): Used when <code class="docutils literal notranslate"><span class="pre">error_bar=True</span></code>, by the method <code class="xref py py-meth docutils literal notranslate"><span class="pre">utils_bin_statistics()</span></code> as keyword arguments (except <code class="docutils literal notranslate"><span class="pre">&quot;statistic&quot;</span></code>) of <code class="docutils literal notranslate"><span class="pre">scipy.stats.binned_statistic</span></code>.</p>
+</dd>
+</dl>
 </dd></dl>
 
 </section>

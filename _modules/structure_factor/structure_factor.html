@@ -536,6 +536,9 @@
 
 <span class="sd">            file_name (str, optional): Name used to save the figure. The available output formats depend on the backend being used. Defaults to &quot;&quot;.</span>
 
+<span class="sd">        Keyword Args:</span>
+<span class="sd">            binning_params: (dict): Used when ``error_bar=True``, by the method :py:meth:`~structure_factor.utils_bin_statistics` as keyword arguments (except ``&quot;statistic&quot;``) of ``scipy.stats.binned_statistic``.</span>
+
 <span class="sd">        Returns:</span>
 <span class="sd">            matplotlib.plot: Plot the output of :py:meth:`~structure_factor.structure_factor.StructureFactor.hankel_quadrature`.</span>
 
