@@ -22,7 +22,7 @@
 
 Hyperuniformity is the study of stationary point processes with a sub-Poisson variance of the number of points in a large window.
 To study the hyperuniformity of a given point process, a common practice in statistical physics is to estimate a spectral measure called the **structure factor**, the behavior of which around zero is a sign of hyperuniformity. The structure factor of a point process is defined via the Fourier transform of its total correlation function, and a point process is hyperuniform if its structure factor vanishes at zero.
-This Python toolbox gathers many estimators of the structure factor, along with a numerical test of effective hyperuniformity and the corresponding possible class of hyperuniformity.
+This Python toolbox gathers many estimators of the structure factor, along with a numerical test of effective hyperuniformity and a test for identifying the possible hyperuniformity class.
 
 ---
 
