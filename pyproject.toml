@@ -47,6 +47,8 @@ matplotlib = "^3.4.2"
 pandas = "^1.2.4"
 spatstat-interface = "^0.1.0"
 
+pickle5 = { version = ">0.0", python = ">=3.5,<3.8" }
+
 # Optional dependencies
 # poetry add name --optional
 
