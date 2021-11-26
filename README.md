@@ -59,7 +59,7 @@ This Python toolbox gathers many estimators of the structure factor, along with 
 
 ## Installation
 
-`structure-factor` works with [Python 3.8+](https://www.python.org/).
+`structure-factor` works with [![Python >=3.7.1,<3.10](https://img.shields.io/badge/python->=3.7.1,<3.10-blue.svg)](https://www.python.org/downloads/release/python-371/).
 
 Once installed it can be called from
 
