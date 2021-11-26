@@ -5,7 +5,7 @@
 [![docs-build](https://github.com/For-a-few-DPPs-more/structure-factor/actions/workflows/docs.yml/badge.svg)](https://github.com/For-a-few-DPPs-more/structure-factor/actions/workflows/docs.yml)
 [![docs-page](https://img.shields.io/badge/docs-latest-blue)](https://for-a-few-dpps-more.github.io/structure-factor/)
 [![PyPi version](https://badgen.net/pypi/v/structure-factor/)](https://pypi.org/project/structure-factor/)
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Python >=3.6,<3.10](https://img.shields.io/badge/python->=3.6,<3.10-blue.svg)](https://www.python.org/downloads/release/python-360/)
 
 > Approximate the structure factor of a stationary point process, test its effective hyperuniformity, and identify its class of hyperuniformity.
 
@@ -47,7 +47,7 @@ This Python toolbox gathers many estimators of the structure factor, along with 
 
   ```toml
   [tool.poetry.dependencies]
-  python = ">=3.8,<3.10"
+  python = ">=3.6,<3.10"
 
   numpy = "^1.20.3"
   scipy = "^1.6.3"
