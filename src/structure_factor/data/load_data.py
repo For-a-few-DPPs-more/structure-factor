@@ -1,8 +1,13 @@
-import pickle
+import sys
 from importlib.resources import read_binary
 
 from structure_factor.point_pattern import PointPattern
 from structure_factor.spatial_windows import BallWindow, BoxWindow
+
+if sys.version_info < (3, 8):
+    import pickle5 as pickle
+else:
+    import pickle
 
 
 def load_ginibre():
