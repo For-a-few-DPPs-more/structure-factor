@@ -263,7 +263,7 @@ class BoxWindow(AbstractSpatialWindow):
             raise NotImplementedError("spatstat only handles 2D windows")
         spatstat = SpatstatInterface(update=False)
         spatstat.import_package("geom", update=False)
-        a, b = self._bounds
+        a, b = self.bounds
         x = robjects.vectors.FloatVector(a)
         y = robjects.vectors.FloatVector(b)
         return spatstat.geom.owin(xrange=x, yrange=y, **params)
