@@ -203,3 +203,24 @@ def test_check_cubic_window_raises_error_if_not_BoxWindow():
     ball = BallWindow(center=[0, 0], radius=1)
     with pytest.raises(TypeError):
         check_cubic_window(ball)
+
+
+@pytest.mark.parametrize("center, radius", [([0, 0], 5), ([-1, 3], 6)])
+def test_convert_to_spatstat_owin_2D_ball_window(center, radius):
+    window = BallWindow(center=center, radius=radius)
+    window_r = window.to_spatstat_owin()
+    x_range = [center[0] - radius, center[0] + radius]
+    y_range = [center[1] - radius, center[1] + radius]
+    assert list(window_r[0]) == ["polygonal"]
+    assert list(window_r[1]) == x_range
+    assert list(window_r[2]) == y_range
+
+
+@pytest.mark.parametrize("x_bounds, y_bounds", [([-5, 5], [-5, 5]), ([0, 10], [-2, 1])])
+def test_convert_to_spatstat_owin__2D_box_window(x_bounds, y_bounds):
+    bounds = [x_bounds, y_bounds]
+    window = BoxWindow(bounds)
+    window_r = window.to_spatstat_owin()
+    assert list(window_r[0]) == ["rectangle"]
+    assert list(window_r[1]) == x_bounds
+    assert list(window_r[2]) == y_bounds
