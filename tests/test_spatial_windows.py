@@ -208,19 +208,15 @@ def test_check_cubic_window_raises_error_if_not_BoxWindow():
 @pytest.mark.parametrize("center, radius", [([0, 0], 5), ([-1, 3], 6)])
 def test_convert_to_spatstat_owin_2D_ball_window(center, radius):
     window = BallWindow(center=center, radius=radius)
+    bounds = np.add.outer(window.center, [-radius, radius])
     window_r = window.to_spatstat_owin()
-    x_range = [center[0] - radius, center[0] + radius]
-    y_range = [center[1] - radius, center[1] + radius]
-    assert list(window_r[0]) == ["polygonal"]
-    assert list(window_r[1]) == x_range
-    assert list(window_r[2]) == y_range
+    window_r_bounds = np.array([window_r[1], window_r[2]])
+    np.testing.assert_array_equal(window_r_bounds, bounds)
 
 
-@pytest.mark.parametrize("x_bounds, y_bounds", [([-5, 5], [-5, 5]), ([0, 10], [-2, 1])])
-def test_convert_to_spatstat_owin__2D_box_window(x_bounds, y_bounds):
-    bounds = [x_bounds, y_bounds]
+@pytest.mark.parametrize("bounds", [([[-5, 5], [-5, 5]]), ([[0, 10], [-2, 1]])])
+def test_convert_to_spatstat_owin__2D_box_window(bounds):
     window = BoxWindow(bounds)
     window_r = window.to_spatstat_owin()
-    assert list(window_r[0]) == ["rectangle"]
-    assert list(window_r[1]) == x_bounds
-    assert list(window_r[2]) == y_bounds
+    window_r_bounds = np.array([window_r[1], window_r[2]])
+    np.testing.assert_array_equal(window_r_bounds, window.bounds)
