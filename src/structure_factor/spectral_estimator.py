@@ -35,18 +35,13 @@ def tapered_periodogram(k, points, taper, intensity):
 
         where :math:`\mathbf{k} \in \mathbb{R}^d` is a wave vector.
     """
-    K = np.atleast_2d(k)
-    nb_k, _ = K.shape
-    # Compute sum_x h(x) exp(- i <k, x>)
-    hx_exp_ikx = tapered_DFT(k, points, taper)
-
-    periodogram = np.zeros(nb_k, dtype=float)
-    # | sum_x h(x) exp(- i <k, x>) |
-    np.abs(hx_exp_ikx, out=periodogram)
-    # (1/rho)*| sum_x h(x) exp(- i <k, x>) |^2
+    dft = tapered_DFT(k, points, taper)
+    # periodogram = (1/rho) * | dft |^2
+    periodogram = np.zeros_like(dft, dtype=float)
+    np.abs(dft, out=periodogram)
     np.square(periodogram, out=periodogram)
-
-    return periodogram / intensity
+    periodogram /= intensity
+    return periodogram
 
 
 def tapered_DFT(k, points, taper):
@@ -67,26 +62,20 @@ def tapered_DFT(k, points, taper):
     nb_k, _ = K.shape
     nb_x, _ = X.shape
 
+    # dft = sum_x h(x) exp(- i <k, x>)
     hx_exp_ikx = np.zeros((nb_k, nb_x), dtype=complex)
     # i <k, x>
-    # np.dot(K, X.T, out=hx_exp_ikx.imag)
     hx_exp_ikx.imag = np.dot(K, X.T)
     # - i <k, x>
     np.conj(hx_exp_ikx, out=hx_exp_ikx)
     # exp(- i <k, x>)
     np.exp(hx_exp_ikx, out=hx_exp_ikx)
-
-    # taper
-    if callable(taper):
-        hx = taper(X)
-    else:
-        hx = taper
+    # h(x) exp(- i <k, x>)
+    hx = taper(X) if callable(taper) else taper
     hx_exp_ikx *= hx
-    # periodogram
-    periodogram = np.zeros(nb_k, dtype=float)
-    #  sum_x h(x) exp(- i <k, x>)
-    periodogram = np.sum(hx_exp_ikx, axis=1)
-    return periodogram
+
+    dft = np.sum(hx_exp_ikx, axis=1)
+    return dft
 
 
 def scattering_intensity(k, points, window_volume, intensity):
@@ -119,5 +108,5 @@ def scattering_intensity(k, points, window_volume, intensity):
         where :math:`\mathbf{k} \in \mathbb{R}^d` is a wave vector.
         Equivalently, to prevent additional bias the factor N, in  :math:`\frac{1}{N}` could be replaced by the product of, the intensity of the point process and the volume of the window containing the realization :math:`\{\mathbf{x}_i\}_{i=1}^N`.
     """
-    taper = 1 / np.sqrt(window_volume)
+    taper = 1.0 / np.sqrt(window_volume)
     return tapered_periodogram(k, points, taper, intensity)
