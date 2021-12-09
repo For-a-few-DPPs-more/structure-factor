@@ -93,3 +93,43 @@ def test_allowed_wave_vectors(d, L, max_k, meshgrid_size, result):
 def test_compute_scattering_intensity(k, points, expected):
     computed = utils.compute_scattering_intensity(k, points)
     np.testing.assert_almost_equal(computed, expected)
+
+
+@pytest.mark.parametrize(
+    "d, k, L, expected",
+    [
+        (
+            3,
+            np.array(([3 / 5, 3 / 5, 3 / 5], [2 / 5, 2 / 5, 2 / 5])),
+            5,
+            np.array([0, 0]),
+        ),
+        (
+            4,
+            np.array([[1 / (2 * 6), 1 / (2 * 6), 1 / (2 * 6), 1 / (2 * 6)]]),
+            6,
+            ((2 * 6) / (np.pi * np.sqrt(6))) ** 4,
+        ),
+    ],
+)
+def test_H_0(d, k, L, expected):
+    H_0 = utils.H_0(d, k, L)
+    np.testing.assert_almost_equal(H_0, expected)
+
+
+@pytest.mark.parametrize(
+    "h_0, k, points, expected",
+    [
+        (0, 7, np.random.randn(20, 1), 0),
+        (1 / 20, np.array([[0, 0, 0, 0]]), np.random.randn(10, 4), 10 / 20),
+        (
+            1 / 10,
+            np.array([[1 / 2, 1 / 2, 1 / 2], [1, 1, 1]]),
+            np.array([[1, 1, 1], [3, 3, 3], [7, 7, 7]]),
+            np.array([-3 / 10, 3 / 10]),
+        ),
+    ],
+)
+def test_J_0(h_0, k, points, expected):
+    J_0 = utils.J_0(h_0, k, points)
+    np.testing.assert_almost_equal(J_0, expected)
