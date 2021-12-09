@@ -1,8 +1,7 @@
 import numpy as np
+import structure_factor.utils as utils
 
 
-# ! Draft of code
-# todo play with and test it
 def tapered_periodogram(k, points, taper, intensity):
     r"""Compute the spectral estimator :math:`S_h(k)` associated to the taper :math:`h`.
 
@@ -79,7 +78,7 @@ def tapered_DFT(k, points, taper):
 
 
 def scattering_intensity(k, points, window_volume, intensity):
-    r"""Compute the scattering intensity of ``points`` at each wavevector in ``k``.
+    r"""Compute the scattering intensity of ``points`` at each wavevector in ``k``. Particular case of :py:meth:`tapered_periodogram` for the constant taper 1/|W|, where |W| is the volume of the window containing ``points``.
 
     Args:
         k (np.ndarray): np.ndarray of d columns (where d is the dimension of the space containing ``points``). Each row is a wave vector on which the spectral estimator is to be evaluated.
@@ -108,5 +107,58 @@ def scattering_intensity(k, points, window_volume, intensity):
         where :math:`\mathbf{k} \in \mathbb{R}^d` is a wave vector.
         Equivalently, to prevent additional bias the factor N, in  :math:`\frac{1}{N}` could be replaced by the product of, the intensity of the point process and the volume of the window containing the realization :math:`\{\mathbf{x}_i\}_{i=1}^N`.
     """
-    taper = 1.0 / np.sqrt(window_volume)
-    return tapered_periodogram(k, points, taper, intensity)
+    h0 = 1.0 / np.sqrt(window_volume)
+    return tapered_periodogram(k, points, h0, intensity)
+
+
+def debiased_tapered_periodogram(k, points, taper, intensity, ft_taper):
+    r"""Debiased periodogram of a point process (x) for a specific taper (h) i.e., computes abs(sum_x h(x) exp(- i <k, x>) - rho*F(h)(k))**2.
+
+    Args:
+        k (np.ndarray): np.ndarray of d columns (where d is the dimension of the space containing ``points``). Each row is a wave vector on which the spectral estimator is to be evaluated.
+
+        points (np.ndarray): np.ndarray of d columns where each row is a point from the realization of the point process.
+
+        taper (callable or float): taper :math:`h`.
+
+        intensity (float): Intensity of the point process :math:`\rho`.
+
+        ft_taper (np.ndarray): Fourier transform of `taper` evaluated on `k`
+
+    Returns:
+        numpy.ndarray: Evaluation(s) of the debiased periodogram on ``k``.
+    """
+
+    # dft of the taper
+    dft = tapered_DFT(k, points, taper)
+    debiased_periodogram = np.zeros_like(dft, dtype=float)
+    # removing biase
+    debiased_periodogram = dft - intensity * ft_taper
+
+    # debiased periodogram
+    np.abs(debiased_periodogram, out=debiased_periodogram)
+    np.square(debiased_periodogram, out=debiased_periodogram)
+    debiased_periodogram /= intensity
+    return np.real(debiased_periodogram)
+
+
+def debiased_scattering_intensity(k, points, intensity, window):
+    r"""Debiased scattering intensity. Particular case of :py:meth:`debiased_tapered_periodogram` for the constant taper 1/|W|, where |W| is the volume of the window containing ``points``.
+
+    Args:
+        k (np.ndarray): np.ndarray of d columns (where d is the dimension of the space containing ``points``). Each row is a wave vector on which the spectral estimator is to be evaluated.
+
+        points (np.ndarray): np.ndarray of d columns where each row is a point from the realization of the point process.
+
+        intensity (float): Intensity of the point process :math:`\rho`.
+
+        window (:py:class:`~structure_factor.spatial_windows.AbstractSpatialWindow`): Support window of the realization of the point process.
+
+    Returns:
+        numpy.ndarray: Evaluation(s) of the debiased scattering intensity on ``k``.
+    """
+    # taper
+    h0 = 1.0 / np.sqrt(window.volume)
+    # Fourier transform of the taper
+    ft_h0 = utils.ft_h0(k, window)
+    return np.real(debiased_tapered_periodogram(k, points, h0, intensity, ft_h0))
