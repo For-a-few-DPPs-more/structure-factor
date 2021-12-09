@@ -100,13 +100,27 @@ def test_compute_scattering_intensity(k, points, expected):
     [
         (
             3,
-            np.array(([3 / 5, 3 / 5, 3 / 5], [2 / 5, 2 / 5, 2 / 5])),
+            np.array(
+                (
+                    [2 * np.pi * 3 / 5, 2 * np.pi * 3 / 5, 2 * np.pi * 3 / 5],
+                    [2 * np.pi * 2 / 5, 2 * np.pi * 2 / 5, 2 * np.pi * 2 / 5],
+                )
+            ),
             5,
             np.array([0, 0]),
         ),
         (
             4,
-            np.array([[1 / (2 * 6), 1 / (2 * 6), 1 / (2 * 6), 1 / (2 * 6)]]),
+            np.array(
+                [
+                    [
+                        (2 * np.pi) / (2 * 6),
+                        (2 * np.pi) / (2 * 6),
+                        (2 * np.pi) / (2 * 6),
+                        (2 * np.pi) / (2 * 6),
+                    ]
+                ]
+            ),
             6,
             ((2 * 6) / (np.pi * np.sqrt(6))) ** 4,
         ),
@@ -120,11 +134,11 @@ def test_H_0(d, k, L, expected):
 @pytest.mark.parametrize(
     "h_0, k, points, expected",
     [
-        (0, 7, np.random.randn(20, 1), 0),
+        (0, 2 * np.pi * 7, np.random.randn(20, 1), 0),
         (1 / 20, np.array([[0, 0, 0, 0]]), np.random.randn(10, 4), 10 / 20),
         (
             1 / 10,
-            np.array([[1 / 2, 1 / 2, 1 / 2], [1, 1, 1]]),
+            2 * np.pi * np.array([[1 / 2, 1 / 2, 1 / 2], [1, 1, 1]]),
             np.array([[1, 1, 1], [3, 3, 3], [7, 7, 7]]),
             np.array([-3 / 10, 3 / 10]),
         ),
