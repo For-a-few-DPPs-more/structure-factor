@@ -223,6 +223,7 @@ def allowed_wave_vectors(d, L, k_max, meshgrid_shape=None):
     return k, K
 
 
+#! to delete and its test. replaced in spectral estimator
 def compute_scattering_intensity(k, points):
     r"""Compute the scattering intensity of ``points`` at each wavevector in ``k``.
 
@@ -261,6 +262,7 @@ def compute_scattering_intensity(k, points):
     return si
 
 
+#! to delete and its test. replaced in spectral estimator
 def H_0(d, k, L):
     r"""Fourier transform of the indicator of a **cubic** box window divided by the square root of the volume of the window
     #todo generalize to any box window
@@ -270,7 +272,7 @@ def H_0(d, k, L):
         d: dimension of the space
     """
     window_volume = L ** d
-    s_k = np.sin(np.pi * k * L) / (np.pi * k)
+    s_k = 2 * np.sin(k * L / 2) / k
     return np.prod(s_k, axis=1) / np.sqrt(window_volume)
 
 
@@ -283,7 +285,7 @@ def J_0(h_0, k, points):
         points ([type]): m*d array containing the points of the point process.
 
     """
-    return np.sum(np.exp(-1j * 2 * np.pi * np.dot(k, points.T)), axis=1) * h_0
+    return np.sum(np.exp(-1j * np.dot(k, points.T)), axis=1) * h_0
 
 
 def plot_poisson(x, axis, c="k", linestyle=(0, (5, 10)), label="Poisson"):
