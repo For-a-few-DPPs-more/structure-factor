@@ -2,6 +2,7 @@ import numpy as np
 import pytest
 
 import structure_factor.utils as utils
+from structure_factor.spatial_windows import BoxWindow
 
 
 # todo: fix successive np.testing.assert_array_equal calls, should be a single assert
@@ -96,21 +97,19 @@ def test_compute_scattering_intensity(k, points, expected):
 
 
 @pytest.mark.parametrize(
-    "d, k, L, expected",
+    "k, window, expected",
     [
         (
-            3,
             np.array(
                 (
                     [2 * np.pi * 3 / 5, 2 * np.pi * 3 / 5, 2 * np.pi * 3 / 5],
                     [2 * np.pi * 2 / 5, 2 * np.pi * 2 / 5, 2 * np.pi * 2 / 5],
                 )
             ),
-            5,
+            BoxWindow(bounds=[[0, 5], [2, 7], [-1, 4]]),
             np.array([0, 0]),
         ),
         (
-            4,
             np.array(
                 [
                     [
@@ -121,13 +120,14 @@ def test_compute_scattering_intensity(k, points, expected):
                     ]
                 ]
             ),
-            6,
+            BoxWindow(bounds=[[0, 6], [-6, 0], [-1, 5], [3, 9]]),
             ((2 * 6) / (np.pi * np.sqrt(6))) ** 4,
         ),
+        (np.array([np.pi, 2.8]), BoxWindow(bounds=[[2, 4], [7, 8]]), 0),
     ],
 )
-def test_H_0(d, k, L, expected):
-    H_0 = utils.H_0(d, k, L)
+def test_ft_h0(k, window, expected):
+    H_0 = utils.ft_h0(k, window)
     np.testing.assert_almost_equal(H_0, expected)
 
 
