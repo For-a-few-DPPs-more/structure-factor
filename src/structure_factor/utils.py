@@ -263,16 +263,21 @@ def compute_scattering_intensity(k, points):
 
 
 #! to delete and its test. replaced in spectral estimator
-def H_0(d, k, L):
-    r"""Fourier transform of the indicator of a **cubic** box window divided by the square root of the volume of the window
-    #todo generalize to any box window
+def ft_h0(k, window):
+    r"""Fourier transform of the indicator of a box window divided by the square root of the volume of the window
+
     Args:
-        k ([type]): vector of shape n*d
-        L: length of the cubic window
-        d: dimension of the space
+
+        k (np.ndarray): np.ndarray of d columns (where d is the dimension of the space containing ``points``). Each row is a wave vector on which the spectral estimator is to be evaluated.
+
+        window (:py:class:`~structure_factor.spatial_windows.AbstractSpatialWindow`): Window.
+
+    Return:
+        numpy.array: The evaluated Fourier transform on `k`.
     """
-    window_volume = L ** d
-    s_k = 2 * np.sin(k * L / 2) / k
+    window_bounds = window.bounds
+    window_volume = window.volume
+    s_k = 2 * np.sin(k * np.diff(window_bounds).T / 2) / k
     return np.prod(s_k, axis=1) / np.sqrt(window_volume)
 
 
