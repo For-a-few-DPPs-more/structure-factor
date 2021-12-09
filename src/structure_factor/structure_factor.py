@@ -165,7 +165,7 @@ class StructureFactor:
         i_0 = (
             np.abs(
                 utils.J_0(h_0=h_0, k=k, points=points)
-                - intensity * utils.H_0(d=self.dimension, k=k, L=L)
+                - intensity * utils.ft_h0(k=k, window=window)
             )
             ** 2
         )
@@ -173,7 +173,7 @@ class StructureFactor:
         i_0 /= intensity
         i_0_2 = (
             np.abs(utils.J_0(h_0=h_0, k=k, points=points)) ** 2
-            - np.abs(intensity * utils.H_0(d=self.dimension, k=k, L=L)) ** 2
+            - np.abs(intensity * utils.ft_h0(k=k, window=window)) ** 2
         )
         i_0_2 /= intensity
         k_norm = np.linalg.norm(k, axis=1)
