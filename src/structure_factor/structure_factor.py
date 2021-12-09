@@ -153,6 +153,32 @@ class StructureFactor:
 
         return k_norm, si
 
+    def debiased_bartlett_periodogram(self, k):
+        points = self.point_pattern.points
+        intensity = self.point_pattern.intensity
+        window = self.point_pattern.window
+        L = np.diff(window.bounds[0])
+        n = points.shape[0]  # number of points
+        h_0 = 1 / np.sqrt(window.volume)  # h_0
+        if points.shape[1] != k.shape[1]:
+            raise ValueError("k and points should have same number of columns")
+        i_0 = (
+            np.abs(
+                utils.J_0(h_0=h_0, k=k, points=points)
+                - intensity * utils.H_0(d=self.dimension, k=k, L=L)
+            )
+            ** 2
+        )
+        # debiased periodogram
+        i_0 /= intensity
+        i_0_2 = (
+            np.abs(utils.J_0(h_0=h_0, k=k, points=points)) ** 2
+            - np.abs(intensity * utils.H_0(d=self.dimension, k=k, L=L)) ** 2
+        )
+        i_0_2 /= intensity
+        k_norm = np.linalg.norm(k, axis=1)
+        return k_norm, i_0, i_0_2
+
     def plot_scattering_intensity(
         self,
         k_norm,

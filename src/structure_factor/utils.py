@@ -261,6 +261,31 @@ def compute_scattering_intensity(k, points):
     return si
 
 
+def H_0(d, k, L):
+    r"""Fourier transform of the indicator of a **cubic** box window divided by the square root of the volume of the window
+    #todo generalize to any box window
+    Args:
+        k ([type]): vector of shape n*d
+        L: length of the cubic window
+        d: dimension of the space
+    """
+    window_volume = L ** d
+    s_k = np.sin(np.pi * k * L) / (np.pi * k)
+    return np.prod(s_k, axis=1) / np.sqrt(window_volume)
+
+
+def J_0(h_0, k, points):
+    r"""Particular case of equation (13) of ``Spectral estimation for spatial point patterns``, with h_0 the indicator of the window over the square root of the volume of the window.
+
+    Args:
+        h_0 ([type]): 1 over the square root of the volume of the window
+        k ([type]): n*d array (d is the dimension of the space containing the points) of waves
+        points ([type]): m*d array containing the points of the point process.
+
+    """
+    return np.sum(np.exp(-1j * 2 * np.pi * np.dot(k, points.T)), axis=1) * h_0
+
+
 def plot_poisson(x, axis, c="k", linestyle=(0, (5, 10)), label="Poisson"):
     r"""Plot the pair correlation function :math:`g_{poisson}` and the structure factor :math:`S_{poisson}` corresponding to the Poisson point process.
 
