@@ -1,6 +1,7 @@
 import numpy as np
 import pytest
 
+from structure_factor.point_pattern import PointPattern
 import structure_factor.utils as utils
 from structure_factor.data import load_data
 from structure_factor.spatial_windows import BoxWindow
@@ -24,46 +25,30 @@ def test_scattering_intensity(ginibre_pp):
     sf_pp = StructureFactor(ginibre_pp_box)
     k_norm, si = sf_pp.scattering_intensity(
         k_max=1,
-        meshgrid_shape=(4, 4),
+        meshgrid_shape=(2, 3),
     )
     expected_k_norm = np.array(
         [
             1.38230077,
-            1.04005223,
-            1.01313319,
             1.38230077,
             1.04005223,
-            0.50265482,
-            0.44428829,
             1.04005223,
             1.01313319,
-            0.44428829,
-            0.37699112,
             1.01313319,
             1.38230077,
-            1.04005223,
-            1.01313319,
             1.38230077,
         ]
     )
     expected_si = np.array(
         [
-            0.13647604,
-            0.32944414,
-            0.28438074,
-            1.23781715,
-            0.25049137,
-            0.27434747,
-            0.11169433,
-            0.05213884,
-            0.07547196,
-            0.02700638,
-            0.01302653,
-            0.27565412,
-            1.23781715,
-            0.07421566,
-            0.02024202,
-            0.13647604,
+            0.13642892,
+            1.23738984,
+            0.2504049,
+            0.05212084,
+            0.07544591,
+            0.27555896,
+            1.23738984,
+            0.13642892,
         ]
     )
     np.testing.assert_almost_equal(k_norm, expected_k_norm)
