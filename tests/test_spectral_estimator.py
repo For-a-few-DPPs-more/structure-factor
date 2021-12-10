@@ -1,11 +1,18 @@
 import numpy as np
 import pytest
-
+from structure_factor.point_pattern import PointPattern
 import structure_factor.spectral_estimator as spe
+from structure_factor.spatial_windows import BoxWindow
 
 
-def taper_function(x):
+def taper_1(x, window):
     return np.linalg.norm(x)
+
+
+def taper_2(x, window):
+    n = x.shape[0]
+    window_volume = window.volume
+    return np.linalg.norm(x, axis=1) * np.sqrt(n / window_volume)
 
 
 @pytest.mark.parametrize(
@@ -16,8 +23,8 @@ def taper_function(x):
         (
             np.array([[0, 0]]),
             np.array([[1, 3], [2, 0], [3, 7]]),
-            taper_function,
-            3 * taper_function(np.array([[1, 3], [2, 0], [3, 7]])),
+            taper_1,
+            3 * taper_1(np.array([[1, 3], [2, 0], [3, 7]]), 1),
         ),
         (
             2 * np.pi * np.array([[1 / 2, 1 / 2, 1 / 2], [1, 1, 1]]),
@@ -27,27 +34,35 @@ def taper_function(x):
         ),
     ],
 )
-def test_tapered_DFT(k, points, taper, expected):
-    tapered_DFT = spe.tapered_DFT(k, points, taper)
-    np.testing.assert_almost_equal(tapered_DFT, expected)
+def test_tapered_dft(k, points, taper, expected):
+    point_pattern = PointPattern(points)
+    tapered_dft = spe.tapered_dft(k, point_pattern, taper)
+    np.testing.assert_almost_equal(tapered_dft, expected)
 
 
 @pytest.mark.parametrize(
-    "k, points, window_volume, intensity ,expected",
+    "k, points, window, taper, expected ",
     [
-        (np.full((1, 2), 5), np.zeros((6, 2)), 3, 2, 6),
-        (np.full((1, 8), 2), np.zeros((6, 8)), 2, 3, 6),
         (
-            np.full((1, 2), 2 * np.pi),
-            np.ones((6, 2)),
-            6,
-            1,
-            6,
-        ),
-        (np.ones((1, 5)), np.zeros((8, 5)), 4, 2, 8),
-        (np.ones((1, 1)), np.zeros((12, 1)), 12, 1, 12),
+            np.array([[1, 2, 3]]),
+            np.array(
+                [[2 * np.pi, 2 * np.pi, 2 * np.pi], [4 * np.pi, 4 * np.pi, 4 * np.pi]]
+            ),
+            BoxWindow([[0, 10], [-2, 2], [3, 4]]),
+            taper_2(
+                np.array(
+                    [
+                        [2 * np.pi, 2 * np.pi, 2 * np.pi],
+                        [4 * np.pi, 4 * np.pi, 4 * np.pi],
+                    ]
+                ),
+                BoxWindow([[0, 10], [-2, 2], [3, 4]]),
+            ),
+            108 * np.pi ** 2,
+        )
     ],
 )
-def test_scattering_intensity(k, points, window_volume, intensity, expected):
-    computed = spe.scattering_intensity(k, points, window_volume, intensity)
-    np.testing.assert_almost_equal(computed, expected)
+def test_tapered_periodogram(k, points, window, taper, expected):
+    point_pattern = PointPattern(points, window)
+    tp = spe.tapered_periodogram(k, point_pattern, taper)
+    np.testing.assert_almost_equal(tp, expected)
