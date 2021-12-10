@@ -3,6 +3,30 @@ import numpy as np
 import structure_factor.utils as utils
 
 
+def undirected_debiased_tapered_periodogram(k, point_pattern, taper, ft_taper):
+    rho = point_pattern.intensity
+    window = point_pattern.window
+    perio = tapered_periodogram(k, point_pattern, taper=taper)
+    perio -= rho ** 2 * ft_taper(k, window)
+    return perio / rho
+
+
+def debiased_tapered_periodogram(k, point_pattern, taper, ft_taper):
+    rho = point_pattern.intensity
+    window = point_pattern.window
+    dft = tapered_DFT(k, point_pattern, taper=taper)
+    dft -= rho * ft_taper(k, window)
+    periodogram = periodogram_from_dft(dft)
+    return periodogram / rho
+
+
+def tapered_periodogram(k, point_pattern, taper):
+    rho = point_pattern.intensity
+    dft = tapered_DFT(k, point_pattern, taper=taper)
+    periodogram = periodogram_from_dft(dft)
+    return periodogram / rho
+
+
 def periodogram(k, point_pattern, taper=None, ft_taper=None):
     r"""Compute the spectral estimator :math:`S_h(k)` associated to the taper :math:`h`.
 
@@ -52,8 +76,6 @@ def periodogram(k, point_pattern, taper=None, ft_taper=None):
 
     Returns:
         numpy.ndarray: Evaluation(s) of the spectral estimator :math:`S_h(k)` at ``k``.
-
-
     """
     rho = point_pattern.intensity
     window = point_pattern.window

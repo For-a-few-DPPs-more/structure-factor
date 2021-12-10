@@ -9,6 +9,10 @@ from spatstat_interface.interface import SpatstatInterface
 import structure_factor.utils as utils
 from structure_factor.point_pattern import PointPattern
 from structure_factor.spatial_windows import BoxWindow, check_cubic_window
+from structure_factor.spectral_estimator import (
+    debiased_tapered_periodogram,
+    undirected_debiased_tapered_periodogram,
+)
 from structure_factor.transforms import RadiallySymmetricFourierTransform
 
 
@@ -60,6 +64,16 @@ class StructureFactor:
     def dimension(self):
         """Ambient dimension of the underlying point process."""
         return self.point_pattern.dimension
+
+    def scattering_intensity_debiased(self, k, undirected=False):
+        window = self.point_pattern.window
+        taper = 1.0 / np.sqrt(window.volume)
+        ft_taper = utils.ft_h0(k, window)
+        if undirected:
+            estim = undirected_debiased_tapered_periodogram
+        else:
+            estim = debiased_tapered_periodogram
+        return estim(k, self.point_pattern, taper, ft_taper)
 
     def scattering_intensity(
         self,
