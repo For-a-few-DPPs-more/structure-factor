@@ -7,12 +7,10 @@ import scipy.interpolate as interpolate
 from spatstat_interface.interface import SpatstatInterface
 
 import structure_factor.utils as utils
+import structure_factor.taper as taper
 from structure_factor.point_pattern import PointPattern
 from structure_factor.spatial_windows import BoxWindow, check_cubic_window
-from structure_factor.spectral_estimator import (
-    debiased_tapered_periodogram,
-    undirected_debiased_tapered_periodogram,
-)
+import structure_factor.spectral_estimator as spectral_estimator
 from structure_factor.transforms import RadiallySymmetricFourierTransform
 
 
@@ -64,16 +62,6 @@ class StructureFactor:
     def dimension(self):
         """Ambient dimension of the underlying point process."""
         return self.point_pattern.dimension
-
-    def scattering_intensity_debiased(self, k, undirected=False):
-        window = self.point_pattern.window
-        taper = 1.0 / np.sqrt(window.volume)
-        ft_taper = utils.ft_h0(k, window)
-        if undirected:
-            estim = undirected_debiased_tapered_periodogram
-        else:
-            estim = debiased_tapered_periodogram
-        return estim(k, self.point_pattern, taper, ft_taper)
 
     def scattering_intensity(
         self,
@@ -162,36 +150,36 @@ class StructureFactor:
                 raise ValueError(
                     "the vector of wave(s) should belong to the same dimension of the point process, i.e., `k` should have d columns."
                 )
-        si = utils.compute_scattering_intensity(k, point_pattern.points)
+
+        si = spectral_estimator.tapered_periodogram(k, self.point_pattern, taper.h0)
+        # si = utils.compute_scattering_intensity(k, point_pattern.points)
         k_norm = np.linalg.norm(k, axis=1)
 
         return k_norm, si
 
-    def debiased_bartlett_periodogram(self, k):
-        points = self.point_pattern.points
-        intensity = self.point_pattern.intensity
-        window = self.point_pattern.window
-        L = np.diff(window.bounds[0])
-        n = points.shape[0]  # number of points
-        h_0 = 1 / np.sqrt(window.volume)  # h_0
-        if points.shape[1] != k.shape[1]:
-            raise ValueError("k and points should have same number of columns")
-        i_0 = (
-            np.abs(
-                utils.J_0(h_0=h_0, k=k, points=points)
-                - intensity * utils.ft_h0(k=k, window=window)
+    def scattering_intensity_debiased(self, k, undirect=False):
+        r"""Debiased scattering intensity. Particular case of :py:meth:`debiased_tapered_periodogram` for the constant taper 1/|W|, where |W| is the volume of the window containing ``points``.
+
+        Args:
+            k (np.ndarray): np.ndarray of d columns (where d is the dimension of the space containing ``points``). Each row is a wave vector on which the spectral estimator is to be evaluated.
+
+            undirect(bool, optional): Direct or undirect bias substraction
+
+        Returns:
+            numpy.ndarray: Evaluation(s) of the debiased scattering intensity on ``k``.
+        """
+        if undirect:
+            debiased_si = spectral_estimator.undirect_debiased_tapered_periodogram(
+                k, self.point_pattern, taper.h0, taper.ft_h0
             )
-            ** 2
-        )
-        # debiased periodogram
-        i_0 /= intensity
-        i_0_2 = (
-            np.abs(utils.J_0(h_0=h_0, k=k, points=points)) ** 2
-            - np.abs(intensity * utils.ft_h0(k=k, window=window)) ** 2
-        )
-        i_0_2 /= intensity
+
+        else:
+            debiased_si = spectral_estimator.debiased_tapered_periodogram(
+                k, self.point_pattern, taper.h0, taper.ft_h0
+            )
+
         k_norm = np.linalg.norm(k, axis=1)
-        return k_norm, i_0, i_0_2
+        return k_norm, debiased_si
 
     def plot_scattering_intensity(
         self,
