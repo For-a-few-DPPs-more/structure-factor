@@ -7,10 +7,14 @@ import scipy.interpolate as interpolate
 from spatstat_interface.interface import SpatstatInterface
 
 import structure_factor.utils as utils
-import structure_factor.taper as taper
 from structure_factor.point_pattern import PointPattern
 from structure_factor.spatial_windows import BoxWindow, check_cubic_window
-import structure_factor.spectral_estimator as spectral_estimator
+from structure_factor.spectral_estimator import (
+    debiased_tapered_periodogram,
+    tapered_periodogram,
+    undirect_debiased_tapered_periodogram,
+)
+from structure_factor.tapers import BartlettTaper
 from structure_factor.transforms import RadiallySymmetricFourierTransform
 
 
@@ -151,7 +155,8 @@ class StructureFactor:
                     "the vector of wave(s) should belong to the same dimension of the point process, i.e., `k` should have d columns."
                 )
 
-        si = spectral_estimator.tapered_periodogram(k, self.point_pattern, taper.h0)
+        taper = BartlettTaper.taper
+        si = tapered_periodogram(k, self.point_pattern, taper)
         # si = utils.compute_scattering_intensity(k, point_pattern.points)
         k_norm = np.linalg.norm(k, axis=1)
 
@@ -169,15 +174,12 @@ class StructureFactor:
             numpy.ndarray: Evaluation(s) of the debiased scattering intensity on ``k``.
         """
         if undirect:
-            debiased_si = spectral_estimator.undirect_debiased_tapered_periodogram(
-                k, self.point_pattern, taper.h0, taper.ft_h0
-            )
-
+            debiased_estimator = undirect_debiased_tapered_periodogram
         else:
-            debiased_si = spectral_estimator.debiased_tapered_periodogram(
-                k, self.point_pattern, taper.h0, taper.ft_h0
-            )
-
+            debiased_estimator = debiased_tapered_periodogram
+        h = BartlettTaper.taper
+        H = BartlettTaper.ft_taper
+        debiased_si = debiased_estimator(k, self.point_pattern, h, H)
         k_norm = np.linalg.norm(k, axis=1)
         return k_norm, debiased_si
 

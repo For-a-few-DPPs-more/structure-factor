@@ -1,8 +1,8 @@
 import numpy as np
 import pytest
 
-import structure_factor.taper as taper
 from structure_factor.spatial_windows import BoxWindow
+from structure_factor.tapers import BartlettTaper
 
 
 @pytest.mark.parametrize(
@@ -10,7 +10,7 @@ from structure_factor.spatial_windows import BoxWindow
     [(BoxWindow([[0, 1], [0, 1], [0, 1]]), 1), (BoxWindow([[0, 2], [0, 2]]), 1 / 2)],
 )
 def test_h0(window, expected):
-    h0 = taper.h0(1, window)
+    h0 = BartlettTaper.taper(1, window)
     np.testing.assert_almost_equal(h0, expected)
 
 
@@ -45,5 +45,5 @@ def test_h0(window, expected):
     ],
 )
 def test_ft_h0(k, window, expected):
-    H_0 = taper.ft_h0(k, window)
+    H_0 = BartlettTaper.ft_taper(k, window)
     np.testing.assert_almost_equal(H_0, expected)
