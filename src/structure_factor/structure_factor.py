@@ -1,12 +1,9 @@
 import warnings
 
 import numpy as np
-import pandas as pd
-import rpy2.robjects as robjects
-import scipy.interpolate as interpolate
-from spatstat_interface.interface import SpatstatInterface
 
 import structure_factor.utils as utils
+from structure_factor.pair_correlation_function import PairCorrelationFunction as PCF
 from structure_factor.point_pattern import PointPattern
 from structure_factor.spatial_windows import BoxWindow, check_cubic_window
 from structure_factor.transforms import RadiallySymmetricFourierTransform
@@ -32,16 +29,16 @@ class StructureFactor:
 
         **This class contains:**
             - Three estimators of the structure factor:
-                - :meth:`scattering_intensity`: The scattering intensity estimator.
-                - :meth:`hankel_quadrature` with ``method="Ogata"``: Based on Ogata quadrature for approximating the Hankel transform :cite:`Oga05`.
-                - :meth:`hankel_quadrature` with ``method="BaddourChouinard"``: Based on Baddour and Chouinard Discrete Hankel transform :cite:`BaCh15`.
-            - Two estimators of the pair correlation function :
-                - :meth:`compute_pcf` with ``method="ppp"``: Uses Epanechnikov kernel and a bandwidth selected by Stoyan's rule of thumb.
-                - :meth:`compute_pcf` with ``method="fv"``: Uses the derivative of Ripley's K function.
+                - :py:meth:`scattering_intensity`: The scattering intensity estimator.
+                - :py:meth:`hankel_quadrature` with ``method="Ogata"``: Based on Ogata quadrature for approximating the Hankel transform :cite:`Oga05`.
+                - :py:meth:`hankel_quadrature` with ``method="BaddourChouinard"``: Based on Baddour and Chouinard Discrete Hankel transform :cite:`BaCh15`.
+            - Two estimators of the pair correlation function:
+                - :py:meth:`~structure_factor.pair_correlation_function.PairCorrelationFonction.estimate` with ``method="ppp"``: Uses Epanechnikov kernel and a bandwidth selected by Stoyan's rule of thumb.
+                - :py:meth:`~structure_factor.pair_correlation_function.PairCorrelationFonction.estimate` with ``method="fv"``: Uses the derivative of Ripley's K function.
 
                 This 2 estimators are obtained using `spatstat-interface <https://github.com/For-a-few-DPPs-more/spatstat-interface>`_ which builds a hidden interface with the package `spatstat <https://github.com/spatstat/spatstat>`_ of the programming language R.
-            - :meth:`interpolate_pcf`: Interpolates the output results of :meth:`compute_pcf`.
-            - :meth:`plot_scattering_intensity`,  :meth:`plot_pcf` and :meth:`plot_sf_hankel_quadrature`: Visualize the output result of the methods :meth:`scattering_intensity`, :meth:`compute_pcf` and :meth:`hankel_quadrature` respectively.
+            - :py:meth:`~structure_factor.pair_correlation_function.PairCorrelationFonction.interpolate`: Interpolates the output results of :py:meth:`~structure_factor.pair_correlation_function.PairCorrelationFonction.estimate`.
+            - :py:meth:`plot_scattering_intensity`, :py:meth:`~structure_factor.pair_correlation_function.PairCorrelationFonction.plot` and :py:meth:`plot_sf_hankel_quadrature`: Visualize the output result of the methods :py:meth:`scattering_intensity`, :py:meth:`~structure_factor.pair_correlation_function.PairCorrelationFonction.estimate` and :py:meth:`hankel_quadrature` respectively.
     """
 
     def __init__(self, point_pattern):
@@ -114,7 +111,7 @@ class StructureFactor:
 
             **Typical usage**:
                 - If the realization of the point process :math:`\{\mathbf{x}_j\}_{j=1}^N` is not supported on a cubic window, use the method :py:class:`~structure_factor.point_pattern.PointPattern.restrict_to_window` to extract a sub-sample within a cubic window.
-                - Do not specify the input argument ``k``. It is rather recommended to specify ``k_max`` and/or ``meshgrid_shape`` if needed. This allows :meth:`scattering_intensity` to operate automatically on a set of allowed wavevectors (see :py:meth:`~structure_factor.utils.allowed_wave_vectors`).
+                - Do not specify the input argument ``k``. It is rather recommended to specify ``k_max`` and/or ``meshgrid_shape`` if needed. This allows :py:meth:`scattering_intensity` to operate automatically on a set of allowed wavevectors (see :py:meth:`~structure_factor.utils.allowed_wave_vectors`).
 
             .. important::
 
@@ -288,37 +285,15 @@ class StructureFactor:
 
             for any non-negative smooth function :math:`f`  with compact support.
         """
-        assert self.point_pattern.dimension == 2 or self.point_pattern.dimension == 3
-
-        assert method in ("ppp", "fv")
-
-        # core, geom and other subpackages are updated if install_spatstat
-        spatstat = SpatstatInterface(update=install_spatstat)
-        spatstat.import_package("core", "geom", update=False)
-
-        data = self.point_pattern.convert_to_spatstat_ppp()
-
-        if method == "ppp":
-            r = params.get("r", None)
-            if r is not None and isinstance(r, np.ndarray):
-                params["r"] = robjects.vectors.FloatVector(r)
-            pcf = spatstat.core.pcf_ppp(data, **params)
-
-        if method == "fv":
-            params_Kest = params.get("Kest", dict())
-            Kest_r = params_Kest.get("r", None)
-            if Kest_r is not None and isinstance(Kest_r, np.ndarray):
-                params_Kest["r"] = robjects.vectors.FloatVector(Kest_r)
-            k_ripley = spatstat.core.Kest(data, **params_Kest)
-            params_fv = params.get("fv", dict())
-            pcf = spatstat.core.pcf_fv(k_ripley, **params_fv)
-        return pd.DataFrame(np.array(pcf).T, columns=pcf.names).drop(["theo"], axis=1)
+        return PCF.estimate(
+            self.point_pattern, method="fv", install_spatstat=False, **params
+        )
 
     def plot_pcf(self, pcf_dataframe, exact_pcf=None, file_name="", **kwargs):
-        """Display the data frame output of the method :py:meth:`~structure_factor.structure_factor.StructureFactor.compute_pcf`.
+        """Display the data frame output of the method :py:meth:`~structure_factor.pair_correlation_function.PairCorrelationFonction.estimate`.
 
         Args:
-            pcf_dataframe (pandas.DataFrame): Output DataFrame of the method :py:meth:`~structure_factor.structure_factor.StructureFactor.compute_pcf`.
+            pcf_dataframe (pandas.DataFrame): Output DataFrame of the method :py:meth:`~structure_factor.pair_correlation_function.PairCorrelationFonction.estimate`.
 
             exact_pcf (callable, optional): Function representing the theoretical pair correlation function of the point process. Defaults to None.
 
@@ -328,7 +303,7 @@ class StructureFactor:
             kwargs (dict): Keyword arguments of the function `pandas.DataFrame.plot.line <https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.plot.line.html>`_.
 
         Returns:
-            matplotlib.plot: Plot of the output of :py:meth:`~structure_factor.structure_factor.StructureFactor.compute_pcf`.
+            matplotlib.plot: Plot of the output of :py:meth:`~structure_factor.pair_correlation_function.PairCorrelationFonction.estimate`.
 
         Example:
             .. literalinclude:: code/pcf_example.py
@@ -340,15 +315,15 @@ class StructureFactor:
                 :alt: alternate text
                 :align: center
         """
-        return utils.plot_pcf(pcf_dataframe, exact_pcf, file_name, **kwargs)
+        return PCF.plot(pcf_dataframe, exact_pcf, file_name, **kwargs)
 
     def interpolate_pcf(self, r, pcf_r, clean=True, **params):
         """Clean (i.e., replace the possible nan, posinf and neginf by zero) and interpolate the vector ``pcf_r`` evaluated at ``r``.
 
         Args:
-            r (numpy.ndarray): Vector of radius. Typically, the first colomun of the output of the method :py:meth:`~structure_factor.structure_factor.StructureFactor.compute_pcf`.
+            r (numpy.ndarray): Vector of radius. Typically, the first colomun of the output of the method :py:meth:`~structure_factor.pair_correlation_function.PairCorrelationFonction.estimate`.
 
-            pcf_r (numpy.ndarray): Vector of approximations of the pair correlation function. Typically, a column from the output of the method :py:meth:`~structure_factor.structure_factor.StructureFactor.compute_pcf`.
+            pcf_r (numpy.ndarray): Vector of approximations of the pair correlation function. Typically, a column from the output of the method :py:meth:`~structure_factor.pair_correlation_function.PairCorrelationFonction.estimate`.
 
             clean (bool, optional): Replace nan, posinf and neginf values of ``pcf_r`` by zero before interpolating. Defaults to True.
 
@@ -364,18 +339,9 @@ class StructureFactor:
                 :lines: 18-21
 
         .. note::
-            Typically ``pcf_r`` is an approximation of the pair correlation function using the method :py:meth:`~structure_factor.structure_factor.StructureFactor.compute_pcf`. The failure of the approximation method on some specific radius may lead to some bad data like nan, posinf and neginf. This may happen for small radiuses, the reason for replacing them with zero. see :cite:`Rbook15`.
+            Typically ``pcf_r`` is an approximation of the pair correlation function using the method :py:meth:`~structure_factor.pair_correlation_function.PairCorrelationFonction.estimate`. The failure of the approximation method on some specific radius may lead to some bad data like nan, posinf and neginf. This may happen for small radiuses, the reason for replacing them with zero. see :cite:`Rbook15`.
         """
-        params.setdefault("fill_value", "extrapolate")
-        params.setdefault("kind", "cubic")
-        rmin = np.min(r)
-        r_max = np.max(r)
-        if clean:
-            pcf_r = utils.set_nan_inf_to_zero(pcf_r)
-
-        dict_rmin_r_max = dict(rmin=rmin, r_max=r_max)
-        pcf = interpolate.interp1d(r, pcf_r, **params)
-        return dict_rmin_r_max, pcf
+        return PCF.interpolate(r, pcf_r, clean=clean, **params)
 
     def hankel_quadrature(self, pcf, k_norm=None, method="BaddourChouinard", **params):
         r"""Approximate the structure factor of the point process encapsulated in ``point_pattern`` (only for stationary isotropic point processes), using specific approximations of the Hankel transform.
@@ -432,9 +398,9 @@ class StructureFactor:
         .. note::
 
             **Typical usage**:
-                1. Estimate the pair correlation function using :py:meth:`compute_pcf`.
+                1. Estimate the pair correlation function using :py:meth:`~structure_factor.pair_correlation_function.PairCorrelationFonction.estimate`.
 
-                2. Clean and interpolate the resulting estimation using :py:meth:`interpolate_pcf` to get a **function**.
+                2. Clean and interpolate the resulting estimation using :py:meth:`~structure_factor.pair_correlation_function.PairCorrelationFonction.interpolate` to get a **function**.
 
                 3. Pass the resulting interpolated function to :py:meth:`hankel_quadrature` to get an approximation of the structure factor of the point process.
         """

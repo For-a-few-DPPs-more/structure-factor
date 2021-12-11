@@ -492,40 +492,6 @@ def plot_si_all(
     return axes
 
 
-def plot_pcf(pcf_dataframe, exact_pcf, file_name, **kwargs):
-    r"""Plot the columns a DataFrame (excluding the first) with respect to the first columns.
-
-    Args:
-        pcf_dataframe (pandas.DataFrame): Output DataFrame of the method :py:meth:`~structure_factor.structure_factor.StructureFactor.compute_pcf`.
-
-        exact_pcf (callable): Function representing the theoretical pair correlation function of the point process.
-
-        file_name (str): Name used to save the figure. The available output formats depend on the backend being used.
-
-        Keyword Args:
-            kwargs (dict): Keyword arguments of the function `pandas.DataFrame.plot.line <https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.plot.line.html>`_.
-
-    """
-    axis = pcf_dataframe.plot.line(x="r", **kwargs)
-    if exact_pcf is not None:
-        axis.plot(
-            pcf_dataframe["r"],
-            exact_pcf(pcf_dataframe["r"]),
-            "g",
-            label="exact pcf",
-        )
-    plot_poisson(pcf_dataframe["r"], axis=axis, linestyle=(0, (5, 5)))
-
-    axis.legend()
-    axis.set_xlabel(r"Radius ($r$)")
-    axis.set_ylabel(r"Pair correlation function ($g(r)$)")
-
-    if file_name:
-        fig = axis.get_figure()
-        fig.savefig(file_name, bbox_inches="tight")
-    return axis
-
-
 def plot_sf_hankel_quadrature(
     k_norm,
     sf,
