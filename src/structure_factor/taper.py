@@ -11,9 +11,9 @@ def h0(points, window):
     Returns:
         [type]: [description]
     """
-    window_volume = window.volume
-    h0 = 1 / np.sqrt(window_volume)
-    return h0
+    h = window.indicator_function(points).astype(float)
+    h /= np.sqrt(window.volume)
+    return h
 
 
 def ft_h0(k, window):
@@ -28,8 +28,8 @@ def ft_h0(k, window):
     Return:
         numpy.array: The evaluated Fourier transform on `k`.
     """
-    window_bounds = window.bounds
-    window_volume = window.volume
-    s_k = 2 * np.sin(k * np.diff(window_bounds).T / 2) / k
-    ft_h0 = np.prod(s_k, axis=1) / np.sqrt(window_volume)
-    return ft_h0
+    widths = 0.5 * np.diff(window.bounds.T, axis=0)
+    sines = 2.0 * np.sin(k * widths) / k
+    ft = np.prod(sines, axis=1)
+    ft /= np.sqrt(window.volume)
+    return ft
