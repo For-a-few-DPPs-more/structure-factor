@@ -1,8 +1,11 @@
 import numpy as np
 import pytest
-from structure_factor.point_pattern import PointPattern
+
 import structure_factor.spectral_estimator as spe
+from structure_factor.point_pattern import PointPattern
 from structure_factor.spatial_windows import BoxWindow
+
+#! Please explain what is supposed to be tested, it is difficult to guess as is
 
 
 def taper_1(x, window):
