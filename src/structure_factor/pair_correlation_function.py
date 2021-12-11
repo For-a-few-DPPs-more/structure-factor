@@ -8,6 +8,8 @@ from spatstat_interface.interface import SpatstatInterface
 
 import structure_factor.utils as utils
 
+# ? do we need to create a class with only statimethods, these could be simple functions
+
 
 class PairCorrelationFunction:
     @staticmethod
