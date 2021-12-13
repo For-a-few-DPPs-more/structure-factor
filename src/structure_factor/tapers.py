@@ -81,3 +81,25 @@ class BartlettTaper:
         ft = np.prod(sines, axis=1)
         ft /= np.sqrt(window.volume)
         return ft
+
+
+def sin_taper(p, x, window):
+    """sin taper family
+
+    Args:
+        p (nd.array): 1*d array
+        x ([type]): n*d array
+        window ([type]): [description]
+
+    Returns:
+        [type]: 1*d array
+    """
+    l = np.diff(window.bounds.T, axis=0)  # shape 1*d
+    teta = np.pi * p * (x / l + 0.5)  # shape n*d
+    # teta = p * (x / l * 0.5 + np.pi * 0.5)
+    sin_teta = np.sin(teta)  # shape n*d
+    taper_p = window.indicator_function(x).astype(float) * np.prod(
+        sin_teta, axis=1
+    )  # shape n*1
+    taper_p /= np.sqrt(window.volume)
+    return taper_p

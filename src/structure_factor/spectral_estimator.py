@@ -120,3 +120,65 @@ def undirect_debiased_tapered_periodogram(k, point_pattern, taper, ft_taper):
     np.square(Hk_2, out=Hk_2)
     periodogram -= intensity * Hk_2
     return periodogram
+
+
+def multitaper_periodogram(P, k, point_pattern, taper_p):
+    """[summary]
+
+    [extended_summary]
+
+    Args:
+        P ([type]): [description]
+        k ([type]): [description]
+        point_pattern ([type]): [description]
+        taper_p (callabe, list): Callable taper function of (p, x, window) or list of p element of callable taper function of (x, window) or the p evaluations of the taper on x and window.
+
+    Returns:
+        [type]: [description]
+    """
+    d = point_pattern.dimension
+    points = point_pattern.points
+    window = point_pattern.window
+    mtpp = np.zeros(k.shape[0], dtype=float)
+    for p in range(1, P ** d + 1):
+        print(p)
+        taper = taper_p(p, points, window) if callable(taper_p) else taper_p[p]
+        mtpp += tapered_periodogram(k, point_pattern, taper)
+    mtpp / (P ** d)
+    return mtpp
+
+
+def debiased_multitaper_periodogram(
+    P, k, point_pattern, taper_p, ft_taper_p, undirect=False
+):
+    """[summary]
+
+    [extended_summary]
+
+    Args:
+        P ([type]): [description]
+        k ([type]): [description]
+        point_pattern ([type]): [description]
+        taper_p (callabe, list): Callable taper function of (p, x, window) or list of p element of callable taper function of (x, window) or the p evaluations of the taper on x and window.
+
+    Returns:
+        [type]: [description]
+    """
+    d = point_pattern.dimension
+    points = point_pattern.points
+    window = point_pattern.window
+    mtpp = np.zeros(k.shape[0], dtype=float)
+    for p in range(1, P ** d):
+        taper = taper_p(p, points, window) if callable(taper_p) else taper_p[p]
+        ft_taper = (
+            ft_taper_p(p, points, window) if callable(ft_taper_p) else ft_taper_p[p]
+        )
+        if undirect:
+            mtpp += undirect_debiased_tapered_periodogram(
+                k, point_pattern, taper, ft_taper
+            )
+
+        else:
+            mtpp += debiased_tapered_periodogram(k, point_pattern, taper, ft_taper)
+    mtpp / (P ** d)
+    return mtpp

@@ -11,10 +11,12 @@ from structure_factor.point_pattern import PointPattern
 from structure_factor.spatial_windows import BoxWindow, check_cubic_window
 from structure_factor.spectral_estimator import (
     debiased_tapered_periodogram,
+    multitaper_periodogram,
     tapered_periodogram,
     undirect_debiased_tapered_periodogram,
+    multitaper_periodogram,
 )
-from structure_factor.tapers import BartlettTaper
+from structure_factor.tapers import BartlettTaper, sin_taper
 from structure_factor.transforms import RadiallySymmetricFourierTransform
 
 
@@ -182,6 +184,11 @@ class StructureFactor:
         debiased_si = debiased_estimator(k, self.point_pattern, h, H)
         k_norm = np.linalg.norm(k, axis=1)
         return k_norm, debiased_si
+
+    def multitaper_periodogram(self, P, k, taper_p=sin_taper):
+        sf = multitaper_periodogram(P, k, self.point_pattern, taper_p)
+        k_norm = np.linalg.norm(k, axis=1)
+        return k_norm, sf
 
     def plot_scattering_intensity(
         self,
