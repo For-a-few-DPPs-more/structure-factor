@@ -1,4 +1,8 @@
 import numpy as np
+from scipy.spatial.distance import pdist
+
+from structure_factor.spatial_windows import UnitBallWindow
+from structure_factor.utils import bessel1
 
 # ? I find this not very explicit to call functions periodograms in a file called estimators where the returned values are not periodograms but rescaled periodograms that correspond to estimators of the structure factor...
 # ? I'd rather like to rename the file to periodograms, where the different functions indeed return periodograms to be rescaled in the corresponding StructureFactor method
@@ -182,3 +186,34 @@ def debiased_multitaper_periodogram(
             mtpp += debiased_tapered_periodogram(k, point_pattern, taper, ft_taper)
     mtpp / (P ** d)
     return mtpp
+
+
+def isotropic_estimator(k, point_pattern):
+    # ! the current implem may take some time when there are a lot of wave vectors and points
+    window = point_pattern.window
+    d = window.dimension
+    unit_ball = UnitBallWindow(np.zeros(d))
+
+    X = np.atleast_2d(point_pattern.points)
+    norm_x_y = pdist(X, metric="euclidean")
+    K = np.atleast_2d(k)
+    norm_k = np.linalg.norm(K, axis=1)
+
+    k_xy = np.multiply.outer(norm_k, norm_x_y)
+    order = d / 2 - 1
+    J_k_xy = bessel1(order, k_xy)
+
+    estimator = np.zeros_like(norm_k)
+    # for i, k_ in enumerate(norm_k):
+    #     estimator[i] = bessel1(order, k_ * norm_x_y).sum()
+    if order > 0:
+        np.power(k_xy, order, out=k_xy)
+        J_k_xy /= k_xy
+    np.sum(J_k_xy, axis=1, out=estimator)
+
+    surface, volume = unit_ball.surface, window.volume
+    intensity = point_pattern.intensity
+    estimator *= (2 * np.pi) ** (d / 2) / (surface * volume * intensity)
+    estimator += 1
+
+    return norm_k, estimator

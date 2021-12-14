@@ -14,7 +14,6 @@ from structure_factor.spectral_estimator import (
     multitaper_periodogram,
     tapered_periodogram,
     undirect_debiased_tapered_periodogram,
-    multitaper_periodogram,
 )
 from structure_factor.tapers import BartlettTaper, sin_taper
 from structure_factor.transforms import RadiallySymmetricFourierTransform

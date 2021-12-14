@@ -115,12 +115,25 @@ class BallWindow(AbstractSpatialWindow):
         return len(self.center)
 
     @property
+    def surface(self):
+        d, r = self.dimension, self.radius
+        if d == 1:
+            return 0.0
+        if d == 2:
+            return 2 * np.pi * r
+        if d == 3:
+            return 4 * np.pi * r ** 2
+        return 2 * np.pi ** (d / 2) * r ** (d - 1) / sp.special.gamma(d / 2)
+
+    @property
     def volume(self):
         d, r = self.dimension, self.radius
         if d == 1:
             return 2 * r
         if d == 2:
             return np.pi * r ** 2
+        if d == 3:
+            return 4 / 3 * np.pi * r ** 3
         return np.pi ** (d / 2) * r ** d / sp.special.gamma(d / 2 + 1)
 
     def __contains__(self, point):
