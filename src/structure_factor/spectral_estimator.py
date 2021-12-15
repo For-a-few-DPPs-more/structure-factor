@@ -168,7 +168,7 @@ def debiased_multitaper_periodogram(
     points = point_pattern.points
     window = point_pattern.window
     mtpp = np.zeros(k.shape[0], dtype=float)
-    for p in range(1, P ** d):
+    for p in range(1, P ** d + 1):
         taper = taper_p(p, points, window) if callable(taper_p) else taper_p[p]
         ft_taper = (
             ft_taper_p(p, points, window) if callable(ft_taper_p) else ft_taper_p[p]
@@ -181,4 +181,34 @@ def debiased_multitaper_periodogram(
         else:
             mtpp += debiased_tapered_periodogram(k, point_pattern, taper, ft_taper)
     mtpp / (P ** d)
+    return mtpp
+
+
+def quadratic_multitaper_periodogram(P, k, point_pattern, taper_p):
+    """[summary]
+
+    [extended_summary]
+
+    Args:
+        P ([type]): [description]
+        k ([type]): [description]
+        point_pattern ([type]): [description]
+        taper_p (callabe, list): Callable taper function of (p, x, window) or list of p element of callable taper function of (x, window) or the p evaluations of the taper on x and window.
+
+    Returns:
+        [type]: [description]
+    """
+    d = point_pattern.dimension
+    points = point_pattern.points
+    window = point_pattern.window
+    mtpp = np.zeros(k.shape[0], dtype=float)
+    for p1 in range(1, P + 1):
+        for p2 in range(1, P + 1):
+            p = np.array([[p1, p2]])
+            # print(p)
+            taper = taper_p(p, points, window) if callable(taper_p) else taper_p[p]
+            mtpp += tapered_periodogram(k, point_pattern, taper)
+    # print(np.max(mtpp))
+    mtpp = mtpp / (P ** d)
+    # print(np.max(mtpp))
     return mtpp
