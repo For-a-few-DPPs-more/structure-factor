@@ -23,6 +23,9 @@
     "editor.tabSize": 4,
     "editor.wordWrap": "bounded",
     "editor.quickSuggestions": true,
+    // native bracket pair colorization
+    "editor.bracketPairColorization.enabled": true,
+    "editor.guides.bracketPairs": "active",
     // Python
     "python.languageServer": "Pylance",
     "python.pythonPath": "${workspaceFolder}/.venv/bin/python",

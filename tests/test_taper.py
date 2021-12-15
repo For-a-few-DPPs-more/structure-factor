@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 
 from structure_factor.spatial_windows import BoxWindow
-from structure_factor.tapers import BartlettTaper, sin_taper
+from structure_factor.tapers import BartlettTaper, SineTaper, sin_taper
 
 
 @pytest.mark.parametrize(
@@ -68,5 +68,8 @@ def test_ft_h0(k, window, expected):
     ],
 )
 def test_sin_taper(p, x, window, expected):
-    h_p = sin_taper(p, x, window)
+    # taper = sin_taper
+    # h_p = taper(p, x, window)
+    taper = SineTaper(p)
+    h_p = taper.taper(x, window)
     np.testing.assert_almost_equal(h_p, expected)

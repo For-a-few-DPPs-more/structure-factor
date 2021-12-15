@@ -83,6 +83,26 @@ class BartlettTaper:
         return ft
 
 
+class SineTaper:
+    def __init__(self, p):
+        self.p = np.array(p)
+
+    def taper(self, x, window):
+        widths = np.diff(window.bounds.T, axis=0)
+
+        sines = x / widths + 0.5
+        sines *= np.pi * self.p
+        np.sin(sines, out=sines)
+
+        h_x = window.indicator_function(x).astype(float)
+        h_x *= np.prod(sines, axis=1)
+        # h_x /= np.sqrt(window.volume)
+        return h_x
+
+    def ft_taper(self, k, window):
+        raise NotImplementedError()
+
+
 def sin_taper(p, x, window):
     """sin taper family
 

@@ -1,4 +1,5 @@
 import warnings
+from itertools import combinations_with_replacement
 
 import numpy as np
 import pandas as pd
@@ -11,11 +12,11 @@ from structure_factor.point_pattern import PointPattern
 from structure_factor.spatial_windows import BoxWindow, check_cubic_window
 from structure_factor.spectral_estimator import (
     debiased_tapered_periodogram,
-    multitaper_periodogram,
+    multitapered_periodogram,
     tapered_periodogram,
     undirect_debiased_tapered_periodogram,
 )
-from structure_factor.tapers import BartlettTaper, sin_taper
+from structure_factor.tapers import BartlettTaper, SineTaper, sin_taper
 from structure_factor.transforms import RadiallySymmetricFourierTransform
 
 
@@ -156,8 +157,7 @@ class StructureFactor:
                     "the vector of wave(s) should belong to the same dimension of the point process, i.e., `k` should have d columns."
                 )
 
-        taper = BartlettTaper.taper
-        si = tapered_periodogram(k, self.point_pattern, taper)
+        si = tapered_periodogram(k, self.point_pattern, BartlettTaper)
         # si = utils.compute_scattering_intensity(k, point_pattern.points)
         k_norm = np.linalg.norm(k, axis=1)
 
@@ -175,17 +175,19 @@ class StructureFactor:
             numpy.ndarray: Evaluation(s) of the debiased scattering intensity on ``k``.
         """
         if undirect:
-            debiased_estimator = undirect_debiased_tapered_periodogram
+            estimator = undirect_debiased_tapered_periodogram
         else:
-            debiased_estimator = debiased_tapered_periodogram
-        h = BartlettTaper.taper
-        H = BartlettTaper.ft_taper
-        debiased_si = debiased_estimator(k, self.point_pattern, h, H)
+            estimator = debiased_tapered_periodogram
+
+        debiased_si = estimator(k, self.point_pattern, BartlettTaper)
         k_norm = np.linalg.norm(k, axis=1)
         return k_norm, debiased_si
 
     def multitaper_periodogram(self, P, k, taper_p=sin_taper):
-        sf = multitaper_periodogram(P, k, self.point_pattern, taper_p)
+        d = self.point_pattern.dimension
+        params = combinations_with_replacement(range(1, P + 1), d)
+        tapers = (SineTaper(p) for p in params)
+        sf = multitapered_periodogram(k, self.point_pattern, *tapers)
         k_norm = np.linalg.norm(k, axis=1)
         return k_norm, sf
 
