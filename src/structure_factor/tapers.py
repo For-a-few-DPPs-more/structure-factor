@@ -41,15 +41,11 @@ class BartlettTaper:
     @staticmethod
     def taper(x, window):
         r"""Evaluate the indicator function of a rectangular ``window`` :math:`W` on points ``x`` divided by the square root of the volume :math:`|W|`.
-
         .. math::
-
             h(x, W) = \frac{1}{\sqrt{|W|}} 1_{x \in W}.
-
         Args:
             x (np.ndarray): Points.
             window (:py:class:`~structure_factor.spatial_windows.AbstractSpatialWindow`): Window :math:`W`.
-
         Returns:
             array_like: evaluation of the taper :math:`h(x, W)`
         """
@@ -61,18 +57,13 @@ class BartlettTaper:
     @staticmethod
     def ft_taper(k, window):
         r"""Evaluate the Fourier transform of :py:meth:`~structure_factor/tapers.BartlettTaper.taper`.
-
         .. math::
-
             H(k) = F[h](k)
             = \int_{\mathbb{R}^d}
                 h(x) \exp(-i \left\langle k, x \right\rangle) d x.
-
         Args:
             k (np.ndarray): Wave vector array (d,) or array of wave vectors (n, d).
-
             window (:py:class:`~structure_factor.spatial_windows.AbstractSpatialWindow`): Window.
-
         Return:
             numpy.array: Evaluation of the Fourier transform :math:`H(k)`.
         """
@@ -83,25 +74,41 @@ class BartlettTaper:
         return ft
 
 
+class SineTaper:
+    def __init__(self, p):
+        self.p = np.array(p)
+
+    def taper(self, x, window):
+        widths = np.diff(window.bounds.T, axis=0)
+
+        sines = x / widths + 0.5
+        sines *= np.pi * self.p
+        np.sin(sines, out=sines)
+
+        h_x = window.indicator_function(x).astype(float)
+        h_x *= np.prod(sines, axis=1)
+        # h_x /= np.sqrt(window.volume)
+        return h_x
+
+    def ft_taper(self, k, window):
+        raise NotImplementedError()
+
+
 def sin_taper(p, x, window):
     """sin taper family
-
     Args:
         p (nd.array): 1*d array
         x ([type]): n*d array
         window ([type]): [description]
-
     Returns:
         [type]: 1*d array
     """
     l = np.diff(window.bounds.T, axis=0)  # shape 1*d
     teta = np.pi * p * (x / l + 0.5)  # shape n*d
-    # print(x.shape)
-    # print(teta.shape)
     # teta = p * (x / l * 0.5 + np.pi * 0.5)
     sin_teta = np.sin(teta)  # shape n*d
     taper_p = window.indicator_function(x).astype(float) * np.prod(
         sin_teta, axis=1
     )  # shape n*1
-    # taper_p /= np.sqrt(window.volume)
+    taper_p /= np.sqrt(window.volume)
     return taper_p
