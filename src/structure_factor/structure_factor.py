@@ -51,7 +51,6 @@ class StructureFactor:
         assert isinstance(point_pattern, PointPattern)
         self.point_pattern = point_pattern  # the point pattern
         self.k_norm_min = None  # minimal bounds on the wavenumbers for Ogata method
-        self.K_shape = None  # meshgrid of allowed values
 
     @property
     def dimension(self):
@@ -119,10 +118,9 @@ class StructureFactor:
             check_cubic_window(window)
             L = np.diff(window.bounds[0])
 
-            k, K = utils.allowed_wave_vectors(
+            k, _ = utils.allowed_wave_vectors(
                 d, L=L, k_max=k_max, meshgrid_shape=meshgrid_shape
             )
-            self.K_shape = K[0].shape
         else:
             if k.shape[1] != d:
                 raise ValueError(
@@ -152,11 +150,29 @@ class StructureFactor:
         k_norm = np.linalg.norm(k, axis=1)
         return k_norm, debiased_si
 
-    def multitaper_periodogram(self, P, k, taper_p=sin_taper):
+    def multitaper_periodogram(self, k, P=3, taper_p=SineTaper):
         d = self.point_pattern.dimension
         params = combinations_with_replacement(range(1, P + 1), d)
-        tapers = (SineTaper(p) for p in params)
+        tapers = (taper_p(p) for p in params)
         sf = multitapered_periodogram(k, self.point_pattern, *tapers)
+        k_norm = np.linalg.norm(k, axis=1)
+        return k_norm, sf
+
+    def multitaper_periodogram_debiased(
+        self, k, P=3, taper_p=SineTaper, undirect=False
+    ):
+        d = self.point_pattern.dimension
+        params = combinations_with_replacement(range(1, P + 1), d)
+
+        tapers = (taper_p(p) for p in params)
+        if undirect:
+            sf = multitapered_periodogram(
+                k, self.point_pattern, *tapers, debiased=True, undirect=True
+            )
+        else:
+            sf = multitapered_periodogram(
+                k, self.point_pattern, *tapers, debiased=True, undirect=False
+            )
         k_norm = np.linalg.norm(k, axis=1)
         return k_norm, sf
 
@@ -203,29 +219,28 @@ class StructureFactor:
                 k_norm, si, axes, exact_sf, error_bar, file_name, **binning_params
             )
         elif plot_type == "imshow":
+            n_grid = int(np.sqrt(k_norm.shape[0]))
+            grid_shape = (n_grid, n_grid)
             if self.dimension != 2:
                 raise ValueError(
                     "This plot option is adapted only for a 2D point process. Please use plot_type ='radial'."
                 )
-            if self.K_shape is None:
-                raise ValueError(
-                    "The option 'imshow' is available for 2D evaluations. Choose plot_type= 'radial' or re-evaluate the scattering intensity on the meshgrid of allowed wave vectors."
-                )
-            si = si.reshape(self.K_shape)
-            k_norm = k_norm.reshape(self.K_shape)
+
+            si = si.reshape(grid_shape)
+            k_norm = k_norm.reshape(grid_shape)
             return utils.plot_si_imshow(k_norm, si, axes, file_name)
 
         elif plot_type == "all":
+
+            n_grid = int(np.sqrt(k_norm.shape[0]))
+            grid_shape = (n_grid, n_grid)
             if self.dimension != 2:
                 raise ValueError(
                     "The option 'all' is available for 2D point processes."
                 )
-            if self.K_shape is None:
-                raise ValueError(
-                    "The option 'imshow' is available for 2D evaluations. Choose plot_type= 'radial' or re-evaluate the scattering intensity on the meshgrid of allowed wave vectors."
-                )
-            si = si.reshape(self.K_shape)
-            k_norm = k_norm.reshape(self.K_shape)
+
+            si = si.reshape(grid_shape)
+            k_norm = k_norm.reshape(grid_shape)
             return utils.plot_si_all(
                 self.point_pattern,
                 k_norm,

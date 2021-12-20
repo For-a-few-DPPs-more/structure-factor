@@ -125,7 +125,8 @@ def multitapered_periodogram(k, point_pattern, *tapers, debiased=False, undirect
     if debiased:
         if undirect:
             periodogram = undirect_debiased_tapered_periodogram
-        periodogram = debiased_tapered_periodogram
+        else:
+            periodogram = debiased_tapered_periodogram
     else:
         periodogram = tapered_periodogram
 

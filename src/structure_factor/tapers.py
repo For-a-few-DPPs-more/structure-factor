@@ -80,18 +80,28 @@ class SineTaper:
 
     def taper(self, x, window):
         widths = np.diff(window.bounds.T, axis=0)
-
+        d = x.shape[1]
         sines = x / widths + 0.5
         sines *= np.pi * self.p
         np.sin(sines, out=sines)
 
         h_x = window.indicator_function(x).astype(float)
         h_x *= np.prod(sines, axis=1)
-        # h_x /= np.sqrt(window.volume)
+        h_x *= np.sqrt(2 ** d / window.volume)  # normalization
         return h_x
 
     def ft_taper(self, k, window):
-        raise NotImplementedError()
+        widths = np.diff(window.bounds.T, axis=0)
+        p = self.p
+        a = k * widths - np.pi * p
+        b = k * widths + np.pi * p
+        print(np.min(abs(a)), np.min(abs(b)))
+        c = -2 * np.pi * 1j
+        sines = (np.sin(a * 0.5) / a - (-1) ** p * np.sin(b * 0.5) / b) * c
+        sines *= np.exp(1j * np.pi * p * 0.5)
+        ft = np.prod(sines, axis=1)
+        ft = ft * np.sqrt(window.volume)
+        return ft
 
 
 def sin_taper(p, x, window):
