@@ -1,5 +1,5 @@
 import warnings
-from itertools import combinations_with_replacement
+from itertools import product
 
 import numpy as np
 import pandas as pd
@@ -163,7 +163,8 @@ class StructureFactor:
 
     def multitaper_periodogram(self, k, P=3, taper_p=SineTaper):
         d = self.point_pattern.dimension
-        params = combinations_with_replacement(range(1, P + 1), d)
+        # params = combinations_with_replacement(range(1, P + 1), d)
+        params = product(*(range(1, P + 1) for _ in range(d)))
         tapers = (taper_p(p) for p in params)
         sf = multitapered_periodogram(k, self.point_pattern, *tapers)
         k_norm = np.linalg.norm(k, axis=1)
@@ -173,7 +174,7 @@ class StructureFactor:
         self, k, P=3, taper_p=SineTaper, undirect=False
     ):
         d = self.point_pattern.dimension
-        params = combinations_with_replacement(range(1, P + 1), d)
+        params = product(*(range(1, P + 1) for _ in range(d)))
 
         tapers = (taper_p(p) for p in params)
         if undirect:
