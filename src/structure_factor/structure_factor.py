@@ -150,6 +150,17 @@ class StructureFactor:
         k_norm = np.linalg.norm(k, axis=1)
         return k_norm, debiased_si
 
+    def tapered_debiased(self, k, taper, undirect=False):
+
+        if undirect:
+            estimator = undirect_debiased_tapered_periodogram
+        else:
+            estimator = debiased_tapered_periodogram
+
+        debiased_si = estimator(k, self.point_pattern, taper)
+        k_norm = np.linalg.norm(k, axis=1)
+        return k_norm, debiased_si
+
     def multitaper_periodogram(self, k, P=3, taper_p=SineTaper):
         d = self.point_pattern.dimension
         params = combinations_with_replacement(range(1, P + 1), d)
