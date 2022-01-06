@@ -144,7 +144,8 @@ def isotropic_estimator(k, point_pattern):
     unit_ball = UnitBallWindow(np.zeros(d))
 
     X = np.atleast_2d(point_pattern.points)
-    norm_x_y = pdist(X, metric="euclidean")
+
+    norm_x_y = pdist(X, metric="euclidean")  # ||x_i - x_j|| for i < j
     K = np.atleast_2d(k)
     norm_k = np.linalg.norm(K, axis=1)
 
@@ -159,6 +160,7 @@ def isotropic_estimator(k, point_pattern):
         np.power(k_xy, order, out=k_xy)
         J_k_xy /= k_xy
     np.sum(J_k_xy, axis=1, out=estimator)
+    estimator *= 2  # sum_{i neq j} = 2 sum_{i<j}
 
     surface, volume = unit_ball.surface, window.volume
     rho = point_pattern.intensity
