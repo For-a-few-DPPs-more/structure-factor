@@ -163,7 +163,6 @@ class StructureFactor:
 
     def multitaper_periodogram(self, k, P=3, taper_p=SineTaper):
         d = self.point_pattern.dimension
-        # params = combinations_with_replacement(range(1, P + 1), d)
         params = product(*(range(1, P + 1) for _ in range(d)))
         tapers = (taper_p(p) for p in params)
         sf = multitapered_periodogram(k, self.point_pattern, *tapers)
@@ -175,7 +174,6 @@ class StructureFactor:
     ):
         d = self.point_pattern.dimension
         params = product(*(range(1, P + 1) for _ in range(d)))
-
         tapers = (taper_p(p) for p in params)
         if undirect:
             sf = multitapered_periodogram(
@@ -372,6 +370,7 @@ class StructureFactor:
         return dict_rmin_r_max, pcf
 
     def hankel_quadrature(self, pcf, k_norm=None, method="BaddourChouinard", **params):
+        # ? mettre k_nom avant pcf et donner le choix à l'utilisateur d'enter un None
         r"""Approximate the structure factor of the point process encapsulated in ``point_pattern`` (only for stationary isotropic point processes), using specific approximations of the Hankel transform.
         .. warning::
             This method is actually applicable for 2-dimensional point processes.

@@ -137,23 +137,22 @@ def multitapered_periodogram(k, point_pattern, *tapers, debiased=False, undirect
     return multi_periodogram
 
 
-def isotropic_estimator(k, point_pattern):
+def isotropic_bartlett_estimator(k_norm, point_pattern):
     # ! the current implem may take some time when there are a lot of wave vectors and points
     window = point_pattern.window
+    #! fi window doenst exists ?
     d = window.dimension
     unit_ball = UnitBallWindow(np.zeros(d))
 
     X = np.atleast_2d(point_pattern.points)
-    norm_x_y = pdist(X, metric="euclidean")
-    K = np.atleast_2d(k)
-    norm_k = np.linalg.norm(K, axis=1)
+    norm_x_y = pdist(X, metric="euclidean")  # distances between coordinates of X
 
-    k_xy = np.multiply.outer(norm_k, norm_x_y)
+    k_xy = np.multiply.outer(k_norm, norm_x_y)
     order = d / 2 - 1
     J_k_xy = bessel1(order, k_xy)
 
-    estimator = np.zeros_like(norm_k)
-    # for i, k_ in enumerate(norm_k):
+    estimator = np.zeros_like(k_norm)
+    # for i, k_ in enumerate(k_norm):
     #     estimator[i] = bessel1(order, k_ * norm_x_y).sum()
     if order > 0:
         np.power(k_xy, order, out=k_xy)
@@ -165,4 +164,4 @@ def isotropic_estimator(k, point_pattern):
     estimator *= (2 * np.pi) ** (d / 2) / (surface * volume * rho)
     estimator += 1
 
-    return norm_k, estimator
+    return k_norm, estimator
