@@ -111,54 +111,16 @@ class SineTaper:
     def ft_taper(self, k, window):
         widths = np.diff(window.bounds.T, axis=0)  # l
         p = self.p
-        print("p", p)
         a = k - np.pi * p / widths  # k- pi*p/l
         b = k + np.pi * p / widths  # k + pi*p/l
-        res_1 = (
-            (-1j) ** p * np.sin(b * 0.5 * widths) / b
-        )  # (-i)^p sin(( k + np.pi * p / widths)* (l/2)) / (k + pi*p/l)
-        res_2 = (
-            (1j) ** p * np.sin(a * 0.5 * widths) / a
-        )  # i^p sin(( k - np.pi * p / widths)* (l/2)) / (k - pi*p/l)
-        # print(np.max(res_1), np.max(res_2))
-        res = (2 * np.sqrt(2) * np.pi * 1j) * (res_1 - res_2)
-        print("k", k[11320:11330, :])
+
+        res_1 = np.sin(a * 0.5 * widths) / a
+        #  sin(( k - np.pi * p / widths)* (l/2)) / (k - pi*p/l)
+        res_2 = np.sin(b * 0.5 * widths) / b
+        # sin(( k + np.pi * p / widths)* (l/2)) / (k + pi*p/l)
+        res = (
+            (1j) ** (p + 1) * np.sqrt(2) * (res_1 - (-1) ** p * res_2)
+        )  # i^(p+1) sqrt(2) (res_1 - (-1)^p res_2)
         ft = np.prod(res, axis=1)
-        print("ft", ft[11320:11330])
         ft = ft / np.sqrt(window.volume)
-        print("norm", ft[11320:11330])
         return ft
-
-    def ft_taper_old_version(self, k, window):
-        # todo old version to delete
-        widths = np.diff(window.bounds.T, axis=0)
-        p = self.p
-        a = k * widths - np.pi * p
-        b = k * widths + np.pi * p
-        # print(np.min(abs(a)), np.min(abs(b)))
-        c = -2 * np.pi * 1j
-        sines = (np.sin(a * 0.5) / a - (-1) ** p * np.sin(b * 0.5) / b) * c
-        sines *= np.exp(1j * np.pi * p * 0.5)
-        ft = np.prod(sines, axis=1)
-        ft = ft * np.sqrt(window.volume)
-        return ft
-
-
-def sin_taper(p, x, window):
-    """sin taper family
-    Args:
-        p (nd.array): 1*d array
-        x ([type]): n*d array
-        window ([type]): [description]
-    Returns:
-        [type]: 1*d array
-    """
-    l = np.diff(window.bounds.T, axis=0)  # shape 1*d
-    teta = np.pi * p * (x / l + 0.5)  # shape n*d
-    # teta = p * (x / l * 0.5 + np.pi * 0.5)
-    sin_teta = np.sin(teta)  # shape n*d
-    taper_p = window.indicator_function(x).astype(float) * np.prod(
-        sin_teta, axis=1
-    )  # shape n*1
-    taper_p /= np.sqrt(window.volume)
-    return taper_p
