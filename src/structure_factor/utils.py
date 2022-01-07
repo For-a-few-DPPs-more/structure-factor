@@ -49,10 +49,26 @@ def pair_correlation_function_thomas(x, d, rho_parent, sigma):
 
 
 def structure_factor_poisson(k):
+    """Structure factor of the Poisson point process
+
+    Args:
+        k (np.array): Points to evaluate on.
+
+    Returns:
+        np.array: Structure factor of Poisson process evaluated on `k`.
+    """
     return np.ones_like(k)
 
 
 def structure_factor_ginibre(k):
+    r"""Structure factor of the Ginibre Ensemble of intensity :math:`1/\pi`.
+
+    Args:
+        k (np.array): Points to evaluate on.
+
+    Returns:
+        np.array: Structure factor of Ginibre process evaluated on `k`.
+    """
     return 1.0 - np.exp(-(k ** 2) / 4)
 
 
