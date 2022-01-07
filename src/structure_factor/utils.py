@@ -19,7 +19,33 @@ def get_random_number_generator(seed=None):
 
 
 def pair_correlation_function_ginibre(x):
+    r"""Pair correlation function of the Ginibre Ensemble with intensity  :math:`1/\pi`.
+
+    Args:
+        x (np.array): Points to evaluate on.
+
+    Returns:
+        np.array: Pair correlation function of the Ginibre evaluated on `x`
+    """
     return 1.0 - np.exp(-(x ** 2))
+
+
+def pair_correlation_function_thomas(x, d, rho_parent, sigma):
+    """Pair correlation function of the (modified) Thomas point process of :math:`\mathbb{R}^d`, generated from a parent Poisson point process of intensity :math:`\rho`.
+    The displacement of a child from its parent follows a zero-mean isotropic :math:`d` -dimensional Gaussian distribution with variance :math:`\sigma^2`.
+
+    Args:
+        k (np.array): Points to evaluate on.
+        d (int): Dimension of the space.
+        rho_child (float): Intensity of the parent Poisson process.
+        sigma (float): Square root of the variance.
+
+    Returns:
+        np.array: Pair correlation function of Thomas process evaluated on `x`.
+    """
+    return 1 + 1 / rho_parent * (4 * np.pi * sigma ** 2) ** (-d / 2) * np.exp(
+        -(x ** 2) / (4 * sigma ** 2)
+    )
 
 
 def structure_factor_poisson(k):
@@ -28,6 +54,22 @@ def structure_factor_poisson(k):
 
 def structure_factor_ginibre(k):
     return 1.0 - np.exp(-(k ** 2) / 4)
+
+
+def structure_factor_thomas(k, d, rho_child, sigma):
+    r"""Structure factor of the (modified) Thomas point process of :math:`\mathbb{R}^d`, where the number of points is each cluster has a Poisson distribution of intensity :math:`\rho` and the displacement of a child from its parent follows a zero-mean isotropic :math:`d` -dimensional Gaussian distribution with variance :math:`\sigma^2`.
+    Args:
+        k (np.array): Points to evaluate on.
+        d (int): Dimension of the space.
+        rho_child (float): Mean number of points in each cluster.
+        sigma (float): Square root of the variance.
+
+    Returns:
+        np.array: Structure factor of Thomas process evaluated on `k`.
+    """
+    return 1 + rho_child * (4 * np.pi * sigma ** 2) ** (-(d - 1) / 2) * np.exp(
+        -(k ** 2 ** sigma ** 2)
+    )
 
 
 # utils for hyperuniformity.py
