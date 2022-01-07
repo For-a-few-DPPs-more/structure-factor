@@ -8,7 +8,7 @@ from scipy.spatial.distance import pdist
 from structure_factor.spatial_windows import UnitBallWindow
 
 
-def isotropic_estimator(k, point_pattern):
+def isotropic_estimator(point_pattern, norm_k=None):
     window = point_pattern.window
     d = window.dimension
     unit_ball = UnitBallWindow(np.zeros(d))
@@ -17,8 +17,8 @@ def isotropic_estimator(k, point_pattern):
     norm_xi_xj = pdist(X, metric="euclidean")
     # K = np.atleast_2d(k)
     # norm_k = np.linalg.norm(K, axis=1)
-
-    norm_k = sc.jn_zeros(d / 2, 500) / window.radius
+    if norm_k == None:
+        norm_k = sc.jn_zeros(d / 2, 200) / window.radius
 
     estimator = np.zeros_like(norm_k)
     order = float(d / 2 - 1)
