@@ -145,7 +145,8 @@ def isotropic_bartlett_estimator(k_norm, point_pattern):
     unit_ball = UnitBallWindow(np.zeros(d))
 
     X = np.atleast_2d(point_pattern.points)
-    norm_x_y = pdist(X, metric="euclidean")  # distances between coordinates of X
+
+    norm_x_y = pdist(X, metric="euclidean")  # ||x_i - x_j|| for i < j
 
     k_xy = np.multiply.outer(k_norm, norm_x_y)
     order = d / 2 - 1
@@ -158,6 +159,7 @@ def isotropic_bartlett_estimator(k_norm, point_pattern):
         np.power(k_xy, order, out=k_xy)
         J_k_xy /= k_xy
     np.sum(J_k_xy, axis=1, out=estimator)
+    estimator *= 2  # sum_{i neq j} = 2 sum_{i<j}
 
     surface, volume = unit_ball.surface, window.volume
     rho = point_pattern.intensity
