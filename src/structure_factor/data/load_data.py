@@ -25,6 +25,10 @@ def load_poisson():
     return __load_point_pattern_in_box("poisson_data.pkl")
 
 
+def load_thomas():
+    return __load_point_pattern_in_box("thomas_data.pkl")
+
+
 def load_z2():
     # todo explain how data was generatedx
     return __load_point_pattern_in_box("z2_data.pkl")
@@ -53,5 +57,10 @@ def __load_point_pattern_in_box(file_name):
     bounds = dict_data["bounds"]
     window = BoxWindow(bounds)
     intensity = dict_data.get("intensity", None)
-
-    return PointPattern(points=points, window=window, intensity=intensity)
+    intensity_parent = dict_data.get("intensity_parent", None)  # for thomas pp
+    sigma = dict_data.get("sigma", None)  # for thomas pp
+    params = {
+        "intensity_parent": intensity_parent,
+        "sigma": sigma,
+    }  # params for thomas pp
+    return PointPattern(points=points, window=window, intensity=intensity, **params)

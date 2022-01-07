@@ -36,15 +36,14 @@ class PointPattern(object):
             - Convert Python :py:class:`~structure_factor.point_pattern.PointPattern` object to a ``spatstat`` point pattern R object using :py:meth:`~structure_factor.point_pattern.PointPattern.convert_to_spatstat_ppp`.
     """
 
-    def __init__(self, points, window=None, intensity=None):
+    def __init__(self, points, window=None, intensity=None, **params):
         r"""Initialize the object from a realization ``points`` of the underlying point process with intensity ``intensity`` observed in ``window``.
 
         Args:
             points (np.ndarray): :math:`N \times d` array collecting :math:`N` points in dimension :math:`d` consisting of a realization of a point process.
-
             window (AbstractSpatialWindow, optional): Observation window containing the ``points``. Defaults to None.
-
             intensity(float, optional): Intensity of the point process. Defaults to None.
+
         """
         _points = np.array(points)
         assert _points.ndim == 2
@@ -58,8 +57,8 @@ class PointPattern(object):
             assert intensity > 0
         elif window is not None:
             intensity = self.points.shape[0] / window.volume
-
         self.intensity = intensity
+        self.params = params
 
     @property
     def dimension(self):
