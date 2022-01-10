@@ -57,12 +57,7 @@ class StructureFactor:
         """Ambient dimension of the underlying point process."""
         return self.point_pattern.dimension
 
-    def scattering_intensity(
-        self,
-        k=None,
-        k_max=5,
-        meshgrid_shape=None,
-    ):
+    def scattering_intensity(self, k=None, debiased=True, undirect=False, **params):
         r"""Compute the scattering intensity (an estimator of the structure factor) of the point process encapsulated in ``point_pattern``.
         It is evaluated by default, on a specific set of wavevectors called **allowed wavevectors** that minimizes the approximation errors.
         Args:
@@ -99,6 +94,12 @@ class StructureFactor:
             .. important::
                 Specifying the meshgrid argument ``meshgrid_shape`` is useful if the number of points of the realization is big. In this case, the evaluation of :math:`\widehat{S}_{SI}` on the total set of allowed wavevectors may be time-consuming.
         """
+        # Default params for allowed values
+        params.setdefault("k_max", 5)
+        k_max = params["k_max"]
+        params.setdefault("meshgrid_shape", None)
+        meshgrid_shape = params["meshgrid_shape"]
+
         point_pattern = self.point_pattern
         window = point_pattern.window
         d = point_pattern.dimension
@@ -109,7 +110,10 @@ class StructureFactor:
             warnings.warn(
                 message="The window should be a 'cubic' BoxWindow to minimize the error of approximating the structure factor by the scattering intensity. Hint: use PointPattern.restrict_to_window."
             )
+
         if k is None:
+            if debiased == False:
+                raise ValueError("k could not be None if debiased=False.")
             if meshgrid_shape is not None and len(meshgrid_shape) != d:
                 raise ValueError(
                     "Each wavevector should belong to the same dimension (d) of the point process, i.e., len(meshgrid_shape) = d."
@@ -121,34 +125,21 @@ class StructureFactor:
             k, _ = utils.allowed_wave_vectors(
                 d, L=L, k_max=k_max, meshgrid_shape=meshgrid_shape
             )
+            estimator = tapered_periodogram
         else:
             if k.shape[1] != d:
                 raise ValueError(
                     "the vector of wave(s) should belong to the same dimension of the point process, i.e., `k` should have d columns."
                 )
-
-        si = tapered_periodogram(k, self.point_pattern, BartlettTaper)
-        # si = utils.compute_scattering_intensity(k, point_pattern.points)
-        k_norm = np.linalg.norm(k, axis=1)
-
-        return k_norm, si
-
-    def scattering_intensity_debiased(self, k, undirect=False):
-        r"""Debiased scattering intensity. Particular case of :py:meth:`debiased_tapered_periodogram` for the constant taper 1/|W|, where |W| is the volume of the window containing ``points``.
-        Args:
-            k (np.ndarray): np.ndarray of d columns (where d is the dimension of the space containing ``points``). Each row is a wave vector on which the spectral estimator is to be evaluated.
-            undirect(bool, optional): Direct or undirect bias substraction
-        Returns:
-            numpy.ndarray: Evaluation(s) of the debiased scattering intensity on ``k``.
-        """
-        if undirect:
-            estimator = undirect_debiased_tapered_periodogram
-        else:
-            estimator = debiased_tapered_periodogram
-
-        debiased_si = estimator(k, self.point_pattern, BartlettTaper)
-        k_norm = np.linalg.norm(k, axis=1)
-        return k_norm, debiased_si
+            if debiased:
+                if undirect:
+                    estimator = undirect_debiased_tapered_periodogram
+                else:
+                    estimator = debiased_tapered_periodogram
+            else:
+                estimator = tapered_periodogram
+        si = estimator(k, self.point_pattern, BartlettTaper)
+        return k, si
 
     def tapered_debiased(self, k, taper, undirect=False):
 
@@ -188,7 +179,7 @@ class StructureFactor:
 
     def plot_scattering_intensity(
         self,
-        k_norm,
+        k,
         si,
         plot_type="radial",
         axes=None,
@@ -200,12 +191,12 @@ class StructureFactor:
     ):
         """Visualize the results of the method :py:meth:`~structure_factor.structure_factor.StructureFactor.scattering_intensity`.
         Args:
-            k_norm (numpy.array): Norm(s) of the wavevector(s) on which the scattering intensity has been approximated.
-            si (numpy.array): Approximated scattering intensity associated to `k_norm`.
+            k (numpy.array): Wavevector(s) on which the scattering intensity has been approximated.
+            si (numpy.array): Approximated scattering intensity associated to `k`.
             plot_type (str, optional): ("radial", "imshow", "all"). Type of the plot to visualize. Defaults to "radial".
                     - If "radial", the output is a loglog plot.
                     - If "imshow" (option available only for a 2D point process), the output is a (2D) color level plot.
-                    - If "all" (option available only for a 2D point process), the result contains 3 subplots: the point pattern (or a restriction to a specific window if ``window_res`` is set), the loglog radial plot, and the color level plot. Note that the options "imshow" and "all" couldn't be used, if ``k_norm`` is not a meshgrid.
+                    - If "all" (option available only for a 2D point process), the result contains 3 subplots: the point pattern (or a restriction to a specific window if ``window_res`` is set), the loglog radial plot, and the color level plot. Note that the options "imshow" and "all" couldn't be used, if ``k`` is not a meshgrid.
             axes (matplotlib.axis, optional): Support axes of the plots. Defaults to None.
             exact_sf (np.array, optional): Theoretical structure factor of the point process evaluated on `k_norm`. Defaults to None.
             error_bar (bool, optional): If ``True``, ``k_norm`` and correspondingly ``si`` are divided into sub-intervals (bins). Over each bin, the mean and the standard deviation of ``si`` are derived and visualized on the plot. Note that each error bar corresponds to the mean +/- 3 standard deviation. To specify the number of bins, add it to the kwargs argument ``binning_params``. For more details see :py:meth:`~structure_factor.utils._bin_statistics`. Defaults to False.
@@ -224,10 +215,12 @@ class StructureFactor:
                 :alt: alternate text
                 :align: center
         """
+        k_norm = np.linalg.norm(k, axis=1)
         if plot_type == "radial":
             return utils.plot_si_showcase(
                 k_norm, si, axes, exact_sf, error_bar, file_name, **binning_params
             )
+        #! todo k may be already a meshgrid and add a warning else
         elif plot_type == "imshow":
             n_grid = int(np.sqrt(k_norm.shape[0]))
             grid_shape = (n_grid, n_grid)
