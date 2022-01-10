@@ -236,7 +236,7 @@ def allowed_wave_vectors(d, L, k_max, meshgrid_shape=None):
     # warnings
     if meshgrid_shape is None:
         warnings.warn(
-            message="The computation on all allowed wave vectors may be time-consuming."
+            message="The computation on all allowed wavevectors may be time-consuming."
         )
     elif (np.array(meshgrid_shape) > (2 * n_max)).any():
         warnings.warn(
