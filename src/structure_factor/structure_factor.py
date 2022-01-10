@@ -207,7 +207,7 @@ class StructureFactor:
                     - If "imshow" (option available only for a 2D point process), the output is a (2D) color level plot.
                     - If "all" (option available only for a 2D point process), the result contains 3 subplots: the point pattern (or a restriction to a specific window if ``window_res`` is set), the loglog radial plot, and the color level plot. Note that the options "imshow" and "all" couldn't be used, if ``k_norm`` is not a meshgrid.
             axes (matplotlib.axis, optional): Support axes of the plots. Defaults to None.
-            exact_sf (callable, optional): Theoretical structure factor of the point process. Defaults to None.
+            exact_sf (np.array, optional): Theoretical structure factor of the point process evaluated on `k_norm`. Defaults to None.
             error_bar (bool, optional): If ``True``, ``k_norm`` and correspondingly ``si`` are divided into sub-intervals (bins). Over each bin, the mean and the standard deviation of ``si`` are derived and visualized on the plot. Note that each error bar corresponds to the mean +/- 3 standard deviation. To specify the number of bins, add it to the kwargs argument ``binning_params``. For more details see :py:meth:`~structure_factor.utils._bin_statistics`. Defaults to False.
             file_name (str, optional): Name used to save the figure. The available output formats depend on the backend being used. Defaults to "".
             window_res (:py:class:`~structure_factor.spatial_windows.AbstractSpatialWindow`, optional): New restriction window. It is useful when the sample of points is large, so for time and visualization purposes, it is better to restrict the plot of the point process to a smaller window. Defaults to None.
@@ -324,7 +324,7 @@ class StructureFactor:
         """Display the data frame output of the method :py:meth:`~structure_factor.structure_factor.StructureFactor.compute_pcf`.
         Args:
             pcf_dataframe (pandas.DataFrame): Output DataFrame of the method :py:meth:`~structure_factor.structure_factor.StructureFactor.compute_pcf`.
-            exact_pcf (callable, optional): Function representing the theoretical pair correlation function of the point process. Defaults to None.
+            exact_pcf (np.array, optional): Evaluations of the theoretical pair correlation function of the point process on `r` (first column of `pcf_dataframe`). Defaults to None.
             file_name (str, optional): Name used to save the figure. The available output formats depend on the backend being used. Defaults to "".
         Keyword Args:
             kwargs (dict): Keyword arguments of the function `pandas.DataFrame.plot.line <https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.plot.line.html>`_.

@@ -43,9 +43,8 @@ def pair_correlation_function_thomas(x, d, rho_parent, sigma):
     Returns:
         np.array: Pair correlation function of Thomas process evaluated on `x`.
     """
-    return 1 + 1 / rho_parent * (4 * np.pi * sigma ** 2) ** (-d / 2) * np.exp(
-        -(x ** 2) / (4 * sigma ** 2)
-    )
+    alpha = (4 * np.pi * sigma ** 2) ** (-d / 2)
+    return 1 + 1 / rho_parent * alpha * np.exp(-(x ** 2) / (4 * sigma ** 2))
 
 
 def structure_factor_poisson(k):
@@ -83,9 +82,8 @@ def structure_factor_thomas(k, d, rho_child, sigma):
     Returns:
         np.array: Structure factor of Thomas process evaluated on `k`.
     """
-    return 1 + rho_child * (4 * np.pi * sigma ** 2) ** (-(d - 1) / 2) * np.exp(
-        -(k ** 2 ** sigma ** 2)
-    )
+    alpha = (4 * np.pi * sigma ** 2) ** (-(d - 1) / 2)
+    return 1 + rho_child * alpha * np.exp(-(k ** 2 * sigma ** 2))
 
 
 # utils for hyperuniformity.py
@@ -410,14 +408,14 @@ def plot_exact(x, y, axis, label):
 
     Args:
         x (np.ndarray): x coordinate.
-        y (callable): Function to evaluate on ``x``.
+        y (np.ndarray): y coordinate.
         axis (matplotlib.axis): Axis on which to add the plot.
         label (regexp, optional):  Label of the plot.
 
     Returns:
         matplotlib.plot: Plot of ``y`` with respect to ``x``.
     """
-    axis.loglog(x, y(x), "g", label=label)
+    axis.loglog(x, y, "g", label=label)
     return axis
 
 
@@ -588,7 +586,7 @@ def plot_pcf(pcf_dataframe, exact_pcf, file_name, **kwargs):
     Args:
         pcf_dataframe (pandas.DataFrame): Output DataFrame of the method :py:meth:`~structure_factor.structure_factor.StructureFactor.compute_pcf`.
 
-        exact_pcf (callable): Function representing the theoretical pair correlation function of the point process.
+        exact_pcf (np.array): Evaluations of the theoretical pair correlation function of the point process on `r`.
 
         file_name (str): Name used to save the figure. The available output formats depend on the backend being used.
 
@@ -600,7 +598,7 @@ def plot_pcf(pcf_dataframe, exact_pcf, file_name, **kwargs):
     if exact_pcf is not None:
         axis.plot(
             pcf_dataframe["r"],
-            exact_pcf(pcf_dataframe["r"]),
+            exact_pcf,
             "g",
             label="exact pcf",
         )

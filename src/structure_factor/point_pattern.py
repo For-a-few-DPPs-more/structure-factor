@@ -19,7 +19,7 @@ class PointPattern(object):
     Example:
         .. literalinclude:: code/point_pattern.py
             :language: python
-            :lines: 6-22
+            :lines: 6-24
 
     .. note::
 
