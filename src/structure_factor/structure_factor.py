@@ -122,7 +122,7 @@ class StructureFactor:
             check_cubic_window(window)
             L = np.diff(window.bounds[0])
 
-            k, _ = utils.allowed_wave_vectors(
+            k = utils.allowed_wave_vectors(
                 d, L=L, k_max=k_max, meshgrid_shape=meshgrid_shape
             )
             estimator = tapered_periodogram

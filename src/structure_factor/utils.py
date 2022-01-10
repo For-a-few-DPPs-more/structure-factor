@@ -218,7 +218,6 @@ def allowed_wave_vectors(d, L, k_max, meshgrid_shape=None):
     Returns:
         tuple (np.ndarray, list):
             - k : np.array with ``d`` columns where each row is an allowed wave vector.
-            - K : List of meshgrids, (the elements of the list correspond to the 2D representation of the components of the wavevectors, i.e., a 2D representation of the vectors of allowed waves ``k``). i.g., in dimension 2, if K =[X,Y] then X is the 2D representation of the x coordinates of the allowed wavevectors ``k`` (representation as a meshgrid).
 
     .. proof:definition::
 
@@ -230,7 +229,7 @@ def allowed_wave_vectors(d, L, k_max, meshgrid_shape=None):
 
         Note that the maximum ``n`` and the number of output allowed wavevectors returned by :py:meth:`allowed_wave_vectors`, are specified by the input parameters ``k_max`` and ``meshgrid_shape``.
     """
-    K = None
+
     n_max = np.floor(k_max * L / (2 * np.pi))  # maximum of ``n``
 
     # warnings
@@ -249,7 +248,7 @@ def allowed_wave_vectors(d, L, k_max, meshgrid_shape=None):
         n_i = n_i[n_i != 0]
         n_all = (n_i for i in range(0, d))
         X = np.meshgrid(*n_all, copy=False)
-        K = [X_i * 2 * np.pi / L for X_i in X]  # meshgrid of allowed wavevectors
+        # K = [X_i * 2 * np.pi / L for X_i in X]  # meshgrid of allowed wavevectors
         n = _reshape_meshgrid(X)  # reshape as d columns
 
     else:
@@ -272,11 +271,11 @@ def allowed_wave_vectors(d, L, k_max, meshgrid_shape=None):
                 n_all.append(n_i)
 
             X = np.meshgrid(*n_all, copy=False)
-            K = [X_i * 2 * np.pi / L for X_i in X]  # meshgrid of allowed wavevectors
+            # K = [X_i * 2 * np.pi / L for X_i in X]  # meshgrid of allowed wavevectors
             n = _reshape_meshgrid(X)  # reshape as d columns
 
     k = 2 * np.pi * n / L
-    return k, K
+    return k
 
 
 #! to delete and its test. replaced in spectral estimator
