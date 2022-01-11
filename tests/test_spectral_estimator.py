@@ -64,5 +64,5 @@ class Taper2:
 )
 def test_tapered_periodogram(k, points, window, taper, expected):
     point_pattern = PointPattern(points, window)
-    tp = spe.tapered_periodogram(k, point_pattern, taper)
+    tp = spe.tapered_periodogram_core(k, point_pattern, taper)
     np.testing.assert_almost_equal(tp, expected)

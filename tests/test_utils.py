@@ -73,7 +73,7 @@ def test_sort_vectors(k, x, y, expected_k_sorted, expected_x_sorted, expected_y_
 )
 def test_allowed_wave_vectors(d, L, max_k, meshgrid_size, result):
     # ? seems like a copy paste from original code
-    computed, _ = utils.allowed_wave_vectors(d, L, max_k, meshgrid_size)
+    computed = utils.allowed_wave_vectors(d, L, max_k, meshgrid_size)
     np.testing.assert_array_equal(computed, result)
 
 

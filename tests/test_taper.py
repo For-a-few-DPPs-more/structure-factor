@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 
 from structure_factor.spatial_windows import BoxWindow
-from structure_factor.tapers import BartlettTaper, SineTaper, sin_taper
+from structure_factor.tapers import BartlettTaper, SineTaper
 
 
 @pytest.mark.parametrize(

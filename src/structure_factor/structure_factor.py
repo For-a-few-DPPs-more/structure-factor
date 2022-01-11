@@ -11,10 +11,9 @@ import structure_factor.utils as utils
 from structure_factor.point_pattern import PointPattern
 from structure_factor.spatial_windows import BoxWindow, check_cubic_window
 from structure_factor.spectral_estimator import (
-    debiased_tapered_periodogram,
     multitapered_periodogram,
-    tapered_periodogram,
-    undirect_debiased_tapered_periodogram,
+    select_periodogram_isotropic,
+    select_tapered_periodogram_non_isotropic,
 )
 from structure_factor.tapers import BartlettTaper, SineTaper
 from structure_factor.transforms import RadiallySymmetricFourierTransform
@@ -57,125 +56,142 @@ class StructureFactor:
         """Ambient dimension of the underlying point process."""
         return self.point_pattern.dimension
 
-    def scattering_intensity(self, k=None, debiased=True, undirect=False, **params):
+    def scattering_intensity(self, k=None, debiased=True, direct=False, **params):
         r"""Compute the scattering intensity (an estimator of the structure factor) of the point process encapsulated in ``point_pattern``.
-        It is evaluated by default, on a specific set of wavevectors called **allowed wavevectors** that minimizes the approximation errors.
-        Args:
-            k (np.ndarray, optional): n wavevectors of d columns (d is the dimension of the space) on which the scattering intensity to be evaluated. It is recommended to keep the default ``k`` and to specify ``k_max`` instead, to get the evaluations on a subset of the total set of allowed wavevectors. Defaults to None.
-            k_max (float, specific option for allowed wavevectors): Supremum of the components of the allowed wavevectors on which the scattering intensity to be evaluated; i.e., for any allowed wavevector :math:`\mathbf{k}=(k_1,...,k_d)`, :math:`k_i \leq k\_max` for all i. This implies that the maximum of the output vector ``k_norm`` will be approximately equal to the norm of the vector :math:`(k\_max, ... k\_max)`. Defaults to 5.
-            meshgrid_shape (tuple, specific option for allowed wavevectors): Tuple of length `d`, where each element specifies the number of components over an axis. These axes are crossed to form a subset of :math:`\mathbb{Z}^d` used to construct a set of allowed wavevectors. i.g., if d=2, setting meshgid_shape=(2,3) will construct a meshgrid of allowed wavevectors formed by a vector of 2 values over the x-axis and a vector of 3 values over the y-axis. Defaults to None, which will run the calculation over **all** the allowed wavevectors.
-        Returns:
-            tuple(numpy.ndarray, numpy.ndarray):
-                - k_norm: Wavenumber(s) (i.e., the vector of the norm(s) of the wavevector(s)) on which the scattering intensity has been evaluated.
-                - si: Evaluation(s) of the scattering intensity corresponding to ``k_norm``.
-        Example:
-            .. literalinclude:: code/si_example.py
-                :language: python
-                :lines: 1-19
-                :emphasize-lines: 17-19
-        .. proof:definition::
-            The scattering intensity :math:`\widehat{S}_{SI}` is an ensemble estimator of the structure factor :math:`S` of an ergodic stationary point process :math:`\mathcal{X} \subset \mathbb{R}^d`. It is accessible from a realization :math:`\mathcal{X}\cap W =\{\mathbf{x}_i\}_{i=1}^N` of :math:`\mathcal{X}` within a **cubic** window :math:`W=[-L/2, L/2]^d`.
-            .. math::
-                \widehat{S}_{SI}(\mathbf{k}) =
-                \frac{1}{N}\left\lvert
-                    \sum_{j=1}^N
-                        \exp(- i \left\langle \mathbf{k}, \mathbf{x_j} \right\rangle)
-                \right\rvert^2
-            for a specific set of wavevectors
-            .. math::
-                \mathbf{k} \in \{
-                \frac{2 \pi}{L} \mathbf{n},\,
-                \text{for} \; \mathbf{n} \in (\mathbb{Z}^d)^\ast \}
-            called in the physics jargon **allowed wavevectors** or dual lattice :cite:`KlaLasYog20`.
-        .. note::
-            **Typical usage**:
-                - If the realization of the point process :math:`\{\mathbf{x}_j\}_{j=1}^N` is not supported on a cubic window, use the method :py:class:`~structure_factor.point_pattern.PointPattern.restrict_to_window` to extract a sub-sample within a cubic window.
-                - Do not specify the input argument ``k``. It is rather recommended to specify ``k_max`` and/or ``meshgrid_shape`` if needed. This allows :meth:`scattering_intensity` to operate automatically on a set of allowed wavevectors (see :py:meth:`~structure_factor.utils.allowed_wave_vectors`).
-            .. important::
-                Specifying the meshgrid argument ``meshgrid_shape`` is useful if the number of points of the realization is big. In this case, the evaluation of :math:`\widehat{S}_{SI}` on the total set of allowed wavevectors may be time-consuming.
+
+        By default, the scattering intensity is evaluated on a specific set of wavevectors called **allowed wavevectors** that minimizes the approximation errors.
+
+         Args:
+             k (np.ndarray, optional): n wavevectors of d columns (d is the dimension of the space) on which the scattering intensity to be evaluated. It is recommended to keep the default ``k`` and to specify ``k_max`` instead, to get the evaluations on a subset of the total set of allowed wavevectors. Defaults to None.
+
+             k_max (float, specific option for allowed wavevectors): Supremum of the components of the allowed wavevectors on which the scattering intensity to be evaluated; i.e., for any allowed wavevector :math:`\mathbf{k}=(k_1,...,k_d)`, :math:`k_i \leq k\_max` for all i. This implies that the maximum of the output vector ``k_norm`` will be approximately equal to the norm of the vector :math:`(k\_max, ... k\_max)`. Defaults to 5.
+
+             meshgrid_shape (tuple, specific option for allowed wavevectors): Tuple of length `d`, where each element specifies the number of components over an axis. These axes are crossed to form a subset of :math:`\mathbb{Z}^d` used to construct a set of allowed wavevectors. i.g., if d=2, setting meshgid_shape=(2,3) will construct a meshgrid of allowed wavevectors formed by a vector of 2 values over the x-axis and a vector of 3 values over the y-axis. Defaults to None, which will run the calculation over **all** the allowed wavevectors.
+
+         Returns:
+             tuple(numpy.ndarray, numpy.ndarray):
+                 - k_norm: Wavenumber(s) (i.e., the vector of the norm(s) of the wavevector(s)) on which the scattering intensity has been evaluated.
+                 - si: Evaluation(s) of the scattering intensity corresponding to ``k_norm``.
+
+         Example:
+
+             .. literalinclude:: code/si_example.py
+                 :language: python
+                 :lines: 1-19
+                 :emphasize-lines: 17-19
+
+         .. proof:definition::
+
+             The scattering intensity :math:`\widehat{S}_{SI}` is an ensemble estimator of the structure factor :math:`S` of an ergodic stationary point process :math:`\mathcal{X} \subset \mathbb{R}^d`. It is accessible from a realization :math:`\mathcal{X}\cap W =\{\mathbf{x}_i\}_{i=1}^N` of :math:`\mathcal{X}` within a **cubic** window :math:`W=[-L/2, L/2]^d`.
+
+             .. math::
+                 \widehat{S}_{SI}(\mathbf{k}) =
+                 \frac{1}{N}\left\lvert
+                     \sum_{j=1}^N
+                         \exp(- i \left\langle \mathbf{k}, \mathbf{x_j} \right\rangle)
+                 \right\rvert^2
+
+             for a specific set of wavevectors
+
+             .. math::
+                 \mathbf{k} \in \{
+                 \frac{2 \pi}{L} \mathbf{n},\,
+                 \text{for} \; \mathbf{n} \in (\mathbb{Z}^d)^\ast \}
+
+             called in the physics jargon **allowed wavevectors** or dual lattice :cite:`KlaLasYog20`.
+
+         .. note::
+
+             **Typical usage**:
+                 - If the realization of the point process :math:`\{\mathbf{x}_j\}_{j=1}^N` is not supported on a cubic window, use the method :py:class:`~structure_factor.point_pattern.PointPattern.restrict_to_window` to extract a sub-sample within a cubic window.
+                 - Do not specify the input argument ``k``. It is rather recommended to specify ``k_max`` and/or ``meshgrid_shape`` if needed. This allows :meth:`scattering_intensity` to operate automatically on a set of allowed wavevectors (see :py:meth:`~structure_factor.utils.allowed_wave_vectors`).
+
+             .. important::
+                 Specifying the meshgrid argument ``meshgrid_shape`` is useful if the number of points of the realization is big. In this case, the evaluation of :math:`\widehat{S}_{SI}` on the total set of allowed wavevectors may be time-consuming.
         """
         # Default params for allowed values
         params.setdefault("k_max", 5)
         k_max = params["k_max"]
+        assert isinstance(k_max, (float, int))
+
         params.setdefault("meshgrid_shape", None)
         meshgrid_shape = params["meshgrid_shape"]
 
         point_pattern = self.point_pattern
-        window = point_pattern.window
         d = point_pattern.dimension
 
-        assert isinstance(k_max, float) or isinstance(k_max, int)
-
+        window = point_pattern.window
         if not isinstance(window, BoxWindow):
             warnings.warn(
                 message="The window should be a 'cubic' BoxWindow to minimize the error of approximating the structure factor by the scattering intensity. Hint: use PointPattern.restrict_to_window."
             )
 
         if k is None:
-            if debiased == False:
-                raise ValueError("k could not be None if debiased=False.")
+            if not debiased:
+                raise ValueError("when k is None debiased must be True.")
             if meshgrid_shape is not None and len(meshgrid_shape) != d:
                 raise ValueError(
                     "Each wavevector should belong to the same dimension (d) of the point process, i.e., len(meshgrid_shape) = d."
                 )
-
             check_cubic_window(window)
             L = np.diff(window.bounds[0])
+            k = utils.allowed_wave_vectors(d, L, k_max, meshgrid_shape)
 
-            k = utils.allowed_wave_vectors(
-                d, L=L, k_max=k_max, meshgrid_shape=meshgrid_shape
+        elif k.shape[1] != d:
+            raise ValueError(
+                "`k` should have d columns, where d is the dimension of the ambient space where the points forming the point pattern live."
             )
-            estimator = tapered_periodogram
-        else:
-            if k.shape[1] != d:
-                raise ValueError(
-                    "the vector of wave(s) should belong to the same dimension of the point process, i.e., `k` should have d columns."
-                )
-            if debiased:
-                if undirect:
-                    estimator = undirect_debiased_tapered_periodogram
-                else:
-                    estimator = debiased_tapered_periodogram
-            else:
-                estimator = tapered_periodogram
-        si = estimator(k, self.point_pattern, BartlettTaper)
+
+        _, si = self.tapered_periodogram(
+            k,
+            taper=BartlettTaper(),
+            debiased=debiased,
+            direct=direct,
+            isotropic=False,
+        )
+
         return k, si
 
-    def tapered_debiased(self, k, taper, undirect=False):
-
-        if undirect:
-            estimator = undirect_debiased_tapered_periodogram
+    def tapered_periodogram(
+        self, k, taper, debiased=False, direct=True, isotropic=False
+    ):
+        if isotropic:
+            selector = select_periodogram_isotropic
         else:
-            estimator = debiased_tapered_periodogram
+            selector = select_tapered_periodogram_non_isotropic
 
-        debiased_si = estimator(k, self.point_pattern, taper)
+        estimator = selector(debiased, direct)
+        estimated_sf = estimator(k, self.point_pattern, taper)
         k_norm = np.linalg.norm(k, axis=1)
-        return k_norm, debiased_si
+        return k_norm, estimated_sf
 
-    def multitaper_periodogram(self, k, P=3, taper_p=SineTaper):
-        d = self.point_pattern.dimension
-        params = product(*(range(1, P + 1) for _ in range(d)))
-        tapers = (taper_p(p) for p in params)
-        sf = multitapered_periodogram(k, self.point_pattern, *tapers)
-        k_norm = np.linalg.norm(k, axis=1)
-        return k_norm, sf
+    # todo to be removed
+    def tapered_debiased(self, k, taper, direct=True):
+        debiased, isotropic = True, False
+        return self.tapered_periodogram(k, taper, debiased, direct, isotropic)
 
-    def multitaper_periodogram_debiased(
-        self, k, P=3, taper_p=SineTaper, undirect=False
+    # !name taperED
+    def multitaper_periodogram(
+        self, k, P=3, taper_p=SineTaper, debiased=False, direct=True
     ):
         d = self.point_pattern.dimension
         params = product(*(range(1, P + 1) for _ in range(d)))
         tapers = (taper_p(p) for p in params)
-        if undirect:
-            sf = multitapered_periodogram(
-                k, self.point_pattern, *tapers, debiased=True, undirect=True
-            )
-        else:
-            sf = multitapered_periodogram(
-                k, self.point_pattern, *tapers, debiased=True, undirect=False
-            )
+        sf = multitapered_periodogram(
+            k,
+            self.point_pattern,
+            *tapers,
+            debiased=debiased,
+            direct=direct,
+        )
         k_norm = np.linalg.norm(k, axis=1)
         return k_norm, sf
+
+    # todo to be removed
+    def multitaper_periodogram_debiased(self, k, P=3, taper_p=SineTaper, direct=True):
+        return self.multitaper_periodogram(
+            k, P=P, taper_p=taper_p, debiased=True, direct=direct
+        )
 
     def plot_scattering_intensity(
         self,
@@ -252,7 +268,7 @@ class StructureFactor:
                 error_bar,
                 file_name,
                 window_res,
-                **binning_params
+                **binning_params,
             )
         else:
             raise ValueError(
@@ -469,5 +485,5 @@ class StructureFactor:
             exact_sf,
             error_bar,
             file_name,
-            **binning_params
+            **binning_params,
         )
