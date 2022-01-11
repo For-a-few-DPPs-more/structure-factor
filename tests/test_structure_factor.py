@@ -1,9 +1,9 @@
 import numpy as np
 import pytest
 
-from structure_factor.point_pattern import PointPattern
 import structure_factor.utils as utils
 from structure_factor.data import load_data
+from structure_factor.point_pattern import PointPattern
 from structure_factor.spatial_windows import BoxWindow
 from structure_factor.structure_factor import StructureFactor
 from structure_factor.utils import (
@@ -17,16 +17,19 @@ def ginibre_pp():
     return load_data.load_ginibre()
 
 
+# todo reshape the test, scattering_intensity does not return k_norm but k
+#
 def test_scattering_intensity(ginibre_pp):
     L = ginibre_pp.window.radius / np.sqrt(2)  # sidelength of the cubic window
     bounds = [[-L / 2, L / 2], [-L / 2, L / 2]]
     window = BoxWindow(bounds)  # create a cubic window
     ginibre_pp_box = ginibre_pp.restrict_to_window(window)
     sf_pp = StructureFactor(ginibre_pp_box)
-    k_norm, si = sf_pp.scattering_intensity(
+    k, si = sf_pp.scattering_intensity(
         k_max=1,
         meshgrid_shape=(2, 3),
     )
+    k_norm = np.linalg.norm(k, axis=-1)
     expected_k_norm = np.array(
         [
             1.38230077,
