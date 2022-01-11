@@ -78,9 +78,9 @@ class PairCorrelationFunction:
             params_fv = params.get("fv", dict())
             pcf = spatstat.core.pcf_fv(k_ripley, **params_fv)
 
-        df = pd.DataFrame(np.array(pcf).T, columns=pcf.names)
-        df.drop(["theo"], axis=1, inplace=True)
-        return df
+        pcf_pd = pd.DataFrame(np.array(pcf).T, columns=pcf.names)
+        pcf_pd.drop(columns="theo", inplace=True)
+        return pcf_pd
 
     @staticmethod
     def interpolate(r, pcf_r, clean=True, **params):
