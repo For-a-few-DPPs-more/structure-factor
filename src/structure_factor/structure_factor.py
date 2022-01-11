@@ -53,6 +53,8 @@ class StructureFactor:
         """
         assert isinstance(point_pattern, PointPattern)
         self.point_pattern = point_pattern  # the point pattern
+        #!todo k_norm_min and K_shape have nothing to do with the StructureFactor object, except for plotting
+        # todo Consider removing them or "hiding" them with an underscore _
         self.k_norm_min = None  # minimal bounds on the wavenumbers for Ogata method
         self.K_shape = None  # meshgrid of allowed values
 
@@ -377,12 +379,14 @@ class StructureFactor:
         pcf = interpolate.interp1d(r, pcf_r, **params)
         return dict_rmin_r_max, pcf
 
+    # ? change name to integral_estimator
     def hankel_quadrature(self, pcf, k_norm=None, method="BaddourChouinard", **params):
-        r"""Approximate the structure factor of the point process encapsulated in ``point_pattern`` (only for stationary isotropic point processes), using specific approximations of the Hankel transform.
+        # ? mettre k_nom avant pcf et donner le choix à l'utilisateur d'enter un None
+        r"""Approximate the structure factor of a stationary isotropic point process at values ``k_norm``, given its pair correlation function ``pcf``, using a quadrature ``method``.
 
         .. warning::
 
-            This method is actually applicable for 2-dimensional point processes.
+            It only applies to point processes in even dimension :math:`d`, due to evaluations of the zeros of Bessel functions of order :math:`d / 2 - 1` that must integer-valued.
 
         Args:
             pcf (callable): Radially symmetric pair correlation function.
@@ -390,35 +394,31 @@ class StructureFactor:
             k_norm (numpy.ndarray, optional): Vector of wavenumbers (i.e., norms of wave vectors) where the structure factor is to be evaluated. Optional if ``method="BaddourChouinard"`` (since this method evaluates the Hankel transform on a specific vector, see :cite:`BaCh15`), but it is **non optional** if ``method="Ogata"``. Defaults to None.
 
             method (str, optional): Choose between ``"BaddourChouinard"`` or ``"Ogata"``. Defaults to ``"BaddourChouinard"``. Selects the method to be used to compute the Hankel transform corresponding to the symmetric Fourier transform of ``pcf -1``,
-
                 - if ``"BaddourChouinard"``: The Hankel transform is approximated using the Discrete Hankel transform :cite:`BaCh15`. See :py:class:`~structure_factor.transforms.HankelTransformBaddourChouinard`,
                 - if ``"Ogata"``: The Hankel transform is approximated using Ogata quadrature :cite:`Oga05`. See :py:class:`~structure_factor.transforms.HankelTransformOgata`.
 
         Keyword Args:
             params (dict): Keyword arguments passed to the corresponding Hankel transformer selected according to the ``method`` argument.
-
                 - ``method == "Ogata"``, see :py:meth:`~structure_factor.transforms.HankelTransformOgata.compute_transformation_parameters`
                     - ``step_size``
                     - ``nb_points``
-
                 - ``method == "BaddourChouinard"``, see :py:meth:`~structure_factor.transforms.HankelTransformBaddourChouinard.compute_transformation_parameters`
                     - ``r_max``
                     - ``nb_points``
                     - ``interpolotation`` dictionnary containing the keyword arguments of `scipy.integrate.interp1d <https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html>`_ parameters.
-
         Returns:
             tuple (np.ndarray, np.ndarray):
                 - k_norm: Vector of wavenumbers.
-                - sf: Evaluations of the structure factor on ``k_norm``.
-
+                - sf: Evaluations of the structure factor at ``k_norm``.
         Example:
+
             .. literalinclude:: code/sf_baddour_example.py
                 :lines: 1-28
                 :emphasize-lines: 23-28
 
         .. proof:definition::
 
-            The structure factor :math:`S` of a **stationary isotropic** point process :math:`\mathcal{X} \subset \mathbb{R}^d` of intensity :math:`\rho`, can be defined via the Hankel transform :math:`\mathcal{H}_{d/2 -1}` of order :math:`d/2 -1` as follows,
+            The structure factor :math:`S` of a **stationary isotropic** point process :math:`\mathcal{X} \subset \mathbb{R}^d` with intensity :math:`\rho`, can be defined via the Hankel transform :math:`\mathcal{H}_{d/2 -1}` of order :math:`d/2 -1` as follows,
 
             .. math::
 
@@ -433,36 +433,35 @@ class StructureFactor:
 
             **Typical usage**:
                 1. Estimate the pair correlation function using :py:meth:`compute_pcf`.
-
                 2. Clean and interpolate the resulting estimation using :py:meth:`interpolate_pcf` to get a **function**.
-
                 3. Pass the resulting interpolated function to :py:meth:`hankel_quadrature` to get an approximation of the structure factor of the point process.
         """
-        if self.dimension != 2:
-            warnings.warn(
-                message="This method is actually applicable for 2-dimensional point processes",
-                category=DeprecationWarning,
-            )
         assert callable(pcf)
-        if method == "Ogata" and k_norm.all() is None:
+        r_max = params.setdefault("r_max", None)
+
+        if method == "Ogata" and k_norm is None:
             raise ValueError(
-                "k_norm is not optional while using method='Ogata'. Please provide a vector k_norm in the input. "
+                "k_norm argument must be passed when using method='Ogata'."
             )
-        params.setdefault("r_max", None)
-        if method == "BaddourChouinard" and params["r_max"] is None:
+
+        if method == "BaddourChouinard" and r_max is None:
             raise ValueError(
-                "r_max is not optional while using method='BaddourChouinard'. Please specify r_max in the input. "
+                "r_max keyword argument must be passed when using method='BaddourChouinard'."
             )
+
         ft = RadiallySymmetricFourierTransform(dimension=self.dimension)
         total_pcf = lambda r: pcf(r) - 1.0
         k_norm, ft_k = ft.transform(total_pcf, k_norm, method=method, **params)
-        if method == "Ogata" and params["r_max"] is not None:
-            params.setdefault("step_size", 0.1)
-            step_size = params["step_size"]
-            self.k_norm_min = utils._compute_k_min(
-                r_max=params["r_max"], step_size=step_size
-            )
-        sf = 1.0 + self.point_pattern.intensity * ft_k
+
+        if method == "Ogata":
+            # ? why this default, it does not match default of compute_transformation_parameters
+            step_size = params.get("step_size", 0.1)
+            if r_max is not None:
+                #! k_norm_min only used for plots see todo in __init__
+                self.k_norm_min = utils._compute_k_min(r_max, step_size)
+
+        rho = self.point_pattern.intensity
+        sf = 1.0 + rho * ft_k
         return k_norm, sf
 
     def plot_sf_hankel_quadrature(
