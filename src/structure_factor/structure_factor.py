@@ -57,6 +57,7 @@ class StructureFactor:
         """Ambient dimension of the underlying point process."""
         return self.point_pattern.dimension
 
+    #! pass on doc
     def scattering_intensity(self, k=None, debiased=True, undirect=False, **params):
         r"""Compute the scattering intensity (an estimator of the structure factor) of the point process encapsulated in ``point_pattern``.
         It is evaluated by default, on a specific set of wavevectors called **allowed wavevectors** that minimizes the approximation errors.
@@ -99,7 +100,6 @@ class StructureFactor:
         k_max = params["k_max"]
         params.setdefault("meshgrid_shape", None)
         meshgrid_shape = params["meshgrid_shape"]
-
         point_pattern = self.point_pattern
         window = point_pattern.window
         d = point_pattern.dimension
@@ -181,8 +181,9 @@ class StructureFactor:
         self,
         k,
         si,
-        plot_type="radial",
         axes=None,
+        plot_type="radial",
+        positive=False,
         exact_sf=None,
         error_bar=False,
         file_name="",
@@ -193,12 +194,15 @@ class StructureFactor:
         Args:
             k (numpy.array): Wavevector(s) on which the scattering intensity has been approximated.
             si (numpy.array): Approximated scattering intensity associated to `k`.
+            axes (matplotlib.axis, optional): Support axes of the plots. Defaults to None.
             plot_type (str, optional): ("radial", "imshow", "all"). Type of the plot to visualize. Defaults to "radial".
                     - If "radial", the output is a loglog plot.
                     - If "imshow" (option available only for a 2D point process), the output is a (2D) color level plot.
                     - If "all" (option available only for a 2D point process), the result contains 3 subplots: the point pattern (or a restriction to a specific window if ``window_res`` is set), the loglog radial plot, and the color level plot. Note that the options "imshow" and "all" couldn't be used, if ``k`` is not a meshgrid.
-            axes (matplotlib.axis, optional): Support axes of the plots. Defaults to None.
-            exact_sf (np.array, optional): Theoretical structure factor of the point process evaluated on `k_norm`. Defaults to None.
+
+            positive (bool): If True, plots only the positive values of si.
+            exact_sf (callable, optional): Theoretical structure factor of the point process. Defaults to None.
+
             error_bar (bool, optional): If ``True``, ``k_norm`` and correspondingly ``si`` are divided into sub-intervals (bins). Over each bin, the mean and the standard deviation of ``si`` are derived and visualized on the plot. Note that each error bar corresponds to the mean +/- 3 standard deviation. To specify the number of bins, add it to the kwargs argument ``binning_params``. For more details see :py:meth:`~structure_factor.utils._bin_statistics`. Defaults to False.
             file_name (str, optional): Name used to save the figure. The available output formats depend on the backend being used. Defaults to "".
             window_res (:py:class:`~structure_factor.spatial_windows.AbstractSpatialWindow`, optional): New restriction window. It is useful when the sample of points is large, so for time and visualization purposes, it is better to restrict the plot of the point process to a smaller window. Defaults to None.
@@ -216,6 +220,13 @@ class StructureFactor:
                 :align: center
         """
         k_norm = np.linalg.norm(k, axis=1)
+
+        # unplot possible negative values
+        if positive:
+            si_ = si
+            si = si[si_ >= 0]
+            k_norm = k_norm[si_ >= 0]
+
         if plot_type == "radial":
             return utils.plot_si_showcase(
                 k_norm, si, axes, exact_sf, error_bar, file_name, **binning_params
@@ -248,7 +259,7 @@ class StructureFactor:
                 self.point_pattern,
                 k_norm,
                 si,
-                exact_sf,
+                exact_sf(k_norm),
                 error_bar,
                 file_name,
                 window_res,

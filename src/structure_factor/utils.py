@@ -10,6 +10,10 @@ from scipy import interpolate, stats
 from scipy.special import j0, j1, jn_zeros, jv, y0, y1, yv
 
 
+def norm_k(k):
+    return np.linalg.norm(k, axis=1)
+
+
 def get_random_number_generator(seed=None):
     """Turn seed into a np.random.Generator instance."""
     return np.random.default_rng(seed)
@@ -477,8 +481,6 @@ def plot_si_showcase(
         _, axis = plt.subplots(figsize=(8, 6))
 
     plot_poisson(k_norm, axis=axis)
-    if exact_sf is not None:
-        plot_exact(k_norm, exact_sf, axis=axis, label=r"Exact $S(k)$")
 
     plot_approximation(
         k_norm,
@@ -493,6 +495,9 @@ def plot_si_showcase(
 
     if error_bar:
         plot_summary(k_norm, si, axis=axis, **binning_params)
+
+    if exact_sf is not None:
+        plot_exact(k_norm, exact_sf(k_norm), axis=axis, label=r"Exact $S(k)$")
 
     axis.set_xlabel(r"Wavenumber ($||\mathbf{k}||$)")
     axis.set_ylabel(r"Structure factor ($S(k)$)")
@@ -662,7 +667,7 @@ def plot_sf_hankel_quadrature(
         markersize=4,
     )
     if exact_sf is not None:
-        plot_exact(k_norm, exact_sf, axis=axis, label=r"Exact $\mathcal{S}(k)$")
+        plot_exact(k_norm, exact_sf(k_norm), axis=axis, label=r"Exact $\mathcal{S}(k)$")
     if error_bar:
         plot_summary(k_norm, sf, axis=axis, **binning_params)
     plot_poisson(k_norm, axis=axis)
