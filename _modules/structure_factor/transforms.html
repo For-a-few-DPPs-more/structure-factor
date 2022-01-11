@@ -60,7 +60,9 @@
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dimension</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
         <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dimension</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
-        <span class="k">assert</span> <span class="n">dimension</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span>
+        <span class="c1"># assert dimension % 2 == 0</span>
+        <span class="c1"># required to evaluate zeros of Bessel functions with order = d / 2 - 1 that must integer-valued</span>
+        <span class="c1"># error will be raised when calling bessel_zeros</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">d</span> <span class="o">=</span> <span class="n">dimension</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">r_max</span> <span class="o">=</span> <span class="kc">None</span>
 
@@ -70,7 +72,7 @@
 <span class="sd">        Args:</span>
 <span class="sd">            f (callable): Function to transform.</span>
 
-<span class="sd">            k (scalar or numpy.ndarray): Point(s) where the Fourier transform is to be evaluated.</span>
+<span class="sd">            k (scalar or numpy.ndarray): Point or 1d array of points where the Fourier transform is to be evaluated.</span>
 
 <span class="sd">            method (str): Name of the method used to compute the underlying Hankel transform: ``&quot;Ogata&quot;`` (see :cite:`Oga05`) or ``&quot;BaddourChouinard&quot;`` (see :cite:`BaCh15`).</span>
 
@@ -81,6 +83,7 @@
 
 <span class="sd">                    - r_max (float): Threshold radius. Considering that the input function :math:`f` to be Hankel transformed is space-limited, then ``r_max`` is such that :math:`f(r)=0` for r &gt; r_max.</span>
 <span class="sd">                    - nb_points (int, optional): Number of quadrature nodes. Defaults to 300.</span>
+
 <span class="sd">                - If ``method=&quot;Ogata&quot;`` (see :cite:`Oga05`):</span>
 
 <span class="sd">                    - r_max (float, optional): Maximum radius on which the input function :math:`f` to be Hankel transformed was evaluated before the interpolation. Parameter used to conclude a lower bound on :math:`k` on which :math:`f` to be Hankel transformed. Defaults to None.</span>
@@ -88,7 +91,6 @@
 <span class="sd">                    - step_size (float, optional): Step size of the discretization scheme. Defaults to 0.01.</span>
 
 <span class="sd">                    - nb_points (int, optional): Number of quadrature nodes. Defaults to 300.</span>
-
 
 <span class="sd">        Returns:</span>
 <span class="sd">            tuple (np.array, np.array):</span>
@@ -125,11 +127,13 @@
         <span class="n">ht</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_hankel_transformer</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span>
         <span class="n">interp_params</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;interpolation&quot;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">())</span>
         <span class="n">ht</span><span class="o">.</span><span class="n">compute_transformation_parameters</span><span class="p">(</span><span class="o">**</span><span class="n">params</span><span class="p">)</span>
+
         <span class="n">g</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">r</span><span class="p">:</span> <span class="n">f</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="o">*</span> <span class="n">r</span> <span class="o">**</span> <span class="n">order</span>
         <span class="n">k</span><span class="p">,</span> <span class="n">F_k</span> <span class="o">=</span> <span class="n">ht</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="o">**</span><span class="n">interp_params</span><span class="p">)</span>
         <span class="n">F_k</span> <span class="o">*=</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="n">d</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">order</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># F_k /= k^(d/2-1)</span>
             <span class="n">F_k</span> <span class="o">/=</span> <span class="n">k</span> <span class="o">**</span> <span class="n">order</span>
+
         <span class="k">return</span> <span class="n">k</span><span class="p">,</span> <span class="n">F_k</span></div>
 
     <span class="k">def</span> <span class="nf">_get_hankel_transformer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
@@ -227,13 +231,15 @@
         <span class="n">r</span> <span class="o">=</span> <span class="n">jk</span> <span class="o">*</span> <span class="p">(</span><span class="n">r_max</span> <span class="o">/</span> <span class="n">jN</span><span class="p">)</span>
         <span class="n">ht_k</span> <span class="o">=</span> <span class="p">(</span><span class="n">r_max</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">jN</span><span class="p">)</span> <span class="o">*</span> <span class="n">Y</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="n">r</span><span class="p">))</span>  <span class="c1"># Equation (23)</span>
         <span class="n">_k</span> <span class="o">=</span> <span class="n">jk</span> <span class="o">/</span> <span class="n">r_max</span>
-        <span class="k">if</span> <span class="n">k</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">interpolation_params</span><span class="p">[</span><span class="s2">&quot;assume_sorted&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-            <span class="n">interpolation_params</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;fill_value&quot;</span><span class="p">,</span> <span class="s2">&quot;extrapolate&quot;</span><span class="p">)</span>
-            <span class="n">interpolation_params</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;kind&quot;</span><span class="p">,</span> <span class="s2">&quot;cubic&quot;</span><span class="p">)</span>
-            <span class="n">ht</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span><span class="n">_k</span><span class="p">,</span> <span class="n">ht_k</span><span class="p">,</span> <span class="o">**</span><span class="n">interpolation_params</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">k</span><span class="p">,</span> <span class="n">ht</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">_k</span><span class="p">,</span> <span class="n">ht_k</span></div></div>
+
+        <span class="k">if</span> <span class="n">k</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">_k</span><span class="p">,</span> <span class="n">ht_k</span>
+
+        <span class="n">interpolation_params</span><span class="p">[</span><span class="s2">&quot;assume_sorted&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">interpolation_params</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;fill_value&quot;</span><span class="p">,</span> <span class="s2">&quot;extrapolate&quot;</span><span class="p">)</span>
+        <span class="n">interpolation_params</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;kind&quot;</span><span class="p">,</span> <span class="s2">&quot;cubic&quot;</span><span class="p">)</span>
+        <span class="n">ht</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span><span class="n">_k</span><span class="p">,</span> <span class="n">ht_k</span><span class="p">,</span> <span class="o">**</span><span class="n">interpolation_params</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">k</span><span class="p">,</span> <span class="n">ht</span><span class="p">(</span><span class="n">k</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="HankelTransformOgata"><a class="viewcode-back" href="../../transforms.html#structure_factor.transforms.HankelTransformOgata">[docs]</a><span class="k">class</span> <span class="nc">HankelTransformOgata</span><span class="p">(</span><span class="n">HankelTransform</span><span class="p">):</span>
@@ -287,7 +293,7 @@
 <span class="sd">        Args:</span>
 <span class="sd">            f (callable): Function to be Hankel transformed.</span>
 
-<span class="sd">            k (np.array, optional): Points of evaluation of the Hankel transform. Defaults to None.</span>
+<span class="sd">            k (np.array, optional): Points of evaluation of the Hankel transform (1d array). Defaults to None.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            tuple(np.ndarray, np.ndarray):</span>

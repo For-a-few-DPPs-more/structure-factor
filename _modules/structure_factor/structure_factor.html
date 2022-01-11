@@ -96,6 +96,8 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">point_pattern</span><span class="p">,</span> <span class="n">PointPattern</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">point_pattern</span> <span class="o">=</span> <span class="n">point_pattern</span>  <span class="c1"># the point pattern</span>
+        <span class="c1">#!todo k_norm_min and K_shape have nothing to do with the StructureFactor object, except for plotting</span>
+        <span class="c1"># todo Consider removing them or &quot;hiding&quot; them with an underscore _</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">k_norm_min</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># minimal bounds on the wavenumbers for Ogata method</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">K_shape</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># meshgrid of allowed values</span>
 
@@ -420,12 +422,14 @@
         <span class="n">pcf</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">pcf_r</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">dict_rmin_r_max</span><span class="p">,</span> <span class="n">pcf</span></div>
 
+    <span class="c1"># ? change name to integral_estimator</span>
 <div class="viewcode-block" id="StructureFactor.hankel_quadrature"><a class="viewcode-back" href="../../structure_factor.html#structure_factor.structure_factor.StructureFactor.hankel_quadrature">[docs]</a>    <span class="k">def</span> <span class="nf">hankel_quadrature</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pcf</span><span class="p">,</span> <span class="n">k_norm</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;BaddourChouinard&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Approximate the structure factor of the point process encapsulated in ``point_pattern`` (only for stationary isotropic point processes), using specific approximations of the Hankel transform.</span>
+        <span class="c1"># ? mettre k_nom avant pcf et donner le choix à l&#39;utilisateur d&#39;enter un None</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Approximate the structure factor of a stationary isotropic point process at values ``k_norm``, given its pair correlation function ``pcf``, using a quadrature ``method``.</span>
 
 <span class="sd">        .. warning::</span>
 
-<span class="sd">            This method is actually applicable for 2-dimensional point processes.</span>
+<span class="sd">            It only applies to point processes in even dimension :math:`d`, due to evaluations of the zeros of Bessel functions of order :math:`d / 2 - 1` that must integer-valued.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            pcf (callable): Radially symmetric pair correlation function.</span>
@@ -433,35 +437,31 @@
 <span class="sd">            k_norm (numpy.ndarray, optional): Vector of wavenumbers (i.e., norms of wave vectors) where the structure factor is to be evaluated. Optional if ``method=&quot;BaddourChouinard&quot;`` (since this method evaluates the Hankel transform on a specific vector, see :cite:`BaCh15`), but it is **non optional** if ``method=&quot;Ogata&quot;``. Defaults to None.</span>
 
 <span class="sd">            method (str, optional): Choose between ``&quot;BaddourChouinard&quot;`` or ``&quot;Ogata&quot;``. Defaults to ``&quot;BaddourChouinard&quot;``. Selects the method to be used to compute the Hankel transform corresponding to the symmetric Fourier transform of ``pcf -1``,</span>
-
 <span class="sd">                - if ``&quot;BaddourChouinard&quot;``: The Hankel transform is approximated using the Discrete Hankel transform :cite:`BaCh15`. See :py:class:`~structure_factor.transforms.HankelTransformBaddourChouinard`,</span>
 <span class="sd">                - if ``&quot;Ogata&quot;``: The Hankel transform is approximated using Ogata quadrature :cite:`Oga05`. See :py:class:`~structure_factor.transforms.HankelTransformOgata`.</span>
 
 <span class="sd">        Keyword Args:</span>
 <span class="sd">            params (dict): Keyword arguments passed to the corresponding Hankel transformer selected according to the ``method`` argument.</span>
-
 <span class="sd">                - ``method == &quot;Ogata&quot;``, see :py:meth:`~structure_factor.transforms.HankelTransformOgata.compute_transformation_parameters`</span>
 <span class="sd">                    - ``step_size``</span>
 <span class="sd">                    - ``nb_points``</span>
-
 <span class="sd">                - ``method == &quot;BaddourChouinard&quot;``, see :py:meth:`~structure_factor.transforms.HankelTransformBaddourChouinard.compute_transformation_parameters`</span>
 <span class="sd">                    - ``r_max``</span>
 <span class="sd">                    - ``nb_points``</span>
 <span class="sd">                    - ``interpolotation`` dictionnary containing the keyword arguments of `scipy.integrate.interp1d &lt;https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html&gt;`_ parameters.</span>
-
 <span class="sd">        Returns:</span>
 <span class="sd">            tuple (np.ndarray, np.ndarray):</span>
 <span class="sd">                - k_norm: Vector of wavenumbers.</span>
-<span class="sd">                - sf: Evaluations of the structure factor on ``k_norm``.</span>
-
+<span class="sd">                - sf: Evaluations of the structure factor at ``k_norm``.</span>
 <span class="sd">        Example:</span>
+
 <span class="sd">            .. literalinclude:: code/sf_baddour_example.py</span>
 <span class="sd">                :lines: 1-28</span>
 <span class="sd">                :emphasize-lines: 23-28</span>
 
 <span class="sd">        .. proof:definition::</span>
 
-<span class="sd">            The structure factor :math:`S` of a **stationary isotropic** point process :math:`\mathcal{X} \subset \mathbb{R}^d` of intensity :math:`\rho`, can be defined via the Hankel transform :math:`\mathcal{H}_{d/2 -1}` of order :math:`d/2 -1` as follows,</span>
+<span class="sd">            The structure factor :math:`S` of a **stationary isotropic** point process :math:`\mathcal{X} \subset \mathbb{R}^d` with intensity :math:`\rho`, can be defined via the Hankel transform :math:`\mathcal{H}_{d/2 -1}` of order :math:`d/2 -1` as follows,</span>
 
 <span class="sd">            .. math::</span>
 
@@ -476,36 +476,35 @@
 
 <span class="sd">            **Typical usage**:</span>
 <span class="sd">                1. Estimate the pair correlation function using :py:meth:`compute_pcf`.</span>
-
 <span class="sd">                2. Clean and interpolate the resulting estimation using :py:meth:`interpolate_pcf` to get a **function**.</span>
-
 <span class="sd">                3. Pass the resulting interpolated function to :py:meth:`hankel_quadrature` to get an approximation of the structure factor of the point process.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dimension</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="n">message</span><span class="o">=</span><span class="s2">&quot;This method is actually applicable for 2-dimensional point processes&quot;</span><span class="p">,</span>
-                <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span>
-            <span class="p">)</span>
         <span class="k">assert</span> <span class="n">callable</span><span class="p">(</span><span class="n">pcf</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;Ogata&quot;</span> <span class="ow">and</span> <span class="n">k_norm</span><span class="o">.</span><span class="n">all</span><span class="p">()</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">r_max</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;r_max&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;Ogata&quot;</span> <span class="ow">and</span> <span class="n">k_norm</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;k_norm is not optional while using method=&#39;Ogata&#39;. Please provide a vector k_norm in the input. &quot;</span>
+                <span class="s2">&quot;k_norm argument must be passed when using method=&#39;Ogata&#39;.&quot;</span>
             <span class="p">)</span>
-        <span class="n">params</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;r_max&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;BaddourChouinard&quot;</span> <span class="ow">and</span> <span class="n">params</span><span class="p">[</span><span class="s2">&quot;r_max&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;BaddourChouinard&quot;</span> <span class="ow">and</span> <span class="n">r_max</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;r_max is not optional while using method=&#39;BaddourChouinard&#39;. Please specify r_max in the input. &quot;</span>
+                <span class="s2">&quot;r_max keyword argument must be passed when using method=&#39;BaddourChouinard&#39;.&quot;</span>
             <span class="p">)</span>
+
         <span class="n">ft</span> <span class="o">=</span> <span class="n">RadiallySymmetricFourierTransform</span><span class="p">(</span><span class="n">dimension</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dimension</span><span class="p">)</span>
         <span class="n">total_pcf</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">r</span><span class="p">:</span> <span class="n">pcf</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="o">-</span> <span class="mf">1.0</span>
         <span class="n">k_norm</span><span class="p">,</span> <span class="n">ft_k</span> <span class="o">=</span> <span class="n">ft</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">total_pcf</span><span class="p">,</span> <span class="n">k_norm</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;Ogata&quot;</span> <span class="ow">and</span> <span class="n">params</span><span class="p">[</span><span class="s2">&quot;r_max&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">params</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;step_size&quot;</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
-            <span class="n">step_size</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s2">&quot;step_size&quot;</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">k_norm_min</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">_compute_k_min</span><span class="p">(</span>
-                <span class="n">r_max</span><span class="o">=</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;r_max&quot;</span><span class="p">],</span> <span class="n">step_size</span><span class="o">=</span><span class="n">step_size</span>
-            <span class="p">)</span>
-        <span class="n">sf</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">point_pattern</span><span class="o">.</span><span class="n">intensity</span> <span class="o">*</span> <span class="n">ft_k</span>
+
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;Ogata&quot;</span><span class="p">:</span>
+            <span class="c1"># ? why this default, it does not match default of compute_transformation_parameters</span>
+            <span class="n">step_size</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;step_size&quot;</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">r_max</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1">#! k_norm_min only used for plots see todo in __init__</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">k_norm_min</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">_compute_k_min</span><span class="p">(</span><span class="n">r_max</span><span class="p">,</span> <span class="n">step_size</span><span class="p">)</span>
+
+        <span class="n">rho</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">point_pattern</span><span class="o">.</span><span class="n">intensity</span>
+        <span class="n">sf</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">+</span> <span class="n">rho</span> <span class="o">*</span> <span class="n">ft_k</span>
         <span class="k">return</span> <span class="n">k_norm</span><span class="p">,</span> <span class="n">sf</span></div>
 
 <div class="viewcode-block" id="StructureFactor.plot_sf_hankel_quadrature"><a class="viewcode-back" href="../../structure_factor.html#structure_factor.structure_factor.StructureFactor.plot_sf_hankel_quadrature">[docs]</a>    <span class="k">def</span> <span class="nf">plot_sf_hankel_quadrature</span><span class="p">(</span>

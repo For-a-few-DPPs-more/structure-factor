@@ -387,35 +387,31 @@ f(\mathbf{x}, \mathbf{y}) \bigg] = \int_{\mathbb{R}^d \times \mathbb{R}^d} f(\ma
 <dl class="py method">
 <dt class="sig sig-object py" id="structure_factor.structure_factor.StructureFactor.hankel_quadrature">
 <span class="sig-name descname"><span class="pre">hankel_quadrature</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pcf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k_norm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'BaddourChouinard'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/structure_factor.html#StructureFactor.hankel_quadrature"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.structure_factor.StructureFactor.hankel_quadrature" title="Permalink to this definition">¶</a></dt>
-<dd><p>Approximate the structure factor of the point process encapsulated in <code class="docutils literal notranslate"><span class="pre">point_pattern</span></code> (only for stationary isotropic point processes), using specific approximations of the Hankel transform.</p>
+<dd><p>Approximate the structure factor of a stationary isotropic point process at values <code class="docutils literal notranslate"><span class="pre">k_norm</span></code>, given its pair correlation function <code class="docutils literal notranslate"><span class="pre">pcf</span></code>, using a quadrature <code class="docutils literal notranslate"><span class="pre">method</span></code>.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>This method is actually applicable for 2-dimensional point processes.</p>
+<p>It only applies to point processes in even dimension <span class="math notranslate nohighlight">\(d\)</span>, due to evaluations of the zeros of Bessel functions of order <span class="math notranslate nohighlight">\(d / 2 - 1\)</span> that must integer-valued.</p>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pcf</strong> (<em>callable</em>) – Radially symmetric pair correlation function.</p></li>
 <li><p><strong>k_norm</strong> (<em>numpy.ndarray</em><em>, </em><em>optional</em>) – Vector of wavenumbers (i.e., norms of wave vectors) where the structure factor is to be evaluated. Optional if <code class="docutils literal notranslate"><span class="pre">method=&quot;BaddourChouinard&quot;</span></code> (since this method evaluates the Hankel transform on a specific vector, see <span id="id14">[<a class="reference internal" href="bibliography/index.html#id2" title="Natalie Baddour and Ugo Chouinard. Theory and operational rules for the discrete hankel transform. J. Opt. Soc. Am. A, 32(4):611–622, Apr 2015. URL: http://josaa.osa.org/abstract.cfm?URI=josaa-32-4-611, doi:10.1364/JOSAA.32.000611.">BC15</a>]</span>), but it is <strong>non optional</strong> if <code class="docutils literal notranslate"><span class="pre">method=&quot;Ogata&quot;</span></code>. Defaults to None.</p></li>
-<li><p><strong>method</strong> (<em>str</em><em>, </em><em>optional</em>) – <p>Choose between <code class="docutils literal notranslate"><span class="pre">&quot;BaddourChouinard&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;Ogata&quot;</span></code>. Defaults to <code class="docutils literal notranslate"><span class="pre">&quot;BaddourChouinard&quot;</span></code>. Selects the method to be used to compute the Hankel transform corresponding to the symmetric Fourier transform of <code class="docutils literal notranslate"><span class="pre">pcf</span> <span class="pre">-1</span></code>,</p>
-<ul>
-<li><p>if <code class="docutils literal notranslate"><span class="pre">&quot;BaddourChouinard&quot;</span></code>: The Hankel transform is approximated using the Discrete Hankel transform <span id="id15">[<a class="reference internal" href="bibliography/index.html#id2" title="Natalie Baddour and Ugo Chouinard. Theory and operational rules for the discrete hankel transform. J. Opt. Soc. Am. A, 32(4):611–622, Apr 2015. URL: http://josaa.osa.org/abstract.cfm?URI=josaa-32-4-611, doi:10.1364/JOSAA.32.000611.">BC15</a>]</span>. See <a class="reference internal" href="transforms.html#structure_factor.transforms.HankelTransformBaddourChouinard" title="structure_factor.transforms.HankelTransformBaddourChouinard"><code class="xref py py-class docutils literal notranslate"><span class="pre">HankelTransformBaddourChouinard</span></code></a>,</p></li>
-<li><p>if <code class="docutils literal notranslate"><span class="pre">&quot;Ogata&quot;</span></code>: The Hankel transform is approximated using Ogata quadrature <span id="id16">[<a class="reference internal" href="bibliography/index.html#id6" title="H. Ogata. A numerical integration formula based on the bessel functions. Research Institute for Mathematical Sciences, 2005. doi:10.2977/prims/1145474602.">Oga05</a>]</span>. See <a class="reference internal" href="transforms.html#structure_factor.transforms.HankelTransformOgata" title="structure_factor.transforms.HankelTransformOgata"><code class="xref py py-class docutils literal notranslate"><span class="pre">HankelTransformOgata</span></code></a>.</p></li>
-</ul>
-</p></li>
+<li><p><strong>method</strong> (<em>str</em><em>, </em><em>optional</em>) – Choose between <code class="docutils literal notranslate"><span class="pre">&quot;BaddourChouinard&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;Ogata&quot;</span></code>. Defaults to <code class="docutils literal notranslate"><span class="pre">&quot;BaddourChouinard&quot;</span></code>. Selects the method to be used to compute the Hankel transform corresponding to the symmetric Fourier transform of <code class="docutils literal notranslate"><span class="pre">pcf</span> <span class="pre">-1</span></code>,
+- if <code class="docutils literal notranslate"><span class="pre">&quot;BaddourChouinard&quot;</span></code>: The Hankel transform is approximated using the Discrete Hankel transform <span id="id15">[<a class="reference internal" href="bibliography/index.html#id2" title="Natalie Baddour and Ugo Chouinard. Theory and operational rules for the discrete hankel transform. J. Opt. Soc. Am. A, 32(4):611–622, Apr 2015. URL: http://josaa.osa.org/abstract.cfm?URI=josaa-32-4-611, doi:10.1364/JOSAA.32.000611.">BC15</a>]</span>. See <a class="reference internal" href="transforms.html#structure_factor.transforms.HankelTransformBaddourChouinard" title="structure_factor.transforms.HankelTransformBaddourChouinard"><code class="xref py py-class docutils literal notranslate"><span class="pre">HankelTransformBaddourChouinard</span></code></a>,
+- if <code class="docutils literal notranslate"><span class="pre">&quot;Ogata&quot;</span></code>: The Hankel transform is approximated using Ogata quadrature <span id="id16">[<a class="reference internal" href="bibliography/index.html#id6" title="H. Ogata. A numerical integration formula based on the bessel functions. Research Institute for Mathematical Sciences, 2005. doi:10.2977/prims/1145474602.">Oga05</a>]</span>. See <a class="reference internal" href="transforms.html#structure_factor.transforms.HankelTransformOgata" title="structure_factor.transforms.HankelTransformOgata"><code class="xref py py-class docutils literal notranslate"><span class="pre">HankelTransformOgata</span></code></a>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Keyword Arguments</dt>
-<dd class="field-even"><p><strong>params</strong> (<em>dict</em>) – <p>Keyword arguments passed to the corresponding Hankel transformer selected according to the <code class="docutils literal notranslate"><span class="pre">method</span></code> argument.</p>
-<ul class="simple">
-<li><dl class="simple">
-<dt><code class="docutils literal notranslate"><span class="pre">method</span> <span class="pre">==</span> <span class="pre">&quot;Ogata&quot;</span></code>, see <a class="reference internal" href="transforms.html#structure_factor.transforms.HankelTransformOgata.compute_transformation_parameters" title="structure_factor.transforms.HankelTransformOgata.compute_transformation_parameters"><code class="xref py py-meth docutils literal notranslate"><span class="pre">compute_transformation_parameters()</span></code></a></dt><dd><ul>
+<dd class="field-even"><p><strong>params</strong> (<em>dict</em>) – <p>Keyword arguments passed to the corresponding Hankel transformer selected according to the <code class="docutils literal notranslate"><span class="pre">method</span></code> argument.
+- <code class="docutils literal notranslate"><span class="pre">method</span> <span class="pre">==</span> <span class="pre">&quot;Ogata&quot;</span></code>, see <a class="reference internal" href="transforms.html#structure_factor.transforms.HankelTransformOgata.compute_transformation_parameters" title="structure_factor.transforms.HankelTransformOgata.compute_transformation_parameters"><code class="xref py py-meth docutils literal notranslate"><span class="pre">compute_transformation_parameters()</span></code></a></p>
+<blockquote>
+<div><ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">step_size</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">nb_points</span></code></p></li>
 </ul>
-</dd>
-</dl>
-</li>
+</div></blockquote>
+<ul class="simple">
 <li><dl class="simple">
 <dt><code class="docutils literal notranslate"><span class="pre">method</span> <span class="pre">==</span> <span class="pre">&quot;BaddourChouinard&quot;</span></code>, see <a class="reference internal" href="transforms.html#structure_factor.transforms.HankelTransformBaddourChouinard.compute_transformation_parameters" title="structure_factor.transforms.HankelTransformBaddourChouinard.compute_transformation_parameters"><code class="xref py py-meth docutils literal notranslate"><span class="pre">compute_transformation_parameters()</span></code></a></dt><dd><ul>
 <li><p><code class="docutils literal notranslate"><span class="pre">r_max</span></code></p></li>
@@ -431,7 +427,7 @@ f(\mathbf{x}, \mathbf{y}) \bigg] = \int_{\mathbb{R}^d \times \mathbb{R}^d} f(\ma
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p><ul class="simple">
 <li><p>k_norm: Vector of wavenumbers.</p></li>
-<li><p>sf: Evaluations of the structure factor on <code class="docutils literal notranslate"><span class="pre">k_norm</span></code>.</p></li>
+<li><p>sf: Evaluations of the structure factor at <code class="docutils literal notranslate"><span class="pre">k_norm</span></code>.</p></li>
 </ul>
 </p>
 </dd>
@@ -476,7 +472,7 @@ f(\mathbf{x}, \mathbf{y}) \bigg] = \int_{\mathbb{R}^d \times \mathbb{R}^d} f(\ma
         <span class="proof-type">Definition </span>
         
     </div><div class="proof-content">
-<p>The structure factor <span class="math notranslate nohighlight">\(S\)</span> of a <strong>stationary isotropic</strong> point process <span class="math notranslate nohighlight">\(\mathcal{X} \subset \mathbb{R}^d\)</span> of intensity <span class="math notranslate nohighlight">\(\rho\)</span>, can be defined via the Hankel transform <span class="math notranslate nohighlight">\(\mathcal{H}_{d/2 -1}\)</span> of order <span class="math notranslate nohighlight">\(d/2 -1\)</span> as follows,</p>
+<p>The structure factor <span class="math notranslate nohighlight">\(S\)</span> of a <strong>stationary isotropic</strong> point process <span class="math notranslate nohighlight">\(\mathcal{X} \subset \mathbb{R}^d\)</span> with intensity <span class="math notranslate nohighlight">\(\rho\)</span>, can be defined via the Hankel transform <span class="math notranslate nohighlight">\(\mathcal{H}_{d/2 -1}\)</span> of order <span class="math notranslate nohighlight">\(d/2 -1\)</span> as follows,</p>
 <div class="math notranslate nohighlight">
 \[S(\|\mathbf{k}\|)
 = 1 + \rho \frac{(2 \pi)^{d/2}}{\|\mathbf{k}\|^{d/2 -1}} \mathcal{H}_{d/2 -1}(\tilde g -1)(\|\mathbf{k}\|),

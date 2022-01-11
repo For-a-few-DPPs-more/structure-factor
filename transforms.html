@@ -69,7 +69,7 @@
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>f</strong> (<em>callable</em>) – Function to transform.</p></li>
-<li><p><strong>k</strong> (<em>scalar</em><em> or </em><em>numpy.ndarray</em>) – Point(s) where the Fourier transform is to be evaluated.</p></li>
+<li><p><strong>k</strong> (<em>scalar</em><em> or </em><em>numpy.ndarray</em>) – Point or 1d array of points where the Fourier transform is to be evaluated.</p></li>
 <li><p><strong>method</strong> (<em>str</em>) – Name of the method used to compute the underlying Hankel transform: <code class="docutils literal notranslate"><span class="pre">&quot;Ogata&quot;</span></code> (see <span id="id1">[<a class="reference internal" href="bibliography/index.html#id6" title="H. Ogata. A numerical integration formula based on the bessel functions. Research Institute for Mathematical Sciences, 2005. doi:10.2977/prims/1145474602.">Oga05</a>]</span>) or <code class="docutils literal notranslate"><span class="pre">&quot;BaddourChouinard&quot;</span></code> (see <span id="id2">[<a class="reference internal" href="bibliography/index.html#id2" title="Natalie Baddour and Ugo Chouinard. Theory and operational rules for the discrete hankel transform. J. Opt. Soc. Am. A, 32(4):611–622, Apr 2015. URL: http://josaa.osa.org/abstract.cfm?URI=josaa-32-4-611, doi:10.1364/JOSAA.32.000611.">BC15</a>]</span>).</p></li>
 </ul>
 </dd>
@@ -264,7 +264,7 @@
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>f</strong> (<em>callable</em>) – Function to be Hankel transformed.</p></li>
-<li><p><strong>k</strong> (<em>np.array</em><em>, </em><em>optional</em>) – Points of evaluation of the Hankel transform. Defaults to None.</p></li>
+<li><p><strong>k</strong> (<em>np.array</em><em>, </em><em>optional</em>) – Points of evaluation of the Hankel transform (1d array). Defaults to None.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
