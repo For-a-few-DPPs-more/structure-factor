@@ -3,15 +3,12 @@
 
 # import pandas as pd
 import warnings
+from itertools import product
 
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy import interpolate, stats
 from scipy.special import j0, j1, jn_zeros, jv, y0, y1, yv
-
-
-def norm_k(k):
-    return np.linalg.norm(k, axis=1)
 
 
 def get_random_number_generator(seed=None):
@@ -182,6 +179,26 @@ def _compute_k_min(r_max, step_size):
 
 
 # utils for structure_factor.py
+
+
+def norm_k(k):
+    return np.linalg.norm(k, axis=1)
+
+
+def taper_grid_generator(d, taper_p, P):
+    r"""Given a class of taper `taper_p` of parameter `p` of :math:`\mathbb{R}^d`, return the list of taper `taper_p(p)` with :math:`p \in \{1, ..., P\}^d`.
+
+    Args:
+        d (int): Space dimension.
+        taper_p (Class): Class of taper pf parameter p.
+        P (int):
+
+    Returns:
+        [type]: List of taper `taper_p(p)` with :math:`p \in \{1, ..., P\}^d`.
+    """
+    params = product(*(range(1, P + 1) for _ in range(d)))
+    tapers = [taper_p(p) for p in params]
+    return tapers
 
 
 def set_nan_inf_to_zero(array, nan=0, posinf=0, neginf=0):
@@ -454,6 +471,7 @@ def plot_si_showcase(
     axis=None,
     exact_sf=None,
     error_bar=False,
+    label=r"$\widehat{S}$",
     file_name="",
     **binning_params
 ):
@@ -484,7 +502,7 @@ def plot_si_showcase(
         k_norm,
         si,
         axis=axis,
-        label=r"$\widehat{S}_{SI}$",
+        label=label,
         color="grey",
         linestyle="",
         marker=".",
@@ -547,6 +565,7 @@ def plot_si_all(
     si,
     exact_sf=None,
     error_bar=False,
+    label=r"$\widehat{S}$",
     file_name="",
     window_res=None,
     **binning_params
@@ -571,6 +590,7 @@ def plot_si_all(
         axes[1],
         exact_sf,
         error_bar,
+        label,
         file_name="",
         **binning_params,
     )
