@@ -1,23 +1,15 @@
 import numpy as np
-from scipy.spatial.distance import pdist
-
-from structure_factor.spatial_windows import UnitBallWindow
-from structure_factor.utils import bessel1
 
 # ? I find this not very explicit to call functions periodograms in a file called estimators where the returned values are not periodograms but rescaled periodograms that correspond to estimators of the structure factor...
 # ? I'd rather like to rename the file to periodograms, where the different functions indeed return periodograms to be rescaled in the corresponding StructureFactor method
 
 
-def select_tapered_periodogram_non_isotropic(debiased, direct):
+def select_tapered_periodogram(debiased, direct):
     if debiased:
         if direct:
             return tapered_periodogram_debiased_direct
         return tapered_periodogram_debiased_undirect
     return tapered_periodogram_core
-
-
-def select_periodogram_isotropic(debiased, direct):
-    return isotropic_bartlett_estimator
 
 
 def tapered_dft(k, point_pattern, taper):
@@ -152,41 +144,9 @@ def tapered_periodogram_debiased_undirect(k, point_pattern, taper):
 
 
 def multitapered_periodogram(k, point_pattern, *tapers, debiased=False, direct=True):
-    periodogram = select_tapered_periodogram_non_isotropic(debiased, direct)
+    periodogram = select_tapered_periodogram(debiased, direct)
     multi_periodogram = np.zeros(k.shape[0], dtype=float)
     for taper in tapers:
         multi_periodogram += periodogram(k, point_pattern, taper)
     multi_periodogram /= len(tapers)
     return multi_periodogram
-
-
-def isotropic_bartlett_estimator(k_norm, point_pattern, taper=None):
-    # ! the current implem may take some time when there are a lot of wave vectors and points
-    window = point_pattern.window
-    #! fi window doenst exists ?
-    d = window.dimension
-    unit_ball = UnitBallWindow(np.zeros(d))
-
-    X = np.atleast_2d(point_pattern.points)
-
-    norm_x_y = pdist(X, metric="euclidean")  # ||x_i - x_j|| for i < j
-
-    k_xy = np.multiply.outer(k_norm, norm_x_y)
-    order = d / 2 - 1
-    J_k_xy = bessel1(order, k_xy)
-
-    estimated_sf_k = np.zeros_like(k_norm)
-    # for i, k_ in enumerate(k_norm):
-    #     estimated_sf_k[i] = bessel1(order, k_ * norm_x_y).sum()
-    if order > 0:
-        np.power(k_xy, order, out=k_xy)
-        J_k_xy /= k_xy
-    np.sum(J_k_xy, axis=1, out=estimated_sf_k)
-    estimated_sf_k *= 2  # sum_{i neq j} = 2 sum_{i<j}
-
-    surface, volume = unit_ball.surface, window.volume
-    rho = point_pattern.intensity
-    estimated_sf_k *= (2 * np.pi) ** (d / 2) / (surface * volume * rho)
-    estimated_sf_k += 1
-
-    return k_norm, estimated_sf_k
