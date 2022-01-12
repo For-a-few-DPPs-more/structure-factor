@@ -1,6 +1,4 @@
 import warnings
-from itertools import product
-
 import numpy as np
 import pandas as pd
 import rpy2.robjects as robjects
@@ -12,8 +10,7 @@ from structure_factor.point_pattern import PointPattern
 from structure_factor.spatial_windows import BoxWindow, check_cubic_window
 from structure_factor.spectral_estimator import (
     multitapered_periodogram,
-    select_periodogram_isotropic,
-    select_tapered_periodogram_non_isotropic,
+    select_tapered_periodogram,
 )
 from structure_factor.tapers import BartlettTaper, SineTaper
 from structure_factor.transforms import RadiallySymmetricFourierTransform
@@ -56,7 +53,8 @@ class StructureFactor:
         """Ambient dimension of the underlying point process."""
         return self.point_pattern.dimension
 
-    def scattering_intensity(self, k=None, debiased=True, direct=False, **params):
+    #! pass on doc
+    def scattering_intensity(self, k=None, debiased=True, direct=True, **params):
         r"""Compute the scattering intensity (an estimator of the structure factor) of the point process encapsulated in ``point_pattern``.
 
         By default, the scattering intensity is evaluated on a specific set of wavevectors called **allowed wavevectors** that minimizes the approximation errors.
@@ -141,41 +139,21 @@ class StructureFactor:
                 "`k` should have d columns, where d is the dimension of the ambient space where the points forming the point pattern live."
             )
 
-        _, si = self.tapered_periodogram(
-            k,
-            taper=BartlettTaper(),
-            debiased=debiased,
-            direct=direct,
-            isotropic=False,
+        si = self.tapered_periodogram(
+            k, taper=BartlettTaper(), debiased=debiased, direct=direct
         )
 
         return k, si
 
-    def tapered_periodogram(
-        self, k, taper, debiased=False, direct=True, isotropic=False
-    ):
-        if isotropic:
-            selector = select_periodogram_isotropic
-        else:
-            selector = select_tapered_periodogram_non_isotropic
+    def tapered_periodogram(self, k, taper, debiased=True, direct=True):
+        estimator = select_tapered_periodogram(debiased, direct)
+        sf = estimator(k, self.point_pattern, taper)
+        return sf
 
-        estimator = selector(debiased, direct)
-        estimated_sf = estimator(k, self.point_pattern, taper)
-        k_norm = np.linalg.norm(k, axis=1)
-        return k_norm, estimated_sf
-
-    # todo to be removed
-    def tapered_debiased(self, k, taper, direct=True):
-        debiased, isotropic = True, False
-        return self.tapered_periodogram(k, taper, debiased, direct, isotropic)
-
-    # !name taperED
-    def multitaper_periodogram(
-        self, k, P=3, taper_p=SineTaper, debiased=False, direct=True
-    ):
+    def multitaper_periodogram(self, k, tapers=None, debiased=False, direct=True):
         d = self.point_pattern.dimension
-        params = product(*(range(1, P + 1) for _ in range(d)))
-        tapers = (taper_p(p) for p in params)
+        if tapers is None:
+            tapers = utils.taper_grid_generator(d=d, taper_p=SineTaper, P=3)
         sf = multitapered_periodogram(
             k,
             self.point_pattern,
@@ -183,14 +161,7 @@ class StructureFactor:
             debiased=debiased,
             direct=direct,
         )
-        k_norm = np.linalg.norm(k, axis=1)
-        return k_norm, sf
-
-    # todo to be removed
-    def multitaper_periodogram_debiased(self, k, P=3, taper_p=SineTaper, direct=True):
-        return self.multitaper_periodogram(
-            k, P=P, taper_p=taper_p, debiased=True, direct=direct
-        )
+        return sf
 
     def plot_scattering_intensity(
         self,
@@ -201,6 +172,7 @@ class StructureFactor:
         positive=False,
         exact_sf=None,
         error_bar=False,
+        label=r"$\widehat{S}$",
         file_name="",
         window_res=None,
         **binning_params
@@ -244,7 +216,14 @@ class StructureFactor:
 
         if plot_type == "radial":
             return utils.plot_si_showcase(
-                k_norm, si, axes, exact_sf, error_bar, file_name, **binning_params
+                k_norm,
+                si,
+                axes,
+                exact_sf,
+                error_bar,
+                label,
+                file_name,
+                **binning_params,
             )
         #! todo k may be already a meshgrid and add a warning else
         elif plot_type == "imshow":
