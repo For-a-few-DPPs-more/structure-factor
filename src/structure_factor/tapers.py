@@ -90,24 +90,6 @@ class SineTaper:
         h_x *= np.sqrt(1 / window.volume)  # normalization
         return h_x
 
-    def ft_taper_1(self, k, window):
-        widths = np.diff(window.bounds.T, axis=0)
-        print(widths.shape)
-        p = self.p
-        A = 1 / np.sqrt(window.volume)
-        A_2 = np.sqrt(2) * 0.5
-        a = k - np.pi * p / widths
-        b = k + np.pi * p / widths
-        a1 = 1j * widths * 0.5 * k
-        b2 = 1j * np.pi * p
-        res_1 = (np.exp(b2 - a1) - np.exp(a1)) / a
-        res_2 = (np.exp(a1) - np.exp(-b2 - a1)) / b
-        res = (res_1 - res_2) * A_2
-        ft = np.prod(res, axis=1)
-        ft = ft * A
-        print(np.max(np.abs(ft)))
-        return ft
-
     def ft_taper(self, k, window):
         widths = np.diff(window.bounds.T, axis=0)  # l
         p = self.p
