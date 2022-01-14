@@ -83,8 +83,7 @@ def structure_factor_thomas(k, d, rho_child, sigma):
     Returns:
         np.array: Structure factor of Thomas process evaluated on `k`.
     """
-    alpha = (4 * np.pi * sigma ** 2) ** (-(d - 1) / 2)
-    return 1 + rho_child * alpha * np.exp(-(k ** 2 * sigma ** 2))
+    return 1 + rho_child * np.exp(-(k ** 2 * sigma ** 2))
 
 
 # utils for hyperuniformity.py
@@ -391,7 +390,9 @@ def plot_poisson(x, axis, c="k", linestyle=(0, (5, 10)), label="Poisson"):
     return axis
 
 
-def plot_summary(x, y, axis, label=r"mean $\pm$ 3 $\cdot$ std", **binning_params):
+def plot_summary(
+    x, y, axis, label=r"mean $\pm$ 3 $\cdot$ std", fmt="b", **binning_params
+):
     r"""Loglog plot the summary results of :py:func:`~structure_factor.utils._bin_statistics` i.e., means and errors bars (3 standard deviations).
 
     Args:
@@ -409,7 +410,7 @@ def plot_summary(x, y, axis, label=r"mean $\pm$ 3 $\cdot$ std", **binning_params
         bin_centers,
         bin_mean,
         yerr=3 * bin_std,  # 3 times the standard deviation
-        fmt="b",
+        fmt=fmt,
         lw=1,
         ecolor="r",
         capsize=3,
@@ -417,7 +418,7 @@ def plot_summary(x, y, axis, label=r"mean $\pm$ 3 $\cdot$ std", **binning_params
         label=label,
         zorder=4,
     )
-
+    axis.legend(loc=4, framealpha=0.2)
     return axis
 
 
@@ -496,8 +497,6 @@ def plot_si_showcase(
     if axis is None:
         _, axis = plt.subplots(figsize=(8, 6))
 
-    plot_poisson(k_norm, axis=axis)
-
     plot_approximation(
         k_norm,
         si,
@@ -508,15 +507,16 @@ def plot_si_showcase(
         marker=".",
         markersize=1.5,
     )
+    plot_poisson(k_norm, axis=axis)
 
     if error_bar:
         plot_summary(k_norm, si, axis=axis, **binning_params)
 
     if exact_sf is not None:
-        plot_exact(k_norm, exact_sf(k_norm), axis=axis, label=r"Exact $S(k)$")
+        plot_exact(k_norm, exact_sf(k_norm), axis=axis, label=r"Exact $S(\mathbf{k})$")
 
     axis.set_xlabel(r"Wavenumber ($||\mathbf{k}||$)")
-    axis.set_ylabel(r"Structure factor ($S(k)$)")
+    axis.set_ylabel(r"Structure factor ($S(\mathbf{k})$)")
     axis.legend(loc=4, framealpha=0.2)
 
     if file_name:

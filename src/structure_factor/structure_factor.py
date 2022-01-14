@@ -150,10 +150,29 @@ class StructureFactor:
         sf = estimator(k, self.point_pattern, taper)
         return sf
 
-    def multitapered_periodogram(self, k, tapers=None, debiased=False, direct=True):
+    def multitapered_periodogram(
+        self, k, tapers=None, debiased=True, direct=True, **params
+    ):
+        """[summary]
+
+        [extended_summary]
+
+        Args:
+            k ([type]): [description]
+            tapers ([type], optional): [description]. Defaults to None.
+            debiased (bool, optional): [description]. Defaults to True.
+            direct (bool, optional): [description]. Defaults to True.
+
+        Kwargs:
+            params: P for grid sine taper
+        Returns:
+            [type]: [description]
+        """
         d = self.point_pattern.dimension
         if tapers is None:
-            tapers = utils.taper_grid_generator(d=d, taper_p=SineTaper, P=3)
+            params.setdefault("P", 2)
+            P = params["P"]
+            tapers = utils.taper_grid_generator(d=d, taper_p=SineTaper, P=P)
         sf = multitapered_periodogram(
             k,
             self.point_pattern,
