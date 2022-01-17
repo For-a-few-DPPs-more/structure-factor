@@ -184,17 +184,18 @@ def norm_k(k):
     return np.linalg.norm(k, axis=1)
 
 
-def taper_grid_generator(d, taper_p, P):
+def taper_grid_generator(d, taper_p, P=2):
     r"""Given a class of taper `taper_p` of parameter `p` of :math:`\mathbb{R}^d`, return the list of taper `taper_p(p)` with :math:`p \in \{1, ..., P\}^d`.
 
     Args:
         d (int): Space dimension.
         taper_p (Class): Class of taper pf parameter p.
-        P (int):
+        P (int): Maximum component of the grid over each axis.
 
     Returns:
         [type]: List of taper `taper_p(p)` with :math:`p \in \{1, ..., P\}^d`.
     """
+    print(P)
     params = product(*(range(1, P + 1) for _ in range(d)))
     tapers = [taper_p(p) for p in params]
     return tapers
@@ -222,7 +223,7 @@ def _reshape_meshgrid(X):
     return n
 
 
-def allowed_wave_vectors(d, L, k_max, meshgrid_shape=None):
+def allowed_wave_vectors(d, L, k_max=5, meshgrid_shape=None):
     r"""Return a subset of the d-dimensional allowed wave vectors corresponding to a cubic window of length ``L``.
 
     Args:
@@ -250,6 +251,8 @@ def allowed_wave_vectors(d, L, k_max, meshgrid_shape=None):
         Note that the maximum ``n`` and the number of output allowed wavevectors returned by :py:meth:`allowed_wave_vectors`, are specified by the input parameters ``k_max`` and ``meshgrid_shape``.
     """
 
+    assert isinstance(k_max, (float, int))
+
     n_max = np.floor(k_max * L / (2 * np.pi))  # maximum of ``n``
 
     # warnings
@@ -272,6 +275,11 @@ def allowed_wave_vectors(d, L, k_max, meshgrid_shape=None):
         n = _reshape_meshgrid(X)  # reshape as d columns
 
     else:
+        if meshgrid_shape is not None and len(meshgrid_shape) != d:
+            raise ValueError(
+                "Each wavevector should belong to the same dimension (d) of the point process, i.e., len(meshgrid_shape) = d."
+            )
+
         if d == 1:
             n = np.linspace(-n_max, n_max, num=meshgrid_shape, dtype=int, endpoint=True)
             if np.count_nonzero(n == 0) != 0:
@@ -643,8 +651,8 @@ def plot_sf_hankel_quadrature(
     k_norm_min,
     exact_sf,
     error_bar,
+    label,
     file_name,
-    label=r"$\widehat{S}_{H}$",
     **binning_params
 ):
     r"""Plot the approximations of the structure factor (results of :py:meth:`~structure_factor.hankel_quadrature`) with means and error bars over bins, see :py:meth:`~structure_factor.utils._bin_statistics`.
@@ -702,7 +710,7 @@ def plot_sf_hankel_quadrature(
     axis.legend()
     axis.set_xlabel(r"Wavenumber ($k$)")
     axis.set_ylabel(r"Structure factor ($\mathcal{S}(k)$)")
-
+    plt.show()
     if file_name:
         fig = axis.get_figure()
         fig.savefig(file_name, bbox_inches="tight")
