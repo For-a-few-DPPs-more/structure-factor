@@ -391,7 +391,7 @@ def plot_poisson(x, axis, c="k", linestyle=(0, (5, 10)), label="Poisson"):
 
 
 def plot_summary(
-    x, y, axis, label=r"mean $\pm$ 3 $\cdot$ std", fmt="b", **binning_params
+    x, y, axis, label=r"mean $\pm$ 3 $\cdot$ std", fmt="b", ecolor="r", **binning_params
 ):
     r"""Loglog plot the summary results of :py:func:`~structure_factor.utils._bin_statistics` i.e., means and errors bars (3 standard deviations).
 
@@ -412,7 +412,7 @@ def plot_summary(
         yerr=3 * bin_std,  # 3 times the standard deviation
         fmt=fmt,
         lw=1,
-        ecolor="r",
+        ecolor=ecolor,
         capsize=3,
         capthick=1,
         label=label,
