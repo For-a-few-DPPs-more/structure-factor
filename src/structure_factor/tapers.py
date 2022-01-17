@@ -79,6 +79,17 @@ class SineTaper:
         self.p = np.array(p)
 
     def taper(self, x, window):
+        """[summary]
+
+        [extended_summary]
+
+        Args:
+            x ([type]): shape n*d (d is the dimension of the space)
+            window ([type]): [description]
+
+        Returns:
+            [type]: [description]
+        """
         widths = np.diff(window.bounds.T, axis=0)
         # d = x.shape[1]
         sines = x / widths + 0.5
