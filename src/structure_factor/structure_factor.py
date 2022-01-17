@@ -182,7 +182,7 @@ class StructureFactor:
         )
         return sf
 
-    def plot_scattering_intensity(
+    def plot_tapered_periodogram(
         self,
         k,
         si,
