@@ -7,13 +7,14 @@ from spatstat_interface.interface import SpatstatInterface
 
 import structure_factor.utils as utils
 from structure_factor.point_pattern import PointPattern
-from structure_factor.spatial_windows import BoxWindow, check_cubic_window
+from structure_factor.spatial_windows import BoxWindow, BallWindow, check_cubic_window
 from structure_factor.spectral_estimator import (
     multitapered_periodogram,
     select_tapered_periodogram,
 )
 from structure_factor.tapers import BartlettTaper, SineTaper
 from structure_factor.transforms import RadiallySymmetricFourierTransform
+import structure_factor.isotropic_estimator as ise
 
 
 class StructureFactor:
@@ -107,32 +108,23 @@ class StructureFactor:
              .. important::
                  Specifying the meshgrid argument ``meshgrid_shape`` is useful if the number of points of the realization is big. In this case, the evaluation of :math:`\widehat{S}_{SI}` on the total set of allowed wavevectors may be time-consuming.
         """
-        # Default params for allowed values
-        params.setdefault("k_max", 5)
-        k_max = params["k_max"]
-        assert isinstance(k_max, (float, int))
 
-        params.setdefault("meshgrid_shape", None)
-        meshgrid_shape = params["meshgrid_shape"]
         point_pattern = self.point_pattern
         d = point_pattern.dimension
 
         window = point_pattern.window
         if not isinstance(window, BoxWindow):
             warnings.warn(
-                message="The window should be a 'cubic' BoxWindow to minimize the error of approximating the structure factor by the scattering intensity. Hint: use PointPattern.restrict_to_window."
+                message="The window should be a BoxWindow to minimize the approximation error. Hint: use PointPattern.restrict_to_window."
             )
 
         if k is None:
             if not debiased:
                 raise ValueError("when k is None debiased must be True.")
-            if meshgrid_shape is not None and len(meshgrid_shape) != d:
-                raise ValueError(
-                    "Each wavevector should belong to the same dimension (d) of the point process, i.e., len(meshgrid_shape) = d."
-                )
+
             check_cubic_window(window)
             L = np.diff(window.bounds[0])
-            k = utils.allowed_wave_vectors(d, L, k_max, meshgrid_shape)
+            k = utils.allowed_wave_vectors(d, L, **params)
 
         elif k.shape[1] != d:
             raise ValueError(
@@ -170,9 +162,7 @@ class StructureFactor:
         """
         d = self.point_pattern.dimension
         if tapers is None:
-            params.setdefault("P", 2)
-            P = params["P"]
-            tapers = utils.taper_grid_generator(d=d, taper_p=SineTaper, P=P)
+            tapers = utils.taper_grid_generator(d=d, taper_p=SineTaper, **params)
         sf = multitapered_periodogram(
             k,
             self.point_pattern,
@@ -282,6 +272,21 @@ class StructureFactor:
             raise ValueError(
                 "plot_type must be chosen among ('all', 'radial', 'imshow')."
             )
+
+    def bartlett_isotropic_estimator(self, k_norm=None, **params):
+        window = self.point_pattern.window
+        warnings.warn(
+            message=r"The computation may take some time for more than $10^4$ points in the PointPattern. Start by restricting the PointPattern to a smaller window using  PointPattern.restrict_to_window, then increasing the window progressively."
+        )
+        if not isinstance(window, BallWindow):
+            warnings.warn(
+                message="The window should be a BallWindow to minimize the approximation error. Hint: use PointPattern.restrict_to_window."
+            )
+
+        k_norm, sf = ise.bartlett_estimator(
+            point_pattern=self.point_pattern, k_norm=k_norm, **params
+        )
+        return k_norm, sf
 
     def compute_pcf(self, method="fv", install_spatstat=False, **params):
         r"""Estimate the pair correlation function (pcf) of the point process encapsulated in ``point_pattern`` (only for stationary isotropic point processes of :math:`\mathbb{R}^2`). The available methods are the methods ``spastat.core.pcf_ppp`` and ``spastat.core.pcf_fv`` of the `R` package `spatstat <https://github.com/spatstat/spatstat>`_.
@@ -455,7 +460,7 @@ class StructureFactor:
         sf = 1.0 + self.point_pattern.intensity * ft_k
         return k_norm, sf
 
-    def plot_sf_hankel_quadrature(
+    def plot_isotropic_estimator(
         self,
         k_norm,
         sf,
@@ -463,6 +468,7 @@ class StructureFactor:
         k_norm_min=None,
         exact_sf=None,
         error_bar=False,
+        label=r"$\widehat{S}$",
         file_name="",
         **binning_params
     ):
@@ -486,12 +492,13 @@ class StructureFactor:
                 :include-source: False
         """
         return utils.plot_sf_hankel_quadrature(
-            k_norm,
-            sf,
-            axis,
-            k_norm_min,
-            exact_sf,
-            error_bar,
-            file_name,
+            k_norm=k_norm,
+            sf=sf,
+            axis=axis,
+            k_norm_min=k_norm_min,
+            exact_sf=exact_sf,
+            error_bar=error_bar,
+            label=label,
+            file_name=file_name,
             **binning_params,
         )
