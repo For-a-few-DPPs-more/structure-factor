@@ -4,8 +4,13 @@ import numpy as np
 import scipy.special as sc
 from numba import njit
 from scipy.spatial.distance import pdist
+from structure_factor.spatial_windows import BallWindow
 
 from structure_factor.spatial_windows import UnitBallWindow
+
+
+def allowed_k_norm(d, r, n):
+    return sc.jn_zeros(d / 2, n) / r
 
 
 def bartlett_estimator(point_pattern, k_norm=None, n_allowed_k_norm=100):
@@ -18,7 +23,11 @@ def bartlett_estimator(point_pattern, k_norm=None, n_allowed_k_norm=100):
 
     # allowed wavenumbers
     if k_norm is None:
-        k_norm = sc.jn_zeros(d / 2, n_allowed_k_norm) / window.radius
+        if not isinstance(window, BallWindow):
+            raise TypeError(
+                "Window must be an instance of BallWindow. Hint: use PointPattern.restrict_to_window."
+            )
+        k_norm = allowed_k_norm(d=d, r=window.radius, n=n_allowed_k_norm)
 
     estimator = np.zeros_like(k_norm)
     order = float(d / 2 - 1)
