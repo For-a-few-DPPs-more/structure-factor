@@ -276,7 +276,7 @@ class StructureFactor:
     def bartlett_isotropic_estimator(self, k_norm=None, **params):
         window = self.point_pattern.window
         warnings.warn(
-            message=r"The computation may take some time for more than $10^4$ points in the PointPattern. Start by restricting the PointPattern to a smaller window using  PointPattern.restrict_to_window, then increasing the window progressively."
+            message="The computation may take some time for a big number of points in the PointPattern. The complexity is quadratic in the number of points. Start by restricting the PointPattern to a smaller window using  PointPattern.restrict_to_window, then increasing the window progressively."
         )
         if not isinstance(window, BallWindow):
             warnings.warn(
