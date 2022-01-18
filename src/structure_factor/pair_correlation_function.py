@@ -28,10 +28,10 @@ class PairCorrelationFunction:
         Keyword Args:
             params (dict):
                 - if ``method = "ppp"``
-                    - keyword arguments of `spastat.core.pcf.ppp <https://rdrr.io/cran/spatstat.core/man/pcf.ppp.html>`_,
+                    - keyword arguments of `spastat.core.pcf.ppp <https://rdrr.io/cran/spatstat.core/man/pcf.ppp.html>`_, ex: r, correction ...
                 - if ``method = "fv"``
-                    - Kest = dict(keyword arguments of `spastat.core.Kest <https://rdrr.io/github/spatstat/spatstat.core/man/Kest.html>`_),
-                    - fv = dict( keyword arguments of `spastat.core.pcf.fv <https://rdrr.io/cran/spatstat.core/man/pcf.fv.html>`_).
+                    - Kest = dict(keyword arguments of `spastat.core.Kest <https://rdrr.io/github/spatstat/spatstat.core/man/Kest.html>`_), ex: rmax ...
+                    - fv = dict( keyword arguments of `spastat.core.pcf.fv <https://rdrr.io/cran/spatstat.core/man/pcf.fv.html>`_), ex: method, spar ...
 
         Returns:
             pandas.DataFrame: Version of the output of `spatstat.core.pcf.ppp <https://www.rdocumentation.org/packages/spatstat.core/versions/2.1-2/topics/pcf.ppp>`_ or `spatsta.core.pcf.fv <https://www.rdocumentation.org/packages/spatstat.core/versions/2.1-2/topics/pcf.fv>`_. The first column of the DataFrame is the set of radius on which the pair correlation function was approximated. The others correspond to the approximated pair correlation function with different edge corrections.
@@ -118,7 +118,7 @@ class PairCorrelationFunction:
         return dict_r_min_max, pcf
 
     @staticmethod
-    def plot(pcf_dataframe, exact_pcf, file_name, **kwargs):
+    def plot(pcf_dataframe, exact_pcf=None, file_name="", **kwargs):
         r"""Plot the columns a DataFrame (excluding the first) with respect to the first columns.
 
         Args:
@@ -138,7 +138,7 @@ class PairCorrelationFunction:
                 pcf_dataframe["r"],
                 exact_pcf(pcf_dataframe["r"]),
                 "g",
-                label="exact pcf",
+                label=r"Exact $g(r)$",
             )
         utils.plot_poisson(pcf_dataframe["r"], axis=axis, linestyle=(0, (5, 5)))
 
