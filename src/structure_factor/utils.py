@@ -72,7 +72,7 @@ def structure_factor_ginibre(k):
     return 1.0 - np.exp(-(k ** 2) / 4)
 
 
-def structure_factor_thomas(k, d, rho_child, sigma):
+def structure_factor_thomas(k, rho_child, sigma):
     r"""Structure factor of the (modified) Thomas point process of :math:`\mathbb{R}^d`, where the number of points is each cluster has a Poisson distribution of intensity :math:`\rho` and the displacement of a child from its parent follows a zero-mean isotropic :math:`d` -dimensional Gaussian distribution with variance :math:`\sigma^2`.
     Args:
         k (np.array): Points to evaluate on.
@@ -195,7 +195,6 @@ def taper_grid_generator(d, taper_p, P=2):
     Returns:
         [type]: List of taper `taper_p(p)` with :math:`p \in \{1, ..., P\}^d`.
     """
-    print(P)
     params = product(*(range(1, P + 1) for _ in range(d)))
     tapers = [taper_p(p) for p in params]
     return tapers
@@ -693,7 +692,7 @@ def plot_sf_hankel_quadrature(
         markersize=4,
     )
     if exact_sf is not None:
-        plot_exact(k_norm, exact_sf(k_norm), axis=axis, label=r"Exact $\mathcal{S}(k)$")
+        plot_exact(k_norm, exact_sf(k_norm), axis=axis, label=r"Exact $S(k)$")
     if error_bar:
         plot_summary(k_norm, sf, axis=axis, **binning_params)
     plot_poisson(k_norm, axis=axis)
