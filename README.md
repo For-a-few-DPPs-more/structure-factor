@@ -6,6 +6,7 @@
 [![docs-page](https://img.shields.io/badge/docs-latest-blue)](https://for-a-few-dpps-more.github.io/structure-factor/)
 [![PyPi version](https://badgen.net/pypi/v/structure-factor/)](https://pypi.org/project/structure-factor/)
 [![Python >=3.7.1,<3.10](https://img.shields.io/badge/python->=3.7.1,<3.10-blue.svg)](https://www.python.org/downloads/release/python-371/)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](./notebooks)
 
 > Approximate the structure factor of a stationary point process, test its effective hyperuniformity, and identify its class of hyperuniformity.
 
@@ -18,6 +19,8 @@
   - [Documentation](#documentation)
     - [Build the documentation](#build-the-documentation)
   - [Getting started](#getting-started)
+    - [Documentation](#documentation-1)
+    - [Notebooks](#notebooks)
 
 ## Introduction
 
@@ -148,24 +151,21 @@ Otherwise, if you don't use `poetry`
 
   ```bash
   cd structure-factor
+  # activate a virtual environment
+  pip install '.[notebook]'  # (see [tool.poetry.extras] in pyproject.toml)
   sphinx-build -b html docs docs/_build/html
   open _build/html/index.html
   ```
 
 ## Getting started
 
-- [Jupyter](https://jupyter.org/) notebooks that showcase `structure-factor` are available in the [./notebooks](./notebooks) folder.
+### Documentation
 
-  - if you use `poetry`
+See the documentation [![docs-page](https://img.shields.io/badge/docs-latest-blue)](https://for-a-few-dpps-more.github.io/structure-factor/)
 
-    ```bash
-    cd structure-factor
-    poetry shell  # to create/activate local .venv (see poetry.toml)
-    poetry install -E notebook  # (see [tool.poetry.extras] in pyproject.toml)
-    # open a notebook within VSCode for example
-    ```
+### Notebooks
 
-- See the documentation [![docs-page](https://img.shields.io/badge/docs-latest-blue)](https://for-a-few-dpps-more.github.io/structure-factor/)
+[Jupyter](https://jupyter.org/) that showcase `structure-factor` are available in the [./notebooks](./notebooks) folder.
 
 <!--
 ## How to cite this work

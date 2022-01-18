@@ -609,6 +609,7 @@ def plot_si_all(
     return axes
 
 
+<<<<<<< HEAD
 def plot_pcf(pcf_dataframe, exact_pcf, file_name, **kwargs):
     r"""Plot the columns a DataFrame (excluding the first) with respect to the first columns.
 
@@ -643,6 +644,8 @@ def plot_pcf(pcf_dataframe, exact_pcf, file_name, **kwargs):
     return axis
 
 
+=======
+>>>>>>> origin/pair_correlation_function
 def plot_sf_hankel_quadrature(
     k_norm,
     sf,

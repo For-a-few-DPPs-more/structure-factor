@@ -1,7 +1,6 @@
 import numpy as np
 import pytest
 
-import structure_factor.utils as utils
 from structure_factor.data import load_data
 from structure_factor.point_pattern import PointPattern
 from structure_factor.spatial_windows import BoxWindow
@@ -76,39 +75,6 @@ def test_scattering_intensity(ginibre_pp):
 #         bins=60,  # number of bins
 #         error_bar=True,  # visualizing the error bars
 #     )
-
-
-def test_interpolate_pcf_ginibre(ginibre_pp):
-    sf_pp = StructureFactor(ginibre_pp)
-    r = np.linspace(0, 80, 500)
-    pcf_r = pair_correlation_function_ginibre(r)
-    _, interp_pcf = sf_pp.interpolate_pcf(r, pcf_r)
-    x = np.linspace(5, 10, 30)
-    computed_pcf = interp_pcf(x)
-    expected_pcf = pair_correlation_function_ginibre(x)
-    np.testing.assert_almost_equal(computed_pcf, expected_pcf)
-
-
-def test_compute_pcf(ginibre_pp):
-    sf_pp = StructureFactor(ginibre_pp)
-    pcf_fv = sf_pp.compute_pcf(
-        method="fv", Kest=dict(r_max=45), fv=dict(method="b", spar=0.1)
-    )
-    _, pcf_fv_func = sf_pp.interpolate_pcf(
-        r=pcf_fv["r"], pcf_r=pcf_fv["pcf"], clean=True
-    )
-    np.testing.assert_almost_equal(
-        pcf_fv_func(pcf_fv["r"]),
-        utils.pair_correlation_function_ginibre(pcf_fv["r"]),
-        decimal=1,
-    )
-    # fig = sf_pp.plot_pcf(
-    #     pcf_fv,
-    #     exact_pcf=utils.pair_correlation_function_ginibre,
-    #     figsize=(10, 6),
-    #     color=["grey", "b", "darkcyan"],
-    #     style=[".", "o", "^"],
-    # )
 
 
 def test_compute_structure_factor_ginibre_with_ogata(ginibre_pp):
