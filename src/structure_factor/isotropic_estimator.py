@@ -17,7 +17,7 @@ def bartlett_estimator(point_pattern, k_norm=None, n_allowed_k_norm=100):
     norm_xi_xj = pdist(X, metric="euclidean")
 
     # allowed wavenumbers
-    if k_norm == None:
+    if k_norm is None:
         k_norm = sc.jn_zeros(d / 2, n_allowed_k_norm) / window.radius
 
     estimator = np.zeros_like(k_norm)
