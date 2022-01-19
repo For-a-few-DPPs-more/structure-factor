@@ -118,7 +118,7 @@ class StructureFactor:
         if k is None:
             if not debiased:
                 raise ValueError("when k is None debiased must be True.")
-
+            # todo generalize to any boxwindow
             check_cubic_window(window)
             L = np.diff(window.bounds[0])
             k = utils.allowed_wave_vectors(d, L, **params)
@@ -335,6 +335,7 @@ class StructureFactor:
                 category=DeprecationWarning,
             )
         assert callable(pcf)
+
         if method == "Ogata" and k_norm.all() is None:
             raise ValueError(
                 "k_norm is not optional while using method='Ogata'. Please provide a vector k_norm in the input. "
@@ -350,6 +351,7 @@ class StructureFactor:
         if method == "Ogata" and params["r_max"] is not None:
             params.setdefault("step_size", 0.1)
             step_size = params["step_size"]
+            # todo does it really metter k_norm_min?
             self.k_norm_min = utils._compute_k_min(
                 r_max=params["r_max"], step_size=step_size
             )
