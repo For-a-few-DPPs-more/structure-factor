@@ -139,6 +139,7 @@ class Hyperuniformity:
 
         s_first_peak = 1
         idx_peaks, _ = find_peaks(self.sf, height=s_first_peak)
+        print(idx_peaks)
         if idx_peaks.size:
             self.i_first_peak = max(idx_peaks[0], 1)
             s_first_peak = self.sf[self.i_first_peak]
@@ -210,10 +211,12 @@ class Hyperuniformity:
         if x_max is not None:
             # index of the closest value to x_max in k_norm
             i = np.argmin(np.abs(k_norm - x_max))
+            print(i)
 
         xdata = k_norm[:i]
         ydata = sf[:i]
-        sigma = std[:i] if std is not None else None
-        kwargs["sigma"] = sigma
+        if std is not None and (std != 0).all():
+            sigma = std[:i]
+            kwargs["sigma"] = sigma
 
         return curve_fit(f=function, xdata=xdata, ydata=ydata, **kwargs)
