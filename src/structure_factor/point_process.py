@@ -17,7 +17,7 @@ class HomogeneousPoissonPointProcess(object):
         :type intensity: real, optional
         """
         if not intensity > 0:
-            raise TypeError("intensity argument must be positive")
+            raise TypeError("intensity argument must be 2positive")
         self.intensity = intensity
 
     def structure_factor(self, k):
