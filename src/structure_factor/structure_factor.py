@@ -259,7 +259,7 @@ class StructureFactor:
                 self.point_pattern,
                 k_norm,
                 si,
-                exact_sf(k_norm),
+                exact_sf,
                 error_bar,
                 file_name,
                 window_res,
