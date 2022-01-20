@@ -305,76 +305,6 @@ def allowed_wave_vectors(d, L, k_max=5, meshgrid_shape=None):
     return k
 
 
-#! to delete and its test. replaced in spectral estimator
-def compute_scattering_intensity(k, points):
-    r"""Compute the scattering intensity of ``points`` at each wavevector in ``k``.
-
-    Args:
-
-        k (np.ndarray): np.ndarray of d columns (where d is the dimension of the space containing ``points``). Each row is a wave vector on which the scattering intensity is to be evaluated.
-
-        points (np.ndarray): np.ndarray of d columns where each row is a point from the realization of the point process.
-
-    Returns:
-        numpy.ndarray: Evaluation(s) of the scattering intensity on ``k``.
-
-    .. proof:definition::
-
-        The scattering intensity :math:`\widehat{S}_{SI}`, of a realization of points :math:`\{\mathbf{x}_i\}_{i=1}^N` of :math:`\mathbb{R}^d`, is defined by,
-
-        .. math::
-
-            \widehat{S}_{SI}(\mathbf{k}) =
-                \frac{1}{N}\left\lvert
-                    \sum_{j=1}^N
-                        \exp(- i \left\langle \mathbf{k}, \mathbf{x_j} \right\rangle)
-                \right\rvert^2
-
-        where :math:`\mathbf{k} \in \mathbb{R}^d` is a wave vector.
-    """
-    n = points.shape[0]  # number of points
-    if points.shape[1] != k.shape[1]:
-        raise ValueError("k and points should have same number of columns")
-
-    si = np.square(np.abs(np.sum(np.exp(-1j * np.dot(k, points.T)), axis=1)))
-    si /= n
-
-    # reshape the output
-
-    return si
-
-
-#! to delete and its test. replaced in spectral estimator
-def ft_h0(k, window):
-    r"""Fourier transform of the indicator of a box window divided by the square root of the volume of the window
-
-    Args:
-
-        k (np.ndarray): np.ndarray of d columns (where d is the dimension of the space containing ``points``). Each row is a wave vector on which the spectral estimator is to be evaluated.
-
-        window (:py:class:`~structure_factor.spatial_windows.AbstractSpatialWindow`): Window.
-
-    Return:
-        numpy.array: The evaluated Fourier transform on `k`.
-    """
-    window_bounds = window.bounds
-    window_volume = window.volume
-    s_k = 2 * np.sin(k * np.diff(window_bounds).T / 2) / k
-    return np.prod(s_k, axis=1) / np.sqrt(window_volume)
-
-
-def J_0(h_0, k, points):
-    r"""Particular case of equation (13) of ``Spectral estimation for spatial point patterns``, with h_0 the indicator of the window over the square root of the volume of the window.
-
-    Args:
-        h_0 ([type]): 1 over the square root of the volume of the window
-        k ([type]): n*d array (d is the dimension of the space containing the points) of waves
-        points ([type]): m*d array containing the points of the point process.
-
-    """
-    return np.sum(np.exp(-1j * np.dot(k, points.T)), axis=1) * h_0
-
-
 def plot_poisson(x, axis, c="k", linestyle=(0, (5, 10)), label="Poisson"):
     r"""Plot the pair correlation function :math:`g_{poisson}` and the structure factor :math:`S_{poisson}` corresponding to the Poisson point process.
 
@@ -426,6 +356,16 @@ def plot_summary(
         zorder=4,
     )
     axis.legend(loc=4, framealpha=0.2)
+    return axis
+
+
+def plot_summary_2(
+    x, y, axis, label=r"mean $\pm$ 3 $\cdot$ std", c="k", marker=".", **binning_params
+):
+
+    bin_centers, bin_mean, bin_std = _bin_statistics(x, y, **binning_params)
+    axis.loglog(bin_centers, bin_mean, color=c, marker=marker, label=label)
+    axis.legend(framealpha=0.2)
     return axis
 
 
