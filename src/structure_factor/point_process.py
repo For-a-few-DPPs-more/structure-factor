@@ -139,3 +139,5 @@ class ThomasProintProcess(object):
         return points[window.indicator_function(points)]
 
     # todo move all structure factor and pair correlation functions here for ginibre add note for the simulation to use DPPY
+
+    # todo add plot function similar to taht of point_pattern
