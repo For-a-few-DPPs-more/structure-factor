@@ -674,7 +674,7 @@ def plot_sf_hankel_quadrature(
         )
     axis.legend()
     axis.set_xlabel(r"Wavenumber ($k$)")
-    axis.set_ylabel(r"Structure factor ($\mathcal{S}(k)$)")
+    axis.set_ylabel(r"Structure factor ($S(k)$)")
     plt.show()
     if file_name:
         fig = axis.get_figure()
