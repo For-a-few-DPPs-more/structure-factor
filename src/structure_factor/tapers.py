@@ -101,6 +101,7 @@ class SineTaper:
         h_x *= np.sqrt(1 / window.volume)  # normalization
         return h_x
 
+    #! care about the case when the denominator is zero
     def ft_taper(self, k, window):
         widths = np.diff(window.bounds.T, axis=0)  # l
         p = self.p
