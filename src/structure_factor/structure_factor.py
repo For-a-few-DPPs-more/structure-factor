@@ -50,25 +50,27 @@ class StructureFactor:
         """Ambient dimension of the underlying point process."""
         return self.point_pattern.dimension
 
-    #! pass on doc
+    #! doc done untill example
     def scattering_intensity(self, k=None, debiased=True, direct=True, **params):
-        r"""Compute the scattering intensity (an estimator of the structure factor) of the point process encapsulated in ``point_pattern``.
+        r"""Compute the scattering intensity (an estimator of the structure factor) of the point process encapsulated in a ``PointPattern``.
 
-        By default, the scattering intensity is evaluated on a specific set of wavevectors called **allowed wavevectors** that minimizes the approximation errors.
+        Args:
+            k (np.ndarray, optional): :math:`n \times d` array where d is the dimension of the space. :math:`n` wavevectors on which the scattering intensity to be evaluated. If ``k=None`` and ``debiased=True``, the scattering intensity will be evaluated on the corresponding set of allowed wavevectors; In this case, the parameters ``k_max``, and ``meshgrid_shape`` could be used. See :py:attr:`~structure_factor.utils.allowed_wave_vectors`, for more details about ``k_max``, and ``meshgrid_shape``. Defaults to None.
+            debiased (bool, optional): Default to True. If ``True``, the estimator is debiased as follows,
 
-         Args:
-             k (np.ndarray, optional): n wavevectors of d columns (d is the dimension of the space) on which the scattering intensity to be evaluated. It is recommended to keep the default ``k`` and to specify ``k_max`` instead, to get the evaluations on a subset of the total set of allowed wavevectors. Defaults to None.
+                - if ``k=None``, the scattering intensity will be evaluated on the corresponding set of allowed wavevectors.
+                - if ``k`` is not None and ``direct=True``, the direct debiased scattering intensity will be used,
+                - if ``k`` is not None and ``direct=False``, the undirect debiased scattering intensity will be used.
 
-             k_max (float, specific option for allowed wavevectors): Supremum of the components of the allowed wavevectors on which the scattering intensity to be evaluated; i.e., for any allowed wavevector :math:`\mathbf{k}=(k_1,...,k_d)`, :math:`k_i \leq k\_max` for all i. This implies that the maximum of the output vector ``k_norm`` will be approximately equal to the norm of the vector :math:`(k\_max, ... k\_max)`. Defaults to 5.
-
-             meshgrid_shape (tuple, specific option for allowed wavevectors): Tuple of length `d`, where each element specifies the number of components over an axis. These axes are crossed to form a subset of :math:`\mathbb{Z}^d` used to construct a set of allowed wavevectors. i.g., if d=2, setting meshgid_shape=(2,3) will construct a meshgrid of allowed wavevectors formed by a vector of 2 values over the x-axis and a vector of 3 values over the y-axis. Defaults to None, which will run the calculation over **all** the allowed wavevectors.
-
-         Returns:
+            direct (bool, optional): Choice between the direct (if True) or undirect (if False) debiased scattering intensity. Parameter related to ``debiased``. Default to True.
+        Keyword Args:
+            params (dict): Keyword arguments ``k_max`` and ``meshgrid_shape`` of :py:attr:`~structure_factor.utils.allowed_wave_vectors`. Used when ``k=None`` and ``debiased=True``.
+        Returns:
              tuple(numpy.ndarray, numpy.ndarray):
-                 - k_norm: Wavenumber(s) (i.e., the vector of the norm(s) of the wavevector(s)) on which the scattering intensity has been evaluated.
-                 - si: Evaluation(s) of the scattering intensity corresponding to ``k_norm``.
+                 - k: Wavevector(s) on which the scattering intensity has been evaluated.
+                 - si: Evaluation(s) of the scattering intensity corresponding to ``k``.
 
-         Example:
+        Example:
 
              .. literalinclude:: code/si_example.py
                  :language: python
@@ -150,8 +152,7 @@ class StructureFactor:
             tapers ([type], optional): [description]. Defaults to None.
             debiased (bool, optional): [description]. Defaults to True.
             direct (bool, optional): [description]. Defaults to True.
-
-        Kwargs:
+        Keyword Args:
             params: P for grid sine taper
         Returns:
             [type]: [description]
@@ -293,10 +294,12 @@ class StructureFactor:
             pcf (callable): Radially symmetric pair correlation function.
             k_norm (numpy.ndarray, optional): Vector of wavenumbers (i.e., norms of wave vectors) where the structure factor is to be evaluated. Optional if ``method="BaddourChouinard"`` (since this method evaluates the Hankel transform on a specific vector, see :cite:`BaCh15`), but it is **non optional** if ``method="Ogata"``. Defaults to None.
             method (str, optional): Choose between ``"BaddourChouinard"`` or ``"Ogata"``. Defaults to ``"BaddourChouinard"``. Selects the method to be used to compute the Hankel transform corresponding to the symmetric Fourier transform of ``pcf -1``,
+
                 - if ``"BaddourChouinard"``: The Hankel transform is approximated using the Discrete Hankel transform :cite:`BaCh15`. See :py:class:`~structure_factor.transforms.HankelTransformBaddourChouinard`,
                 - if ``"Ogata"``: The Hankel transform is approximated using Ogata quadrature :cite:`Oga05`. See :py:class:`~structure_factor.transforms.HankelTransformOgata`.
         Keyword Args:
             params (dict): Keyword arguments passed to the corresponding Hankel transformer selected according to the ``method`` argument.
+
                 - ``method == "Ogata"``, see :py:meth:`~structure_factor.transforms.HankelTransformOgata.compute_transformation_parameters`
                     - ``step_size``
                     - ``nb_points``
