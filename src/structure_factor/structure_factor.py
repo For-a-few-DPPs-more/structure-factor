@@ -2,7 +2,6 @@ import warnings
 import numpy as np
 
 import structure_factor.utils as utils
-from structure_factor.pair_correlation_function import PairCorrelationFunction as PCF
 from structure_factor.point_pattern import PointPattern
 from structure_factor.spatial_windows import BoxWindow, BallWindow, check_cubic_window
 from structure_factor.spectral_estimator import (

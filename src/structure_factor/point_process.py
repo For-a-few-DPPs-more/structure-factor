@@ -1,5 +1,10 @@
-from structure_factor.spatial_windows import AbstractSpatialWindow
+from structure_factor.spatial_windows import (
+    AbstractSpatialWindow,
+    BallWindow,
+    BoxWindow,
+)
 from structure_factor.utils import get_random_number_generator
+import numpy as np
 
 
 class HomogeneousPoissonPointProcess(object):
@@ -14,6 +19,28 @@ class HomogeneousPoissonPointProcess(object):
         if not intensity > 0:
             raise TypeError("intensity argument must be positive")
         self.intensity = intensity
+
+    def structure_factor(self, k):
+        """Structure factor of the Poisson point process
+
+        Args:
+            k (np.array): Points to evaluate on.
+
+        Returns:
+            np.array: Structure factor of Poisson process evaluated on `k`.
+        """
+        return np.ones_like(k)
+
+    def pair_correlation_function(self, r):
+        """Pair correlation function of the Poisson point process
+
+        Args:
+            r (np.array): Points to evaluate on.
+
+        Returns:
+            np.array: Structure factor of Poisson process evaluated on `k`.
+        """
+        return np.ones_like(r)
 
     def generate_sample(self, window, seed=None):
         r"""Generate an exact sample from the corresponding :py:class:`~structure_factor.homogeneous_poisson_process.HomogeneousPoissonPointProcess` restricted to the :math:`d` dimensional `window`.
@@ -36,3 +63,7 @@ class HomogeneousPoissonPointProcess(object):
         rng = get_random_number_generator(seed)
         nb_points = rng.poisson(self.intensity * window.volume)
         return window.rand(nb_points, seed=rng)
+
+        # todo add structure factor and pair correlation function
+
+    # todo move all structure factor and pair correlation functions here for ginibre add note for the simulation to use DPPY
