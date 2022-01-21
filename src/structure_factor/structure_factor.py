@@ -41,6 +41,7 @@ class StructureFactor:
         Args:
             point_pattern (:py:class:`~structure_factor.point_pattern.PointPattern`): Object of type point pattern which contains a realization ``point_pattern.points`` of a point process, the window where the points were simulated ``point_pattern.window`` and (optionally) the intensity of the point process ``point_pattern.intensity``.
         """
+
         assert isinstance(point_pattern, PointPattern)
         self.point_pattern = point_pattern  # the point pattern
         self.k_norm_min = None  # minimal bounds on the wavenumbers for Ogata method
