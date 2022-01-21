@@ -5,7 +5,7 @@ import structure_factor.utils as utils
 from structure_factor.point_pattern import PointPattern
 from structure_factor.spatial_windows import BoxWindow, BallWindow, check_cubic_window
 from structure_factor.spectral_estimator import (
-    multitapered_periodogram,
+    multitapered_periodogram_,
     select_tapered_periodogram,
 )
 from structure_factor.tapers import BartlettTaper, SineTaper
@@ -130,16 +130,15 @@ class StructureFactor:
                 "`k` should have d columns, where d is the dimension of the ambient space where the points forming the point pattern live."
             )
 
-        si = self.tapered_periodogram(
+        _, si = self.tapered_periodogram(
             k, taper=BartlettTaper(), debiased=debiased, direct=direct
         )
-
         return k, si
 
     def tapered_periodogram(self, k, taper, debiased=True, direct=True):
         estimator = select_tapered_periodogram(debiased, direct)
         sf = estimator(k, self.point_pattern, taper)
-        return sf
+        return k, sf
 
     def multitapered_periodogram(
         self, k, tapers=None, debiased=True, direct=True, **params
@@ -161,14 +160,14 @@ class StructureFactor:
         d = self.point_pattern.dimension
         if tapers is None:
             tapers = utils.taper_grid_generator(d=d, taper_p=SineTaper, **params)
-        sf = multitapered_periodogram(
+        sf = multitapered_periodogram_(
             k,
             self.point_pattern,
             *tapers,
             debiased=debiased,
             direct=direct,
         )
-        return sf
+        return k, sf
 
     def plot_tapered_periodogram(
         self,

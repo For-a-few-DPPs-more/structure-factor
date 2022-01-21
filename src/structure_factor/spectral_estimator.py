@@ -143,7 +143,7 @@ def tapered_periodogram_debiased_undirect(k, point_pattern, taper):
     return periodogram
 
 
-def multitapered_periodogram(k, point_pattern, *tapers, debiased=False, direct=True):
+def multitapered_periodogram_(k, point_pattern, *tapers, debiased=False, direct=True):
     periodogram = select_tapered_periodogram(debiased, direct)
     multi_periodogram = np.zeros(k.shape[0], dtype=float)
     for taper in tapers:
