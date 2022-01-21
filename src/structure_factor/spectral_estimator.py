@@ -3,7 +3,7 @@ import numpy as np
 # ? I find this not very explicit to call functions periodograms in a file called estimators where the returned values are not periodograms but rescaled periodograms that correspond to estimators of the structure factor...
 # ? I'd rather like to rename the file to periodograms, where the different functions indeed return periodograms to be rescaled in the corresponding StructureFactor method
 
-
+# todo rename tapered
 def select_tapered_periodogram(debiased, direct):
     if debiased:
         if direct:
