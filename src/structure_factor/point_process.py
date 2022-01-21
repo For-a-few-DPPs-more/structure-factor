@@ -29,7 +29,7 @@ class HomogeneousPoissonPointProcess(object):
         Returns:
             np.array: Structure factor of Poisson process evaluated on `k`.
         """
-        return np.ones_like(k)
+        return np.ones(k.shape[0])
 
     def pair_correlation_function(self, r):
         """Pair correlation function of the Poisson point process
@@ -40,7 +40,7 @@ class HomogeneousPoissonPointProcess(object):
         Returns:
             np.array: Structure factor of Poisson process evaluated on `k`.
         """
-        return np.ones_like(r)
+        return np.ones(r.shape[0])
 
     def generate_sample(self, window, seed=None):
         r"""Generate an exact sample from the corresponding :py:class:`~structure_factor.homogeneous_poisson_process.HomogeneousPoissonPointProcess` restricted to the :math:`d` dimensional `window`.
@@ -64,7 +64,12 @@ class HomogeneousPoissonPointProcess(object):
         nb_points = rng.poisson(self.intensity * window.volume)
         return window.rand(nb_points, seed=rng)
 
-        # todo add structure factor and pair correlation function
+    def generate_list_of_samples(self, s, window):
+        sample_list = []
+        for i in range(0, s):
+            sample = self.generate_sample(window)
+            sample_list.append(sample)
+        return sample_list
 
 
 class ThomasProintProcess(object):
@@ -137,6 +142,13 @@ class ThomasProintProcess(object):
             [rng.normal(c, s, (n, d)) for (c, n) in zip(centers, n_per_cluster)]
         )
         return points[window.indicator_function(points)]
+
+    def generate_list_of_samples(self, s, window):
+        sample_list = []
+        for i in range(0, s):
+            sample = self.generate_sample(window)
+            sample_list.append(sample)
+        return sample_list
 
     # todo move all structure factor and pair correlation functions here for ginibre add note for the simulation to use DPPY
 
