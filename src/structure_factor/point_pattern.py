@@ -148,3 +148,22 @@ class PointPattern(object):
         if file_name:
             fig.savefig(file_name, bbox_inches="tight")
         return axis
+
+
+def pointpattern_list(list_points, window, intensity):
+    """Return list of PointPattern
+
+    Args:
+        list_points (list): list of sample generated in the same window and of same intensity
+        window (AbstractSpatialWindow): [description]
+        intensity (float): [description]
+
+    Returns:
+        [type]: [description]
+    """
+    pp_list = []
+    s = len(list_points)
+    for i in range(0, s):
+        pp = PointPattern(list_points[i], window=window, intensity=intensity)
+        pp_list.append(pp)
+    return pp_list
