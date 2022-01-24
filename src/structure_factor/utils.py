@@ -69,7 +69,8 @@ def structure_factor_ginibre(k):
     Returns:
         np.array: Structure factor of Ginibre process evaluated on `k`.
     """
-    return 1.0 - np.exp(-(k ** 2) / 4)
+    norm_k_ = norm_k(k)
+    return 1.0 - np.exp(-(norm_k_ ** 2) / 4)
 
 
 def structure_factor_thomas(k, rho_child, sigma):

@@ -5,7 +5,7 @@ from structure_factor.point_pattern import PointPattern
 #! Work for DSE actually
 
 
-class SummeryStatistics:
+class SummaryStatistics:
     def __init__(self, list_point_pattern):
         self.list_point_pattern = list_point_pattern  # list of PointPattern
         self.s = len(list_point_pattern)  # number of sample
@@ -71,7 +71,8 @@ def structure_factor_estimator(point_pattern, estimator):
         return sf_pointpattern.tapered_periodogram
     elif estimator == "multitapered_periodogram":
         return sf_pointpattern.multitapered_periodogram
-
+    elif estimator == "bartlett_isotropic_estimator":
+        return sf_pointpattern.bartlett_isotropic_estimator
     else:
         raise ValueError(
             "Available estimators are:'scattering_intensity', 'tapered_periodogram','multitapered_periodogram' "
