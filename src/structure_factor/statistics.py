@@ -5,6 +5,7 @@ from multiprocessing import Pool, freeze_support
 from functools import partial
 import structure_factor.utils as utils
 from structure_factor.isotropic_estimator import allowed_k_norm
+from structure_factor.pair_correlation_function import PairCorrelationFunction as pcf
 
 
 #! Work for DSE actually
@@ -27,17 +28,45 @@ class SummaryStatistics:
             )
         return approximations
 
-    def sample_statistics(self, k, approximation, exact):
+    def sample_integral_approximation(self, pcf_interpolate_list, **params):
+        s = len(pcf_interpolate_list)
+        estimator_list = [
+            apply_estimator(
+                self.list_point_pattern[0],
+                estimator="hankel_quadrature",
+                pcf=pcf_interpolate_list[i],
+                **params
+            )
+            for i in range(s)
+        ]
+        return estimator_list
+
+    def sample_pcf_approximation(self, method, core_num=7, **params):
+        list_point_pattern = self.list_point_pattern
+        isinstance(list_point_pattern[0], PointPattern)
+        freeze_support()
+        with Pool(core_num) as pool:
+            pcf_list = pool.map(
+                partial(pcf.estimate, method=method, **params),
+                list_point_pattern,
+            )
+        return pcf_list
+
+    def sample_statistics(
+        self, k=None, k_norm=None, approximation="scattering_intensity", exact=None
+    ):
         s = len(approximation)  # number of sample
-        n = k.shape[0]  # number of k
-        norm_k = utils.norm_k(k)
+
+        if k is not None:
+            k_norm = utils.norm_k(k)
+        n = k_norm.shape[0]  # number of k
         m = sum(approximation) / s
         var = np.square(approximation - m)
         var = np.sum(var, axis=0)
         var /= s - 1
         ivar = sum(var) / n
-        bias = m - exact(norm_k)
-        ibias = sum(bias) / n
+        bias = m - exact(k_norm)
+        ibias = sum(bias ** 2) / n  # mean of bias square
         mse = var + bias ** 2
         imse = sum(mse) / n
 
@@ -46,7 +75,10 @@ class SummaryStatistics:
     def plot_sample_mean(self, k, m, **params):
         pp = self.list_point_pattern[0]
         sf = StructureFactor(pp)
-        return sf.plot_tapered_periodogram(k, m, **params)
+        if k.ndim == 2:
+            return sf.plot_tapered_periodogram(k, m, **params)
+        if k.ndim == 1:
+            return sf.plot_isotropic_estimator(k, m, **params)
 
 
 def structure_factor_estimator(point_pattern, estimator):
@@ -60,9 +92,11 @@ def structure_factor_estimator(point_pattern, estimator):
         return sf_pointpattern.multitapered_periodogram
     elif estimator == "bartlett_isotropic_estimator":
         return sf_pointpattern.bartlett_isotropic_estimator
+    elif estimator == "hankel_quadrature":
+        return sf_pointpattern.hankel_quadrature
     else:
         raise ValueError(
-            "Available estimators are:'scattering_intensity', 'tapered_periodogram','multitapered_periodogram' "
+            "Available estimators are:'scattering_intensity', 'tapered_periodogram','multitapered_periodogram', 'bartlett_isotropic_estimator', 'hankel_quadrature' "
         )
 
 
@@ -91,3 +125,11 @@ def get_k_norm(point_pattern, **params):
         r = window.radius
         k_norm = allowed_k_norm(d=d, r=r, n=n)
     return k_norm
+
+
+def pcf_interpolate_list(r_list, pcf_list, **params):
+    s = len(r_list)
+    pcf_interpolate_list = [
+        pcf.interpolate(r_list[i], pcf_list[i], params) for i in range(s)
+    ]
+    return pcf_interpolate_list

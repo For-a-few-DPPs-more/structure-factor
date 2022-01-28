@@ -122,14 +122,15 @@ class PairCorrelationFunction:
         params.setdefault("fill_value", "extrapolate")
         params.setdefault("kind", "cubic")
         if clean:
-            if drop:
-                index_outlier = np.isnan(pcf_r) | np.isinf(pcf_r)
-                pcf_r = pcf_r[~index_outlier]
-                r = r[~index_outlier]
             if replace:
                 pcf_r = utils.set_nan_inf_to_zero(
                     pcf_r, nan=nan, posinf=posinf, neginf=neginf
                 )
+            elif drop:
+                index_outlier = np.isnan(pcf_r) | np.isinf(pcf_r)
+                pcf_r = pcf_r[~index_outlier]
+                r = r[~index_outlier]
+
         pcf = interpolate.interp1d(r, pcf_r, **params)
         return pcf
 
