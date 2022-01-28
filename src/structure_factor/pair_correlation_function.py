@@ -83,7 +83,17 @@ class PairCorrelationFunction:
         return pcf_pd
 
     @staticmethod
-    def interpolate(r, pcf_r, clean=True, **params):
+    def interpolate(
+        r,
+        pcf_r,
+        clean=True,
+        drop=True,
+        replace=False,
+        nan=0,
+        posinf=0,
+        neginf=0,
+        **params
+    ):
         """Interpolate the vector ``pcf_r`` evaluated at ``r``, where NaNs, posinf and neginf of ``pcf_r`` are set to zero if ``clean`` is True.
 
         The interpolation is performed with `scipy.interpolate.interp1d <https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html>`_.
@@ -99,7 +109,7 @@ class PairCorrelationFunction:
             params (dict): Keyword arguments of the function `scipy.interpolate.interp1d <https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html>`_.
 
         Returns:
-            tuple (dict, callable): Dictionary containing the bounds of the support of ``r`` and the resulting output function of the interpolation of ``pcf_r``.
+            tuple (dict, callable): Resulting output function of the interpolation of ``pcf_r``.
 
         Example:
             .. literalinclude:: code/sf_baddour_example.py
@@ -112,10 +122,16 @@ class PairCorrelationFunction:
         params.setdefault("fill_value", "extrapolate")
         params.setdefault("kind", "cubic")
         if clean:
-            pcf_r = utils.set_nan_inf_to_zero(pcf_r)
+            if drop:
+                index_outlier = np.isnan(pcf_r) | np.isinf(pcf_r)
+                pcf_r = pcf_r[~index_outlier]
+                r = r[~index_outlier]
+            if replace:
+                pcf_r = utils.set_nan_inf_to_zero(
+                    pcf_r, nan=nan, posinf=posinf, neginf=neginf
+                )
         pcf = interpolate.interp1d(r, pcf_r, **params)
-        dict_r_min_max = dict(r_min=np.min(r), r_max=np.max(r))
-        return dict_r_min_max, pcf
+        return pcf
 
     @staticmethod
     def plot(pcf_dataframe, exact_pcf=None, file_name="", **kwargs):

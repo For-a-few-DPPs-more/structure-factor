@@ -150,7 +150,7 @@ class PointPattern(object):
         return axis
 
 
-def pointpattern_list(list_points, window, intensity):
+def pointpattern_list(list_points, window, intensity, window_res=None):
     """Return list of PointPattern
 
     Args:
@@ -161,9 +161,11 @@ def pointpattern_list(list_points, window, intensity):
     Returns:
         [type]: [description]
     """
-    pp_list = []
     s = len(list_points)
-    for i in range(0, s):
-        pp = PointPattern(list_points[i], window=window, intensity=intensity)
-        pp_list.append(pp)
+    pp_list = [
+        PointPattern(list_points[i], window=window, intensity=intensity)
+        for i in range(s)
+    ]
+    if window_res is not None:
+        pp_list = [pp_list[i].restrict_to_window(window_res) for i in range(s)]
     return pp_list

@@ -60,7 +60,7 @@ def structure_factor_poisson(k):
     return np.ones_like(k)
 
 
-def structure_factor_ginibre(k):
+def structure_factor_ginibre(k_norm):
     r"""Structure factor of the Ginibre Ensemble of intensity :math:`1/\pi`.
 
     Args:
@@ -69,8 +69,8 @@ def structure_factor_ginibre(k):
     Returns:
         np.array: Structure factor of Ginibre process evaluated on `k`.
     """
-    norm_k_ = norm_k(k)
-    return 1.0 - np.exp(-(norm_k_ ** 2) / 4)
+    # norm_k_ = norm_k(k)
+    return 1.0 - np.exp(-(k_norm ** 2) / 4)
 
 
 def structure_factor_thomas(k, rho_child, sigma):
@@ -202,7 +202,7 @@ def taper_grid_generator(d, taper_p, P=2):
 
 
 def set_nan_inf_to_zero(array, nan=0, posinf=0, neginf=0):
-    """Set nan, posinf, and neginf values of ``array`` to 0."""
+    """Replace nan, posinf, and neginf values of ``array`` resp. with the specified arguments in nan, posinf, and neginf. Default to zero."""
     return np.nan_to_num(array, nan=nan, posinf=posinf, neginf=neginf)
 
 
@@ -364,7 +364,7 @@ def plot_summary_2(
     x, y, axis, label=r"mean $\pm$ 3 $\cdot$ std", c="k", marker=".", **binning_params
 ):
 
-    bin_centers, bin_mean, bin_std = _bin_statistics(x, y, **binning_params)
+    bin_centers, bin_mean, _ = _bin_statistics(x, y, **binning_params)
     axis.loglog(bin_centers, bin_mean, color=c, marker=marker, label=label)
     axis.legend(framealpha=0.2)
     return axis
