@@ -51,6 +51,8 @@ Contents
    point_pattern
    spatial_windows
    structure_factor
+   spectral_estimators
+   tapers
    transforms
    utils
    bibliography/index

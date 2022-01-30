@@ -1,16 +1,17 @@
 import warnings
+
 import numpy as np
 
+import structure_factor.isotropic_estimator as ise
 import structure_factor.utils as utils
 from structure_factor.point_pattern import PointPattern
-from structure_factor.spatial_windows import BoxWindow, BallWindow, check_cubic_window
-from structure_factor.spectral_estimator import (
-    multitapered_periodogram,
-    select_tapered_periodogram,
+from structure_factor.spatial_windows import BallWindow, BoxWindow, check_cubic_window
+from structure_factor.spectral_estimators import (
+    multitapered_spectral_estimator,
+    select_tapered_spectral_estimator,
 )
 from structure_factor.tapers import BartlettTaper, SineTaper
 from structure_factor.transforms import RadiallySymmetricFourierTransform
-import structure_factor.isotropic_estimator as ise
 
 
 class StructureFactor:
@@ -136,7 +137,7 @@ class StructureFactor:
         return k, si
 
     def tapered_periodogram(self, k, taper, debiased=True, direct=True):
-        estimator = select_tapered_periodogram(debiased, direct)
+        estimator = select_tapered_spectral_estimator(debiased, direct)
         sf = estimator(k, self.point_pattern, taper)
         return sf
 
@@ -160,7 +161,7 @@ class StructureFactor:
         d = self.point_pattern.dimension
         if tapers is None:
             tapers = utils.taper_grid_generator(d=d, taper_p=SineTaper, **params)
-        sf = multitapered_periodogram(
+        sf = multitapered_spectral_estimator(
             k,
             self.point_pattern,
             *tapers,

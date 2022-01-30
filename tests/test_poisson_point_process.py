@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 from scipy.stats import norm
 
-from structure_factor.homogeneous_poisson_process import HomogeneousPoissonPointProcess
+from structure_factor.point_process import HomogeneousPoissonPointProcess
 from structure_factor.spatial_windows import BoxWindow
 
 

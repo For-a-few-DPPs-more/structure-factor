@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-import structure_factor.spectral_estimator as spe
+import structure_factor.spectral_estimators as spe
 from structure_factor.point_pattern import PointPattern
 from structure_factor.spatial_windows import BoxWindow
 
@@ -64,5 +64,5 @@ class Taper2:
 )
 def test_tapered_periodogram(k, points, window, taper, expected):
     point_pattern = PointPattern(points, window)
-    tp = spe.tapered_periodogram_core(k, point_pattern, taper)
+    tp = spe.tapered_spectral_estimator_core(k, point_pattern, taper)
     np.testing.assert_almost_equal(tp, expected)

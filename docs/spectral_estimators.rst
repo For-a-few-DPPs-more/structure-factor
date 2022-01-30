@@ -1,0 +1,7 @@
+Spectral estimators
+###################
+
+.. automodule:: structure_factor.spectral_estimators
+    :members:
+    :inherited-members:
+    :show-inheritance:
