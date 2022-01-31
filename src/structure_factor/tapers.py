@@ -96,8 +96,8 @@ class SineTaper:
         sines *= np.pi * self.p
         np.sin(sines, out=sines)
 
-        h_x = 2 * window.indicator_function(x).astype(float)
-        h_x *= np.prod(sines, axis=1)
+        h_x = window.indicator_function(x).astype(float)
+        h_x *= np.prod(sines * np.sqrt(2), axis=1)
         h_x *= np.sqrt(1 / window.volume)  # normalization
         return h_x
 
