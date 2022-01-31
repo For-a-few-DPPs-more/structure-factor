@@ -76,7 +76,7 @@ class HomogeneousPoissonPointProcess(object):
 class ThomasProintProcess(object):
     """Homogeneous Thomas point process."""
 
-    def __init__(self, intensity_parent, mu, sigma):
+    def __init__(self, d, intensity_parent, mu, sigma):
         """Create a homogeneous Thomas point process.
 
         Args:
@@ -87,6 +87,7 @@ class ThomasProintProcess(object):
         self.intensity_parent = intensity_parent
         self.mu = mu
         self.sigma = sigma
+        self.d = d
 
     @property
     def intensity(self):
@@ -94,24 +95,21 @@ class ThomasProintProcess(object):
 
     # todo repasse over this fction semms stranger
     # todo remove dim and add d in int?
-    def pair_correlation_function(self, r, dim):
-        if isinstance(r, np.ndarray) and r.ndim > 1:
-            assert r.ndim == 2  # why??
-            assert r.shape[1] == dim
-
+    def pair_correlation_function(self, r):
+        assert r.ndim == 1
+        d = self.d
         k = self.intensity_parent
         s2 = self.sigma ** 2
 
         pcf = np.exp(r ** 2 / (-4 * s2))
-        pcf /= k * (4 * np.pi * s2) ** (dim / 2)
+        pcf /= k * (4 * np.pi * s2) ** (d / 2)
         pcf += 1.0
         return pcf
 
-    def structure_factor(self, k):
-        norm_k = utils.norm_k(k)
+    def structure_factor(self, k_norm):
         mu = self.mu
         s2 = self.sigma ** 2
-        return 1.0 + mu * np.exp(-s2 * norm_k ** 2)
+        return 1.0 + mu * np.exp(-s2 * k_norm ** 2)
 
     def generate_sample(self, window, seed=None):
         r"""Generate an exact sample from the corresponding :py:class:`~structure_factor.thomas_process.ThomasPointProcess` restricted to the :math:`d` dimensional `window`.
