@@ -7,11 +7,15 @@ from structure_factor.tapers import BartlettTaper, SineTaper
 
 @pytest.mark.parametrize(
     "window, expected",
-    [(BoxWindow([[0, 1], [0, 1], [0, 1]]), 1), (BoxWindow([[0, 2], [0, 2]]), 1 / 2)],
+    [
+        (BoxWindow([[0, 1], [0, 1], [0, 1]]), 1),
+        (BoxWindow([[0, 2], [0, 2]]), 1 / 2),
+        (BoxWindow([[-1 / 2, 1 / 2], [-1 / 7, 1 / 8]]), 0),
+    ],
 )
-def test_h0(window, expected):
-    h0 = BartlettTaper.taper(1, window)
-    np.testing.assert_almost_equal(h0, expected)
+def test_t0(window, expected):
+    t0 = BartlettTaper.taper(1, window)
+    np.testing.assert_almost_equal(t0, expected)
 
 
 @pytest.mark.parametrize(
@@ -44,9 +48,9 @@ def test_h0(window, expected):
         (np.array([np.pi, 2.8]), BoxWindow(bounds=[[2, 4], [7, 8]]), 0),
     ],
 )
-def test_ft_h0(k, window, expected):
-    H_0 = BartlettTaper.ft_taper(k, window)
-    np.testing.assert_almost_equal(H_0, expected)
+def test_ft_t0(k, window, expected):
+    ft_t0 = BartlettTaper.ft_taper(k, window)
+    np.testing.assert_almost_equal(ft_t0, expected)
 
 
 @pytest.mark.parametrize(
@@ -58,7 +62,12 @@ def test_ft_h0(k, window, expected):
             BoxWindow([[-1, 2], [2, 4], [4, 7]]),
             np.array([0, 0]),
         ),
-        (4, np.array([[3], [0], [3 / 4]]), BoxWindow([-1, 5]), np.array([0, 0, 1])),
+        (
+            4,
+            np.array([[3], [0], [3 / 4]]),
+            BoxWindow([-1, 3]),
+            np.array([0, 0, 0.5]),
+        ),
         (
             np.array([[4, 4]]),
             np.array([[3, 3], [0, 3], [3 / 4, -3 / 4]]),
@@ -68,8 +77,6 @@ def test_ft_h0(k, window, expected):
     ],
 )
 def test_sin_taper(p, x, window, expected):
-    # taper = sin_taper
-    # h_p = taper(p, x, window)
     taper = SineTaper(p)
-    h_p = taper.taper(x, window)
-    np.testing.assert_almost_equal(h_p, expected)
+    t_p = taper.taper(x, window)
+    np.testing.assert_almost_equal(t_p, expected)
