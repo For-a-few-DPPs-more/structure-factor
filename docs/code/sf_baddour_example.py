@@ -2,6 +2,7 @@ import numpy as np
 
 import structure_factor.utils as utils
 from structure_factor.data import load_data
+from structure_factor.point_processes import GinibrePointProcess
 from structure_factor.structure_factor import StructureFactor
 
 # load Ginibre PointPattern
@@ -31,7 +32,7 @@ k_norm, sf_BadChou = sf_ginibre.hankel_quadrature(
 sf_ginibre.plot_sf_hankel_quadrature(
     k_norm,
     sf_BadChou,
-    exact_sf=utils.structure_factor_ginibre,
+    exact_sf=GinibrePointProcess.structure_factor,
     label=r"$S_{HBC}(k)$",
     error_bar=True,
     bins=100,

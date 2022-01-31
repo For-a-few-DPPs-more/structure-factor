@@ -15,21 +15,6 @@ def get_random_number_generator(seed=None):
     return np.random.default_rng(seed)
 
 
-# theoretical structure factors and pair correlation functions
-
-
-def pair_correlation_function_ginibre(x):
-    return 1.0 - np.exp(-(x ** 2))
-
-
-def structure_factor_poisson(k):
-    return np.ones_like(k)
-
-
-def structure_factor_ginibre(k):
-    return 1.0 - np.exp(-(k ** 2) / 4)
-
-
 # utils for hyperuniformity.py
 
 

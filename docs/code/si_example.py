@@ -1,5 +1,6 @@
 import structure_factor.utils as utils
 from structure_factor.data import load_data
+from structure_factor.point_processes import GinibrePointProcess
 from structure_factor.spatial_windows import BoxWindow
 from structure_factor.structure_factor import StructureFactor
 
@@ -23,7 +24,7 @@ sf_ginibre_box.plot_scattering_intensity(
     norm_k,
     si,
     plot_type="all",
-    exact_sf=utils.structure_factor_ginibre,
+    exact_sf=GinibrePointProcess.structure_factor,
     bins=60,  # number of bins
     error_bar=True,  # visualizing the error bars
 )

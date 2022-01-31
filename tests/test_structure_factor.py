@@ -1,14 +1,10 @@
 import numpy as np
 import pytest
 
-import structure_factor.utils as utils
 from structure_factor.data import load_data
+from structure_factor.point_processes import GinibrePointProcess
 from structure_factor.spatial_windows import BoxWindow
 from structure_factor.structure_factor import StructureFactor
-from structure_factor.utils import (
-    pair_correlation_function_ginibre,
-    structure_factor_ginibre,
-)
 
 
 @pytest.fixture
@@ -84,7 +80,7 @@ def test_scattering_intensity(ginibre_pp):
 #         k_norm,
 #         si,
 #         plot_type="all",
-#         exact_sf=utils.structure_factor_ginibre,
+#         exact_sf=GinibrePointProcess.structure_factor,
 #         bins=60,  # number of bins
 #         error_bar=True,  # visualizing the error bars
 #     )
@@ -93,11 +89,11 @@ def test_scattering_intensity(ginibre_pp):
 def test_interpolate_pcf_ginibre(ginibre_pp):
     sf_pp = StructureFactor(ginibre_pp)
     r = np.linspace(0, 80, 500)
-    pcf_r = pair_correlation_function_ginibre(r)
+    pcf_r = GinibrePointProcess.pair_correlation_function(r)
     _, interp_pcf = sf_pp.interpolate_pcf(r, pcf_r)
     x = np.linspace(5, 10, 30)
     computed_pcf = interp_pcf(x)
-    expected_pcf = pair_correlation_function_ginibre(x)
+    expected_pcf = GinibrePointProcess.pair_correlation_function(x)
     np.testing.assert_almost_equal(computed_pcf, expected_pcf)
 
 
@@ -111,12 +107,12 @@ def test_compute_pcf(ginibre_pp):
     )
     np.testing.assert_almost_equal(
         pcf_fv_func(pcf_fv["r"]),
-        utils.pair_correlation_function_ginibre(pcf_fv["r"]),
+        GinibrePointProcess.pair_correlation_function(pcf_fv["r"]),
         decimal=1,
     )
     # fig = sf_pp.plot_pcf(
     #     pcf_fv,
-    #     exact_pcf=utils.pair_correlation_function_ginibre,
+    #     exact_pcf=GinibrePointProcess.pair_correlation_function,
     #     figsize=(10, 6),
     #     color=["grey", "b", "darkcyan"],
     #     style=[".", "o", "^"],
@@ -129,9 +125,12 @@ def test_compute_structure_factor_ginibre_with_ogata(ginibre_pp):
     params = dict(r_max=80, step_size=0.01, nb_points=1000)
     k_norm = np.linspace(1, 10, 1000)
     _, sf_computed = sf_pp.hankel_quadrature(
-        pair_correlation_function_ginibre, k_norm=k_norm, method=method, **params
+        GinibrePointProcess.pair_correlation_function,
+        k_norm=k_norm,
+        method=method,
+        **params
     )
-    sf_expected = structure_factor_ginibre(k_norm)
+    sf_expected = GinibrePointProcess.structure_factor(k_norm)
     np.testing.assert_almost_equal(sf_computed, sf_expected)
 
 
@@ -140,10 +139,13 @@ def test_compute_structure_factor_ginibre_with_baddour_chouinard(ginibre_pp):
     method = "BaddourChouinard"
     params = dict(r_max=80, nb_points=800)
     k_norm, sf_computed = sf_pp.hankel_quadrature(
-        pair_correlation_function_ginibre, k_norm=None, method=method, **params
+        GinibrePointProcess.pair_correlation_function,
+        k_norm=None,
+        method=method,
+        **params
     )
-    sf_expected = structure_factor_ginibre(k_norm)
+    sf_expected = GinibrePointProcess.structure_factor(k_norm)
     np.testing.assert_almost_equal(sf_computed, sf_expected)
     # fig = sf_pp.plot_sf_hankel_quadrature(
-    #     k_norm, sf_computed, exact_sf=utils.structure_factor_ginibre
+    #     k_norm, sf_computed, exact_sf=GinibrePointProcess.structure_factor
     # )

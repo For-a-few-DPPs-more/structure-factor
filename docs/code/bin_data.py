@@ -1,5 +1,6 @@
 import structure_factor.utils as utils
 from structure_factor.data import load_data
+from structure_factor.point_processes import GinibrePointProcess
 from structure_factor.spatial_windows import BoxWindow
 from structure_factor.structure_factor import StructureFactor
 
@@ -42,7 +43,7 @@ utils.plot_approximation(
     markersize=1.5,
 )
 utils.plot_summary(k_norm, sf, axis, bins=60)
-utils.plot_exact(k_norm, utils.structure_factor_ginibre, axis, label="exact sf")
+utils.plot_exact(k_norm, GinibrePointProcess.structure_factor, axis, label="exact sf")
 axis.legend()
 axis.title.set_text(
     "Regularization of the approximated structure factor of the Ginibre ensemble"

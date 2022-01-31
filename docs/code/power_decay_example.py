@@ -20,16 +20,20 @@ sf_ginibre_box = StructureFactor(ginibre_pp_box)  # initialize the class Structu
 norm_k, si = sf_ginibre_box.scattering_intensity(k_max=6, meshgrid_shape=(200, 200))
 
 
-# estimate the class of hyperuniformity 
+# estimate the class of hyperuniformity
 from structure_factor.hyperuniformity import Hyperuniformity
+from structure_factor.point_processes import GinibrePointProcess
 
 # initialize Hyperuniformity
 hyperuniformity_test = Hyperuniformity(norm_k, si)
-# regularization of the approximated structure factor 
+# regularization of the approximated structure factor
 hyperuniformity_test.bin_data(bins=40)
 # find the power decay of the structure factor
 sf_power_decay, c = hyperuniformity_test.hyperuniformity_class(k_norm_stop=1)
-print( "The estimated power of the decay to zero of the approximated structure factor is:",sf_power_decay)
+print(
+    "The estimated power of the decay to zero of the approximated structure factor is:",
+    sf_power_decay,
+)
 
 import matplotlib.pyplot as plt
 
@@ -41,7 +45,7 @@ y = np.linspace(0, 9, 500)
 fig = plt.figure(figsize=(10, 6))
 plt.plot(mean_k_norm, mean_sf, "b.", label="regularized sf")
 plt.plot(mean_k_norm, mean_sf, "b")
-plt.plot(y, utils.structure_factor_ginibre(y), "g", label="exact sf")
+plt.plot(y, GinibrePointProcess.structure_factor(y), "g", label="exact sf")
 plt.plot(x, fitted_poly(x), "r--", label="fitted polynomial")
 plt.legend()
 plt.xlabel("wavelength ($||\mathbf{k}||$)")
