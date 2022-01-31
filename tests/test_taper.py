@@ -71,8 +71,8 @@ def test_ft_t0(k, window, expected):
         (
             np.array([[4, 4]]),
             np.array([[3, 3], [0, 3], [3 / 4, -3 / 4]]),
-            BoxWindow([[-1, 5], [-1, 5]]),
-            np.array([0, 0, -1]),
+            BoxWindow([[-1, 3], [-1, 3]]),
+            np.array([0, 0, -1 / 4]),
         ),
     ],
 )
@@ -80,3 +80,28 @@ def test_sin_taper(p, x, window, expected):
     taper = SineTaper(p)
     t_p = taper.taper(x, window)
     np.testing.assert_almost_equal(t_p, expected)
+
+
+@pytest.mark.parametrize(
+    "p, k, window, expected",
+    [
+        (
+            np.array([[1, 2, 1]]),
+            np.array(
+                [[np.pi / 2, np.pi / 4, np.pi / 2], [np.pi / 2, np.pi / 4, np.pi / 2]]
+            ),
+            BoxWindow([[-1, 1], [-2, 2], [-1, 1]]),
+            np.array(
+                [
+                    (-1j * 8 * np.sqrt(2)) / (3 * np.pi),
+                    (-1j * 8 * np.sqrt(2)) / (3 * np.pi),
+                ]
+            ),
+        ),
+        (2, np.pi / 4, BoxWindow([-2, 2]), (-1j * 8 * np.sqrt(2)) / (3 * np.pi)),
+    ],
+)
+def test_ft_sin_taper(p, k, window, expected):
+    taper = SineTaper(p)
+    ft_t_p = taper.ft_taper(k, window)
+    np.testing.assert_almost_equal(ft_t_p, expected)

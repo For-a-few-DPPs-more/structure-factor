@@ -78,13 +78,11 @@ class SineTaper:
         sines *= np.pi * self.p
         np.sin(sines, out=sines)
 
-        t = np.sqrt(2) * window.indicator_function(x).astype(float)
-        t *= np.prod(sines, axis=1)
+        t = window.indicator_function(x).astype(float)
+        t *= np.prod(sines * np.sqrt(2), axis=1)
         t *= np.sqrt(1 / window.volume)  # normalization
         return t
 
-    #! care about the case when the denominator is zero
-    # todo have a look at np.sinc
     def ft_taper(self, k, window):
         r"""Evaluate the Fourier transform :math:`F[t(\cdot, W)](k)` of the taper :math:`t` (:py:meth:`~structure_factor.tapers.SineTaper.taper`).
 
@@ -101,9 +99,20 @@ class SineTaper:
         p = self.p
         a = k - np.pi * p / widths
         b = k + np.pi * p / widths
-
-        res_1 = np.sin(a * 0.5 * widths) / a
-        res_2 = np.sin(b * 0.5 * widths) / b
+        if (a == 0).any():
+            res_1 = np.zeros_like(k)
+            widths_matrix = np.ones_like(k) * widths
+            res_1[a == 0] = 0.5 * widths_matrix[a == 0]
+            res_1[a != 0] = np.sin(a[a != 0] * 0.5 * widths_matrix[a != 0]) / a[a != 0]
+        else:
+            res_1 = np.sin(a * 0.5 * widths) / a
+        if (b == 0).any():
+            res_2 = np.zeros_like(k)
+            widths_matrix = np.ones_like(k) * widths
+            res_2[b == 0] = 0.5 * widths_matrix[b == 0]
+            res_2[b != 0] = np.sin(b[b != 0] * 0.5 * widths_matrix[b != 0]) / b[b != 0]
+        else:
+            res_2 = np.sin(b * 0.5 * widths) / b
         res = (1j) ** (p + 1) * np.sqrt(2) * (res_1 - (-1) ** p * res_2)
         ft = np.prod(res, axis=1)
         ft /= np.sqrt(window.volume)
