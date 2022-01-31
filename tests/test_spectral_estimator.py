@@ -11,7 +11,7 @@ from structure_factor.spatial_windows import BoxWindow
 class Taper1:
     @staticmethod
     def taper(x, window):
-        return np.linalg.norm(x)
+        return np.linalg.norm(x, axis=1)
 
 
 class Taper2:
@@ -23,29 +23,41 @@ class Taper2:
 
 
 #! unreadable test
-# @pytest.mark.parametrize(
-#     "k, points, taper, expected",
-#     [
-#         (2 * np.pi * 7, np.random.randn(20, 1), 0, 0),
-#         (np.array([[0, 0, 0, 0]]), np.random.randn(10, 4), 1 / 20, 10 / 20),
-#         (
-#             np.array([[0, 0]]),
-#             np.array([[1, 3], [2, 0], [3, 7]]),
-#             Taper1,
-#             3 * Taper1(np.array([[1, 3], [2, 0], [3, 7]]), 1),
-#         ),
-#         (
-#             2 * np.pi * np.array([[1 / 2, 1 / 2, 1 / 2], [1, 1, 1]]),
-#             np.array([[1, 1, 1], [3, 3, 3], [7, 7, 7]]),
-#             1 / 10,
-#             np.array([-3 / 10, 3 / 10]),
-#         ),
-#     ],
-# )
-# def test_tapered_dft(k, points, taper, expected):
-#     point_pattern = PointPattern(points)
-#     tapered_dft = spe.tapered_dft(k, point_pattern, taper)
-#     np.testing.assert_almost_equal(tapered_dft, expected)
+@pytest.mark.parametrize(
+    "k, points, window, taper, expected",
+    [
+        (
+            np.array([[0, 0]]),
+            np.array([[1, 3], [2, 0]]),
+            BoxWindow([[-4, 4], [-6, 7]]),
+            Taper1,
+            2 + np.sqrt(10),
+        ),
+        (
+            np.array([[0, 0, 0]]),
+            np.array([[1, 3, 0], [2, 0, 1]]),
+            BoxWindow([[-1, 2], [0, 3], [0, 1]]),
+            Taper2,
+            (np.sqrt(5) + np.sqrt(10)) * np.sqrt(2) / 3,
+        ),
+    ],
+)
+def test_tapered_dft(k, points, window, taper, expected):
+
+    point_pattern = PointPattern(points, window)
+    tapered_dft = spe.tapered_dft(k, point_pattern, taper)
+    np.testing.assert_almost_equal(tapered_dft, expected)
+
+
+@pytest.mark.parametrize(
+    "dft, expected ",
+    [
+        (np.array([[1 + 2j], [2 - 1j], [3], [-2j]]), np.array([[5], [5], [9], [4]])),
+    ],
+)
+def test_periodogram_from_dft(dft, expected):
+    periodogram = spe.periodogram_from_dft(dft)
+    np.testing.assert_almost_equal(periodogram, expected)
 
 
 @pytest.mark.parametrize(
@@ -62,7 +74,7 @@ class Taper2:
         )
     ],
 )
-def test_tapered_periodogram(k, points, window, taper, expected):
+def test_tapered_spectral_estimator_core(k, points, window, taper, expected):
     point_pattern = PointPattern(points, window)
     tp = spe.tapered_spectral_estimator_core(k, point_pattern, taper)
     np.testing.assert_almost_equal(tp, expected)

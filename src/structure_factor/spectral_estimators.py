@@ -6,27 +6,6 @@ Some tapers (tapering function) are available in :ref:`tapers`.
 import numpy as np
 
 
-def select_tapered_spectral_estimator(debiased, direct):
-    """Select the tapered spectral estimator of the structure factor.
-
-    Args:
-        debiased (bool): trigger the use of a debiased tapered estimator.
-        direct (bool): If ``debiased`` is True, trigger the use of the direct/undirect debiased tapered estimator.
-
-    Returns:
-        callable: According to ``debiased`` and ``direct``
-
-            - :py:func:`~structure_factor.spectral_estimators.tapered_spectral_estimator_debiased_direct`
-            - :py:func:`~structure_factor.spectral_estimators.tapered_spectral_estimator_debiased_undirect`
-            - :py:func:`~structure_factor.spectral_estimators.tapered_spectral_estimator_core`
-    """
-    if debiased:
-        if direct:
-            return tapered_spectral_estimator_debiased_direct
-        return tapered_spectral_estimator_debiased_undirect
-    return tapered_spectral_estimator_core
-
-
 def tapered_dft(k, point_pattern, taper):
     r"""Compute the tapered discrete Fourier transform (tapered DFT) associated with ``point_pattern`` evaluated at ``k``, using ``taper`` :math:`t`
 
@@ -64,7 +43,7 @@ def tapered_dft(k, point_pattern, taper):
     # t(x) exp(- i <k, x>)
     hx = taper.taper(X, window)
     hx_exp_ikx *= hx
-
+    # sum_x t(x) exp(- i <k, x>)
     dft = np.sum(hx_exp_ikx, axis=1)
     return dft
 
@@ -124,6 +103,27 @@ def tapered_spectral_estimator_core(k, point_pattern, taper):
     estimated_sf_k = periodogram_from_dft(dft)
     estimated_sf_k /= rho
     return estimated_sf_k
+
+
+def select_tapered_spectral_estimator(debiased, direct):
+    """Select the tapered spectral estimator of the structure factor.
+
+    Args:
+        debiased (bool): trigger the use of a debiased tapered estimator.
+        direct (bool): If ``debiased`` is True, trigger the use of the direct/undirect debiased tapered estimator.
+
+    Returns:
+        callable: According to ``debiased`` and ``direct``
+
+            - :py:func:`~structure_factor.spectral_estimators.tapered_spectral_estimator_debiased_direct`
+            - :py:func:`~structure_factor.spectral_estimators.tapered_spectral_estimator_debiased_undirect`
+            - :py:func:`~structure_factor.spectral_estimators.tapered_spectral_estimator_core`
+    """
+    if debiased:
+        if direct:
+            return tapered_spectral_estimator_debiased_direct
+        return tapered_spectral_estimator_debiased_undirect
+    return tapered_spectral_estimator_core
 
 
 #! add test
@@ -215,6 +215,7 @@ def tapered_spectral_estimator_debiased_undirect(k, point_pattern, taper):
     return estimated_sf_k
 
 
+#! add test
 def multitapered_spectral_estimator(
     k, point_pattern, *tapers, debiased=False, direct=True
 ):
