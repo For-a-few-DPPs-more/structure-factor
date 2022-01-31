@@ -399,10 +399,14 @@ class StructureFactor:
 
         Keyword Args:
             params (dict): Keyword arguments passed to the corresponding Hankel transformer selected according to the ``method`` argument.
+
                 - ``method == "Ogata"``, see :py:meth:`~structure_factor.transforms.HankelTransformOgata.compute_transformation_parameters`
+
                     - ``step_size``
                     - ``nb_points``
+
                 - ``method == "BaddourChouinard"``, see :py:meth:`~structure_factor.transforms.HankelTransformBaddourChouinard.compute_transformation_parameters`
+
                     - ``r_max``
                     - ``nb_points``
                     - ``interpolotation`` dictionnary containing the keyword arguments of `scipy.integrate.interp1d <https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html>`_ parameters.
