@@ -52,7 +52,7 @@ def test_sort_vectors(k, x, y, expected_k_sorted, expected_x_sorted, expected_y_
         ),
         (
             3,
-            2 * np.pi,
+            np.array([[2 * np.pi], [2 * np.pi], [2 * np.pi]]),
             2,
             (4, 2, 2),
             np.array(
@@ -78,7 +78,7 @@ def test_sort_vectors(k, x, y, expected_k_sorted, expected_x_sorted, expected_y_
         ),
         (
             2,
-            2 * np.pi,
+            np.array([[2 * np.pi], [2 * np.pi]]),
             1,
             (4, 4),
             np.array([[-1.0, -1.0], [1.0, -1.0], [-1.0, 1.0], [1.0, 1.0]]),

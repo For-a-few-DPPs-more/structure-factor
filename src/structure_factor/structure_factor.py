@@ -121,8 +121,8 @@ class StructureFactor:
             if not debiased:
                 raise ValueError("when k is None debiased must be True.")
             # todo generalize to any boxwindow
-            check_cubic_window(window)
-            L = np.diff(window.bounds[0])
+            # check_cubic_window(window)
+            L = np.diff(window.bounds)
             k = utils.allowed_wave_vectors(d, L, **params)
 
         elif k.shape[1] != d:

@@ -189,7 +189,7 @@ def allowed_wave_vectors(d, L, k_max=5, meshgrid_shape=None):
 
         d (int): Dimension of the space containing the point process.
 
-        L (float): Length of the cubic window containing the point process realization.
+        L (np.array): 1-d array of d rows, where each element correspond to the length of a side of the BoxWindow containing the point process realization.
 
         k_max (float, optional): Supremum of the components of the allowed wavevectors on which the scattering intensity to be evaluated; i.e., for any allowed wavevector :math:`\mathbf{k}=(k_1,...,k_d)`, :math:`k_i \leq k\_max` for all i. This implies that the maximum of the output vector ``k_norm`` will be approximately equal to the norm of the vector :math:`(k\_max, ... k\_max)`. Defaults to 5.
 
@@ -224,36 +224,43 @@ def allowed_wave_vectors(d, L, k_max=5, meshgrid_shape=None):
             message="Each component of the argument 'meshgrid_shape' should be less than or equal to the cardinality of the (total) set of allowed wavevectors."
         )
 
-    if meshgrid_shape is None or (np.array(meshgrid_shape) > (2 * n_max)).any():
-        n_all = ()
-        n_i = np.arange(-n_max, n_max + 1, step=1)
-        n_i = n_i[n_i != 0]
-        n_all = (n_i for i in range(0, d))
-        X = np.meshgrid(*n_all, copy=False)
-        # K = [X_i * 2 * np.pi / L for X_i in X]  # meshgrid of allowed wavevectors
-        n = _reshape_meshgrid(X)  # reshape as d columns
-
-    else:
-        if meshgrid_shape is not None and len(meshgrid_shape) != d:
-            raise ValueError(
-                "Each wavevector should belong to the same dimension (d) of the point process, i.e., len(meshgrid_shape) = d."
-            )
-
-        if d == 1:
+    # case d=1
+    if d == 1:
+        if meshgrid_shape is None or (meshgrid_shape > (2 * n_max)):
+            n = np.arange(-n_max, n_max + 1, step=1)
+            n = n[n != 0]
+        else:
             n = np.linspace(-n_max, n_max, num=meshgrid_shape, dtype=int, endpoint=True)
             if np.count_nonzero(n == 0) != 0:
                 n = np.linspace(
                     -n_max, n_max, num=meshgrid_shape + 1, dtype=int, endpoint=True
                 )
+        k = 2 * np.pi * n / L
+        k = np.reshape(k, (k.shape[0], 1))
+    # case d>1
+    else:
+        if meshgrid_shape is None or (np.array(meshgrid_shape) > (2 * n_max)).any():
+            n_all = ()
+            n_i_all = []
+            for i in range(d):
+                n_i = np.arange(-n_max[i], n_max[i] + 1, step=1)
+                n_i = n_i[n_i != 0]
+                n_i_all.append(n_i)
+            n_all = (n_i_all[i] for i in range(0, d))
+            X = np.meshgrid(*n_all, copy=False)
+            # K = [X_i * 2 * np.pi / L for X_i in X]  # meshgrid of allowed wavevectors
+            n = _reshape_meshgrid(X)  # reshape as d columns
 
         else:
             n_all = []
+            i = 0
             for s in meshgrid_shape:
-                n_i = np.linspace(-n_max, n_max, num=s, dtype=int, endpoint=True)
+                n_i = np.linspace(-n_max[i], n_max[i], num=s, dtype=int, endpoint=True)
                 if np.count_nonzero(n_i == 0) != 0:
                     n_i = np.linspace(
-                        -n_max, n_max, num=s + 1, dtype=int, endpoint=True
+                        -n_max[i], n_max[i], num=s + 1, dtype=int, endpoint=True
                     )
+                i += 1
                 n_i = n_i[n_i != 0]
                 n_all.append(n_i)
 
@@ -261,13 +268,11 @@ def allowed_wave_vectors(d, L, k_max=5, meshgrid_shape=None):
             # K = [X_i * 2 * np.pi / L for X_i in X]  # meshgrid of allowed wavevectors
             n = _reshape_meshgrid(X)  # reshape as d columns
 
-    k = 2 * np.pi * n / L
+        k = 2 * np.pi * n / L.T
     return k
 
 
 # plot functions
-
-
 def plot_poisson(x, axis, c="k", linestyle=(0, (5, 10)), label="Poisson"):
     r"""Plot the pair correlation function :math:`g_{poisson}` and the structure factor :math:`S_{poisson}` corresponding to the Poisson point process.
 
