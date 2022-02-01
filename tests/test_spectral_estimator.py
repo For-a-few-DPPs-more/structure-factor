@@ -103,7 +103,7 @@ def test_tapered_spectral_estimator_core(k, points, window, taper, expected):
 )
 def test_tapered_spectral_estimator_debiased(points, L, window, taper):
     r"""Test that the debiased versions of :math:`\widehat{S}_{\mathrm{TP}}`
-    gave the same results as :math:`\widehat{S}_{\mathrm{TP}}` on the allowed wavevector (i.e., where bias equal zero)
+    gave the same results as :math:`\widehat{S}_{\mathrm{TP}}` on the allowed wavevector (i.e., where bias equal zero).
     """
     d = points.shape[1]
     point_pattern = PointPattern(points, window)

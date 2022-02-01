@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+import structure_factor.utils as utils
 
 from structure_factor.data import load_data
 from structure_factor.point_pattern import PointPattern
@@ -9,6 +10,7 @@ from structure_factor.utils import (
     pair_correlation_function_ginibre,
     structure_factor_ginibre,
 )
+from structure_factor.tapers import BartlettTaper
 
 
 @pytest.fixture
@@ -19,6 +21,7 @@ def ginibre_pp():
 # todo reshape the test, scattering_intensity does not return k_norm but k
 #
 def test_scattering_intensity(ginibre_pp):
+    """Test scattering intensity of the Ginibre on allowed wavevectors"""
     L = ginibre_pp.window.radius / np.sqrt(2)  # sidelength of the cubic window
     bounds = [[-L / 2, L / 2], [-L / 2, L / 2]]
     window = BoxWindow(bounds)  # create a cubic window
@@ -28,7 +31,7 @@ def test_scattering_intensity(ginibre_pp):
         k_max=1,
         meshgrid_shape=(2, 3),
     )
-    k_norm = np.linalg.norm(k, axis=-1)
+    k_norm = utils.norm_k(k)
     expected_k_norm = np.array(
         [
             1.38230077,
@@ -57,24 +60,62 @@ def test_scattering_intensity(ginibre_pp):
     np.testing.assert_almost_equal(si, expected_si)
 
 
-# def test_plot_scattering_intensity(ginibre_pp):
-#     L = ginibre_pp.window.radius / np.sqrt(2)  # sidelength of the cubic window
-#     bounds = [[-L / 2, L / 2], [-L / 2, L / 2]]
-#     window = BoxWindow(bounds)  # create a cubic window
-#     ginibre_pp_box = ginibre_pp.restrict_to_window(window)
-#     sf_pp = StructureFactor(ginibre_pp_box)
-#     k_norm, si = sf_pp.scattering_intensity(
-#         k_max=6,
-#         meshgrid_shape=(50, 50),
-#     )
-#     sf_pp.plot_scattering_intensity(
-#         k_norm,
-#         si,
-#         plot_type="all",
-#         exact_sf=utils.structure_factor_ginibre,
-#         bins=60,  # number of bins
-#         error_bar=True,  # visualizing the error bars
-#     )
+@pytest.mark.parametrize(
+    "k, points, unscaled_expected",
+    [
+        (np.array([[1], [2]]), np.array([[np.pi], [2 * np.pi]]), np.array([0, 4])),
+    ],
+)
+def test_scattering_intensity2(k, points, unscaled_expected):
+    """Test the scattering intensity and the debiased versions on simple choice of wavevectors in 1-d, and specific points allowing to simplify the calculation"""
+    window = BoxWindow([-8, 8])
+    point_pattern = PointPattern(points, window)
+    sf = StructureFactor(point_pattern)
+    intensity = point_pattern.intensity
+    _, si = sf.scattering_intensity(k, debiased=False)
+    expected_si = unscaled_expected / (window.volume * intensity)
+
+    _, si_ddtp = sf.scattering_intensity(k, debiased=True, direct=True)
+    expected_si_ddtp = (
+        1
+        / intensity
+        * (
+            np.sqrt(unscaled_expected / window.volume)
+            - intensity * BartlettTaper.ft_taper(k, window)
+        )
+        ** 2
+    )
+
+    _, si_udtp = sf.scattering_intensity(k, debiased=True, direct=False)
+    expected_si_udtp = expected_si - intensity * BartlettTaper.ft_taper(k, window) ** 2
+    np.testing.assert_almost_equal(si, expected_si)
+    np.testing.assert_almost_equal(si_ddtp, expected_si_ddtp)
+    np.testing.assert_almost_equal(si_udtp, expected_si_udtp)
+
+
+def test_tapered_periodogram():
+    r"""Test that the debiased versions of :math:`\widehat{S}_{\mathrm{TP}}` with Bartlett taper gave the scattering intensity and the debiased verions."""
+    points = np.random.rand(20, 3) * 5
+    window = BoxWindow([[-6, 6], [-7, 5], [-5, 6]])
+    taper = BartlettTaper
+
+    point_pattern = PointPattern(points, window)
+    sf = StructureFactor(point_pattern)
+    k = np.random.randn(10, 3)
+
+    # scattering intensity on k
+    _, si_k = sf.scattering_intensity(k, debiased=False)
+    s_tp = sf.tapered_periodogram(k, taper, debiased=False)
+    # directly debiased scattering intensity
+    _, si_dd = sf.scattering_intensity(k, debiased=True, direct=True)
+    s_ddtp = sf.tapered_periodogram(k, taper, debiased=True, direct=True)
+    # undirectly debiased scattering intensity
+    _, si_ud = sf.scattering_intensity(k, debiased=True, direct=False)
+    s_udtp = sf.tapered_periodogram(k, taper, debiased=True, direct=False)
+
+    np.testing.assert_almost_equal(si_k, s_tp)
+    np.testing.assert_almost_equal(si_dd, s_ddtp)
+    np.testing.assert_almost_equal(si_ud, s_udtp)
 
 
 def test_compute_structure_factor_ginibre_with_ogata(ginibre_pp):
