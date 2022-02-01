@@ -170,7 +170,7 @@ class StructureFactor:
         )
         return sf
 
-    def plot_tapered_periodogram(
+    def plot_spectral_estimator(
         self,
         k,
         si,
@@ -271,6 +271,7 @@ class StructureFactor:
                 "plot_type must be chosen among ('all', 'radial', 'imshow')."
             )
 
+    #! add test
     def bartlett_isotropic_estimator(self, k_norm=None, **params):
         window = self.point_pattern.window
         warnings.warn(
