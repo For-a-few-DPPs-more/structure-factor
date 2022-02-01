@@ -87,7 +87,19 @@ class ThomasProintProcess(object):
         return self.kappa * self.mu
 
     # todo remove dim and add d in int?
-    def pcf(self, r, dim):
+    def pair_correlation_function(self, r, dim):
+        """Pair correlation function of the (modified) Thomas point process of :math:`\mathbb{R}^d`, generated from a parent Poisson point process of intensity :math:`\rho`.
+        The displacement of a child from its parent follows a zero-mean isotropic :math:`d` -dimensional Gaussian distribution with variance :math:`\sigma^2`.
+
+        Args:
+            s (np.array): Points to evaluate on.
+            d (int): Dimension of the space.
+            rho_child (float): Intensity of the parent Poisson process.
+            sigma (float): Square root of the variance.
+
+        Returns:
+            np.array: Pair correlation function of Thomas process evaluated on `x`.
+        """
         if isinstance(r, np.ndarray) and r.ndim > 1:
             assert r.ndim == 2
             assert r.shape[1] == dim
@@ -101,6 +113,13 @@ class ThomasProintProcess(object):
         return pcf
 
     def structure_factor(self, k):
+        r"""Structure factor of the (modified) Thomas point process of :math:`\mathbb{R}^d`, where the number of points is each cluster has a Poisson distribution of intensity :math:`\rho` and the displacement of a child from its parent follows a zero-mean isotropic :math:`d` -dimensional Gaussian distribution with variance :math:`\sigma^2`.
+        Args:
+            k (np.array): Points to evaluate on.
+
+        Returns:
+            np.array: Structure factor of Thomas process evaluated on `k`.
+        """
         mu = self.mu
         s2 = self.sigma ** 2
         return 1.0 + mu * np.exp(-s2 * k ** 2)

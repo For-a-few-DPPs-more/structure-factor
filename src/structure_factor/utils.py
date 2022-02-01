@@ -31,35 +31,6 @@ def pair_correlation_function_ginibre(x):
     return 1.0 - np.exp(-(x ** 2))
 
 
-def pair_correlation_function_thomas(x, d, rho_parent, sigma):
-    """Pair correlation function of the (modified) Thomas point process of :math:`\mathbb{R}^d`, generated from a parent Poisson point process of intensity :math:`\rho`.
-    The displacement of a child from its parent follows a zero-mean isotropic :math:`d` -dimensional Gaussian distribution with variance :math:`\sigma^2`.
-
-    Args:
-        k (np.array): Points to evaluate on.
-        d (int): Dimension of the space.
-        rho_child (float): Intensity of the parent Poisson process.
-        sigma (float): Square root of the variance.
-
-    Returns:
-        np.array: Pair correlation function of Thomas process evaluated on `x`.
-    """
-    alpha = (4 * np.pi * sigma ** 2) ** (-d / 2)
-    return 1 + 1 / rho_parent * alpha * np.exp(-(x ** 2) / (4 * sigma ** 2))
-
-
-def structure_factor_poisson(k):
-    """Structure factor of the Poisson point process
-
-    Args:
-        k (np.array): Points to evaluate on.
-
-    Returns:
-        np.array: Structure factor of Poisson process evaluated on `k`.
-    """
-    return np.ones_like(k)
-
-
 def structure_factor_ginibre(k):
     r"""Structure factor of the Ginibre Ensemble of intensity :math:`1/\pi`.
 
@@ -70,20 +41,6 @@ def structure_factor_ginibre(k):
         np.array: Structure factor of Ginibre process evaluated on `k`.
     """
     return 1.0 - np.exp(-(k ** 2) / 4)
-
-
-def structure_factor_thomas(k, rho_child, sigma):
-    r"""Structure factor of the (modified) Thomas point process of :math:`\mathbb{R}^d`, where the number of points is each cluster has a Poisson distribution of intensity :math:`\rho` and the displacement of a child from its parent follows a zero-mean isotropic :math:`d` -dimensional Gaussian distribution with variance :math:`\sigma^2`.
-    Args:
-        k (np.array): Points to evaluate on.
-        d (int): Dimension of the space.
-        rho_child (float): Mean number of points in each cluster.
-        sigma (float): Square root of the variance.
-
-    Returns:
-        np.array: Structure factor of Thomas process evaluated on `k`.
-    """
-    return 1 + rho_child * np.exp(-(k ** 2 * sigma ** 2))
 
 
 # utils for hyperuniformity.py
@@ -177,6 +134,14 @@ def _compute_k_min(r_max, step_size):
     return (2.7 * np.pi) / (r_max * step_size)
 
 
+# utils for pair_correlation_function.py
+
+
+def set_nan_inf_to_zero(array, nan=0, posinf=0, neginf=0):
+    """Set nan, posinf, and neginf values of ``array`` to the corresponding input arguments. Default to zero."""
+    return np.nan_to_num(array, nan=nan, posinf=posinf, neginf=neginf)
+
+
 # utils for structure_factor.py
 
 
@@ -198,11 +163,6 @@ def taper_grid_generator(d, taper_p, P=2):
     params = product(*(range(1, P + 1) for _ in range(d)))
     tapers = [taper_p(p) for p in params]
     return tapers
-
-
-def set_nan_inf_to_zero(array, nan=0, posinf=0, neginf=0):
-    """Set nan, posinf, and neginf values of ``array`` to 0."""
-    return np.nan_to_num(array, nan=nan, posinf=posinf, neginf=neginf)
 
 
 def _reshape_meshgrid(X):
@@ -303,6 +263,9 @@ def allowed_wave_vectors(d, L, k_max=5, meshgrid_shape=None):
 
     k = 2 * np.pi * n / L
     return k
+
+
+# plot functions
 
 
 def plot_poisson(x, axis, c="k", linestyle=(0, (5, 10)), label="Poisson"):
