@@ -46,6 +46,7 @@ def test_t0(window, expected):
             ((2 * 6) / (np.pi * np.sqrt(6))) ** 4,
         ),
         (np.array([np.pi, 2.8]), BoxWindow(bounds=[[2, 4], [7, 8]]), 0),
+        (np.array([[0, 0]]), BoxWindow([[-1, 1], [-1, 0]]), np.sqrt(2)),
     ],
 )
 def test_ft_t0(k, window, expected):

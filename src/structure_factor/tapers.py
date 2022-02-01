@@ -48,10 +48,16 @@ class BartlettTaper:
         """
         assert isinstance(window, BoxWindow)
         widths = 0.5 * np.diff(window.bounds.T, axis=0)
-        sines = 2.0 * np.sin(k * widths) / k
+        if (k == 0).any():
+            sines = np.zeros_like(k)
+            widths_matrix = np.ones_like(k) * widths
+            sines[k == 0] = 2.0 * widths_matrix[k == 0]
+            sines[k != 0] = 2.0 * np.sin(k[k != 0] * widths_matrix[k != 0]) / k[k != 0]
+        else:
+            sines = 2.0 * np.sin(k * widths) / k
+
         ft = np.prod(sines, axis=1)
-        ft /= np.sqrt(window.volume)
-        return ft
+        return ft / np.sqrt(window.volume)
 
 
 class SineTaper:
