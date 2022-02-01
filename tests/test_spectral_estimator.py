@@ -89,13 +89,13 @@ def test_tapered_spectral_estimator_core(k, points, window, taper, expected):
     [
         (
             np.random.rand(10, 3),  # in 3-d random points
-            2,
+            np.array([[2], [2], [2]]),
             BoxWindow([[-1, 1], [-1, 1], [-1, 1]]),
             BartlettTaper,
         ),
         (
             np.random.rand(10, 2),  # in 2-d random points
-            2,
+            np.array([[2], [2]]),
             BoxWindow([[-1, 1], [-1, 1]]),
             BartlettTaper,
         ),
