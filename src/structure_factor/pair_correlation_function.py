@@ -82,8 +82,19 @@ class PairCorrelationFunction:
         pcf_pd.drop(columns="theo", inplace=True)
         return pcf_pd
 
+    # todo add test
     @staticmethod
-    def interpolate(r, pcf_r, clean=True, **params):
+    def interpolate(
+        r,
+        pcf_r,
+        clean=True,
+        drop=True,
+        replace=False,
+        nan=0,
+        posinf=0,
+        neginf=0,
+        **params
+    ):
         """Interpolate the vector ``pcf_r`` evaluated at ``r``, where NaNs, posinf and neginf of ``pcf_r`` are set to zero if ``clean`` is True.
 
         The interpolation is performed with `scipy.interpolate.interp1d <https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html>`_.
@@ -93,7 +104,17 @@ class PairCorrelationFunction:
 
             pcf_r (numpy.ndarray): Vector of approximations of the pair correlation function. Typically, a column from the output of the method :py:meth:`~structure_factor.structure_factor.StructureFactor.estimate`.
 
-            clean (bool, optional): Replace nan, posinf and neginf values of ``pcf_r`` by zero before interpolating. Defaults to True.
+            clean (bool, optional): If ``True``, a method is chosen to deal with possible outliers (nan, posinf, neginf) of ``pcf_r``. The chosen method depends on the parameters ``replace`` and ``drop``. Default to True.
+
+            drop (bool, optional): cleaning method for ``pcf_r`` active when it's set to True simultaneousely with ``clean=True``. Drops nan, posinf, and neginf from ``pcf_r`` with the corresponding values of ``r``.
+
+            replace (bool, optional): cleaning method for ``pcf_r`` active when it's set to True simultaneousely with ``clean=True``. Replaces nan, posinf and neginf values of ``pcf_r`` by the values set in the corresponging arguments. Defaults to True.
+
+            nan (float, optional): Value to replace the possible nan of ``pcf_r`` with. Active when ``clean=True`` and ``replace=True``. Default to zero.
+
+            posinf (float, optional): Value to replace the possible posinf of ``pcf_r`` with. Active when ``clean=True`` and ``replace=True``. Default to zero.
+
+            neginf (float, optional): Value to replace the possible neginf of ``pcf_r`` with. Active when ``clean=True`` and ``replace=True``. Default to zero.
 
         Keyword Args:
             params (dict): Keyword arguments of the function `scipy.interpolate.interp1d <https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html>`_.
@@ -112,7 +133,15 @@ class PairCorrelationFunction:
         params.setdefault("fill_value", "extrapolate")
         params.setdefault("kind", "cubic")
         if clean:
-            pcf_r = utils.set_nan_inf_to_zero(pcf_r)
+            if replace:
+                pcf_r = utils.set_nan_inf_to_zero(
+                    pcf_r, nan=nan, posinf=posinf, neginf=neginf
+                )
+            elif drop:
+                index_outlier = np.isnan(pcf_r) | np.isinf(pcf_r)
+                pcf_r = pcf_r[~index_outlier]
+                r = r[~index_outlier]
+
         pcf = interpolate.interp1d(r, pcf_r, **params)
         dict_r_min_max = dict(r_min=np.min(r), r_max=np.max(r))
         return dict_r_min_max, pcf
