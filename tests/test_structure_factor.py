@@ -1,10 +1,11 @@
 import numpy as np
 import pytest
 import structure_factor.utils as utils
+import scipy.special as sc
 
 from structure_factor.data import load_data
 from structure_factor.point_pattern import PointPattern
-from structure_factor.spatial_windows import BoxWindow
+from structure_factor.spatial_windows import BoxWindow, BallWindow
 from structure_factor.structure_factor import StructureFactor
 from structure_factor.utils import (
     pair_correlation_function_ginibre,
@@ -116,6 +117,30 @@ def test_tapered_periodogram():
     np.testing.assert_almost_equal(si_k, s_tp)
     np.testing.assert_almost_equal(si_dd, s_ddtp)
     np.testing.assert_almost_equal(si_ud, s_udtp)
+
+
+def test_bartlett_isotropic_estimator():
+    r"""Test the estimator :math:`\widehat{S}_{\mathrm{BI}}`, for simple choice of parameters in 3-d"""
+    points = np.random.rand(2, 3) * 3
+    d = points.shape[1]
+    r = 4
+    window = BallWindow(center=[0, 0, 0], radius=r)
+    window_volume = 4 / 3 * np.pi * r ** 3
+    window_surface = 4 * np.pi
+    point_pattern = PointPattern(points, window)
+    k_norm = np.array([1.0])
+    # s_bi
+    sf = StructureFactor(point_pattern)
+    _, s_bi = sf.bartlett_isotropic_estimator(k_norm)
+    # expected s_bi
+    dist_points = np.linalg.norm(points[0] - points[1])
+    m = (2 * np.pi) ** (d / 2) / (
+        point_pattern.intensity * window_volume * window_surface
+    )
+    expected_s_bi = 1 + m * 2 * sc.jv(d / 2 - 1, dist_points) / (
+        dist_points ** (d / 2 - 1)
+    )
+    np.testing.assert_almost_equal(s_bi, expected_s_bi)
 
 
 def test_compute_structure_factor_ginibre_with_ogata(ginibre_pp):

@@ -271,7 +271,6 @@ class StructureFactor:
                 "plot_type must be chosen among ('all', 'radial', 'imshow')."
             )
 
-    #! add test
     def bartlett_isotropic_estimator(self, k_norm=None, **params):
         window = self.point_pattern.window
         warnings.warn(

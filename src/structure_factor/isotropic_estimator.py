@@ -13,6 +13,9 @@ def allowed_k_norm(d, r, n):
     return sc.jn_zeros(d / 2, n) / r
 
 
+#! care about case k=0
+
+
 def bartlett_estimator(point_pattern, k_norm=None, n_allowed_k_norm=100):
     window = point_pattern.window
     d = window.dimension
