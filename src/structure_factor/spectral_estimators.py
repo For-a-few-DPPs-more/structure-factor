@@ -126,13 +126,13 @@ def select_tapered_spectral_estimator(debiased, direct):
     return tapered_spectral_estimator_core
 
 
-#! add test
+# ? renamne tapered_periodogram_debiased_direct and the other functions?
 def tapered_spectral_estimator_debiased_direct(k, point_pattern, taper):
-    r"""Compute the direct debiased tapered spectral estimator :math:`S_{DTP}(t, k)` of the structure factor :math:`S(k)` evaluated at ``k`` w.r.t. the ``taper`` :math:`t` and the realization ``point_pattern`` of the underlying stationary point process.
+    r"""Compute the direct debiased tapered spectral estimator :math:`S_{DDTP}(t, k)` of the structure factor :math:`S(k)` evaluated at ``k`` w.r.t. the ``taper`` :math:`t` and the realization ``point_pattern`` of the underlying stationary point process.
 
     .. math::
 
-        S_{DTP}(t, k) =
+        S_{DDTP}(t, k) =
             \frac{1}{\rho} \left\lvert
             \sum_{j=1}^N
                 t(x_j, W)
@@ -142,7 +142,7 @@ def tapered_spectral_estimator_debiased_direct(k, point_pattern, taper):
 
     where :math:`x_{1}, \dots, x_{N}` corresponds to ``point_pattern.points``,  :math:`W` corresponds to the window ``point_pattern.window`` and :math:`\rho` is the intensity of the underlying stationary point process.
 
-    The direct debiased estimator :math:`S_{DTP}(t, k)` is positive and asymptotically unbiased as the observation window :math:`W` grows to :math:`\mathbb{R}^d`.
+    The direct debiased estimator :math:`S_{DDTP}(t, k)` is positive and asymptotically unbiased as the observation window :math:`W` grows to :math:`\mathbb{R}^d`.
 
     Args:
         k (numpy.ndarray): Array of size :math:`n \times d`, where :math:`d` is the ambient dimension and :math:`n` the number of points where the estimator is evaluated.
@@ -156,7 +156,7 @@ def tapered_spectral_estimator_debiased_direct(k, point_pattern, taper):
             - ``.ft_taper(k, window)`` corresponding to the Fourier transform :math:`\mathcal{F}[t(\cdot, W)](k)` of the taper function.
 
     Returns:
-        numpy.ndarray: Vector of size :math:`n` containing the evaluation of the direct debiased estimator :math:`S_{DTP}(t, k)`.
+        numpy.ndarray: Vector of size :math:`n` containing the evaluation of the direct debiased estimator :math:`S_{DDTP}(t, k)`.
     """
     rho = point_pattern.intensity
     window = point_pattern.window
@@ -170,7 +170,6 @@ def tapered_spectral_estimator_debiased_direct(k, point_pattern, taper):
     return estimated_sf_k
 
 
-#! add test
 def tapered_spectral_estimator_debiased_undirect(k, point_pattern, taper):
     r"""Compute the undirect debiased tapered spectral estimator :math:`S_{UDTP}(t, k)` of the structure factor :math:`S(k)` evaluated at ``k`` w.r.t. the ``taper`` :math:`t` and the realization ``point_pattern`` of the underlying stationary point process.
 
