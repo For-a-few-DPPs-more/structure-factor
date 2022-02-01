@@ -2,13 +2,16 @@ import numpy as np
 import pytest
 
 from structure_factor.hyperuniformity import Hyperuniformity
-from structure_factor.utils import structure_factor_ginibre, structure_factor_poisson
+from structure_factor.point_process import HomogeneousPoissonPointProcess
+from structure_factor.utils import structure_factor_ginibre
+
+poisson = HomogeneousPoissonPointProcess()
 
 
 @pytest.mark.parametrize(
     "sf, expected",
     [
-        (structure_factor_poisson, False),
+        (poisson.structure_factor, False),
         (structure_factor_ginibre, True),
     ],
 )
