@@ -1,3 +1,5 @@
+.. _point_pattern:
+
 Point pattern
 ##############
 

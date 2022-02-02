@@ -1,4 +1,6 @@
-Spatial window
+.. _spatial_windows:
+
+Spatial windows
 ################
 
 .. automodule:: structure_factor.spatial_windows

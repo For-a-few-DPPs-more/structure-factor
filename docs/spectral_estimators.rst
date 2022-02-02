@@ -1,3 +1,5 @@
+.. _spectral_estimators:
+
 Spectral estimators
 ###################
 
