@@ -1,8 +1,18 @@
 from ctypes import util
+from curses import window
 import numpy as np
 import pytest
 
 import structure_factor.spectral_estimators as spe
+from structure_factor.spectral_estimators import (
+    tapered_spectral_estimator_core as s_tp,
+)
+from structure_factor.spectral_estimators import (
+    tapered_spectral_estimator_debiased_direct as s_ddtp,
+)
+from structure_factor.spectral_estimators import (
+    tapered_spectral_estimator_debiased_undirect as s_udtp,
+)
 from structure_factor.point_pattern import PointPattern
 from structure_factor.spatial_windows import BoxWindow
 import structure_factor.utils as utils
@@ -85,77 +95,78 @@ def test_tapered_spectral_estimator_core(k, points, window, taper, expected):
 
 
 @pytest.mark.parametrize(
-    "points, L, window, taper",
+    " bounds, debiased_estimator",
     [
-        (
-            np.random.rand(10, 3),  # in 3-d random points
-            np.array([[2], [2], [2]]),
-            BoxWindow([[-1, 1], [-1, 1], [-1, 1]]),
-            BartlettTaper,
-        ),
-        (
-            np.random.rand(10, 2),  # in 2-d random points
-            np.array([[2], [2]]),
-            BoxWindow([[-1, 1], [-1, 1]]),
-            BartlettTaper,
-        ),
+        ([[-1, 1], [-1, 1], [-1, 1]], s_ddtp),
+        ([[-1, 1], [-1, 1]], s_ddtp),
+        ([[-1, 1], [-1, 1], [-2, 1]], s_udtp),
+        ([[-1, 1], [-1, 1]], s_udtp),
     ],
 )
-def test_tapered_spectral_estimator_debiased(points, L, window, taper):
+def test_debiased_and_non_debiased_estimators_are_equal_on_allowed_values(
+    bounds, debiased_estimator
+):
     r"""Test that the debiased versions of :math:`\widehat{S}_{\mathrm{TP}}`
     gave the same results as :math:`\widehat{S}_{\mathrm{TP}}` on the allowed wavevector (i.e., where bias equal zero).
     """
+
+    # creat pointpattern
+    window = BoxWindow(bounds)
+    points = window.rand(20)
+    point_pattern = PointPattern(points, window)
+    # creat allowed values
+    L = np.diff(window.bounds)
     d = points.shape[1]
-    point_pattern = PointPattern(points, window)
     k = utils.allowed_wave_vectors(d, L)
-    s_ddtp = spe.tapered_spectral_estimator_debiased_direct(k, point_pattern, taper)
-    s_udtp = spe.tapered_spectral_estimator_debiased_undirect(k, point_pattern, taper)
-    s_tp = spe.tapered_spectral_estimator_core(k, point_pattern, taper)
-    np.testing.assert_almost_equal(s_tp, s_ddtp)
-    np.testing.assert_almost_equal(s_tp, s_udtp)
 
-
-def test_tapered_spectral_estimator_debiased2():
-    r"""Test debiased versions of :math:`\widehat{S}_{\mathrm{TP}}` on simple case: :math:`k=0` and with the Bartlett taper."""
-    k = np.array([[0, 0, 0]])
-    points = np.random.rand(20, 3)
-    window = BoxWindow([[0, 1], [0, 1], [0, 1]])
-    point_pattern = PointPattern(points, window)
     taper = BartlettTaper
-    s_ddtp = spe.tapered_spectral_estimator_debiased_direct(k, point_pattern, taper)
-    s_udtp = spe.tapered_spectral_estimator_debiased_undirect(k, point_pattern, taper)
-    intensity = point_pattern.intensity
-    expected_s_ddtp = (
-        1 / intensity * (20 - intensity * BartlettTaper.ft_taper(k, window)) ** 2
-    )
-    expected_s_udtp = (20 ** 2) / intensity - intensity * BartlettTaper.ft_taper(
-        k, window
-    ) ** 2
-    np.testing.assert_almost_equal(expected_s_ddtp, s_ddtp)
-    np.testing.assert_almost_equal(expected_s_udtp, s_udtp)
+    s_debiased = debiased_estimator(k, point_pattern, taper)
+    s_non_debiased = s_tp(k, point_pattern, taper)
+    np.testing.assert_almost_equal(s_non_debiased, s_debiased)
 
 
-def test_multitapered_spectral_estimator():
-    r"""Test that multitapered estimator :math:`\widehat{S}_{\mathrm{MTP}}` and the corresponding debiased versions applied on only one taper, give the same results as :math:`\widehat{S}_{\mathrm{TP}}` and the corresponding debiased versions"""
-    points = np.random.rand(20, 3) * 10  # arbitrary points in 3-d
-    window = BoxWindow([[-5, 5], [-6, 5], [-5, 7]])
+@pytest.mark.parametrize(
+    "name",
+    ["undirect", "direct"],
+)
+def test_debiased_estimator_value_at_the_origin(name):
+    r"""Test debiased versions of :math:`\widehat{S}_{\mathrm{TP}}` on simple case: :math:`k=0` and with the Bartlett taper."""
+    N = 20
+    window = BoxWindow([[0, 1], [0, 1], [0, 1]])
+    points = window.rand(N)
     point_pattern = PointPattern(points, window)
-    k = np.random.rand(10, 3) * 6  # arbitrary points in 3-d
-    p = [1, 1, 2]
-    taper = SineTaper(p)
+
+    taper = BartlettTaper
+
+    d = 3
+    k = np.zeros((1, d))
+    rho = point_pattern.intensity
+    if name == "direct":
+        s_estimated = s_ddtp(k, point_pattern, taper)
+        s_expected = 1 / rho * (N - rho * taper.ft_taper(k, window)) ** 2
+    if name == "undirect":
+        s_estimated = s_udtp(k, point_pattern, taper)
+        s_expected = (N ** 2) / rho - rho * taper.ft_taper(k, window) ** 2
+
+    np.testing.assert_almost_equal(s_estimated, s_expected)
+
+
+@pytest.mark.parametrize(
+    "debiased, direct, monotaper",
+    [[True, True, s_ddtp], [True, False, s_udtp], [False, False, s_tp]],
+)
+def test_multitapered_with_one_taper_equal_monotaper(debiased, direct, monotaper):
+    r"""Test that multitapered estimator :math:`\widehat{S}_{\mathrm{MTP}}` and the corresponding debiased versions applied on only one taper, give the same results as :math:`\widehat{S}_{\mathrm{TP}}` and the corresponding debiased versions"""
+    window = BoxWindow([[-5, 5], [-6, 5], [-5, 7]])
+    points = window.rand(20)
+    point_pattern = PointPattern(points, window)
+    taper = SineTaper([1, 1, 2])
     tapers = [taper]
-    s_mtp = spe.multitapered_spectral_estimator(
-        k, point_pattern, *tapers, debiased=False
+
+    k = np.random.rand(10, 3) * 6  # arbitrary points in 3-d
+
+    s_estimated = spe.multitapered_spectral_estimator(
+        k, point_pattern, *tapers, debiased=debiased, direct=direct
     )
-    s_mddtp = spe.multitapered_spectral_estimator(
-        k, point_pattern, *tapers, debiased=True, direct=True
-    )
-    s_mudtp = spe.multitapered_spectral_estimator(
-        k, point_pattern, *tapers, debiased=True, direct=False
-    )
-    s_tp = spe.tapered_spectral_estimator_core(k, point_pattern, taper)
-    s_ddtp = spe.tapered_spectral_estimator_debiased_direct(k, point_pattern, taper)
-    s_udtp = spe.tapered_spectral_estimator_debiased_undirect(k, point_pattern, taper)
-    np.testing.assert_almost_equal(s_mtp, s_tp)
-    np.testing.assert_almost_equal(s_mddtp, s_ddtp)
-    np.testing.assert_almost_equal(s_mudtp, s_udtp)
+    s_expected = monotaper(k, point_pattern, taper)
+    np.testing.assert_array_equal(s_estimated, s_expected)
