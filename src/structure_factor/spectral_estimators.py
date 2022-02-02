@@ -58,7 +58,7 @@ def periodogram_from_dft(dft):
         \right\rvert ^ 2,
 
     Args:
-        dft (numpy.ndarray): discrete Fourier transform computed via :py:func:`~structure_factor.spectral_estimators.tapered_dft`.
+        dft (numpy.ndarray): Discrete Fourier transform computed via :py:func:`~structure_factor.spectral_estimators.tapered_dft`.
 
     Returns:
         numpy.ndarray: ``abs(dft)**2``.
@@ -109,7 +109,7 @@ def select_tapered_spectral_estimator(debiased, direct):
     """Select the tapered spectral estimator of the structure factor.
 
     Args:
-        debiased (bool): trigger the use of a debiased tapered estimator.
+        debiased (bool): Trigger the use of a debiased tapered estimator.
         direct (bool): If ``debiased`` is True, trigger the use of the direct/undirect debiased tapered estimator.
 
     Returns:

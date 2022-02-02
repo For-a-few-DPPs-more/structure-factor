@@ -209,7 +209,6 @@ def allowed_wave_vectors(d, L, k_max=5, meshgrid_shape=None):
 
         Note that the maximum ``n`` and the number of output allowed wavevectors returned by :py:meth:`allowed_wave_vectors`, are specified by the input parameters ``k_max`` and ``meshgrid_shape``.
     """
-
     assert isinstance(k_max, (float, int))
 
     n_max = np.floor(k_max * L / (2 * np.pi))  # maximum of ``n``
@@ -240,14 +239,13 @@ def allowed_wave_vectors(d, L, k_max=5, meshgrid_shape=None):
     # case d>1
     else:
         if meshgrid_shape is None or (np.array(meshgrid_shape) > (2 * n_max)).any():
-            n_all = ()
+            # n_all = ()
             n_i_all = []
             for i in range(d):
                 n_i = np.arange(-n_max[i], n_max[i] + 1, step=1)
                 n_i = n_i[n_i != 0]
                 n_i_all.append(n_i)
-            n_all = (n_i_all[i] for i in range(0, d))
-            X = np.meshgrid(*n_all, copy=False)
+            X = np.meshgrid(*n_i_all, copy=False)
             # K = [X_i * 2 * np.pi / L for X_i in X]  # meshgrid of allowed wavevectors
             n = _reshape_meshgrid(X)  # reshape as d columns
 
@@ -383,7 +381,7 @@ def plot_approximation(x, y, axis, label, color, linestyle, marker, markersize):
 
 def plot_si_showcase(
     k_norm,
-    si,
+    approximation,
     axis=None,
     exact_sf=None,
     error_bar=False,
@@ -397,24 +395,23 @@ def plot_si_showcase(
 
         k_norm (np.ndarray): Wavenumbers.
 
-        si (np.ndarray): Scattering intensity corresponding to ``k_norm``.
+        approximation (np.ndarray): Scattering intensity corresponding to ``k_norm``.
 
         axis (matplotlib.axis, optional): Axis on which to add the plot. Defaults to None.
 
         exact_sf (callable, optional): Structure factor of the point process. Defaults to None.
 
-        error_bar (bool, optional): If ``True``, ``k_norm`` and correspondingly ``si`` are divided into sub-intervals (bins). Over each bin, the mean and the standard deviation of ``si`` are derived and visualized on the plot. Note that each error bar corresponds to the mean +/- 3 standard deviation. To specify the number of bins, add it to the kwargs argument ``binning_params``. For more details see :py:meth:`~structure_factor.utils._bin_statistics`. Defaults to False.
+        error_bar (bool, optional): If ``True``, ``k_norm`` and correspondingly ``approximation`` are divided into sub-intervals (bins). Over each bin, the mean and the standard deviation of ``approximation`` are derived and visualized on the plot. Note that each error bar corresponds to the mean +/- 3 standard deviation. To specify the number of bins, add it to the kwargs argument ``binning_params``. For more details see :py:meth:`~structure_factor.utils._bin_statistics`. Defaults to False.
 
         file_name (str, optional): Name used to save the figure. The available output formats depend on the backend being used. Defaults to "".
     """
     k_norm = k_norm.ravel()
-    si = si.ravel()
+    approximation = approximation.ravel()
     if axis is None:
         _, axis = plt.subplots(figsize=(8, 6))
-
     plot_approximation(
         k_norm,
-        si,
+        approximation,
         axis=axis,
         label=label,
         color="grey",
@@ -425,7 +422,7 @@ def plot_si_showcase(
     plot_poisson(k_norm, axis=axis)
 
     if error_bar:
-        plot_summary(k_norm, si, axis=axis, **binning_params)
+        plot_summary(k_norm, approximation, axis=axis, **binning_params)
 
     if exact_sf is not None:
         plot_exact(k_norm, exact_sf(k_norm), axis=axis, label=r"Exact $S(\mathbf{k})$")
@@ -477,7 +474,7 @@ def plot_si_imshow(k_norm, si, axis, file_name):
 def plot_si_all(
     point_pattern,
     k_norm,
-    si,
+    estimation,
     exact_sf=None,
     error_bar=False,
     label=r"$\widehat{S}$",
@@ -490,9 +487,9 @@ def plot_si_all(
     Args:
         point_pattern (:py:class:`~structure_factor.point_pattern.PointPattern`): Object of type PointPattern containing a realization ``point_pattern.points`` of a point process, the window where the points were simulated ``point_pattern.window`` and (optionally) the intensity of the point process ``point_pattern.intensity``
         k_norm (np.ndarray): Wavenumbers.
-        si (np.ndarray): Scattering intensity corresponding to ``k_norm``.
+        estimation (np.ndarray): Scattering intensity corresponding to ``k_norm``.
         exact_sf (callable, optional): Structure factor of the point process. Defaults to None.
-        error_bar (bool, optional): If ``True``, ``k_norm`` and correspondingly ``si`` are divided into sub-intervals (bins). Over each bin, the mean and the standard deviation of ``si`` are derived and visualized on the plot. Note that each error bar corresponds to the mean +/- 3 standard deviation. To specify the number of bins, add it to the kwargs argument ``binning_params``. For more details see :py:meth:`~structure_factor.utils._bin_statistics`. Defaults to False.
+        error_bar (bool, optional): If ``True``, ``k_norm`` and correspondingly ``estimation`` are divided into sub-intervals (bins). Over each bin, the mean and the standard deviation of ``estimation`` are derived and visualized on the plot. Note that each error bar corresponds to the mean +/- 3 standard deviation. To specify the number of bins, add it to the kwargs argument ``binning_params``. For more details see :py:meth:`~structure_factor.utils._bin_statistics`. Defaults to False.
         file_name (str, optional): Name used to save the figure. The available output formats depend on the backend being used. Defaults to "".
         window_res (:py:class:`~structure_factor.spatial_windows.AbstractSpatialWindow`, optional): New restriction window. It is useful when the sample of points is large, so for time and visualization purposes, it is better to restrict the plot of the point process to a smaller window. Defaults to None.
     """
@@ -501,7 +498,7 @@ def plot_si_all(
     point_pattern.plot(axis=axes[0], window_res=window_res)
     plot_si_showcase(
         k_norm,
-        si,
+        estimation,
         axes[1],
         exact_sf,
         error_bar,
@@ -509,7 +506,7 @@ def plot_si_all(
         file_name="",
         **binning_params,
     )
-    plot_si_imshow(k_norm, si, axes[2], file_name="")
+    plot_si_imshow(k_norm, estimation, axes[2], file_name="")
 
     if file_name:
         figure.savefig(file_name, bbox_inches="tight")
