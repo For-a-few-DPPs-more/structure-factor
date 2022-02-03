@@ -10,13 +10,34 @@ from structure_factor.spatial_windows import UnitBallWindow
 
 
 def allowed_k_norm(d, r, n):
+    """Allowed wavenumbers of Bartlett isotropic estimator.
+
+    Args:
+        d ([type]): [description]
+        r ([type]): [description]
+        n ([type]): [description]
+
+    Returns:
+        [type]: [description]
+    """
     return sc.jn_zeros(d / 2, n) / r
 
 
 #! care about case k=0
 
 
-def bartlett_estimator(point_pattern, k_norm=None, n_allowed_k_norm=100):
+def bartlett_estimator(point_pattern, k_norm=None, n_allowed_k_norm=60):
+    r"""Compute Bartlett's isotropic estimator :math:`\widehat{S}_{\mathrm{BI}}` of the point process (isotropic) encapsulated in the ``PointPattern``.
+
+    Args:
+        k_norm (np.ndarray, optional): n rows of wavenumbers where the estimator is evaluated. If ``k_norm=None`` (recommended), the estimator will be evaluated on the corresponding set of allowed wavenumbers; In this case, the parameters ``n_allowed_k_norm`` allows to specify the number of allowed wavenumbers. See :py:func:`~structure_factor.isotropic_estimator.allowed_k_norm`. Defaults to None.
+        n_allowed_k_norm(int, optional): Specifies the number of allowed wavenumbers to be used. Used only when ``k_norm=None``. Default to 60.
+
+    Returns:
+        tuple(numpy.ndarray, numpy.ndarray):
+            - k: Wavenumber(s) on which Bartlett's isotropic estimator has been evaluated.
+            - estimation: Evaluation(s) of Bartlett's isotropic estimator at ``k``.
+    """
     window = point_pattern.window
     d = window.dimension
     unit_ball = UnitBallWindow(np.zeros(d))

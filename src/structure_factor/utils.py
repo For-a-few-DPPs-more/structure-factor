@@ -149,18 +149,20 @@ def norm_k(k):
     return np.linalg.norm(k, axis=1)
 
 
-def taper_grid_generator(d, taper_p, P=2):
+def taper_grid_generator(d, taper_p, p_component_max=2):
     r"""Given a class of taper `taper_p` of parameter `p` of :math:`\mathbb{R}^d`, return the list of taper `taper_p(p)` with :math:`p \in \{1, ..., P\}^d`.
 
     Args:
         d (int): Space dimension.
+
         taper_p (Class): Class of taper pf parameter p.
-        P (int): Maximum component of the grid over each axis.
+
+        p_component_max (int): Maximum component of the parameters :math:`p` of the family of tapers. Intuitively the number of taper used is :math:`P=\mathrm{p\_component\_max}^d`. Used only when ``tapers=None``. Default to 2.
 
     Returns:
-        [type]: List of taper `taper_p(p)` with :math:`p \in \{1, ..., P\}^d`.
+        [type]: List of taper `taper_p(p)` with :math:`p \in \{1, ..., p_component_max\}^d`.
     """
-    params = product(*(range(1, P + 1) for _ in range(d)))
+    params = product(*(range(1, p_component_max + 1) for _ in range(d)))
     tapers = [taper_p(p) for p in params]
     return tapers
 

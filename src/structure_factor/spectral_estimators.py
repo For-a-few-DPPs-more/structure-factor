@@ -77,7 +77,7 @@ def tapered_spectral_estimator_core(k, point_pattern, taper):
 
         point_pattern (:py:class:`~structure_factor.point_pattern.PointPattern`): Realization of the underlying stationary point process.
 
-        taper (object): class with static method or instance with method ``.taper(x, window)`` corresponding to :math:`t(x, W)` such that :math:`\|t(\cdot, W)\|_2 = 1`.
+        taper (object): Class with static method or instance with method ``.taper(x, window)`` corresponding to :math:`t(x, W)`.
 
     Returns:
         numpy.ndarray: Evaluation of the tapered spectral estimator :math:`S_{TP}(t, k)` at ``k``.
@@ -236,7 +236,7 @@ def multitapered_spectral_estimator(
 
         tapers (iterable): collection of object instances with two methods:
 
-            - ``.taper(x, window)`` corresponding to the taper function :math:`t(x, W)` such that :math:`\|t(\cdot, W)\|_2 = 1`.
+            - ``.taper(x, window)`` corresponding to the taper function :math:`t(x, W)`.
 
             - ``.ft_taper(k, window)`` corresponding to the Fourier transform :math:`\mathcal{F}[t(\cdot, W)](k)` of the taper function, if ``debiased`` is True.
 

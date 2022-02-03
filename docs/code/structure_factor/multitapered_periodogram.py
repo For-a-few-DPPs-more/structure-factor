@@ -13,13 +13,22 @@ from structure_factor.structure_factor import StructureFactor
 
 sf_poisson = StructureFactor(poisson_pp)
 
-# Compute the scattering intensity on allowed wavevectors
-k, s_si = sf_poisson.scattering_intensity(k_max=4)
+# Generalte wavevectors 
+import numpy as np
+
+x = np.linspace(-2, 2, 80)
+x = x[x != 0] # Get rid of zero
+X, Y = np.meshgrid(x, x)
+k = np.column_stack((X.ravel(), Y.ravel()))
+
+
+# Compute the scaled multitapered periodogram undirectly debiased
+s_mddtp = sf_poisson.multitapered_periodogram(k, debiased=True, direct=True, p_component_max=2) # Use the family of sine tapers (default)
 
 # Visualize the result
 import matplotlib.pyplot as plt
 
 sf_poisson.plot_spectral_estimator(
-    k, s_si, plot_type="all", error_bar=True, bins=30, 
-    label=r"$\widehat{S}_{\mathrm{SI}}(\mathbf{k})$")
+    k, s_mddtp, plot_type="all", error_bar=True, bins=30, 
+    label=r"$\widehat{S}_{\mathrm{MDDTP}}((t_j)_1^4, \mathbf{k})$")
 plt.show()

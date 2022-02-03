@@ -48,6 +48,7 @@ Contents
    :maxdepth: 3
 
    hyperuniformity
+   isotropic_estimator
    point_pattern
    spatial_windows
    structure_factor

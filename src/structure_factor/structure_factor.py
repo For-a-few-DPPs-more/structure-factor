@@ -8,7 +8,7 @@ r"""Collection of estimators of the structure factor :math:`S(\mathbf{k})` of st
     - Bartlett's isotropic estimator: :func:`~structure_factor.structure_factor.StructureFactor.bartlett_isotropic_estimator`.
     - Integral estimation using Hankel transform quadrature: :func:`~structure_factor.structure_factor.StructureFactor.hankel_quadrature`.
 
-For the theoretical derivation of these estimators, we refer to :cite:`DGRR:22`.
+For the theoretical derivation and definitions of these estimators, we refer to :cite:`DGRR:22`.
 """
 # todo the above spatial_window doesn't in the doc refers see why
 import warnings
@@ -61,10 +61,11 @@ class StructureFactor:
 
     #! doc done untill example
     def scattering_intensity(self, k=None, debiased=True, direct=True, **params):
-        r"""Compute the scattering intensity (an estimator of the structure factor) of the point process encapsulated in the ``PointPattern``.
+        r"""Compute the scattering intensity :math:`\widehat{S}_{\mathrm{SI}}` (or a debiased version) of the point process encapsulated in the ``PointPattern``.
 
         Args:
             k (np.ndarray, optional): Array of size :math:`n \times d`  where :math:`d` is the dimension of the space, and :math:`n` is the number of wavevectors where the scattering intensity is evaluated. If ``k=None`` and ``debiased=True``, the scattering intensity will be evaluated on the corresponding set of allowed wavevectors; In this case, the parameters ``k_max``, and ``meshgrid_shape`` could be used. See :py:attr:`~structure_factor.utils.allowed_wave_vectors`, for more details about ``k_max``, and ``meshgrid_shape``. Defaults to None.
+
             debiased (bool, optional): Trigger the use of a debiased tapered estimator. Default to True. If ``debiased=True``, the estimator is debiased as follows,
 
                 - if ``k=None``, the scattering intensity will be evaluated on the corresponding set of allowed wavevectors.
@@ -77,7 +78,7 @@ class StructureFactor:
         Returns:
             tuple(numpy.ndarray, numpy.ndarray):
                 - k: Wavevector(s) on which the scattering intensity has been evaluated.
-                - estimation: Evaluation(s) of the scattering intensity corresponding to ``k``.
+                - estimation: Evaluation(s) of the scattering intensity or a debiased version at ``k``.
 
         Example:
 
@@ -86,7 +87,7 @@ class StructureFactor:
 
         .. proof:definition::
 
-            The scattering intensity :math:`\widehat{S}_{\mathrm{SI}}` is an estimator of the structure factor :math:`S` of a stationary point process :math:`\mathcal{X} \subset \mathbb{R}^d`. It is accessible from a realization :math:`\mathcal{X}\cap W =\{\mathbf{x}_i\}_{i=1}^N` of :math:`\mathcal{X}` within a box window :math:`W=\prod_{j=1}^d[-L_j/2, L_j/2]`.
+            The scattering intensity :math:`\widehat{S}_{\mathrm{SI}}` is an estimator of the structure factor :math:`S` of a stationary point process :math:`\mathcal{X} \subset \mathbb{R}^d` of intensity :math:`\rho`. It is accessible from a realization :math:`\mathcal{X}\cap W =\{\mathbf{x}_i\}_{i=1}^N` of :math:`\mathcal{X}` within a box window :math:`W=\prod_{j=1}^d[-L_j/2, L_j/2]`.
 
             .. math::
                 \widehat{S}_{\mathrm{SI}}(\mathbf{k}) =
@@ -95,7 +96,7 @@ class StructureFactor:
                          \exp(- i \left\langle \mathbf{k}, \mathbf{x_j} \right\rangle)
                  \right\rvert^2 .
 
-            For more details we refer to :cite:`DGRR:22`, (Section 3).
+            For more details we refer to :cite:`DGRR:22`, (Section 3.1).
 
         .. note::
 
@@ -104,7 +105,7 @@ class StructureFactor:
 
         .. seealso::
             :py:class:`~structure_factor.spatial_windows.BoxWindow`,
-            :py:class:`~structure_factor.point_pattern.PointPattern`, :py:meth:`~structure_factor.point_pattern.PointPattern.restrict_to_window`, :py:func:`~structure_factor.utils.allowed_wave_vectors`.
+            :py:meth:`~structure_factor.point_pattern.PointPattern.restrict_to_window`, :py:func:`~structure_factor.utils.allowed_wave_vectors`.
 
         """
 
@@ -134,19 +135,46 @@ class StructureFactor:
 
         return k, estimation
 
-    def tapered_periodogram(self, k, taper, debiased=True, direct=True):
-        """todo
-
-        [extended_summary]
+    def tapered_periodogram(self, k, taper=BartlettTaper, debiased=True, direct=True):
+        r"""Compute the scaled tapered periodogram :math:`\widehat{S}_{\mathrm{TP}}` (or a debiased version :math:`\widehat{S}_{\mathrm{DDTP}}`, :math:`\widehat{S}_{\mathrm{UDTP}}`) of the point process encapsulated in the ``PointPattern`` for a specific choice of ``taper``.
 
         Args:
-            k ([type]): [description]
-            taper ([type]): [description]
-            debiased (bool, optional): [description]. Defaults to True.
-            direct (bool, optional): [description]. Defaults to True.
+            k (np.ndarray): Array of size :math:`n \times d`  where :math:`d` is the dimension of the space, and :math:`n` is the number of wavevectors where the scaled tapered periodogram is evaluated.
 
+            taper (object, optional): Class with static method or instance with method ``.taper(x, window)`` corresponding to :math:`t(x, W)` (see :ref:`tapers`). Default to :py:class:`~structure_factor.tapers.BartlettTaper`
+
+            debiased (bool, optional): Trigger the use of a debiased estimator. Default to True.
+
+            direct (bool, optional): If ``debiased`` is True, trigger the use of the direct/undirect debiased scaled tapered periodogram. Parameter related to ``debiased``. Default to True.
         Returns:
-            [type]: [description]
+            numpy.ndarray: Evaluation(s) of the scaled tapered periodogram or a debiased version at ``k``.
+
+        Example:
+
+             .. plot:: code/structure_factor/tapered_periodogram.py
+                :include-source: True
+
+        .. proof:definition::
+
+            The scaled tapered periodogram :math:`\widehat{S}_{\mathrm{TP}}(t, k)`, is an estimator of the structure factor :math:`S` of a stationary point process :math:`\mathcal{X} \subset \mathbb{R}^d` of intensity :math:`\rho`. It is accessible from a realization :math:`\mathcal{X}\cap W =\{\mathbf{x}_i\}_{i=1}^N` of :math:`\mathcal{X}` within a box window :math:`W`.
+
+            .. math::
+
+                \widehat{S}_{\mathrm{TP}}(t, \mathbf{k}) = \frac{1}{\rho} \left\lvert \sum_{j=1}^N t(x_j, W) \exp(- i \left\langle k, x_j \right\rangle)\right\rvert^2,
+
+            where, :math:`t` is a taper supported on the observation window (satisfying some conditions) and :math:`k \in \mathbb{R}^d`.
+            For more details we refer to :cite:`DGRR:22`, (Section 3.1).
+
+        .. note::
+
+            **Typical usage**:
+                - If the observation window is not a :py:class:`~structure_factor.spatial_windows.BoxWindow`, use the method :py:class:`~structure_factor.point_pattern.PointPattern.restrict_to_window` to extract a sub-sample in a :py:class:`~structure_factor.spatial_windows.BoxWindow`.
+
+        .. seealso::
+            :py:class:`~structure_factor.spatial_windows.BoxWindow`,
+            :py:meth:`~structure_factor.point_pattern.PointPattern.restrict_to_window`, :ref:`tapers`, :py:class:`~structure_factor.tapers.BartlettTaper`, :py:func:`~structure_factor.spectral_estimators.tapered_spectral_estimator_core`, :py:func:`~structure_factor.spectral_estimators.tapered_spectral_estimator_debiased_direct`, :py:func:`~structure_factor.spectral_estimators.tapered_spectral_estimator_debiased_undirect`.
+
+
         """
         estimator = select_tapered_spectral_estimator(debiased, direct)
         sf = estimator(k, self.point_pattern, taper)
@@ -155,19 +183,51 @@ class StructureFactor:
     def multitapered_periodogram(
         self, k, tapers=None, debiased=True, direct=True, **params
     ):
-        """[summary]
-
-        [extended_summary]
+        r"""Compute the scaled multitapered periodogram :math:`\widehat{S}_{\mathrm{MTP}}` (or a debiased version :math:`\widehat{S}_{\mathrm{MDDTP}}`, :math:`\widehat{S}_{\mathrm{MUDTP}}`) of the point process encapsulated in the ``PointPattern`` for the family of tapers  ``tapers``.
 
         Args:
-            k ([type]): [description]
-            tapers ([type], optional): [description]. Defaults to None.
-            debiased (bool, optional): [description]. Defaults to True.
-            direct (bool, optional): [description]. Defaults to True.
+            k (np.ndarray): Array of size :math:`n \times d`  where :math:`d` is the dimension of the space, and :math:`n` is the number of wavevectors where the scaled tapered periodogram is evaluated.
+
+            tapers (list, optional): List of tapers. Defaults to :py:class:`~structure_factor.tapers.SineTaper`. Each taper is an instance with two methods:
+
+                - ``.taper(x, window)`` corresponding to the taper function :math:`t(x, W)`.
+
+                - ``.ft_taper(k, window)`` corresponding to the Fourier transform :math:`\mathcal{F}[t(\cdot, W)](k)` of the taper function, used if ``debiased`` is True.
+
+            debiased (bool, optional): Trigger the use of a debiased estimator. Default to True.
+
+            direct (bool, optional): If ``debiased`` is True, trigger the use of the direct/undirect debiased scaled tapered periodogram. Parameter related to ``debiased``. Default to True.
         Keyword Args:
-            params: P for grid sine taper
+            params (dict): Keyword argument ``p_component_max`` of :py:func:`~structure_factor.utils.taper_grid_generator`. Maximum component of the parameters :math:`p` of the family of :py:class:`~structure_factor.tapers.SineTaper`. Intuitively the number of taper used is :math:`P=\mathrm{p\_component\_max}^d`. Used only when ``tapers=None``. See :py:func:`~structure_factor.utils.tapered_generator`. Default to 2.
         Returns:
-            [type]: [description]
+            numpy.ndarray: Evaluation(s) of the scaled multitapered periodogram or a debiased version at ``k``.
+
+        Example:
+
+            .. plot:: code/structure_factor/multitapered_periodogram.py
+                :include-source: True
+
+        .. proof:definition::
+
+            The scaled multitapered periodogram :math:`\widehat{S}_{\mathrm{MTP}}(t, k)`, is an estimator of the structure factor :math:`S` of a stationary point process :math:`\mathcal{X} \subset \mathbb{R}^d` of intensity :math:`\rho`. It is accessible from a realization :math:`\mathcal{X}\cap W =\{\mathbf{x}_i\}_{i=1}^N` of :math:`\mathcal{X}` within a box window :math:`W`.
+
+            .. math::
+
+                \widehat{S}_{ \mathrm{MTP}}((t_{q})_{q=1}^P, \mathbf{k}) = \frac{1}{P}\sum_{q=1}^{P} \widehat{S}(t_{q}, \mathbf{k})
+
+
+            where, :math:`(t_{q})_{q}` is a family of tapers supported on the observation window (satisfying some conditions), :math:`P` is the number of tapers used, and :math:`k \in \mathbb{R}^d`.
+            For more details we refer to :cite:`DGRR:22`, (Section 3.1).
+
+        .. note::
+
+            **Typical usage**:
+                - If the observation window is not a :py:class:`~structure_factor.spatial_windows.BoxWindow`, use the method :py:class:`~structure_factor.point_pattern.PointPattern.restrict_to_window` to extract a sub-sample in a :py:class:`~structure_factor.spatial_windows.BoxWindow`.
+
+        .. seealso::
+            :py:class:`~structure_factor.spatial_windows.BoxWindow`,
+            :py:meth:`~structure_factor.point_pattern.PointPattern.restrict_to_window`, :ref:`tapers`, :py:class:`~structure_factor.tapers.SineTaper`, :py:func:`~structure_factor.spectral_estimators.multitapered_spectral_estimator`.
+
         """
         d = self.point_pattern.dimension
         if tapers is None:
@@ -181,6 +241,7 @@ class StructureFactor:
         )
         return sf
 
+    # todo not done yet
     def plot_spectral_estimator(
         self,
         k,
@@ -214,7 +275,7 @@ class StructureFactor:
             window_res (:py:class:`~structure_factor.spatial_windows.AbstractSpatialWindow`, optional): New restriction window. It is useful when the sample of points is large, so for time and visualization purposes, it is better to restrict the plot of the point process to a smaller window. Defaults to None.
 
         Keyword Args:
-            binning_params: (dict): Used when ``error_bar=True``, by the method :py:meth:`~structure_factor.utils_bin_statistics` as keyword arguments (except ``"statistic"``) of ``scipy.stats.binned_statistic``.
+            binning_params (dict): Used when ``error_bar=True``, by the method :py:meth:`~structure_factor.utils_bin_statistics` as keyword arguments (except ``"statistic"``) of ``scipy.stats.binned_statistic``.
 
         Returns:
             matplotlib.plot: Plot of the approximated structure factor.
@@ -280,15 +341,43 @@ class StructureFactor:
             )
 
     def bartlett_isotropic_estimator(self, k_norm=None, **params):
-        """todo
-
-        [extended_summary]
+        r"""Compute Bartlett's isotropic estimator :math:`\widehat{S}_{\mathrm{BI}}` of the point process (isotropic) encapsulated in the ``PointPattern``.
 
         Args:
-            k_norm ([type], optional): [description]. Defaults to None.
+            k_norm (np.ndarray, optional): n rows of wavenumbers where the estimator is evaluated. If ``k_norm=None`` (recommended), the estimator will be evaluated on the corresponding set of allowed wavenumbers; In this case, the parameters ``n_allowed_k_norm`` allows to specify the number of allowed wavenumbers. See :py:func:`~structure_factor.isotropic_estimator.allowed_k_norm`. Defaults to None.
+        Keyword Args:
+            params (dict): Keyword argument ``n_allowed_k_norm`` of :py:func:`~structure_factor.isotropic_estimator.bartlett_estimator`. Used when ``k_norm=None`` to specify the number of allowed wavenumbers to be used.
 
         Returns:
-            [type]: [description]
+            tuple(numpy.ndarray, numpy.ndarray):
+                - k_norm: Wavenumber(s) on which Bartlett's isotropic estimator has been evaluated.
+                - estimation: Evaluation(s) of Bartlett's isotropic estimator at ``k``.
+
+        Example:
+
+            .. plot:: code/structure_factor/bartlett_isotropic_estimator.py
+                :include-source: True
+
+        .. proof:definition::
+
+            Bartlett's isotropic estimator :math:`\widehat{S}_{\mathrm{BI}}` is an estimator of the structure factor :math:`S` of a stationary isotropic point process :math:`\mathcal{X} \subset \mathbb{R}^d` of intensity :math:`\rho`. It is accessible from a realization :math:`\mathcal{X}\cap W =\{\mathbf{x}_i\}_{i=1}^N` of :math:`\mathcal{X}` within a ball window :math:`W=B(\mathbf{0}, R)`.
+
+            .. math::
+                \widehat{S}_{\mathrm{BI}}(k) =1 + \frac{ (2\pi)^{d/2} }{\rho \mathcal{L}^d(W) \omega_{d-1}} \sum_{ \substack{j, q =1 \\ j\neq q } }^{N }
+                 \frac{1}{(k \|\mathbf{x}_j - \mathbf{x}_q\|_2)^{d/2 - 1}}
+                J_{d/2 - 1}(k \|\mathbf{x}_j - \mathbf{x}_q\|_2)
+
+            For more details we refer to :cite:`DGRR:22`, (Section 3.2).
+
+        .. note::
+
+            **Typical usage**:
+                - If the observation window is not a :py:class:`~structure_factor.spatial_windows.BallWindow`, use the method :py:class:`~structure_factor.point_pattern.PointPattern.restrict_to_window` to extract a sub-sample in a :py:class:`~structure_factor.spatial_windows.BallWindow`.
+
+        .. seealso::
+            :py:class:`~structure_factor.spatial_windows.BallWindow`,
+            :py:meth:`~structure_factor.point_pattern.PointPattern.restrict_to_window`, :py:func:`~structure_factor.isotropic_estimator`.
+
         """
         window = self.point_pattern.window
         warnings.warn(
