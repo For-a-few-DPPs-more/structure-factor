@@ -6,6 +6,7 @@ from functools import partial
 import structure_factor.utils as utils
 from structure_factor.isotropic_estimator import allowed_k_norm
 from structure_factor.pair_correlation_function import PairCorrelationFunction as pcf
+from structure_factor.hyperuniformity import Hyperuniformity
 
 
 #! Work for DSE actually
@@ -17,8 +18,8 @@ class SummaryStatistics:
         self.s = len(list_point_pattern)  # number of sample
 
     def sample_approximation(self, estimator, core_num=7, **params):
+        """approximate the structure factor of list of point process using a DSI or Bartlett isotropic estimator"""
         list_point_pattern = self.list_point_pattern
-        s = self.s
         isinstance(list_point_pattern[0], PointPattern)
         freeze_support()
         with Pool(core_num) as pool:
@@ -29,6 +30,7 @@ class SummaryStatistics:
         return approximations
 
     def sample_integral_approximation(self, pcf_interpolate_list, **params):
+        """approximate the structure factor of list of point process using a hankel transform"""
         s = len(pcf_interpolate_list)
         estimator_list = [
             apply_estimator(
@@ -42,6 +44,7 @@ class SummaryStatistics:
         return estimator_list
 
     def sample_pcf_approximation(self, method, core_num=7, **params):
+        """approximate the pair correlation function of a list of sample from a point process."""
         list_point_pattern = self.list_point_pattern
         isinstance(list_point_pattern[0], PointPattern)
         freeze_support()
@@ -52,25 +55,26 @@ class SummaryStatistics:
             )
         return pcf_list
 
-    def sample_statistics(
-        self, k=None, k_norm=None, approximation="scattering_intensity", exact=None
-    ):
+    def sample_statistics(self, k=None, k_norm=None, approximation=None, exact=None):
+        """mean, variance, bias"""
         s = len(approximation)  # number of sample
 
         if k is not None:
             k_norm = utils.norm_k(k)
-        n = k_norm.shape[0]  # number of k
+        # n = k_norm.shape[0]  # number of k
         m = sum(approximation) / s
+        # print(m.shape)
         var = np.square(approximation - m)
+        # print(var.shape)
         var = np.sum(var, axis=0)
-        var /= s - 1
-        ivar = sum(var) / n
+        # print(var.shape)
+        var /= s
+        # m_var = sum(var) / n # mean of var
         bias = m - exact(k_norm)
-        ibias = sum(bias ** 2) / n  # mean of bias square
+        # m_bias = sum(bias ** 2) / n  # mean of bias square
         mse = var + bias ** 2
-        imse = sum(mse) / n
-
-        return m, var, ivar, bias, ibias, mse, imse
+        # mse_1 = mse[:-1]
+        return m, var, bias, mse
 
     def plot_sample_mean(self, k, m, **params):
         pp = self.list_point_pattern[0]
@@ -111,7 +115,7 @@ def get_k(point_pattern, **params):
     if k is None:
         d = point_pattern.dimension
         window = point_pattern.window
-        L = np.diff(window.bounds[0])
+        L = np.diff(window.bounds)
         k = utils.allowed_wave_vectors(d, L, **params)
     return k
 
@@ -127,9 +131,91 @@ def get_k_norm(point_pattern, **params):
     return k_norm
 
 
+# pair correlation function of list
+
+
 def pcf_interpolate_list(r_list, pcf_list, **params):
     s = len(r_list)
     pcf_interpolate_list = [
         pcf.interpolate(r_list[i], pcf_list[i], params) for i in range(s)
     ]
     return pcf_interpolate_list
+
+
+# hyperuniformity study
+def hyperunifomity_study(k_norm, s_k_norm, estimator):
+    """chose test of hyperuniformity"""
+    hp = Hyperuniformity(k_norm, s_k_norm)
+    if estimator == "effective":
+        return hp.effective_hyperuniformity
+    elif estimator == "class":
+        return hp.hyperuniformity_class
+    else:
+        raise ValueError("Available estimators are: 'effective' and 'class'. ")
+
+
+def apply_hyperuniformity_estimate(k_norm, s_k_norm, estimator, **params):
+    """Apply hyperuniformity test on a sample from a point process using the approximations of its structure factor"""
+    estimator = hyperunifomity_study(k_norm, s_k_norm, estimator)
+    results, _ = estimator(**params)
+    return results
+
+
+def sample_hyperuniformity(k_norm, sample_s_k_norm, estimator, **params):
+    """Study the hyperuniformity of a list of sample of a point process using the list of approximations of there structure factor ``sample_s_k_norm``.
+
+    Args:
+        k_norm (np.ndarray): wavenumbers.
+        sample_s_k_norm (list): approximation of the structure factor of s samples of a point process.
+        estimator ([type]): "effective", or "class". Studying the index H of the power decay alpha of the estimations.
+
+    Returns:
+        [type]: list of H or alpha.
+    """
+    sample_size = len(sample_s_k_norm)
+    results = [
+        apply_hyperuniformity_estimate(k_norm, sample_s_k_norm[i], estimator, **params)
+        for i in range(sample_size)
+    ]
+    return results
+
+
+# sample variance
+def sample_variance(x):
+    """Compute the sample variance of the list of estimations `x`
+
+    Args:
+        x (list): list of estimations
+    """
+    s = len(x)
+    m = sum(x) / s
+    # print(m.shape)
+    var = np.square(x - m)
+    # print(var.shape)
+    var = np.sum(var, axis=0)
+    # print(var.shape)
+    var /= s
+    return var, m
+
+
+def list_vertical_sample_mean(k, list_s_k):
+    list_s_k_new = []
+    for i in range(len(list_s_k)):
+        k_new, s_k_new = vertical_sample_mean(k, list_s_k[i])
+        list_s_k_new.append(s_k_new)
+    return k_new, list_s_k_new
+
+
+def vertical_sample_mean(k, s_k):
+    "Given repeated elements in x with diffrent values in s_k, this fct find the mean of s_k associated to each unique element of k, and return new k without the repetitions and new s_k with the containing the mean values"
+    data = np.column_stack((k, s_k))
+    results = {}
+    for entry in sorted(data, key=lambda t: t[0]):
+        try:
+            results[entry[0]] = results[entry[0]] + [entry[1]]
+        except KeyError:
+            results[entry[0]] = [entry[1]]
+    matrix_results = np.array([[key, np.mean(results[key])] for key in results.keys()])
+    k_new = matrix_results[:, 0]
+    s_k_new = matrix_results[:, 1]
+    return k_new, s_k_new

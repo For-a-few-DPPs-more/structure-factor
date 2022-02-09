@@ -5,6 +5,7 @@ import pandas as pd
 import rpy2.robjects as robjects
 import scipy.interpolate as interpolate
 from spatstat_interface.interface import SpatstatInterface
+from functools import partial
 
 import structure_factor.utils as utils
 
@@ -92,6 +93,7 @@ class PairCorrelationFunction:
         nan=0,
         posinf=0,
         neginf=0,
+        extrapolate_with_one=True,
         **params
     ):
         """Interpolate the vector ``pcf_r`` evaluated at ``r``, where NaNs, posinf and neginf of ``pcf_r`` are set to zero if ``clean`` is True.
@@ -130,8 +132,11 @@ class PairCorrelationFunction:
                 index_outlier = np.isnan(pcf_r) | np.isinf(pcf_r)
                 pcf_r = pcf_r[~index_outlier]
                 r = r[~index_outlier]
+        if extrapolate_with_one:
+            pcf = lambda x: extrapolate_pcf(x, r, pcf_r, **params)
 
-        pcf = interpolate.interp1d(r, pcf_r, **params)
+        else:
+            pcf = interpolate.interp1d(r, pcf_r, **params)
         return pcf
 
     @staticmethod
@@ -167,3 +172,14 @@ class PairCorrelationFunction:
             fig = axis.get_figure()
             fig.savefig(file_name, bbox_inches="tight")
         return axis
+
+
+def extrapolate_pcf(x, r, pcf_r, **params):
+    r"""Interpolate pcf_r for x=<r_max and set to 1 for x>r_max"""
+    r_max = np.max(r)
+    pcf = np.zeros_like(x)
+    pcf[x <= r_max] = interpolate.interp1d(r, pcf_r, **params)(
+        x[x <= r_max]
+    )  # interpolate for x<=r_max
+    pcf[x > r_max] = np.ones_like(x[x > r_max])  # extrapolation to 1 for x>r_max
+    return pcf

@@ -225,84 +225,70 @@ def _reshape_meshgrid(X):
 
 def allowed_wave_vectors(d, L, k_max=5, meshgrid_shape=None):
     r"""Return a subset of the d-dimensional allowed wave vectors corresponding to a cubic window of length ``L``.
-
     Args:
-
         d (int): Dimension of the space containing the point process.
-
-        L (float): Length of the cubic window containing the point process realization.
-
+        L (np.array): 1-d array of d rows, where each element correspond to the length of a side of the BoxWindow containing the point process realization.
         k_max (float, optional): Supremum of the components of the allowed wavevectors on which the scattering intensity to be evaluated; i.e., for any allowed wavevector :math:`\mathbf{k}=(k_1,...,k_d)`, :math:`k_i \leq k\_max` for all i. This implies that the maximum of the output vector ``k_norm`` will be approximately equal to the norm of the vector :math:`(k\_max, ... k\_max)`. Defaults to 5.
-
         meshgrid_shape (tuple, optional): Tuple of length `d`, where each element specifies the number of components over an axis. These axes are crossed to form a subset of :math:`\mathbb{Z}^d` used to construct a set of allowed wavevectors. i.g., if d=2, setting meshgid_shape=(2,3) will construct a meshgrid of allowed wavevectors formed by a vector of 2 values over the x-axis and a vector of 3 values over the y-axis. Defaults to None, which will run the calculation over **all** the allowed wavevectors. Defaults to None.
-
     Returns:
         tuple (np.ndarray, list):
             - k : np.array with ``d`` columns where each row is an allowed wave vector.
-
     .. proof:definition::
-
         The set of the allowed wavevectors :math:`\{\mathbf{k}_i\}_i` is defined by
-
         .. math::
-
             \{\mathbf{k}_i\}_i = \{\frac{2 \pi}{L} \mathbf{n} ~ ; ~ \mathbf{n} \in (\mathbb{Z}^d)^\ast \}.
-
         Note that the maximum ``n`` and the number of output allowed wavevectors returned by :py:meth:`allowed_wave_vectors`, are specified by the input parameters ``k_max`` and ``meshgrid_shape``.
     """
-
     assert isinstance(k_max, (float, int))
 
     n_max = np.floor(k_max * L / (2 * np.pi))  # maximum of ``n``
-
+    # print(n_max)
     # warnings
     if meshgrid_shape is None:
         warnings.warn(
             message="The computation on all allowed wavevectors may be time-consuming."
         )
-    elif (np.array(meshgrid_shape) > (2 * n_max)).any():
+    elif (np.array(meshgrid_shape) > n_max).any():
         warnings.warn(
             message="Each component of the argument 'meshgrid_shape' should be less than or equal to the cardinality of the (total) set of allowed wavevectors."
         )
 
-    if meshgrid_shape is None or (np.array(meshgrid_shape) > (2 * n_max)).any():
-        n_all = ()
-        n_i = np.arange(-n_max, n_max + 1, step=1)
-        n_i = n_i[n_i != 0]
-        n_all = (n_i for i in range(0, d))
-        X = np.meshgrid(*n_all, copy=False)
-        # K = [X_i * 2 * np.pi / L for X_i in X]  # meshgrid of allowed wavevectors
-        n = _reshape_meshgrid(X)  # reshape as d columns
-
-    else:
-        if meshgrid_shape is not None and len(meshgrid_shape) != d:
-            raise ValueError(
-                "Each wavevector should belong to the same dimension (d) of the point process, i.e., len(meshgrid_shape) = d."
-            )
-
-        if d == 1:
-            n = np.linspace(-n_max, n_max, num=meshgrid_shape, dtype=int, endpoint=True)
-            if np.count_nonzero(n == 0) != 0:
-                n = np.linspace(
-                    -n_max, n_max, num=meshgrid_shape + 1, dtype=int, endpoint=True
-                )
-
+    # case d=1
+    if d == 1:
+        if meshgrid_shape is None or (meshgrid_shape >= n_max):
+            n = np.arange(0, n_max + 1, step=1)
+            n = n[n != 0]
         else:
+            n = np.linspace(0, n_max, num=meshgrid_shape + 1, dtype=int, endpoint=True)
+            n = n[n != 0]
+        # print(n.shape)
+        k = 2 * np.pi * n / L
+        k = np.reshape(k, (k.shape[0], 1))
+    # case d>1
+    else:
+        if meshgrid_shape is None or (np.array(meshgrid_shape) >= n_max).any():
             n_all = []
-            for s in meshgrid_shape:
-                n_i = np.linspace(-n_max, n_max, num=s, dtype=int, endpoint=True)
-                if np.count_nonzero(n_i == 0) != 0:
-                    n_i = np.linspace(
-                        -n_max, n_max, num=s + 1, dtype=int, endpoint=True
-                    )
+            for i in range(d):
+                n_i = np.arange(0, n_max[i] + 1, step=1)
                 n_i = n_i[n_i != 0]
                 n_all.append(n_i)
-
             X = np.meshgrid(*n_all, copy=False)
             # K = [X_i * 2 * np.pi / L for X_i in X]  # meshgrid of allowed wavevectors
             n = _reshape_meshgrid(X)  # reshape as d columns
 
-    k = 2 * np.pi * n / L
+        else:
+            n_all = []
+            i = 0
+            for s in meshgrid_shape:
+                n_i = np.linspace(0, n_max[i], num=s + 1, dtype=int, endpoint=True)
+                n_i = n_i[n_i != 0]
+                n_all.append(n_i)
+                i += 1
+
+            X = np.meshgrid(*n_all, copy=False)
+            n = _reshape_meshgrid(X)  # reshape as d columns
+        # print(n.shape)
+        k = 2 * np.pi * n / L.T
     return k
 
 
@@ -382,11 +368,14 @@ def plot_exact(x, y, axis, label):
     Returns:
         matplotlib.plot: Plot of ``y`` with respect to ``x``.
     """
+    x, y, _ = _sort_vectors(x, y)
     axis.loglog(x, y, "g", label=label)
     return axis
 
 
-def plot_approximation(x, y, axis, label, color, linestyle, marker, markersize):
+def plot_approximation(
+    x, y, axis, label, color, linestyle, marker, markersize, rasterized
+):
     r"""Loglog plot of ``y`` w.r.t. ``x``.
 
     Args:
@@ -410,6 +399,7 @@ def plot_approximation(x, y, axis, label, color, linestyle, marker, markersize):
         marker=marker,
         label=label,
         markersize=markersize,
+        rasterized=rasterized,
     )
     return axis
 
@@ -421,6 +411,7 @@ def plot_si_showcase(
     exact_sf=None,
     error_bar=False,
     label=r"$\widehat{S}$",
+    rasterized=True,
     file_name="",
     **binning_params
 ):
@@ -454,6 +445,7 @@ def plot_si_showcase(
         linestyle="",
         marker=".",
         markersize=1.5,
+        rasterized=rasterized,
     )
     plot_poisson(k_norm, axis=axis)
 
@@ -514,6 +506,7 @@ def plot_si_all(
     exact_sf=None,
     error_bar=False,
     label=r"$\widehat{S}$",
+    rasterized=True,
     file_name="",
     window_res=None,
     **binning_params
@@ -539,6 +532,7 @@ def plot_si_all(
         exact_sf,
         error_bar,
         label,
+        rasterized=rasterized,
         file_name="",
         **binning_params,
     )
@@ -595,6 +589,7 @@ def plot_sf_hankel_quadrature(
         label=label,
         marker=".",
         linestyle="",
+        rasterized=False,
         color="grey",
         markersize=4,
     )

@@ -122,7 +122,7 @@ class StructureFactor:
                 raise ValueError("when k is None debiased must be True.")
             # todo generalize to any boxwindow
             check_cubic_window(window)
-            L = np.diff(window.bounds[0])
+            L = np.diff(window.bounds)
             k = utils.allowed_wave_vectors(d, L, **params)
 
         elif k.shape[1] != d:
@@ -169,7 +169,7 @@ class StructureFactor:
         )
         return k, sf
 
-    def plot_tapered_periodogram(
+    def plot_spectral_estimator(
         self,
         k,
         si,
@@ -179,6 +179,7 @@ class StructureFactor:
         exact_sf=None,
         error_bar=False,
         label=r"$\widehat{S}$",
+        rasterized=True,
         file_name="",
         window_res=None,
         **binning_params
@@ -228,6 +229,7 @@ class StructureFactor:
                 exact_sf,
                 error_bar,
                 label,
+                rasterized,
                 file_name,
                 **binning_params,
             )
@@ -242,7 +244,7 @@ class StructureFactor:
 
             si = si.reshape(grid_shape)
             k_norm = k_norm.reshape(grid_shape)
-            return utils.plot_si_imshow(k_norm, si, axes, file_name)
+            return utils.plot_si_imshow(k_norm, si, axes, rasterized, file_name)
 
         elif plot_type == "all":
 
@@ -261,6 +263,7 @@ class StructureFactor:
                 si,
                 exact_sf,
                 error_bar,
+                rasterized,
                 file_name,
                 window_res,
                 **binning_params,

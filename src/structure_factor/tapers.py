@@ -1,120 +1,109 @@
+r"""Collection of classes representing tapers (also called tapering functions or window functions) with two methods:
+- ``.taper(x, window)`` corresponding to the tapering function :math:`t(x, W)` such that :math:`\|t(\cdot, W)\|_2 = 1`,
+- ``.ft_taper(k, window)`` corresponding to the Fourier transform :math:`\mathcal{F}[t(\cdot, W)](k)` of the tapering function.
+"""
+
 import numpy as np
 
 from structure_factor.spatial_windows import BoxWindow
 
-# class AbstractTaper:
-#     @staticmethod
-#     def taper(x, window):
-#         r"""Evaluate the
-
-#         Args:
-#             x (np.ndarray): Point array (d,) or array of points (n, d).
-#             window (:py:class:`~structure_factor.spatial_windows.AbstractSpatialWindow`): Window :math:`W`.
-
-#         Returns:
-#             array_like: evaluation of the taper :math:`h(x, W)`
-#         """
-#         raise NotImplementedError()
-
-#     @staticmethod
-#     def ft_taper(k, window):
-#         r"""Evaluate the Fourier transform of the taper :math:`h` :py:meth:`~structure_factor/tapers.Abstract.taper`.
-
-#         .. math::
-
-#             H(k) = F[h](k)
-#             = \int_{\mathbb{R}^d}
-#                 h(x) \exp(-i \left\langle k, x \right\rangle) d x.
-
-#         Args:
-#             k (np.ndarray): Wave vector array (d,) or array of wave vectors (n, d).
-
-#             window (:py:class:`~structure_factor.spatial_windows.AbstractSpatialWindow`): Window.
-
-#         Return:
-#             numpy.array: Evaluation of the Fourier transform :math:`H(k)`.
-#         """
-#         raise NotImplementedError()
-
 
 class BartlettTaper:
+    """Class representing the Bartlett tapering function."""
+
     @staticmethod
     def taper(x, window):
-        r"""Evaluate the indicator function of a rectangular ``window`` :math:`W` on points ``x`` divided by the square root of the volume :math:`|W|`.
+        r"""Evaluate the Bartlett taper :math:`t(x, W)` at ``x`` given the rectangular ``window`` :math:`W`.
         .. math::
-            h(x, W) = \frac{1}{\sqrt{|W|}} 1_{x \in W}.
+            t(x, W) = \frac{1}{\sqrt{|W|}} 1_{x \in W}.
         Args:
-            x (np.ndarray): Points.
-            window (:py:class:`~structure_factor.spatial_windows.AbstractSpatialWindow`): Window :math:`W`.
+            x (numpy.ndarray): Array of size :math:`n \times d`, where :math:`d` is the ambient dimension and :math:`n` the number of points where the tapering function is evaluated.
+            window (:py:class:`~structure_factor.spatial_windows.BoxWindow`): :math:`d`-dimensional rectangular window :math:`W`.
         Returns:
-            array_like: evaluation of the taper :math:`h(x, W)`
+            numpy.ndarray: evaluation of the taper :math:`t(x, W)`.
         """
         assert isinstance(window, BoxWindow)
-        h = window.indicator_function(x).astype(float)
-        h /= np.sqrt(window.volume)
-        return h
+        t = window.indicator_function(x).astype(float)
+        t /= np.sqrt(window.volume)
+        return t
 
     @staticmethod
     def ft_taper(k, window):
-        r"""Evaluate the Fourier transform of :py:meth:`~structure_factor/tapers.BartlettTaper.taper`.
-        .. math::
-            H(k) = F[h](k)
-            = \int_{\mathbb{R}^d}
-                h(x) \exp(-i \left\langle k, x \right\rangle) d x.
+        r"""Evaluate the Fourier transform :math:`F[t(\cdot, W)](k)` of the taper :math:`t` (:py:meth:`~structure_factor.tapers.BartlettTaper.taper`).
         Args:
-            k (np.ndarray): Wave vector array (d,) or array of wave vectors (n, d).
-            window (:py:class:`~structure_factor.spatial_windows.AbstractSpatialWindow`): Window.
+            k (numpy.ndarray): Array of size :math:`n \times d`, where :math:`d` is the ambient dimension and :math:`n` the number of points where the Fourier transform :math:`t(k, W)` is evaluated.
+            window (:py:class:`~structure_factor.spatial_windows.BoxWindow`): :math:`d`-dimensional rectangular window :math:`W`.
         Return:
-            numpy.array: Evaluation of the Fourier transform :math:`H(k)`.
+            numpy.ndarray: Evaluation of the Fourier transform :math:`t(k, W)`.
         """
+        assert isinstance(window, BoxWindow)
         widths = 0.5 * np.diff(window.bounds.T, axis=0)
-        sines = 2.0 * np.sin(k * widths) / k
+        if (k == 0).any():
+            sines = np.zeros_like(k)
+            widths_matrix = np.ones_like(k) * widths
+            sines[k == 0] = 2.0 * widths_matrix[k == 0]
+            sines[k != 0] = 2.0 * np.sin(k[k != 0] * widths_matrix[k != 0]) / k[k != 0]
+        else:
+            sines = 2.0 * np.sin(k * widths) / k
+
         ft = np.prod(sines, axis=1)
-        ft /= np.sqrt(window.volume)
-        return ft
+        return ft / np.sqrt(window.volume)
 
 
 class SineTaper:
+    r"""Class representing the sine tapering function."""
+
     def __init__(self, p):
         self.p = np.array(p)
 
     def taper(self, x, window):
-        """[summary]
-
-        [extended_summary]
-
+        r"""Evalute the sine taper :math:`t(x, W)` indexed by :py:attr:`~structure_factor.tapers.SineTaper.p` at ``x`` given the rectangular ``window`` :math:`W`.
         Args:
-            x ([type]): shape n*d (d is the dimension of the space)
-            window ([type]): [description]
-
+            x (numpy.ndarray): Array of size :math:`n \times d`, where :math:`d` is the ambient dimension and :math:`n` the number of points where the tapering function is evaluated.
+            window (:py:class:`~structure_factor.spatial_windows.BoxWindow`): :math:`d`-dimensional rectangular window :math:`W`.
         Returns:
-            [type]: [description]
+            numpy.ndarray: evaluation of the taper :math:`t(x, W)`.
         """
+        assert isinstance(window, BoxWindow)
         widths = np.diff(window.bounds.T, axis=0)
         # d = x.shape[1]
         sines = x / widths + 0.5
         sines *= np.pi * self.p
         np.sin(sines, out=sines)
 
-        h_x = window.indicator_function(x).astype(float)
-        h_x *= np.prod(sines * np.sqrt(2), axis=1)
-        h_x *= np.sqrt(1 / window.volume)  # normalization
-        return h_x
+        t = window.indicator_function(x).astype(float)
+        t *= np.prod(sines * np.sqrt(2), axis=1)
+        t *= np.sqrt(1 / window.volume)  # normalization
+        return t
 
-    #! care about the case when the denominator is zero
     def ft_taper(self, k, window):
-        widths = np.diff(window.bounds.T, axis=0)  # l
+        r"""Evaluate the Fourier transform :math:`F[t(\cdot, W)](k)` of the taper :math:`t` (:py:meth:`~structure_factor.tapers.SineTaper.taper`).
+        Args:
+            k (numpy.ndarray): Array of size :math:`n \times d`, where :math:`d` is the ambient dimension and :math:`n` the number of points where the Fourier transform :math:`t(k, W)` is evaluated.
+            window (:py:class:`~structure_factor.spatial_windows.BoxWindow`): :math:`d`-dimensional rectangular window :math:`W`.
+        Return:
+            numpy.ndarray: Evaluation of the Fourier transform :math:`t(k, W)`.
+        """
+        assert isinstance(window, BoxWindow)
+        widths = np.diff(window.bounds.T, axis=0)
         p = self.p
-        a = k - np.pi * p / widths  # k- pi*p/l
-        b = k + np.pi * p / widths  # k + pi*p/l
-
-        res_1 = np.sin(a * 0.5 * widths) / a
-        #  sin(( k - np.pi * p / widths)* (l/2)) / (k - pi*p/l)
-        res_2 = np.sin(b * 0.5 * widths) / b
-        # sin(( k + np.pi * p / widths)* (l/2)) / (k + pi*p/l)
-        res = (
-            (1j) ** (p + 1) * np.sqrt(2) * (res_1 - (-1) ** p * res_2)
-        )  # i^(p+1) sqrt(2) (res_1 - (-1)^p res_2)
+        a = k - np.pi * p / widths
+        b = k + np.pi * p / widths
+        if (a == 0).any():
+            res_1 = np.zeros_like(k)
+            widths_matrix = np.ones_like(k) * widths
+            res_1[a == 0] = 0.5 * widths_matrix[a == 0]
+            res_1[a != 0] = np.sin(a[a != 0] * 0.5 * widths_matrix[a != 0]) / a[a != 0]
+        else:
+            res_1 = np.sin(a * 0.5 * widths) / a
+        if (b == 0).any():
+            res_2 = np.zeros_like(k)
+            widths_matrix = np.ones_like(k) * widths
+            res_2[b == 0] = 0.5 * widths_matrix[b == 0]
+            res_2[b != 0] = np.sin(b[b != 0] * 0.5 * widths_matrix[b != 0]) / b[b != 0]
+        else:
+            res_2 = np.sin(b * 0.5 * widths) / b
+        res = (1j) ** (p + 1) * np.sqrt(2) * (res_1 - (-1) ** p * res_2)
         ft = np.prod(res, axis=1)
-        ft = ft / np.sqrt(window.volume)
+        ft /= np.sqrt(window.volume)
         return ft
