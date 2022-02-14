@@ -353,16 +353,26 @@ def plot_exact(x, y, axis, label):
     return axis
 
 
-def plot_approximation(x, y, axis, label, color, linestyle, marker, markersize):
+def plot_approximation(
+    x, y, axis, rasterized, label, color, linestyle, marker, markersize
+):
     r"""Loglog plot of ``y`` w.r.t. ``x``.
 
     Args:
         x (np.ndarray): x coordinate.
+
         y (np.ndarray): y coordinate.
+
         axis (matplotlib.axis): Axis on which to add the plot.
+
+        rasterized (bool): Rasterized option of `matlplotlib.plot <https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.plot.html#:~:text=float-,rasterized,-bool>`_.
+
         label (regexp, optional):  Label of the plot.
+
         color (matplotlib.color): Color of the plot. see `color <https://matplotlib.org/2.1.1/api/_as_gen/matplotlib.pyplot.plot.html>`_ .
+
         linestyle (tuple): Style of the plot. see `linestyle <https://matplotlib.org/stable/gallery/lines_bars_and_markers/linestyles.html>`_.
+
         marker (matplotlib.marker): Marker of `marker <https://matplotlib.org/stable/api/markers_api.html>`_.
         markersize (float): Marker size.
 
@@ -377,6 +387,7 @@ def plot_approximation(x, y, axis, label, color, linestyle, marker, markersize):
         marker=marker,
         label=label,
         markersize=markersize,
+        rasterized=rasterized,
     )
     return axis
 
@@ -388,6 +399,7 @@ def plot_si_showcase(
     exact_sf=None,
     error_bar=False,
     label=r"$\widehat{S}$",
+    rasterized="True",
     file_name="",
     **binning_params
 ):
@@ -405,6 +417,8 @@ def plot_si_showcase(
 
         error_bar (bool, optional): If ``True``, ``k_norm`` and correspondingly ``approximation`` are divided into sub-intervals (bins). Over each bin, the mean and the standard deviation of ``approximation`` are derived and visualized on the plot. Note that each error bar corresponds to the mean +/- 3 standard deviation. To specify the number of bins, add it to the kwargs argument ``binning_params``. For more details see :py:meth:`~structure_factor.utils._bin_statistics`. Defaults to False.
 
+        rasterized (bool, optional): Rasterized option of `matlplotlib.plot <https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.plot.html#:~:text=float-,rasterized,-bool>`_. Default to True.
+
         file_name (str, optional): Name used to save the figure. The available output formats depend on the backend being used. Defaults to "".
     """
     k_norm = k_norm.ravel()
@@ -420,6 +434,7 @@ def plot_si_showcase(
         linestyle="",
         marker=".",
         markersize=1.5,
+        rasterized=rasterized,
     )
     plot_poisson(k_norm, axis=axis)
 
@@ -480,6 +495,7 @@ def plot_si_all(
     exact_sf=None,
     error_bar=False,
     label=r"$\widehat{S}$",
+    rasterized=True,
     file_name="",
     window_res=None,
     **binning_params
@@ -487,12 +503,20 @@ def plot_si_all(
     r"""Construct 3 subplots: point pattern, associated scattering intensity plot, associated scattering intensity color level (only for 2D point processes).
 
     Args:
-        point_pattern (:py:class:`~structure_factor.point_pattern.PointPattern`): Object of type PointPattern containing a realization ``point_pattern.points`` of a point process, the window where the points were simulated ``point_pattern.window`` and (optionally) the intensity of the point process ``point_pattern.intensity``
+        point_pattern (:py:class:`~structure_factor.point_pattern.PointPattern`): Object of type PointPattern containing a realization ``point_pattern.points`` of a point process, the window where the points were simulated ``point_pattern.window`` and (optionally) the intensity of the point process ``point_pattern.intensity``.
+
         k_norm (np.ndarray): Wavenumbers.
+
         estimation (np.ndarray): Scattering intensity corresponding to ``k_norm``.
+
         exact_sf (callable, optional): Structure factor of the point process. Defaults to None.
+
         error_bar (bool, optional): If ``True``, ``k_norm`` and correspondingly ``estimation`` are divided into sub-intervals (bins). Over each bin, the mean and the standard deviation of ``estimation`` are derived and visualized on the plot. Note that each error bar corresponds to the mean +/- 3 standard deviation. To specify the number of bins, add it to the kwargs argument ``binning_params``. For more details see :py:meth:`~structure_factor.utils._bin_statistics`. Defaults to False.
+
+        rasterized (bool, optional): Rasterized option of `matlplotlib.plot <https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.plot.html#:~:text=float-,rasterized,-bool>`_. Default to True.
+
         file_name (str, optional): Name used to save the figure. The available output formats depend on the backend being used. Defaults to "".
+
         window_res (:py:class:`~structure_factor.spatial_windows.AbstractSpatialWindow`, optional): New restriction window. It is useful when the sample of points is large, so for time and visualization purposes, it is better to restrict the plot of the point process to a smaller window. Defaults to None.
     """
     figure, axes = plt.subplots(1, 3, figsize=(24, 6))
@@ -504,7 +528,8 @@ def plot_si_all(
         axes[1],
         exact_sf,
         error_bar,
-        label,
+        label=label,
+        rasterized=rasterized,
         file_name="",
         **binning_params,
     )
