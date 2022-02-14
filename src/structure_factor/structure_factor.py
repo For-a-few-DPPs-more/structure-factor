@@ -2,11 +2,11 @@ r"""Collection of estimators of the structure factor :math:`S(\mathbf{k})` of st
 
 **The available estimators are:**
 
-    - The scattering intensity and the corresponding debiased versions: :func:`~structure_factor.structure_factor.StructureFactor.scattering_intensity`.
-    - The scaled tapered periodogram and the corresponding debiased versions: :func:`~structure_factor.structure_factor.StructureFactor.tapered_periodogram`.
-    - The scaled multitapered periodogram and the corresponding debiased versions: :func:`~structure_factor.structure_factor.StructureFactor.multitapered_periodogram`.
-    - Bartlett's isotropic estimator: :func:`~structure_factor.structure_factor.StructureFactor.bartlett_isotropic_estimator`.
-    - Integral estimation using Hankel transform quadrature: :func:`~structure_factor.structure_factor.StructureFactor.hankel_quadrature`.
+    - :py:meth:`~structure_factor.structure_factor.StructureFactor.scattering_intensity`: The scattering intensity and the corresponding debiased versions.
+    - :py:meth:`~structure_factor.structure_factor.StructureFactor.tapered_periodogram`: The scaled tapered periodogram and the corresponding debiased versions.
+    - :py:meth:`~structure_factor.structure_factor.StructureFactor.multitapered_periodogram`: The scaled multitapered periodogram and the corresponding debiased versions.
+    - :py:meth:`~structure_factor.structure_factor.StructureFactor.bartlett_isotropic_estimator`: Bartlett's isotropic estimator.
+    - :py:meth:`~structure_factor.structure_factor.StructureFactor.hankel_quadrature`: Integral estimation using Hankel transform quadrature.
 
 For the theoretical derivation and definitions of these estimators, we refer to :cite:`DGRR:22`.
 """
@@ -60,7 +60,7 @@ class StructureFactor:
         """Ambient dimension of the underlying point process."""
         return self.point_pattern.dimension
 
-    #! doc done untill example
+    #! doc done
     def scattering_intensity(self, k=None, debiased=True, direct=True, **params):
         r"""Compute the scattering intensity :math:`\widehat{S}_{\mathrm{SI}}` (or a debiased version) of the point process encapsulated in the ``PointPattern``.
 
@@ -105,6 +105,7 @@ class StructureFactor:
                 - If the observation window is not a :py:class:`~structure_factor.spatial_windows.BoxWindow`, use the method :py:class:`~structure_factor.point_pattern.PointPattern.restrict_to_window` to extract a sub-sample in a :py:class:`~structure_factor.spatial_windows.BoxWindow`.
 
         .. seealso::
+            :py:meth:`~structure_factor.structure_factor.StructureFactor.plot_spectral_estimator`,
             :py:class:`~structure_factor.spatial_windows.BoxWindow`,
             :py:meth:`~structure_factor.point_pattern.PointPattern.restrict_to_window`, :py:func:`~structure_factor.utils.allowed_wave_vectors`.
 
@@ -136,6 +137,7 @@ class StructureFactor:
 
         return k, estimation
 
+    #! doc done
     def tapered_periodogram(self, k, taper=BartlettTaper, debiased=True, direct=True):
         r"""Compute the scaled tapered periodogram :math:`\widehat{S}_{\mathrm{TP}}` (or a debiased version :math:`\widehat{S}_{\mathrm{DDTP}}`, :math:`\widehat{S}_{\mathrm{UDTP}}`) of the point process encapsulated in the ``PointPattern`` for a specific choice of ``taper``.
 
@@ -172,6 +174,7 @@ class StructureFactor:
                 - If the observation window is not a :py:class:`~structure_factor.spatial_windows.BoxWindow`, use the method :py:class:`~structure_factor.point_pattern.PointPattern.restrict_to_window` to extract a sub-sample in a :py:class:`~structure_factor.spatial_windows.BoxWindow`.
 
         .. seealso::
+            :py:meth:`~structure_factor.structure_factor.StructureFactor.plot_spectral_estimator`,
             :py:class:`~structure_factor.spatial_windows.BoxWindow`,
             :py:meth:`~structure_factor.point_pattern.PointPattern.restrict_to_window`, :ref:`tapers`, :py:class:`~structure_factor.tapers.BartlettTaper`, :py:func:`~structure_factor.spectral_estimators.tapered_spectral_estimator_core`, :py:func:`~structure_factor.spectral_estimators.tapered_spectral_estimator_debiased_direct`, :py:func:`~structure_factor.spectral_estimators.tapered_spectral_estimator_debiased_undirect`.
 
@@ -181,6 +184,7 @@ class StructureFactor:
         sf = estimator(k, self.point_pattern, taper)
         return sf
 
+    #! doc done
     def multitapered_periodogram(
         self, k, tapers=None, debiased=True, direct=True, **params
     ):
@@ -226,6 +230,7 @@ class StructureFactor:
                 - If the observation window is not a :py:class:`~structure_factor.spatial_windows.BoxWindow`, use the method :py:class:`~structure_factor.point_pattern.PointPattern.restrict_to_window` to extract a sub-sample in a :py:class:`~structure_factor.spatial_windows.BoxWindow`.
 
         .. seealso::
+            :py:meth:`~structure_factor.structure_factor.StructureFactor.plot_spectral_estimator`,
             :py:class:`~structure_factor.spatial_windows.BoxWindow`,
             :py:meth:`~structure_factor.point_pattern.PointPattern.restrict_to_window`, :ref:`tapers`, :py:class:`~structure_factor.tapers.SineTaper`, :py:func:`~structure_factor.spectral_estimators.multitapered_spectral_estimator`.
 
@@ -242,7 +247,7 @@ class StructureFactor:
         )
         return sf
 
-    # todo not done yet
+    #! doc done maybe add example
     def plot_spectral_estimator(
         self,
         k,
@@ -259,35 +264,35 @@ class StructureFactor:
         window_res=None,
         **binning_params
     ):
-        """Visualize the results of the method :py:meth:`~structure_factor.structure_factor.StructureFactor.scattering_intensity`.
+        r"""Visualize the results of the methods :py:meth:`~structure_factor.structure_factor.StructureFactor.scattering_intensity`, :py:meth:`~structure_factor.structure_factor.StructureFactor.tapered_periodogram`, and :py:meth:`~structure_factor.structure_factor.StructureFactor.multitapered_periodogram`.
 
         Args:
-            k (numpy.array): Wavevector(s) on which the scattering intensity has been approximated.
+            k (numpy.ndarray): Wavevector(s) on which the scattering intensity has been approximated. Array of size :math:`n \times d`  where :math:`d` is the dimension of the space, and :math:`n` is the number of wavevectors.
 
-            estimation (numpy.array): Approximated scattering intensity associated to `k`.
+            estimation (numpy.array): Approximated structure factor associated to `k`.
 
             axes (matplotlib.axis, optional): Support axes of the plots. Defaults to None.
 
-            scale(str, optional): Trigger between plot scales of `matplotlib.plot <https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_xscale.html>`_. Default to `log`.
+            scale(str, optional): Trigger between plot scales of `matplotlib.plot <https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_xscale.html>`_. Default to "log".
 
-            plot_type (str, optional): ("radial", "imshow", "all"). Type of the plot to visualize. Defaults to "radial".
-                    - If "radial", the output is a loglog plot.
-                    - If "imshow" (option available only for a 2D point process), the output is a (2D) color level plot.
-                    - If "all" (option available only for a 2D point process), the result contains 3 subplots: the point pattern (or a restriction to a specific window if ``window_res`` is set), the loglog radial plot, and the color level plot. Note that the options "imshow" and "all" couldn't be used, if ``k`` is not a meshgrid.
+            plot_type (str, optional): Type of the plot to visualize, "radial", "imshow", or "all". Defaults to "radial".
+                    - If "radial", the output is a 1D plot of `estimation` w.r.t. the norm(s) of `k`.
+                    - If "imshow" (option available only for a 2D point process), the output is a 2D color level plot.
+                    - If "all" (option available only for a 2D point process), the result contains 3 subplots: the point pattern (or a restriction to a specific window if ``window_res`` is set), the radial plot, and the color level plot. Note that the options "imshow" and "all" couldn't be used, if ``k`` couldn't be reshaped as a meshgrid.
 
-            positive (bool): If True, plots only the positive values of si.
+            positive (bool, optional): If True, plots only the positive values of `estimation`. Default to False.
             exact_sf (callable, optional): Theoretical structure factor of the point process. Defaults to None.
 
-            error_bar (bool, optional): If ``True``, ``k_norm`` and correspondingly ``estimation`` are divided into sub-intervals (bins). Over each bin, the mean and the standard deviation of ``estimation`` are derived and visualized on the plot. Note that each error bar corresponds to the mean +/- 3 standard deviation. To specify the number of bins, add it to the kwargs argument ``binning_params``. For more details see :py:meth:`~structure_factor.utils._bin_statistics`. Defaults to False.
+            error_bar (bool, optional): If ``True``, ``k_norm`` and correspondingly ``estimation``, are divided into sub-intervals (bins). Over each bin, the mean and the standard deviation of ``estimation`` are derived and visualized on the plot. Note that each error bar corresponds to the mean :math:`\pm 3 \times` standard deviation. To specify the number of bins, add it as a keyword argument. For more details see :py:meth:`~structure_factor.utils._bin_statistics`. Defaults to False.
 
             rasterized (bool, optional): Rasterized option of `matlplotlib.plot <https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.plot.html#:~:text=float-,rasterized,-bool>`_. Default to True.
 
             file_name (str, optional): Name used to save the figure. The available output formats depend on the backend being used. Defaults to "".
 
-            window_res (:py:class:`~structure_factor.spatial_windows.AbstractSpatialWindow`, optional): New restriction window. It is useful when the sample of points is large, so for time and visualization purposes, it is better to restrict the plot of the point process to a smaller window. Defaults to None.
+            window_res (:py:class:`~structure_factor.spatial_windows.AbstractSpatialWindow`, optional): New restriction window. Useful when the sample of points is large and "plt_type='all'", so for time and visualization purposes, it is better to restrict the plot of the point process to a smaller window. Defaults to None.
 
         Keyword Args:
-            binning_params (dict): Used when ``error_bar=True``, by the method :py:meth:`~structure_factor.utils_bin_statistics` as keyword arguments (except ``"statistic"``) of `scipy.stats.binned_statistic <https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.binned_statistic.html>`_.
+            binning_params (dict): Used when ``error_bar=True``, by the method :py:meth:`~structure_factor.utils._bin_statistics` as keyword arguments (except ``"statistic"``) of `scipy.stats.binned_statistic <https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.binned_statistic.html>`_.
 
         Returns:
             matplotlib.plot: Plot of the approximated structure factor.
@@ -314,15 +319,19 @@ class StructureFactor:
                 file_name=file_name,
                 **binning_params,
             )
-        #! todo k may be already a meshgrid and add a warning else
+
         elif plot_type == "imshow":
-            n_grid = int(np.sqrt(k_norm.shape[0]))
-            grid_shape = (n_grid, n_grid)
+
             if self.dimension != 2:
                 raise ValueError(
-                    "This plot option is adapted only for a 2D point process. Please use plot_type ='radial'."
+                    "This plot option is available only for a 2D point process. Hint: Use `plot_type ='radial'`."
                 )
-
+            n_grid = int(np.sqrt(k_norm.shape[0]))
+            if k_norm.shape[0] != n_grid ** 2:
+                raise ValueError(
+                    "Wavevectors couldn't be reshaped as meshgrid. Hint: the square root of the number of wavevectors should be an integer."
+                )
+            grid_shape = (n_grid, n_grid)
             estimation = estimation.reshape(grid_shape)
             k_norm = k_norm.reshape(grid_shape)
             return utils.plot_si_imshow(k_norm, estimation, axes, file_name)
@@ -333,7 +342,7 @@ class StructureFactor:
             grid_shape = (n_grid, n_grid)
             if self.dimension != 2:
                 raise ValueError(
-                    "The option 'all' is available for 2D point processes."
+                    "The option 'all' is available only for 2D point processes."
                 )
 
             estimation = estimation.reshape(grid_shape)
@@ -356,6 +365,7 @@ class StructureFactor:
                 "plot_type must be chosen among ('all', 'radial', 'imshow')."
             )
 
+    #! doc done
     def bartlett_isotropic_estimator(self, k_norm=None, **params):
         r"""Compute Bartlett's isotropic estimator :math:`\widehat{S}_{\mathrm{BI}}` of the point process (isotropic) encapsulated in the ``PointPattern``.
 
@@ -410,7 +420,6 @@ class StructureFactor:
         return k_norm, sf
 
     def hankel_quadrature(self, pcf, k_norm=None, method="BaddourChouinard", **params):
-        # ? mettre k_nom avant pcf et donner le choix à l'utilisateur d'enter un None
         r"""Approximate the structure factor of the point process encapsulated in ``point_pattern`` (only for stationary isotropic point processes), using specific approximations of the Hankel transform.
         .. warning::
             This method is actually applicable for 2-dimensional point processes.
