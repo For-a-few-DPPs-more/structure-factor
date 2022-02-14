@@ -55,27 +55,6 @@ class SummaryStatistics:
             )
         return pcf_list
 
-    def sample_statistics(self, k=None, k_norm=None, approximation=None, exact=None):
-        """mean, variance, bias"""
-        s = len(approximation)  # number of sample
-
-        if k is not None:
-            k_norm = utils.norm_k(k)
-        # n = k_norm.shape[0]  # number of k
-        m = sum(approximation) / s
-        # print(m.shape)
-        var = np.square(approximation - m)
-        # print(var.shape)
-        var = np.sum(var, axis=0)
-        # print(var.shape)
-        var /= s
-        # m_var = sum(var) / n # mean of var
-        bias = m - exact(k_norm)
-        # m_bias = sum(bias ** 2) / n  # mean of bias square
-        mse = var + bias ** 2
-        # mse_1 = mse[:-1]
-        return m, var, bias, mse
-
     def plot_sample_mean(self, k, m, **params):
         pp = self.list_point_pattern[0]
         sf = StructureFactor(pp)
@@ -187,15 +166,15 @@ def sample_variance(x):
     Args:
         x (list): list of estimations
     """
-    s = len(x)
-    m = sum(x) / s
+    M = len(x)
+    mean = sum(x) / M
     # print(m.shape)
-    var = np.square(x - m)
+    var = np.square(x - mean)
     # print(var.shape)
     var = np.sum(var, axis=0)
     # print(var.shape)
-    var /= s
-    return var, m
+    var /= M
+    return var, mean
 
 
 def list_vertical_sample_mean(k, list_s_k):
@@ -219,3 +198,47 @@ def vertical_sample_mean(k, s_k):
     k_new = matrix_results[:, 0]
     s_k_new = matrix_results[:, 1]
     return k_new, s_k_new
+
+
+def sample_statistics(k=None, k_norm=None, approximation=None, exact=None):
+    """mean, variance, bias"""
+    M = len(approximation)  # number of sample M
+
+    if k is not None:
+        k_norm = utils.norm_k(k)
+
+    k_norm, approximation = list_vertical_sample_mean(
+        k_norm, approximation
+    )  # vertical mean to obtain one value for each k_norm
+    # n = k_norm.shape[0]  # number of k
+    k_norm_diff = k_norm[1:] - k_norm[:-1]  # k_{j+1} - k_j
+    mean = sum(approximation) / M  # mean(approx_S)(k) = sum_m approx_S_m(k)/M
+
+    # var(approx_S)(k) = sum_m (approx_S_m(k) - mean(approx_S(k)))^2/M
+    var = np.square(approximation - mean)
+    var = np.sum(var, axis=0)
+    var /= M
+    # ivar = sum_j (k_{j+1} - k_j)(var(approx_S)(k_{j+1}) + var(approx_S)(k_j))/2
+    ivar = np.sum(k_norm_diff * (var[1:] + var[:-1]) / 2)
+
+    # bias(approx_S)(k) = mean(approx_S)(k) - S(k))
+    bias = mean - exact(k_norm)
+    bias_square = bias ** 2
+    # ibias^2 = sum_j (k_{j+1} - k_j)(bias^2(k_{j+1}) + bias^2(k_{j}))/2
+    ibias = np.sum(k_norm_diff * (bias_square[1:] + bias_square[:-1]) / 2)
+
+    # imse = sum_j (k_{j+1} - k_j)(mse(k_{j+1}) + mse(k_{j}))/2
+    mse = var + bias ** 2
+    imse = np.sum(k_norm_diff * (mse[1:] + mse[:-1]) / 2)
+
+    square_error = (
+        approximation - exact(k_norm)
+    ) ** 2  # se(approx_S)(k)=(approx_S(k) - S(k))^2
+    ise = np.sum(
+        k_norm_diff * (square_error[:, 1:] + square_error[:, :-1]) / 2, axis=1
+    )  # ise=sum_j (k_{j+1} - k_j)(se(k_{j+1}) + se(k_{j}))/2
+    ise = list(ise)
+    # var(imse) = var(ise)/M
+    imse_var, _ = sample_variance(ise)
+    imse_var /= M
+    return k_norm, mean, ivar, ibias, imse, imse_var
