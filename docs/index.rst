@@ -49,7 +49,9 @@ Contents
 
    hyperuniformity
    isotropic_estimator
+   pair_correlation_function
    point_pattern
+   point_process
    spatial_windows
    structure_factor
    spectral_estimators

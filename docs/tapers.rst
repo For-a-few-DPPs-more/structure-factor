@@ -1,7 +1,7 @@
 .. _tapers:
 
 Tapers
-######
+#######
 
 .. automodule:: structure_factor.tapers
     :members:
