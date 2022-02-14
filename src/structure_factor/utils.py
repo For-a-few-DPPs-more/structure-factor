@@ -142,6 +142,24 @@ def set_nan_inf_to_zero(array, nan=0, posinf=0, neginf=0):
     return np.nan_to_num(array, nan=nan, posinf=posinf, neginf=neginf)
 
 
+def _extrapolate_pcf(x, r, pcf_r, **params):
+    """Interpolate pcf_r for x=<r_max and set to 1 for x>r_max.
+    Args:
+        x (np.array): Points on which the pair correlation function is to be evaluated.
+        r (np.array): Vector of the radius on with the pair correlation function was evaluated.
+        pcf_r (np.array): Vector of evaluations of the pair correlation function corresponding to ``r``.
+
+    Returns:
+        np.array: evaluation of the extrapolated pair correlation function on ``x``.
+    """
+    r_max = np.max(r)  # maximum radius
+    pcf = np.zeros_like(x)
+    pcf[x <= r_max] = interpolate.interp1d(r, pcf_r, **params)(
+        x[x <= r_max]
+    )  # interpolate for x<=r_max
+    pcf[x > r_max] = np.ones_like(x[x > r_max])  # extrapolation to 1 for x>r_max
+    return pcf
+
 # utils for structure_factor.py
 
 
