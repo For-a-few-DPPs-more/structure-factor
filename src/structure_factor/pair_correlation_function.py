@@ -1,5 +1,5 @@
 """
-**The vailable methods:**
+**The available methods:**
     - :py:meth:`~structure_factor.pair_correlation_function.PairCorrelationFunction.estimate`: Estimates the pair correlation function.
     - :py:meth:`~structure_factor.pair_correlation_function.PairCorrelationFunction.interpolate`: Cleans, interpolates, and extrapolates the results of :py:meth:`~structure_factor.pair_correlation_function.PairCorrelationFunction.estimate`.
     - :py:meth:`~structure_factor.pair_correlation_function.PairCorrelationFunction.plot`: Plots the results of :py:meth:`~structure_factor.pair_correlation_function.PairCorrelationFunction.estimate`.
@@ -15,9 +15,8 @@ import matplotlib.pyplot as plt
 
 import structure_factor.utils as utils
 
-# ? do we need to create a class with only statimethods, these could be simple functions
 
-
+#! Diala: pass over doc done
 class PairCorrelationFunction:
     """This class contains 2 methods for approximating the pair correlation function of a stationary point process using the `R` package `spatstat <https://github.com/spatstat/spatstat>`_.
     Also, it contains a method to clean, interpolate, extrapolate and a method to visualize the results.
