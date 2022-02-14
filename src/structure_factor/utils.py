@@ -273,6 +273,8 @@ def allowed_wave_vectors(d, L, k_max=5, meshgrid_shape=None):
 
 
 # plot functions
+
+
 def plot_poisson(x, axis, c="k", linestyle=(0, (5, 10)), label="Poisson"):
     r"""Plot the pair correlation function :math:`g_{poisson}` and the structure factor :math:`S_{poisson}` corresponding to the Poisson point process.
 
@@ -296,7 +298,14 @@ def plot_poisson(x, axis, c="k", linestyle=(0, (5, 10)), label="Poisson"):
 
 
 def plot_summary(
-    x, y, axis, label=r"mean $\pm$ 3 $\cdot$ std", fmt="b", ecolor="r", **binning_params
+    x,
+    y,
+    axis,
+    scale="log",
+    label=r"mean $\pm$ 3 $\cdot$ std",
+    fmt="b",
+    ecolor="r",
+    **binning_params
 ):
     r"""Loglog plot the summary results of :py:func:`~structure_factor.utils._bin_statistics` i.e., means and errors bars (3 standard deviations).
 
@@ -310,7 +319,7 @@ def plot_summary(
         matplotlib.plot: Plot of the results of :py:meth:`~structure_factor.utils._bin_statistics` applied on ``x`` and ``y`` .
     """
     bin_centers, bin_mean, bin_std = _bin_statistics(x, y, **binning_params)
-    axis.loglog(bin_centers, bin_mean, "b.")
+    axis.plot(bin_centers, bin_mean, "b.")
     axis.errorbar(
         bin_centers,
         bin_mean,
@@ -324,6 +333,8 @@ def plot_summary(
         zorder=4,
     )
     axis.legend(loc=4, framealpha=0.2)
+    axis.set_yscale(scale)
+    axis.set_xscale(scale)
     return axis
 
 
@@ -349,12 +360,12 @@ def plot_exact(x, y, axis, label):
     Returns:
         matplotlib.plot: Plot of ``y`` with respect to ``x``.
     """
-    axis.loglog(x, y, "g", label=label)
+    axis.plot(x, y, "g", label=label)
     return axis
 
 
 def plot_approximation(
-    x, y, axis, rasterized, label, color, linestyle, marker, markersize
+    x, y, axis, rasterized, label, color, linestyle, marker, markersize, scale="log"
 ):
     r"""Loglog plot of ``y`` w.r.t. ``x``.
 
@@ -376,10 +387,12 @@ def plot_approximation(
         marker (matplotlib.marker): Marker of `marker <https://matplotlib.org/stable/api/markers_api.html>`_.
         markersize (float): Marker size.
 
+        scale(str, optional): Trigger between plot scales of `matplotlib.plot <https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_xscale.html>`_. Default to `log`.
+
     Returns:
         matplotlib.plot: Loglog plot of ``y`` w.r.t. ``x``
     """
-    axis.loglog(
+    axis.plot(
         x,
         y,
         color=color,
@@ -389,6 +402,8 @@ def plot_approximation(
         markersize=markersize,
         rasterized=rasterized,
     )
+    axis.set_yscale(scale)
+    axis.set_xscale(scale)
     return axis
 
 
@@ -396,6 +411,7 @@ def plot_si_showcase(
     k_norm,
     approximation,
     axis=None,
+    scale="log",
     exact_sf=None,
     error_bar=False,
     label=r"$\widehat{S}$",
@@ -412,6 +428,9 @@ def plot_si_showcase(
         approximation (np.ndarray): Scattering intensity corresponding to ``k_norm``.
 
         axis (matplotlib.axis, optional): Axis on which to add the plot. Defaults to None.
+
+        scale(str, optional): Trigger between plot scales of `matplotlib.plot <https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_xscale.html>`_. Default to `log`.
+
 
         exact_sf (callable, optional): Structure factor of the point process. Defaults to None.
 
@@ -435,11 +454,12 @@ def plot_si_showcase(
         marker=".",
         markersize=1.5,
         rasterized=rasterized,
+        scale=scale,
     )
     plot_poisson(k_norm, axis=axis)
 
     if error_bar:
-        plot_summary(k_norm, approximation, axis=axis, **binning_params)
+        plot_summary(k_norm, approximation, axis=axis, scale=scale, **binning_params)
 
     if exact_sf is not None:
         plot_exact(k_norm, exact_sf(k_norm), axis=axis, label=r"Exact $S(\mathbf{k})$")
@@ -498,6 +518,7 @@ def plot_si_all(
     rasterized=True,
     file_name="",
     window_res=None,
+    scale="log",
     **binning_params
 ):
     r"""Construct 3 subplots: point pattern, associated scattering intensity plot, associated scattering intensity color level (only for 2D point processes).
@@ -518,6 +539,9 @@ def plot_si_all(
         file_name (str, optional): Name used to save the figure. The available output formats depend on the backend being used. Defaults to "".
 
         window_res (:py:class:`~structure_factor.spatial_windows.AbstractSpatialWindow`, optional): New restriction window. It is useful when the sample of points is large, so for time and visualization purposes, it is better to restrict the plot of the point process to a smaller window. Defaults to None.
+
+        scale(str, optional): Trigger between plot scales of `matplotlib.plot <https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_xscale.html>`_. Default to `log`.
+
     """
     figure, axes = plt.subplots(1, 3, figsize=(24, 6))
 
@@ -525,12 +549,13 @@ def plot_si_all(
     plot_si_showcase(
         k_norm,
         estimation,
-        axes[1],
-        exact_sf,
-        error_bar,
+        axis=axes[1],
+        exact_sf=exact_sf,
+        error_barr=error_bar,
         label=label,
         rasterized=rasterized,
         file_name="",
+        scale=scale,
         **binning_params,
     )
     plot_si_imshow(k_norm, estimation, axes[2], file_name="")
@@ -545,6 +570,7 @@ def plot_sf_hankel_quadrature(
     k_norm,
     sf,
     axis,
+    scale,
     k_norm_min,
     exact_sf,
     error_bar,
@@ -562,6 +588,8 @@ def plot_sf_hankel_quadrature(
 
         axis (matplotlib.axis): Support axis of the plots.
 
+        scale(str): Trigger between plot scales of `matplotlib.plot <https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_xscale.html>`_.
+
         k_norm_min (float): Estimated lower bound of the wavenumbers (only when ``sf`` was approximated using **Ogata quadrature**).
 
         exact_sf (callable): Theoretical structure factor of the point process.
@@ -570,7 +598,8 @@ def plot_sf_hankel_quadrature(
 
         file_name (str): Name used to save the figure. The available output formats depend on the backend being used.
 
-        label (regexp, optional):  Label of the plot. Default to r"$\widehat{S}_{H}$".
+        label (regexp):  Label of the plot.
+
 
     Keyword Args:
         binning_params: (dict): Used when ``error_bar=True``, by the method :py:meth:`~structure_factor.utils_bin_statistics` as keyword arguments (except ``"statistic"``) of ``scipy.stats.binned_statistic``.
@@ -588,11 +617,12 @@ def plot_sf_hankel_quadrature(
         linestyle="",
         color="grey",
         markersize=4,
+        scale=scale,
     )
     if exact_sf is not None:
         plot_exact(k_norm, exact_sf(k_norm), axis=axis, label=r"Exact $S(k)$")
     if error_bar:
-        plot_summary(k_norm, sf, axis=axis, **binning_params)
+        plot_summary(k_norm, sf, axis=axis, scale=scale, **binning_params)
     plot_poisson(k_norm, axis=axis)
     if k_norm_min is not None:
         sf_interpolate = interpolate.interp1d(

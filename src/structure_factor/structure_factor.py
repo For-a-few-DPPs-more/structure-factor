@@ -10,8 +10,9 @@ r"""Collection of estimators of the structure factor :math:`S(\mathbf{k})` of st
 
 For the theoretical derivation and definitions of these estimators, we refer to :cite:`DGRR:22`.
 """
-# todo the above spatial_window doesn't in the doc refers see why
+
 import warnings
+from isort import file
 
 import numpy as np
 
@@ -247,11 +248,13 @@ class StructureFactor:
         k,
         estimation,
         axes=None,
+        scale="log",
         plot_type="radial",
         positive=False,
         exact_sf=None,
         error_bar=False,
         label=r"$\widehat{S}$",
+        rasterized=True,
         file_name="",
         window_res=None,
         **binning_params
@@ -260,8 +263,13 @@ class StructureFactor:
 
         Args:
             k (numpy.array): Wavevector(s) on which the scattering intensity has been approximated.
+
             estimation (numpy.array): Approximated scattering intensity associated to `k`.
+
             axes (matplotlib.axis, optional): Support axes of the plots. Defaults to None.
+
+            scale(str, optional): Trigger between plot scales of `matplotlib.plot <https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_xscale.html>`_. Default to `log`.
+
             plot_type (str, optional): ("radial", "imshow", "all"). Type of the plot to visualize. Defaults to "radial".
                     - If "radial", the output is a loglog plot.
                     - If "imshow" (option available only for a 2D point process), the output is a (2D) color level plot.
@@ -271,11 +279,15 @@ class StructureFactor:
             exact_sf (callable, optional): Theoretical structure factor of the point process. Defaults to None.
 
             error_bar (bool, optional): If ``True``, ``k_norm`` and correspondingly ``estimation`` are divided into sub-intervals (bins). Over each bin, the mean and the standard deviation of ``estimation`` are derived and visualized on the plot. Note that each error bar corresponds to the mean +/- 3 standard deviation. To specify the number of bins, add it to the kwargs argument ``binning_params``. For more details see :py:meth:`~structure_factor.utils._bin_statistics`. Defaults to False.
+
+            rasterized (bool, optional): Rasterized option of `matlplotlib.plot <https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.plot.html#:~:text=float-,rasterized,-bool>`_. Default to True.
+
             file_name (str, optional): Name used to save the figure. The available output formats depend on the backend being used. Defaults to "".
+
             window_res (:py:class:`~structure_factor.spatial_windows.AbstractSpatialWindow`, optional): New restriction window. It is useful when the sample of points is large, so for time and visualization purposes, it is better to restrict the plot of the point process to a smaller window. Defaults to None.
 
         Keyword Args:
-            binning_params (dict): Used when ``error_bar=True``, by the method :py:meth:`~structure_factor.utils_bin_statistics` as keyword arguments (except ``"statistic"``) of ``scipy.stats.binned_statistic``.
+            binning_params (dict): Used when ``error_bar=True``, by the method :py:meth:`~structure_factor.utils_bin_statistics` as keyword arguments (except ``"statistic"``) of `scipy.stats.binned_statistic <https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.binned_statistic.html>`_.
 
         Returns:
             matplotlib.plot: Plot of the approximated structure factor.
@@ -293,11 +305,13 @@ class StructureFactor:
             return utils.plot_si_showcase(
                 k_norm,
                 estimation,
-                axes,
-                exact_sf,
-                error_bar,
-                label,
-                file_name,
+                axis=axes,
+                scale=scale,
+                exact_sf=exact_sf,
+                error_bar=error_bar,
+                label=label,
+                rasterized=rasterized,
+                file_name=file_name,
                 **binning_params,
             )
         #! todo k may be already a meshgrid and add a warning else
@@ -328,11 +342,13 @@ class StructureFactor:
                 self.point_pattern,
                 k_norm,
                 estimation,
-                exact_sf,
-                error_bar,
-                label,
-                file_name,
-                window_res,
+                exact_sf=exact_sf,
+                error_bar=error_bar,
+                label=label,
+                rasterized=rasterized,
+                file_name=file_name,
+                window_res=window_res,
+                scale=scale,
                 **binning_params,
             )
         else:
@@ -483,6 +499,7 @@ class StructureFactor:
         k_norm,
         sf,
         axis=None,
+        scale="log",
         k_norm_min=None,
         exact_sf=None,
         error_bar=False,
@@ -494,11 +511,19 @@ class StructureFactor:
 
         Args:
             k_norm (np.array): Vector of wavenumbers (i.e., norms of waves) on which the structure factor has been approximated.
+
             sf (np.array): Approximation of the structure factor corresponding to ``k_norm``.
+
             axis (matplotlib.axis, optional): Support axis of the plots. Defaults to None.
+
+            scale(str, optional): Trigger between plot scales of `matplotlib.plot <https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_xscale.html>`_. Default to 'log'.
+
             k_norm_min (float, optional): Estimated lower bound of the wavenumbers (only when ``sf`` was approximated using **Ogata quadrature**). Defaults to None.
+
             exact_sf (callable, optional): Theoretical structure factor of the point process. Defaults to None.
+
             error_bar (bool, optional): If ``True``, ``k_norm`` and correspondingly ``si`` are divided into sub-intervals (bins). Over each bin, the mean and the standard deviation of ``si`` are derived and visualized on the plot. Note that each error bar corresponds to the mean +/- 3 standard deviation. To specify the number of bins, add it to the kwargs argument ``binning_params``. For more details see :py:meth:`~structure_factor.utils._bin_statistics`. Defaults to False.
+
             file_name (str, optional): Name used to save the figure. The available output formats depend on the backend being used. Defaults to "".
 
         Keyword Args:
@@ -512,6 +537,7 @@ class StructureFactor:
             k_norm=k_norm,
             sf=sf,
             axis=axis,
+            scale=scale,
             k_norm_min=k_norm_min,
             exact_sf=exact_sf,
             error_bar=error_bar,
