@@ -30,7 +30,7 @@ from structure_factor.spectral_estimators import (
 from structure_factor.tapers import BartlettTaper, SineTaper
 from structure_factor.transforms import RadiallySymmetricFourierTransform
 
-
+#! docs done (Diala)
 class StructureFactor:
     r"""Implementation of various estimators of the structure factor :math:`S(\mathbf{k})` of a :py:class:`~structure_factor.point_pattern.PointPattern`.
 
