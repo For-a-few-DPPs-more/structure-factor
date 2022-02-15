@@ -47,7 +47,7 @@ def allowed_k_norm(d, r, n):
     """
     if np.floor(d / 2) != d / 2:
         raise ValueError(
-            "Allowed wavenumber could be used only when the dimension of the space `d` is even (i.e., d/2 is an integer)."
+            "Allowed wavenumber could be used only when the dimension of the space `d` is an even number (i.e., d/2 is an integer)."
         )
     return sc.jn_zeros(d / 2, n) / r
 

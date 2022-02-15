@@ -393,7 +393,7 @@ class StructureFactor:
                  \frac{1}{(k \|\mathbf{x}_j - \mathbf{x}_q\|_2)^{d/2 - 1}}
                 J_{d/2 - 1}(k \|\mathbf{x}_j - \mathbf{x}_q\|_2).
 
-            For more details we refer to :cite:`DGRR:22`, (Section 3.2).
+            For more details, we refer to :cite:`DGRR:22`, (Section 3.2).
 
         .. note::
 
