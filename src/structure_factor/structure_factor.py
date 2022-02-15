@@ -370,7 +370,7 @@ class StructureFactor:
         r"""Compute Bartlett's isotropic estimator :math:`\widehat{S}_{\mathrm{BI}}` of the point process (isotropic) encapsulated in the ``PointPattern``.
 
         Args:
-            k_norm (np.ndarray, optional): n rows of wavenumbers where the estimator is evaluated. If ``k_norm=None`` (recommended), the estimator will be evaluated on the corresponding set of allowed wavenumbers; In this case, the parameters ``n_allowed_k_norm`` allows to specify the number of allowed wavenumbers. See :py:func:`~structure_factor.isotropic_estimator.allowed_k_norm`. Defaults to None.
+            k_norm (np.ndarray, optional): n rows of wavenumbers where the estimator is to be evaluated. If ``k_norm=None`` (recommended)and the space's dimension is an even number, the estimator will be evaluated on the corresponding set of allowed wavenumbers; In this case, the parameters ``n_allowed_k_norm`` allows to specify the number of allowed wavenumbers. See :py:func:`~structure_factor.isotropic_estimator.allowed_k_norm`. Defaults to None.
         Keyword Args:
             params (dict): Keyword argument ``n_allowed_k_norm`` of :py:func:`~structure_factor.isotropic_estimator.bartlett_estimator`. Used when ``k_norm=None`` to specify the number of allowed wavenumbers to be used.
 
