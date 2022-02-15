@@ -20,7 +20,7 @@ sys.path.insert(0, os.path.abspath("../src"))
 # -- Project information -----------------------------------------------------
 
 project = "structure-factor"
-copyright = "2021, Diala Hawat"
+copyright = "2021-2022, Diala Hawat"
 author = "Diala Hawat, Guillaume Gautier, Rémi Bardenet, and Raphael Lachieze-Rey"
 
 
@@ -67,8 +67,22 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 # a list of builtin themes.
 #
 html_theme = "sphinx_rtd_theme"
-html_theme_options = {"body_max_width": "100%", "navigation_depth": 4}
-
+html_theme_options = {
+    "body_max_width": "100%",
+    "navigation_depth": 4,
+    "collapse_navigation": True,
+    "sticky_navigation": True,
+    "navigation_depth": 4,
+    "includehidden": True,
+    "titles_only": False,
+}
+html_context = {
+    "display_github": True,  # Integrate Github
+    "github_user": "For-a-few-DPPs-more",  # Username
+    "github_repo": "structure-factor",  # Repo name
+    "github_version": "main",  # Version
+    "conf_py_path": "/docs/",  # Path in the checkout to the docs root
+}
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".

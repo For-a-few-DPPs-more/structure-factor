@@ -222,10 +222,7 @@ def multitapered_spectral_estimator(
 
     .. math::
 
-        S_{MTP}(k) =
-            \frac{1}{p}
-            \sum_{i=1}^p
-                S_{TP}(t_i, k)
+        \widehat{S}_{ \mathrm{MTP}}((t_{q})_{q=1}^P, \mathbf{k}) = \frac{1}{P}\sum_{q=1}^{P} \widehat{S}(t_{q}, \mathbf{k})
 
     where :math:`x_{1}, \dots, x_{N}` corresponds to ``point_pattern.points``, :math:`W` corresponds to the window ``point_pattern.window`` and :math:`\rho` is the intensity of the underlying stationary point process.
 

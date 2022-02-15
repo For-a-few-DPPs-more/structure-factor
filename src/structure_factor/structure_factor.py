@@ -1,6 +1,6 @@
 r"""Collection of estimators of the structure factor :math:`S(\mathbf{k})` of stationary point process given one realization encapsulated in a :py:class:`~structure_factor.point_pattern.PointPattern` together with the simulation window (:ref:`spatial_windows`), and the corresponding intensity.
 
-**The available estimators are:**
+**The available estimators:**
 
     - :py:meth:`~structure_factor.structure_factor.StructureFactor.scattering_intensity`: The scattering intensity and the corresponding debiased versions.
     - :py:meth:`~structure_factor.structure_factor.StructureFactor.tapered_periodogram`: The scaled tapered periodogram and the corresponding debiased versions.
@@ -181,8 +181,8 @@ class StructureFactor:
 
         """
         estimator = select_tapered_spectral_estimator(debiased, direct)
-        sf = estimator(k, self.point_pattern, taper)
-        return sf
+        estimation = estimator(k, self.point_pattern, taper)
+        return estimation
 
     #! doc done
     def multitapered_periodogram(
@@ -222,7 +222,7 @@ class StructureFactor:
 
 
             where, :math:`(t_{q})_{q}` is a family of tapers supported on the observation window (satisfying some conditions), :math:`P` is the number of tapers used, and :math:`k \in \mathbb{R}^d`.
-            For more details we refer to :cite:`DGRR:22`, (Section 3.1).
+            For more details, we refer to :cite:`DGRR:22`, (Section 3.1).
 
         .. note::
 
@@ -238,14 +238,14 @@ class StructureFactor:
         d = self.point_pattern.dimension
         if tapers is None:
             tapers = utils.taper_grid_generator(d=d, taper_p=SineTaper, **params)
-        sf = multitapered_spectral_estimator(
+        estimation = multitapered_spectral_estimator(
             k,
             self.point_pattern,
             *tapers,
             debiased=debiased,
             direct=direct,
         )
-        return sf
+        return estimation
 
     #! doc done maybe add example
     def plot_spectral_estimator(
@@ -264,7 +264,7 @@ class StructureFactor:
         window_res=None,
         **binning_params
     ):
-        r"""Visualize the results of the methods :py:meth:`~structure_factor.structure_factor.StructureFactor.scattering_intensity`, :py:meth:`~structure_factor.structure_factor.StructureFactor.tapered_periodogram`, and :py:meth:`~structure_factor.structure_factor.StructureFactor.multitapered_periodogram`.
+        r"""Display the outputs of the method :py:meth:`~structure_factor.structure_factor.StructureFactor.scattering_intensity`, :py:meth:`~structure_factor.structure_factor.StructureFactor.tapered_periodogram`, or :py:meth:`~structure_factor.structure_factor.StructureFactor.multitapered_periodogram`.
 
         Args:
             k (numpy.ndarray): Wavevector(s) on which the scattering intensity has been approximated. Array of size :math:`n \times d`  where :math:`d` is the dimension of the space, and :math:`n` is the number of wavevectors.
@@ -307,7 +307,7 @@ class StructureFactor:
             k_norm = k_norm[si_ >= 0]
 
         if plot_type == "radial":
-            return utils.plot_si_showcase(
+            return utils.plot_estimation_showcase(
                 k_norm,
                 estimation,
                 axis=axes,
@@ -334,7 +334,7 @@ class StructureFactor:
             grid_shape = (n_grid, n_grid)
             estimation = estimation.reshape(grid_shape)
             k_norm = k_norm.reshape(grid_shape)
-            return utils.plot_si_imshow(k_norm, estimation, axes, file_name)
+            return utils.plot_estimation_imshow(k_norm, estimation, axes, file_name)
 
         elif plot_type == "all":
 
@@ -347,7 +347,7 @@ class StructureFactor:
 
             estimation = estimation.reshape(grid_shape)
             k_norm = k_norm.reshape(grid_shape)
-            return utils.plot_si_all(
+            return utils.plot_estimation_all(
                 self.point_pattern,
                 k_norm,
                 estimation,
@@ -391,7 +391,7 @@ class StructureFactor:
             .. math::
                 \widehat{S}_{\mathrm{BI}}(k) =1 + \frac{ (2\pi)^{d/2} }{\rho \mathcal{L}^d(W) \omega_{d-1}} \sum_{ \substack{j, q =1 \\ j\neq q } }^{N }
                  \frac{1}{(k \|\mathbf{x}_j - \mathbf{x}_q\|_2)^{d/2 - 1}}
-                J_{d/2 - 1}(k \|\mathbf{x}_j - \mathbf{x}_q\|_2)
+                J_{d/2 - 1}(k \|\mathbf{x}_j - \mathbf{x}_q\|_2).
 
             For more details we refer to :cite:`DGRR:22`, (Section 3.2).
 
@@ -414,26 +414,29 @@ class StructureFactor:
                 message="The window should be a BallWindow to minimize the approximation error. Hint: use PointPattern.restrict_to_window."
             )
 
-        k_norm, sf = ise.bartlett_estimator(
+        k_norm, estimation = ise.bartlett_estimator(
             point_pattern=self.point_pattern, k_norm=k_norm, **params
         )
-        return k_norm, sf
+        return k_norm, estimation
 
+    #! doc done maybe change def
     def hankel_quadrature(self, pcf, k_norm=None, method="BaddourChouinard", **params):
         r"""Approximate the structure factor of the point process encapsulated in ``point_pattern`` (only for stationary isotropic point processes), using specific approximations of the Hankel transform.
+
         .. warning::
+
             This method is actually applicable for 2-dimensional point processes.
 
         Args:
-            pcf (callable): Radially symmetric pair correlation function.
-            k_norm (numpy.ndarray, optional): Vector of wavenumbers (i.e., norms of wave vectors) where the structure factor is to be evaluated. Optional if ``method="BaddourChouinard"`` (since this method evaluates the Hankel transform on a specific vector, see :cite:`BaCh15`), but it is **non optional** if ``method="Ogata"``. Defaults to None.
-            method (str, optional): Choose between ``"BaddourChouinard"`` or ``"Ogata"``. Defaults to ``"BaddourChouinard"``. Selects the method to be used to compute the Hankel transform corresponding to the symmetric Fourier transform of ``pcf -1``,
+            pcf (callable): Pair correlation function.
+            k_norm (numpy.ndarray, optional): Vector of wavenumbers (i.e., norms of wavevectors) where the structure factor is to be evaluated. Optional if ``method="BaddourChouinard"`` (since this method evaluates the Hankel transform on a specific set of wavenumbers), but it is **non optional** if ``method="Ogata"``. Defaults to None.
+            method (str, optional): Trigger the use of ``"BaddourChouinard"`` or ``"Ogata"`` quadrature to estimate the structure factor. Defaults to ``"BaddourChouinard"``,
 
                 - if ``"BaddourChouinard"``: The Hankel transform is approximated using the Discrete Hankel transform :cite:`BaCh15`. See :py:class:`~structure_factor.transforms.HankelTransformBaddourChouinard`,
                 - if ``"Ogata"``: The Hankel transform is approximated using Ogata quadrature :cite:`Oga05`. See :py:class:`~structure_factor.transforms.HankelTransformOgata`.
 
         Keyword Args:
-            params (dict): Keyword arguments passed to the corresponding Hankel transformer selected according to the ``method`` argument.
+            params (dict): Keyword arguments passed to the corresponding Hankel transformer selected according to the input argument ``method``.
 
                 - ``method == "Ogata"``, see :py:meth:`~structure_factor.transforms.HankelTransformOgata.compute_transformation_parameters`
                     - ``step_size``
@@ -444,14 +447,13 @@ class StructureFactor:
                     - ``interpolotation`` dictionnary containing the keyword arguments of `scipy.integrate.interp1d <https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html>`_ parameters.
 
         Returns:
-            tuple (np.ndarray, np.ndarray):
+            tuple (np.array, np.array):
                 - k_norm: Vector of wavenumbers.
-                - sf: Evaluations of the structure factor on ``k_norm``.
+                - estimation: Evaluations of the structure factor on ``k_norm``.
 
         Example:
-            .. literalinclude:: code/sf_baddour_example.py
-                :lines: 1-28
-                :emphasize-lines: 23-28
+            .. plot:: code/structure_factor/hankel_quadrature.py
+                :include-source: True
 
         .. proof:definition::
 
@@ -459,20 +461,27 @@ class StructureFactor:
 
             .. math::
 
-                S(\|\mathbf{k}\|)
-                = 1 + \rho \frac{(2 \pi)^{d/2}}{\|\mathbf{k}\|^{d/2 -1}} \mathcal{H}_{d/2 -1}(\tilde g -1)(\|\mathbf{k}\|),
+                S(\|\mathbf{k}\|_2)
+                = 1 + \rho \frac{(2 \pi)^{d/2}}{\|\mathbf{k}\|_2^{d/2 -1}} \mathcal{H}_{d/2 -1}(\tilde g -1)(\|\mathbf{k}\|_2),
                 \quad \tilde g: x \mapsto g(x) x^{d/2 -1},
 
             where, :math:`g` is the pair correlation function of :math:`\mathcal{X}`.
             This is a result of the relation between the Symmetric Fourier transform and the Hankel Transform.
+            For more details, we refer to :cite:`DGRR:22`, (Section 3.2).
 
         .. note::
+
             **Typical usage**:
                 1. Estimate the pair correlation function using :py:meth:`~structure_factor.pair_correlation_function.PairCorrelationFonction.estimate`.
 
-                2. Clean and interpolate the resulting estimation using :py:meth:`~structure_factor.pair_correlation_function.PairCorrelationFonction.interpolate` to get a **function**.
+                2. Clean and interpolate/extrapolate the resulting estimation using :py:meth:`~structure_factor.pair_correlation_function.PairCorrelationFonction.interpolate` to get a **function**.
 
-                3. Pass the resulting interpolated function to :py:meth:`hankel_quadrature` to get an approximation of the structure factor of the point process.
+                3. Use the result as the input ``pcf``.
+
+        .. seealso::
+            :py:meth:`~structure_factor.pair_correlation_function.PairCorrelationFonction.estimate`, :py:meth:`~structure_factor.pair_correlation_function.PairCorrelationFonction.interpolate`, :py:meth:`~structure_factor.structure_factor.StructureFactor.plot_isotropic_estimator`, :py:class:`~structure_factor.spatial_windows`,
+            :py:meth:`~structure_factor.point_pattern.PointPattern`, :py:class:`~structure_factor.transforms.HankelTransformBaddourChouinard`, :py:class:`~structure_factor.transforms.HankelTransformOgata`.
+
         """
         if self.dimension != 2:
             warnings.warn(
@@ -500,13 +509,14 @@ class StructureFactor:
             self.k_norm_min = utils._compute_k_min(
                 r_max=params["r_max"], step_size=step_size
             )
-        sf = 1.0 + self.point_pattern.intensity * ft_k
-        return k_norm, sf
+        estimation = 1.0 + self.point_pattern.intensity * ft_k
+        return k_norm, estimation
 
+    #! doc done maybe add example
     def plot_isotropic_estimator(
         self,
         k_norm,
-        sf,
+        estimation,
         axis=None,
         scale="log",
         k_norm_min=None,
@@ -516,35 +526,36 @@ class StructureFactor:
         file_name="",
         **binning_params
     ):
-        r"""Display the output of :py:meth:`hankel_quadrature`.
+        r"""Display the outputs of the method :py:meth:`~structure_factor.structure_factor.StructureFactor.hankel_quadrature`, or :py:meth:`~structure_factor.structure_factor.StructureFactor.bartlett_isotropic_estimator`
 
         Args:
-            k_norm (np.array): Vector of wavenumbers (i.e., norms of waves) on which the structure factor has been approximated.
+            k_norm (np.array): Vector of wavenumbers (i.e., norms of wavevectors) on which the structure factor has been approximated.
 
-            sf (np.array): Approximation of the structure factor corresponding to ``k_norm``.
+            estimation (np.array): Approximation(s) of the structure factor corresponding to ``k_norm``.
 
-            axis (matplotlib.axis, optional): Support axis of the plots. Defaults to None.
+            axis (matplotlib.axis, optional): Support axis of the plot. Defaults to None.
 
             scale(str, optional): Trigger between plot scales of `matplotlib.plot <https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_xscale.html>`_. Default to 'log'.
 
-            k_norm_min (float, optional): Estimated lower bound of the wavenumbers (only when ``sf`` was approximated using **Ogata quadrature**). Defaults to None.
+            k_norm_min (float, optional): Estimated lower bound of the wavenumbers. Defaults to None.
 
             exact_sf (callable, optional): Theoretical structure factor of the point process. Defaults to None.
 
-            error_bar (bool, optional): If ``True``, ``k_norm`` and correspondingly ``si`` are divided into sub-intervals (bins). Over each bin, the mean and the standard deviation of ``si`` are derived and visualized on the plot. Note that each error bar corresponds to the mean +/- 3 standard deviation. To specify the number of bins, add it to the kwargs argument ``binning_params``. For more details see :py:meth:`~structure_factor.utils._bin_statistics`. Defaults to False.
+            error_bar (bool, optional): If ``True``, ``k_norm`` and correspondingly ``estimation``, are divided into sub-intervals (bins). Over each bin, the mean and the standard deviation of ``si`` are derived and visualized on the plot.  Note that each error bar corresponds to the mean :math:`\pm 3 \times` standard deviation. To specify the number of bins, add it as a keyword argument. For more details see :py:meth:`~structure_factor.utils._bin_statistics`. Defaults to False.
 
             file_name (str, optional): Name used to save the figure. The available output formats depend on the backend being used. Defaults to "".
 
         Keyword Args:
-            binning_params: (dict): Used when ``error_bar=True``, by the method :py:meth:`~structure_factor.utils_bin_statistics` as keyword arguments (except ``"statistic"``) of ``scipy.stats.binned_statistic``.
+            binning_params: (dict): Used when ``error_bar=True``, by the method :py:meth:`~structure_factor.utils_bin_statistics` as keyword arguments (except ``"statistic"``) of `scipy.stats.binned_statistic <https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.binned_statistic.html>`_.
+
 
         Returns:
-            matplotlib.plot: Plot the output of :py:meth:`~structure_factor.structure_factor.StructureFactor.hankel_quadrature`.
+            matplotlib.plot: Plot of the approximated structure factor.
 
         """
         return utils.plot_sf_hankel_quadrature(
             k_norm=k_norm,
-            sf=sf,
+            estimation=estimation,
             axis=axis,
             scale=scale,
             k_norm_min=k_norm_min,

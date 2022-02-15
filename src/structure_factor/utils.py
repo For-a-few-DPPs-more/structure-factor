@@ -160,6 +160,7 @@ def _extrapolate_pcf(x, r, pcf_r, **params):
     pcf[x > r_max] = np.ones_like(x[x > r_max])  # extrapolation to 1 for x>r_max
     return pcf
 
+
 # utils for structure_factor.py
 
 
@@ -425,9 +426,9 @@ def plot_approximation(
     return axis
 
 
-def plot_si_showcase(
+def plot_estimation_showcase(
     k_norm,
-    approximation,
+    estimation,
     axis=None,
     scale="log",
     exact_sf=None,
@@ -443,7 +444,7 @@ def plot_si_showcase(
 
         k_norm (np.ndarray): Wavenumbers.
 
-        approximation (np.ndarray): Scattering intensity corresponding to ``k_norm``.
+        estimation (np.ndarray): Scattering intensity corresponding to ``k_norm``.
 
         axis (matplotlib.axis, optional): Axis on which to add the plot. Defaults to None.
 
@@ -452,19 +453,19 @@ def plot_si_showcase(
 
         exact_sf (callable, optional): Structure factor of the point process. Defaults to None.
 
-        error_bar (bool, optional): If ``True``, ``k_norm`` and correspondingly ``approximation`` are divided into sub-intervals (bins). Over each bin, the mean and the standard deviation of ``approximation`` are derived and visualized on the plot. Note that each error bar corresponds to the mean +/- 3 standard deviation. To specify the number of bins, add it to the kwargs argument ``binning_params``. For more details see :py:meth:`~structure_factor.utils._bin_statistics`. Defaults to False.
+        error_bar (bool, optional): If ``True``, ``k_norm`` and correspondingly ``estimation`` are divided into sub-intervals (bins). Over each bin, the mean and the standard deviation of ``estimation`` are derived and visualized on the plot. Note that each error bar corresponds to the mean +/- 3 standard deviation. To specify the number of bins, add it to the kwargs argument ``binning_params``. For more details see :py:meth:`~structure_factor.utils._bin_statistics`. Defaults to False.
 
         rasterized (bool, optional): Rasterized option of `matlplotlib.plot <https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.plot.html#:~:text=float-,rasterized,-bool>`_. Default to True.
 
         file_name (str, optional): Name used to save the figure. The available output formats depend on the backend being used. Defaults to "".
     """
     k_norm = k_norm.ravel()
-    approximation = approximation.ravel()
+    estimation = estimation.ravel()
     if axis is None:
         _, axis = plt.subplots(figsize=(8, 6))
     plot_approximation(
         k_norm,
-        approximation,
+        estimation,
         axis=axis,
         label=label,
         color="grey",
@@ -477,7 +478,7 @@ def plot_si_showcase(
     plot_poisson(k_norm, axis=axis)
 
     if error_bar:
-        plot_summary(k_norm, approximation, axis=axis, scale=scale, **binning_params)
+        plot_summary(k_norm, estimation, axis=axis, scale=scale, **binning_params)
 
     if exact_sf is not None:
         plot_exact(k_norm, exact_sf(k_norm), axis=axis, label=r"Exact $S(\mathbf{k})$")
@@ -492,7 +493,7 @@ def plot_si_showcase(
     return axis
 
 
-def plot_si_imshow(k_norm, si, axis, file_name):
+def plot_estimation_imshow(k_norm, si, axis, file_name):
     r"""Color level 2D plot, centered on zero.
 
     Args:
@@ -526,7 +527,7 @@ def plot_si_imshow(k_norm, si, axis, file_name):
     return axis
 
 
-def plot_si_all(
+def plot_estimation_all(
     point_pattern,
     k_norm,
     estimation,
@@ -564,7 +565,7 @@ def plot_si_all(
     figure, axes = plt.subplots(1, 3, figsize=(24, 6))
 
     point_pattern.plot(axis=axes[0], window_res=window_res)
-    plot_si_showcase(
+    plot_estimation_showcase(
         k_norm,
         estimation,
         axis=axes[1],
@@ -576,7 +577,7 @@ def plot_si_all(
         scale=scale,
         **binning_params,
     )
-    plot_si_imshow(k_norm, estimation, axes[2], file_name="")
+    plot_estimation_imshow(k_norm, estimation, axes[2], file_name="")
 
     if file_name:
         figure.savefig(file_name, bbox_inches="tight")
@@ -586,7 +587,7 @@ def plot_si_all(
 
 def plot_sf_hankel_quadrature(
     k_norm,
-    sf,
+    estimation,
     axis,
     scale,
     k_norm_min,
@@ -602,13 +603,13 @@ def plot_sf_hankel_quadrature(
 
         k_norm (np.array): Vector of wavenumbers (i.e., norms of waves) on which the structure factor has been approximated.
 
-        sf (np.array): Approximation of the structure factor corresponding to ``k_norm``.
+        estimation (np.array): Approximation of the structure factor corresponding to ``k_norm``.
 
         axis (matplotlib.axis): Support axis of the plots.
 
         scale(str): Trigger between plot scales of `matplotlib.plot <https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_xscale.html>`_.
 
-        k_norm_min (float): Estimated lower bound of the wavenumbers (only when ``sf`` was approximated using **Ogata quadrature**).
+        k_norm_min (float): Estimated lower bound of the wavenumbers (only when ``estimation`` was approximated using **Ogata quadrature**).
 
         exact_sf (callable): Theoretical structure factor of the point process.
 
@@ -628,7 +629,7 @@ def plot_sf_hankel_quadrature(
 
     plot_approximation(
         k_norm,
-        sf,
+        estimation,
         axis=axis,
         label=label,
         marker=".",
@@ -636,21 +637,22 @@ def plot_sf_hankel_quadrature(
         color="grey",
         markersize=4,
         scale=scale,
+        rasterized=False,
     )
     if exact_sf is not None:
         plot_exact(k_norm, exact_sf(k_norm), axis=axis, label=r"Exact $S(k)$")
     if error_bar:
-        plot_summary(k_norm, sf, axis=axis, scale=scale, **binning_params)
+        plot_summary(k_norm, estimation, axis=axis, scale=scale, **binning_params)
     plot_poisson(k_norm, axis=axis)
     if k_norm_min is not None:
         sf_interpolate = interpolate.interp1d(
-            k_norm, sf, axis=0, fill_value="extrapolate", kind="cubic"
+            k_norm, estimation, axis=0, fill_value="extrapolate", kind="cubic"
         )
         axis.loglog(
             k_norm_min,
             sf_interpolate(k_norm_min),
             "ro",
-            label=r"$k_{\min}$",
+            label=r"$k_{min}$",
         )
     axis.legend()
     axis.set_xlabel(r"Wavenumber ($k$)")
