@@ -1,4 +1,4 @@
-r"""Collection of estimators of the structure factor :math:`S(\mathbf{k})` of stationary point process given one realization encapsulated in a :py:class:`~structure_factor.point_pattern.PointPattern` together with the simulation window (:ref:`spatial_windows`), and the corresponding intensity.
+r"""Class collecting estimators of the structure factor :math:`S(\mathbf{k})` of stationary point process given one realization encapsulated in a :py:class:`~structure_factor.point_pattern.PointPattern` together with the simulation window (:ref:`spatial_windows`), and the corresponding intensity.
 
 **The available estimators:**
 

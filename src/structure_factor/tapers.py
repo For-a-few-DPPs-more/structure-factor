@@ -1,8 +1,10 @@
 r"""Collection of classes representing tapers (also called tapering functions or window functions) with two methods:
 
-- ``.taper(x, window)`` corresponding to the tapering function :math:`t(x, W)` such that :math:`\|t(\cdot, W)\|_2 = 1`,
+- ``.taper(x, window)`` corresponding to the tapering function :math:`t(x, W)`,
 
 - ``.ft_taper(k, window)`` corresponding to the Fourier transform :math:`\mathcal{F}[t(\cdot, W)](k)` of the tapering function.
+
+These tapers satisfy some conditions listed in :cite:`DGRR:22` (Sections 3.1, 4.3).
 """
 
 import numpy as np

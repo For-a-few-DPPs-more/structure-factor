@@ -1,4 +1,6 @@
 """
+Class gathering methods for approximating the pair correlation function of an isotropic point process, and transforming the result into a continuous function.
+
 **The available methods:**
     - :py:meth:`~structure_factor.pair_correlation_function.PairCorrelationFunction.estimate`: Estimates the pair correlation function.
     - :py:meth:`~structure_factor.pair_correlation_function.PairCorrelationFunction.interpolate`: Cleans, interpolates, and extrapolates the results of :py:meth:`~structure_factor.pair_correlation_function.PairCorrelationFunction.estimate`.

@@ -1,11 +1,11 @@
-"""Class of methods designed to study the hyperuniformity of a point process given an estimation of its structure factor.
+"""Class gathering methods, designed to study the hyperuniformity of a point process given an estimation of its structure factor.
 
-.. note::
-
-        **The available methods:**
+**The available methods:**
             - :py:meth:`~structure_factor.hyperuniformity.Hyperuniformity.bin_data`: Method for regularizing the structure factor estimation.
             - :py:meth:`~structure_factor.hyperuniformity.Hyperuniformity.effective_hyperuniformity`: Test of effective hyperuniformity.
             - :py:meth:`~structure_factor.hyperuniformity.Hyperuniformity.hyperuniformity_class`: Test of the possible class of hyperuniformity.
+
+.. note::
 
         **Typical usage**:
             1. Estimate the structure factor of the point process by one of the methods of :py:class:`~structure_factor.structure_factor.StructureFactor`.
