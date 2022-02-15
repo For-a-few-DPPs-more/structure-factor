@@ -1,12 +1,15 @@
 r"""Class collecting estimators of the structure factor :math:`S(\mathbf{k})` of stationary point process given one realization encapsulated in a :py:class:`~structure_factor.point_pattern.PointPattern` together with the simulation window (:ref:`spatial_windows`), and the corresponding intensity.
 
 **The available estimators:**
-
     - :py:meth:`~structure_factor.structure_factor.StructureFactor.scattering_intensity`: The scattering intensity and the corresponding debiased versions.
     - :py:meth:`~structure_factor.structure_factor.StructureFactor.tapered_periodogram`: The scaled tapered periodogram and the corresponding debiased versions.
     - :py:meth:`~structure_factor.structure_factor.StructureFactor.multitapered_periodogram`: The scaled multitapered periodogram and the corresponding debiased versions.
     - :py:meth:`~structure_factor.structure_factor.StructureFactor.bartlett_isotropic_estimator`: Bartlett's isotropic estimator.
     - :py:meth:`~structure_factor.structure_factor.StructureFactor.hankel_quadrature`: Integral estimation using Hankel transform quadrature.
+
+**The available plot methods:**
+    - :py:meth:`~structure_factor.structure_factor.StructureFactor.plot_spectral_estimator`: Visualize the results of :py:meth:`~structure_factor.structure_factor.StructureFactor.scattering_intensity`, :py:meth:`~structure_factor.structure_factor.StructureFactor.tapered_periodogram`, or :py:meth:`~structure_factor.structure_factor.StructureFactor.multitapered_periodogram`.
+    - :py:meth:`~structure_factor.structure_factor.StructureFactor.plot_isotropic_estimator`: Visualize the results of :py:meth:`~structure_factor.structure_factor.StructureFactor.bartlett_isotropic_estimator` or :py:meth:`~structure_factor.structure_factor.StructureFactor.hankel_quadrature`.
 
 For the theoretical derivation and definitions of these estimators, we refer to :cite:`DGRR:22`.
 """

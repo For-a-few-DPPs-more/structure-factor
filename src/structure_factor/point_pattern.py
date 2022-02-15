@@ -2,7 +2,6 @@
 Object designed to encapsulate a realization from a point process, the observation window, and the intensity of the point process. We denote the final encapsulation by a point pattern.
 
 **This class contains also**:
-
     - :py:meth:`restrict_to_window`: Restrict the point pattern to a specific window.
     - :py:meth:`convert_to_spatstat_ppp`: Converts the point pattern into a ``spatstat.geom.ppp`` R object.
     - :py:meth:`plot`: Plots the point pattern.
