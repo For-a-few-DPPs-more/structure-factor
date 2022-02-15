@@ -1,6 +1,16 @@
-#!/usr/bin/env python3
-# coding=utf-8
+"""
+Collection of classes designed to create box and ball window objects.
 
+**The available classes are**:
+        - :py:class:`~structure_factor.spatial_windows.BallWindow`: Ball window object.
+        - :py:class:`~structure_factor.spatial_windows.BoxWindow`: Box window object.
+
+.. note::
+
+        **Typical usage**:
+            - :py:class:`~structure_factor.point_pattern.PointPattern` has a :py:attr:`~structure_factor.point_pattern.PointPattern.window` argument/attribute.
+"""
+#! quick pass on docs (Diala)
 from abc import ABCMeta, abstractmethod
 
 import numpy as np
@@ -12,24 +22,7 @@ from structure_factor.utils import get_random_number_generator
 
 
 class AbstractSpatialWindow(metaclass=ABCMeta):
-    r"""Encapsulate the notion of spatial window in :math:`\mathbb{R}^d`.
-
-    .. note::
-
-
-        **This class is a sub-class of**:
-            - :py:class:`~structure_factor.spatial_windows.BallWindow`
-            - :py:class:`~structure_factor.spatial_windows.BoxWindow`
-
-        **Typical usage**:
-
-        :py:class:`~structure_factor.point_pattern.PointPattern` has a :py:attr:`~structure_factor.point_pattern.PointPattern.window` argument/attribute.
-
-    .. seealso::
-
-        - :py:class:`~structure_factor.spatial_windows.BallWindow`, :py:class:`~structure_factor.spatial_windows.UnitBallWindow`
-        - :py:class:`~structure_factor.spatial_windows.BoxWindow`, :py:class:`~structure_factor.spatial_windows.UnitBoxWindow`
-    """
+    r"""Encapsulate the notion of spatial window in :math:`\mathbb{R}^d`."""
 
     @property
     @abstractmethod
@@ -86,13 +79,12 @@ class BallWindow(AbstractSpatialWindow):
         radius (float, optional): Radius :math:`r > 0` of the ball. Defaults to 1.0.
 
     Example:
-        .. literalinclude:: code/spatial_window_example.py
-            :language: python
-            :lines: 1-4
+        .. plot:: code/spatial_window/ball_window.py
+            :include-source: True
+            :align: center
 
-        .. testoutput::
-
-            The volume of the window is equal to 50.26548245743669
+    .. seealso::
+            :py:mod:`~structure_factor.point_pattern`,   :py:class:`~structure_factor.spatial_windows.BoxWindow`.
     """
 
     def __init__(self, center, radius=1.0):
@@ -203,13 +195,12 @@ class BoxWindow(AbstractSpatialWindow):
         bounds (numpy.ndarray): :math:`d \times 2` array describing the bounds of the box.
 
     Example:
-        .. literalinclude:: code/spatial_window_example.py
-            :language: python
-            :lines: 6-10
+        .. plot:: code/spatial_window/box_window.py
+            :include-source: True
+            :align: center
 
-        .. testoutput::
-
-            The volume of the window is equal to 64
+    .. seealso::
+            :py:mod:`~structure_factor.point_pattern`,   :py:class:`~structure_factor.spatial_windows.BoxWindow`.
     """
 
     def __init__(self, bounds):
