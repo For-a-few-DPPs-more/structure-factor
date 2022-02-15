@@ -1,4 +1,4 @@
-# Generate a PointPattern in a BoxWindow
+# Generate a Poisson PointPattern 
 from structure_factor.point_process import HomogeneousPoissonPointProcess
 from structure_factor.spatial_windows import BallWindow
 from structure_factor.point_pattern import PointPattern

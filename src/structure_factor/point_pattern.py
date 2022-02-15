@@ -1,3 +1,19 @@
+"""
+Object designed to encapsulate a realization from a point process, the observation window, and the intensity of the point process. We denote the final encapsulation by a point pattern.
+
+**This class contains also**:
+
+    - :py:meth:`restrict_to_window`: Restrict the point pattern to a specific window.
+    - :py:meth:`convert_to_spatstat_ppp`: Converts the point pattern into a ``spatstat.geom.ppp`` R object.
+    - :py:meth:`plot`: Plots the point pattern.
+
+.. note::
+
+        **Typical usage**:
+            - The class :py:class:`~structure_factor.structure_factor.StructureFactor` gets initialized using a :py:class:`~structure_factor.point_pattern.PointPattern`.
+
+"""
+
 import matplotlib.pyplot as plt
 import numpy as np
 from rpy2 import robjects
@@ -5,44 +21,41 @@ from spatstat_interface.interface import SpatstatInterface
 
 from structure_factor.spatial_windows import AbstractSpatialWindow
 
-
+#! pass on doc done (Diala)
 class PointPattern(object):
-    r"""Encapsulate a realization of a point process: the sampled points, the observation window, and the intensity of underlying point process.
+    r"""Encapsulate a realization of a point process, the observation window, and the intensity of the underlying point process.
 
     Args:
-        points (np.ndarray): :math:`N \times d` array collecting :math:`N` points in dimension :math:`d`, consisting of a realization of a point process.
+        points (np.ndarray): :math:`n \times d` array collecting :math:`n` points in dimension :math:`d`, consisting of a realization of a point process.
 
-        window (AbstractSpatialWindow, optional): Observation window containing the ``points``. Defaults to None.
+        window (AbstractSpatialWindow): Observation window.
 
-        intensity(float, optional): Intensity of the point process. Defaults to None.
+        intensity(float, optional): Intensity of the point process. If None, the intensity of the point process is approximated by the ratio of the points number to the window volume. Defaults to None.
+
+    Keyword Args:
+        params: Possible additional parameters of the point process.
 
     Example:
-        .. literalinclude:: code/point_pattern.py
-            :language: python
-            :lines: 6-24
+        .. plot:: code/point_pattern/point_pattern.py
+            :include-source: True
+            :align: center
 
-    .. note::
-
-        **This class contains also**:
-
-            - :py:meth:`restrict_to_window`: Restricts the point pattern to a specific window.
-            - :py:meth:`convert_to_spatstat_ppp`: Converts the point pattern into a ``spatstat.geom.ppp`` R object.
-            - :py:meth:`plot`: Plots the point pattern.
-
-        **Typical usage**:
-
-            - The class :py:class:`~structure_factor.structure_factor.StructureFactor` gets initialized using a :py:class:`~structure_factor.point_pattern.PointPattern`.
-
-            - Convert Python :py:class:`~structure_factor.point_pattern.PointPattern` object to a ``spatstat`` point pattern R object using :py:meth:`~structure_factor.point_pattern.PointPattern.convert_to_spatstat_ppp`.
+    .. seealso::
+            :py:mod:`~structure_factor.spatial_windows`,  :py:mod:`~structure_factor.point_process`, :py:meth:`~structure_factor.point_pattern.PointPattern.restrict_to_window`, :py:meth:`~structure_factor.point_pattern.PointPattern.plot`.
     """
 
-    def __init__(self, points, window=None, intensity=None, **params):
+    def __init__(self, points, window, intensity=None, **params):
         r"""Initialize the object from a realization ``points`` of the underlying point process with intensity ``intensity`` observed in ``window``.
 
         Args:
             points (np.ndarray): :math:`N \times d` array collecting :math:`N` points in dimension :math:`d` consisting of a realization of a point process.
-            window (AbstractSpatialWindow, optional): Observation window containing the ``points``. Defaults to None.
-            intensity(float, optional): Intensity of the point process. Defaults to None.
+
+            window (AbstractSpatialWindow, optional): Observation window containing the ``points``.
+
+            intensity(float, optional): Intensity of the point process. If None, the intensity of the point process is approximated by the ratio of the number of point to the window volume. Defaults to None.
+
+        Keyword Args:
+            params: Possible additional parameters of the point process.
 
         """
         _points = np.array(points)
@@ -70,7 +83,7 @@ class PointPattern(object):
 
         - points: points of the original object that fall inside the prescribed ``window``,
         - window: prescribed ``window``,
-        - intensity: same intensity as the original object.
+        - intensity: intensity of the original object.
 
         Args:
             window (AbstractSpatialWindow): New observation window to restrict to.
@@ -83,11 +96,13 @@ class PointPattern(object):
             from structure_factor.data import load_data #import data
 
         Example:
-            .. plot:: code/restrict_pp.py
+            .. plot:: code/point_pattern/restrict_pp.py
                 :include-source: True
-                :caption:
-                :alt: alternate text
                 :align: center
+
+        .. seealso::
+            :py:mod:`~structure_factor.spatial_windows`,  :py:mod:`~structure_factor.point_process`, :py:meth:`~structure_factor.point_pattern.PointPattern.plot`.
+
         """
         assert isinstance(window, AbstractSpatialWindow)
         points = self.points[window.indicator_function(self.points)]
@@ -121,14 +136,10 @@ class PointPattern(object):
         Args:
             axis (matplotlib.axis, optional): Support axis of the plot. Defaults to None.
 
-            window_res (AbstractSpatialWindow, optional): Window used to visualized the plot. Defaults to None.
+            window_res (AbstractSpatialWindow, optional): Output observation window. Defaults to None.
 
         Returns:
-            matplotlib.axis: plot axis.
-
-        Example:
-            .. plot:: code/plot_point_pattern.py
-                :include-source: True
+            matplotlib.axis: Plot axis.
         """
         if axis is None:
             fig, axis = plt.subplots(figsize=(5, 5))
