@@ -379,6 +379,7 @@ def plot_exact(x, y, axis, label):
     Returns:
         matplotlib.plot: Plot of ``y`` with respect to ``x``.
     """
+    x, y, _ = _sort_vectors(x, y)
     axis.plot(x, y, "g", label=label)
     return axis
 
