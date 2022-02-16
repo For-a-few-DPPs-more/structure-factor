@@ -154,6 +154,7 @@ def _extrapolate_pcf(x, r, pcf_r, **params):
     """
     r_max = np.max(r)  # maximum radius
     pcf = np.zeros_like(x)
+    params.setdefault("fill_value", "extrapolate")
     pcf[x <= r_max] = interpolate.interp1d(r, pcf_r, **params)(
         x[x <= r_max]
     )  # interpolate for x<=r_max
@@ -571,7 +572,7 @@ def plot_estimation_all(
         estimation,
         axis=axes[1],
         exact_sf=exact_sf,
-        error_barr=error_bar,
+        error_bar=error_bar,
         label=label,
         rasterized=rasterized,
         file_name="",
