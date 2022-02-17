@@ -149,7 +149,7 @@ class StructureFactor:
         Args:
             k (np.ndarray): Array of size :math:`n \times d`  where :math:`d` is the dimension of the space, and :math:`n` is the number of wavevectors where the scaled tapered periodogram is evaluated.
 
-            taper (object, optional): Class with static method or instance with method ``.taper(x, window)`` corresponding to :math:`t(x, W)` (see :ref:`tapers`). Default to :py:class:`~structure_factor.tapers.BartlettTaper`
+            taper (object, optional): Class with two  methods ``.taper(x, window)`` corresponding to the taper function :math:`t(x, W)` , and ``.ft_taper(k, window)`` corresponding to the Fourier transform :math:`\mathcal{F}[t(\cdot, W)](k)` of the taper. Some tapers and a model of implementing a new taper are available in :ref:`tapers`. Default to :py:class:`~structure_factor.tapers.BartlettTaper`.
 
             debiased (bool, optional): Trigger the use of a debiased estimator. Default to True.
 
@@ -198,11 +198,7 @@ class StructureFactor:
         Args:
             k (np.ndarray): Array of size :math:`n \times d`  where :math:`d` is the dimension of the space, and :math:`n` is the number of wavevectors where the scaled tapered periodogram is evaluated.
 
-            tapers (list, optional): List of tapers. Defaults to :py:class:`~structure_factor.tapers.SineTaper`. Each taper is an instance with two methods:
-
-                - ``.taper(x, window)`` corresponding to the taper function :math:`t(x, W)`.
-
-                - ``.ft_taper(k, window)`` corresponding to the Fourier transform :math:`\mathcal{F}[t(\cdot, W)](k)` of the taper function, used if ``debiased`` is True.
+            tapers (list, optional): List of tapers. A taper is a class with methods ``.taper(x, window)`` corresponding to the taper function :math:`t(x, W)` , and ``.ft_taper(k, window)`` corresponding to the Fourier transform :math:`\mathcal{F}[t(\cdot, W)](k)` of the taper. Some tapers and a model of implementing a new taper are available in :ref:`tapers`. Defaults to :py:class:`~structure_factor.tapers.SineTaper`).
 
             debiased (bool, optional): Trigger the use of a debiased estimator. Default to True.
 

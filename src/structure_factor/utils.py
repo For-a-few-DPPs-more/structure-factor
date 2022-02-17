@@ -1,7 +1,7 @@
-#!/usr/bin/env python3
-# coding=utf-8
+"""
+Collection of secondary functions used in the principal modules.
+"""
 
-# import pandas as pd
 import warnings
 from itertools import product
 
@@ -9,6 +9,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy import interpolate, stats
 from scipy.special import j0, j1, jn_zeros, jv, y0, y1, yv
+
+# utils for point_processes.py
 
 
 def get_random_number_generator(seed=None):
@@ -328,16 +330,6 @@ def plot_summary(
     axis.legend(loc=4, framealpha=0.2)
     axis.set_yscale(scale)
     axis.set_xscale(scale)
-    return axis
-
-
-def plot_summary_2(
-    x, y, axis, label=r"mean $\pm$ 3 $\cdot$ std", c="k", marker=".", **binning_params
-):
-
-    bin_centers, bin_mean, bin_std = _bin_statistics(x, y, **binning_params)
-    axis.loglog(bin_centers, bin_mean, color=c, marker=marker, label=label)
-    axis.legend(framealpha=0.2)
     return axis
 
 
