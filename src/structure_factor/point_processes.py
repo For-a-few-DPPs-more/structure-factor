@@ -1,4 +1,5 @@
 import numpy as np
+import warnings
 import scipy.linalg as la
 
 from structure_factor.spatial_windows import (
@@ -6,6 +7,7 @@ from structure_factor.spatial_windows import (
     BallWindow,
     BoxWindow,
 )
+from structure_factor.point_pattern import PointPattern
 from structure_factor.utils import get_random_number_generator
 
 # todo add plot function similar to taht of point_pattern
@@ -93,6 +95,13 @@ class HomogeneousPoissonPointProcess(object):
         rho = self.intensity
         nb_points = rng.poisson(rho * window.volume)
         return window.rand(nb_points, seed=rng)
+
+    def generate_point_pattern(self, window, seed=None):
+        points = self.generate_sample(window=window, seed=seed)
+        point_pattern = PointPattern(
+            points=points, window=window, intensity=self.intensity
+        )
+        return point_pattern
 
 
 class ThomasPointProcess:
@@ -196,6 +205,13 @@ class ThomasPointProcess:
         )
         return points[window.indicator_function(points)]
 
+    def generate_point_pattern(self, window, seed=None):
+        points = self.generate_sample(window=window, seed=seed)
+        point_pattern = PointPattern(
+            points=points, window=window, intensity=self.intensity
+        )
+        return point_pattern
+
 
 class GinibrePointProcess(object):
     """Ginibre point process corresponds to the complex eigenvalues of a standard complex Gaussian matrix."""
@@ -244,7 +260,7 @@ class GinibrePointProcess(object):
         """
         return 1.0 - np.exp(-0.25 * (k_norm ** 2))
 
-    def generate_sample(self, n, seed=None):
+    def generate_sample(self, window, seed=None):
         r"""Generate an exact sample (or realization) of the Ginibre point process of size `n`
 
         This is done by computing the eigenvalues of a random matrix :math:`G`, filled with i.i.d. standard complex Gaussian variables, i.e.,
@@ -254,11 +270,18 @@ class GinibrePointProcess(object):
             G_{ij} = \frac{1}{\sqrt{2}} (X_{ij} + \mathbf{i} Y_{ij})
 
         Args:
-            n (int): number of points of the sample.
+            window (:py:class:`~structure_factor.spatial_windows.AbstractSpatialWindow.BallWindow`): :math:`2`-dimensional centered ball window where the points will be generated.
 
         Returns:
             numpy.ndarray: Array of size :math:`n \times 2`, representing the :math:`n` points forming the sample.
         """
+        if not isinstance(window, BallWindow):
+            raise ValueError("The window should be a 2-d centered BallWindow.")
+        if window.dimension != 2:
+            raise ValueError("The window should be a 2-d window.")
+        if (window.center != np.array([0, 0])).any():
+            raise ValueError("The window should be a centered window.")
+        n = int(window.volume * self.intensity)
         rng = get_random_number_generator(seed)
         A = np.zeros((n, n), dtype=complex)
         A.real = rng.standard_normal((n, n))
@@ -266,3 +289,10 @@ class GinibrePointProcess(object):
         eigvals = la.eigvals(A) / np.sqrt(2.0)
         points = np.vstack((eigvals.real, eigvals.imag))
         return points.T
+
+    def generate_point_pattern(self, window, seed=None):
+        points = self.generate_sample(window=window, seed=seed)
+        point_pattern = PointPattern(
+            points=points, window=window, intensity=self.intensity
+        )
+        return point_pattern
