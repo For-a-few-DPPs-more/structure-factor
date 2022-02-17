@@ -1,5 +1,15 @@
+"""
+Collection of point processes objects, gathering properties s.a. the pair correlation function, the structure factor and methods related to the point process s.a. sampling point in an observation window, generating a PointPattern object.
+
+**This module contains 3 objects** :
+
+    - :py:class:`~structure_factor.point_processes.HomogeneousPoissonPointProcess`: The homogeneous Poisson point process.
+    - :py:class:`~structure_factor.point_processes.ThomasPointProcess`: The Thomas point process.
+    - :py:class:`~structure_factor.point_processes.GinibrePointProcess`: The Ginibre point process.
+
+"""
 import numpy as np
-import warnings
+from py import process
 import scipy.linalg as la
 
 from structure_factor.spatial_windows import (
@@ -9,10 +19,6 @@ from structure_factor.spatial_windows import (
 )
 from structure_factor.point_pattern import PointPattern
 from structure_factor.utils import get_random_number_generator
-
-# todo add plot function similar to taht of point_pattern
-#! this is not important, let users plot things their way (using PointPattern or not)
-# ? You could also think of making generate_sample return a PointPattern instance
 
 
 class HomogeneousPoissonPointProcess(object):
@@ -42,11 +48,11 @@ class HomogeneousPoissonPointProcess(object):
         r"""Evaluate the pair correlation function :math:`g(r)=1` of the homogeneous Poisson process.
 
         Args:
-            r (numpy.ndarray): Array of size :math:`n \times d`, where :math:`d` is the ambient dimension and :math:`n` the number of points where the pair correlation function is evaluated.
-            Since the homogeneous Poisson process is isotropic, a vector of size :math:`n` corresponding to the norm of the :math:`n` points can also be passed. Defaults to None.
+            r (numpy.ndarray): Array of size :math:`n \times d`, where :math:`d` is the ambient dimension and :math:`n` the number of points where the pair correlation function is evaluated. Since the homogeneous Poisson process is isotropic, a vector of size :math:`n` corresponding to the norm of the :math:`n` points can also be passed. Defaults to None.
 
         Returns:
             float or numpy.ndarray: ``1.0`` if ``r=None``, otherwise a vector of size :math:`n` with entries equal to ``1.0``.
+
         """
         val = 1.0
         if r is None:
@@ -60,11 +66,11 @@ class HomogeneousPoissonPointProcess(object):
         r"""Evaluate the structure factor :math:`S(k)=1` of the homogeneous Poisson process.
 
         Args:
-            k (numpy.ndarray): Array of size :math:`n \times d`, where :math:`d` is the ambient dimension and :math:`n` the number of points where the structure factor is evaluated.
-            Since the homogeneous Poisson process is isotropic, a vector of size :math:`n` corresponding to the norm of the :math:`n` points can also be passed. Defaults to None.
+            k (numpy.ndarray): Array of size :math:`n \times d`, where :math:`d` is the ambient dimension and :math:`n` the number of points where the structure factor is evaluated. Since the homogeneous Poisson process is isotropic, a vector of size :math:`n` corresponding to the norm of the :math:`n` points can also be passed. Defaults to None.
 
         Returns:
-            float or numpy.ndarray: ``1.0`` if ``r=None``, otherwise a vector of size :math:`n` with entries equal to ``1.0``.
+            float or numpy.ndarray: ``1.0`` if ``k=None``, otherwise a vector of size :math:`n` with entries equal to ``1.0``.
+
         """
         val = 1.0
         if k is None:
@@ -73,6 +79,7 @@ class HomogeneousPoissonPointProcess(object):
         assert k.ndim <= 2
         return np.full(k.shape[0], val)
 
+    #! complete doc done (Diala)
     def generate_sample(self, window, seed=None):
         r"""Generate an exact sample (or realization) of the point process restricted to the :math:`d` dimensional `window`.
 
@@ -82,11 +89,18 @@ class HomogeneousPoissonPointProcess(object):
         Returns:
             numpy.ndarray: Array of size :math:`n \times d`, where :math:`n` is the number of points forming the sample.
 
-        .. plot:: code/poisson_sample_example.py
-            :include-source: True
-            :caption:
-            :alt: alternate text
-            :align: center
+        Example:
+            .. plot:: code/point_processes/poisson_sample.py
+                :include-source: True
+                :caption:
+                :alt: alternate text
+                :align: center
+
+        .. seealso::
+
+            :py:mod:`~structure_factor.spatial_windows`.
+
+
         """
         if not isinstance(window, AbstractSpatialWindow):
             raise TypeError("window argument must be an AbstractSpatialWindow")
@@ -96,7 +110,29 @@ class HomogeneousPoissonPointProcess(object):
         nb_points = rng.poisson(rho * window.volume)
         return window.rand(nb_points, seed=rng)
 
+    #! pass over doc done (Diala)
     def generate_point_pattern(self, window, seed=None):
+        """Generate a :py:class:`~structure_factor.point_pattern.PointPattern` of the point process.
+
+        Args:
+            window (AbstractSpatialWindow): Observation window.
+            seed (int, optional): Seed to initialize the points generator. Defaults to None.
+
+        Returns:
+            :py:class:`~structure_factor.point_pattern.PointPattern`:Object of type :py:class:`~structure_factor.point_pattern.PointPattern` containing a realization of the point process, the observation window, and (optionally) the intensity of the point process (see :py:class:`~structure_factor.point_pattern.PointPattern`).
+
+        Example:
+            .. plot:: code/point_processes/poisson_pp.py
+                :include-source: True
+                :caption:
+                :alt: alternate text
+                :align: center
+
+        .. seealso::
+
+            :py:mod:`~structure_factor.spatial_windows`, :py:class:`~structure_factor.point_pattern.PointPattern`.
+
+        """
         points = self.generate_sample(window=window, seed=seed)
         point_pattern = PointPattern(
             points=points, window=window, intensity=self.intensity
@@ -111,9 +147,11 @@ class ThomasPointProcess:
         """Create a homogeneous Thomas point process.
 
         Args:
-            kappa (float): Mean number of clusters per unit volume.
-            mu (float): Mean number of points per clusters.
-            sigma (float): Standard deviation of the gaussian clusters.
+            kappa (float): Mean number of clusters per unit volume. Intensity of the parent Poisson point process.
+
+            mu (float): Mean number of points per clusters. Mean of the child Gaussian distribution.
+
+            sigma (float): Standard deviation of the child Gaussian distribution.
         """
         self.kappa = kappa
         self.mu = mu
@@ -172,6 +210,7 @@ class ThomasPointProcess:
         s2 = self.sigma ** 2
         return 1.0 + mu * np.exp(-s2 * k_norm ** 2)
 
+    #! pass over doc done (Diala)
     def generate_sample(self, window, seed=None):
         r"""Generate an exact sample from the corresponding :py:class:`~structure_factor.thomas_process.ThomasPointProcess` restricted to the :math:`d` dimensional `window`.
 
@@ -180,6 +219,18 @@ class ThomasPointProcess:
 
         Returns:
             numpy.ndarray: Array of size :math:`n \times d`, where :math:`n` is the number of points forming the sample.
+
+        Example:
+            .. plot:: code/point_processes/thomas_sample.py
+                :include-source: True
+                :caption:
+                :alt: alternate text
+                :align: center
+
+        .. seealso::
+
+            :py:mod:`~structure_factor.spatial_windows`.
+
         """
         if not isinstance(window, AbstractSpatialWindow):
             raise TypeError("window argument must be an AbstractSpatialWindow")
@@ -205,7 +256,29 @@ class ThomasPointProcess:
         )
         return points[window.indicator_function(points)]
 
+    #! pass over doc done (Diala)
     def generate_point_pattern(self, window, seed=None):
+        """Generate a :py:class:`~structure_factor.point_pattern.PointPattern` of the point process.
+
+        Args:
+            window (AbstractSpatialWindow): Observation window.
+            seed (int, optional): Seed to initialize the points generator. Defaults to None.
+
+        Returns:
+            :py:class:`~structure_factor.point_pattern.PointPattern`:Object of type :py:class:`~structure_factor.point_pattern.PointPattern` containing a realization of the point process, the observation window, and (optionally) the intensity of the point process (see :py:class:`~structure_factor.point_pattern.PointPattern`).
+
+        Example:
+            .. plot:: code/point_processes/thomas_pp.py
+                :include-source: True
+                :caption:
+                :alt: alternate text
+                :align: center
+
+        .. seealso::
+
+            :py:mod:`~structure_factor.spatial_windows`, :py:class:`~structure_factor.point_pattern.PointPattern`.
+
+        """
         points = self.generate_sample(window=window, seed=seed)
         point_pattern = PointPattern(
             points=points, window=window, intensity=self.intensity
@@ -260,6 +333,7 @@ class GinibrePointProcess(object):
         """
         return 1.0 - np.exp(-0.25 * (k_norm ** 2))
 
+    #! complete doc done (Diala)
     def generate_sample(self, window, seed=None):
         r"""Generate an exact sample (or realization) of the Ginibre point process of size `n`
 
@@ -274,6 +348,18 @@ class GinibrePointProcess(object):
 
         Returns:
             numpy.ndarray: Array of size :math:`n \times 2`, representing the :math:`n` points forming the sample.
+
+        Example:
+            .. plot:: code/point_processes/ginibre_sample.py
+                :include-source: True
+                :caption:
+                :alt: alternate text
+                :align: center
+
+        .. seealso::
+
+            :py:class:`~structure_factor.spatial_windows.BallWindow`.
+
         """
         if not isinstance(window, BallWindow):
             raise ValueError("The window should be a 2-d centered BallWindow.")
@@ -290,7 +376,29 @@ class GinibrePointProcess(object):
         points = np.vstack((eigvals.real, eigvals.imag))
         return points.T
 
+    #! pass over doc done (Diala)
     def generate_point_pattern(self, window, seed=None):
+        r"""Generate a :math:`2`-dimensional :py:class:`~structure_factor.point_pattern.PointPattern` of the point process, with a centered :py:class:`~structure_factor.spatial_windows.BallWindow`.
+
+        Args:
+            window (AbstractSpatialWindow): :math:`2`-dimensional observation centered :py:class:`~structure_factor.spatial_windows.BallWindow`.
+            seed (int, optional): Seed to initialize the points generator. Defaults to None.
+
+        Returns:
+            :py:class:`~structure_factor.point_pattern.PointPattern`:Object of type :py:class:`~structure_factor.point_pattern.PointPattern` containing a realization of the point process, the observation window, and (optionally) the intensity of the point process (see :py:class:`~structure_factor.point_pattern.PointPattern`).
+
+        Example:
+            .. plot:: code/point_processes/ginibre_pp.py
+                :include-source: True
+                :caption:
+                :alt: alternate text
+                :align: center
+
+        .. seealso::
+
+            :py:class:`~structure_factor.spatial_windows.BallWindow`, :py:class:`~structure_factor.point_pattern.PointPattern`.
+
+        """
         points = self.generate_sample(window=window, seed=seed)
         point_pattern = PointPattern(
             points=points, window=window, intensity=self.intensity
