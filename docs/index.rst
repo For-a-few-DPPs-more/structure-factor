@@ -51,7 +51,7 @@ Contents
    isotropic_estimator
    pair_correlation_function
    point_pattern
-   point_process
+   point_processes
    spatial_windows
    structure_factor
    spectral_estimators

@@ -1,9 +1,9 @@
-.. _point_process:
+.. _point_processes:
 
-Point process
+Point processes
 ##############
 
-.. automodule:: structure_factor.point_process
+.. automodule:: structure_factor.point_processes
     :members:
     :inherited-members:
     :show-inheritance:
