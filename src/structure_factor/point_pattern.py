@@ -40,7 +40,7 @@ class PointPattern(object):
             :align: center
 
     .. seealso::
-            :py:mod:`~structure_factor.spatial_windows`,  :py:mod:`~structure_factor.point_process`, :py:meth:`~structure_factor.point_pattern.PointPattern.restrict_to_window`, :py:meth:`~structure_factor.point_pattern.PointPattern.plot`.
+            :py:mod:`~structure_factor.spatial_windows`,  :py:mod:`~structure_factor.point_processes`, :py:meth:`~structure_factor.point_pattern.PointPattern.restrict_to_window`, :py:meth:`~structure_factor.point_pattern.PointPattern.plot`.
     """
 
     def __init__(self, points, window, intensity=None, **params):
@@ -100,7 +100,7 @@ class PointPattern(object):
                 :align: center
 
         .. seealso::
-            :py:mod:`~structure_factor.spatial_windows`,  :py:mod:`~structure_factor.point_process`, :py:meth:`~structure_factor.point_pattern.PointPattern.plot`.
+            :py:mod:`~structure_factor.spatial_windows`,  :py:mod:`~structure_factor.point_processes`, :py:meth:`~structure_factor.point_pattern.PointPattern.plot`.
 
         """
         assert isinstance(window, AbstractSpatialWindow)
