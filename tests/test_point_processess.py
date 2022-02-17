@@ -2,7 +2,10 @@ import numpy as np
 import pytest
 from scipy.stats import norm
 
-from structure_factor.point_processes import HomogeneousPoissonPointProcess
+from structure_factor.point_processes import (
+    HomogeneousPoissonPointProcess,
+    GinibrePointProcess,
+)
 from structure_factor.spatial_windows import BoxWindow
 
 
@@ -33,3 +36,17 @@ def test_intensity_estimation_of_poisson_process(nb_samples, rho, W):
     z_a2 = -norm.ppf(alpha / 2)
     width_2 = z_a2 / (2 * np.sqrt(W.volume))
     assert (center - width_2) <= np.sqrt(rho) <= (center + width_2)
+
+
+def test_pair_correlation_function_ginibre():
+    r = np.array([[0], [1], [10 ^ 5]])
+    pcf = GinibrePointProcess.pair_correlation_function(r)
+    expected = np.array([[0], [1 - 1 / np.exp(1)], [1]])
+    np.testing.assert_array_equal(pcf, expected)
+
+
+def test_structure_factor_ginibre():
+    k = np.array([[0], [1], [10 ^ 5]])
+    sf = GinibrePointProcess.structure_factor(k)
+    expected = np.array([[0], [1 - 1 / np.exp(1 / 4)], [1]])
+    np.testing.assert_array_equal(sf, expected)

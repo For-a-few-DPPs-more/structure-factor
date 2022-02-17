@@ -3,7 +3,7 @@ import pytest
 
 from structure_factor.data import load_data
 from structure_factor.pair_correlation_function import PairCorrelationFunction as PCF
-from structure_factor.utils import pair_correlation_function_ginibre
+from structure_factor.point_processes import GinibrePointProcess
 
 
 @pytest.fixture
@@ -14,14 +14,14 @@ def ginibre_pp():
 # ? why changing the radius values in the first test but not the other?
 
 
-def test_default_pcf_interpolant_on_ginibre_data(ginibre_pp):
+def test_default_pcf_interpolant_on_ginibre_data():
     r = np.linspace(0, 80, 500)
-    pcf_r = pair_correlation_function_ginibre(r)
-    _, interp_pcf = PCF.interpolate(r, pcf_r)
+    pcf_r = GinibrePointProcess.pair_correlation_function(r)
+    interp_pcf = PCF.interpolate(r, pcf_r)
 
     r = np.linspace(5, 10, 30)
     computed_pcf = interp_pcf(r)
-    expected_pcf = pair_correlation_function_ginibre(r)
+    expected_pcf = GinibrePointProcess.pair_correlation_function(r)
     np.testing.assert_almost_equal(computed_pcf, expected_pcf)
 
 
@@ -31,10 +31,10 @@ def test_pcf_estimation_on_ginibre_data(ginibre_pp):
     pcf_fv = PCF.estimate(ginibre_pp, method="fv", Kest=param_Kest, fv=param_fv)
 
     r, pcf_r = pcf_fv["r"], pcf_fv["pcf"]
-    _, pcf_fv_func = PCF.interpolate(r=r, pcf_r=pcf_r, clean=True)
+    pcf_fv_func = PCF.interpolate(r=r, pcf_r=pcf_r, clean=True)
 
     computed_pcf = pcf_fv_func(r)
-    expected_pcf = pair_correlation_function_ginibre(r)
+    expected_pcf = GinibrePointProcess.pair_correlation_function(r)
     np.testing.assert_almost_equal(
         computed_pcf,
         expected_pcf,

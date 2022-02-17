@@ -40,7 +40,7 @@ def test_scattering_intensity_of_ginibre_on_allowed_values(ginibre_pp, to_test):
     )
     if to_test == "k_norm":
         expected = utils.norm_k(k)
-        result = np.array(
+        tested = np.array(
             [
                 1.38230077,
                 1.38230077,
@@ -53,8 +53,8 @@ def test_scattering_intensity_of_ginibre_on_allowed_values(ginibre_pp, to_test):
             ]
         )
     elif to_test == "s_si":
-        expected = s_si
-        result = np.array(
+        tested = s_si
+        expected = np.array(
             [
                 0.13642892,
                 1.23738984,
@@ -66,41 +66,7 @@ def test_scattering_intensity_of_ginibre_on_allowed_values(ginibre_pp, to_test):
                 0.13642892,
             ]
         )
-    np.testing.assert_almost_equal(k_norm, expected_k_norm)
-    np.testing.assert_almost_equal(si, expected_si)
-
-
-# def test_plot_scattering_intensity(ginibre_pp):
-#     L = ginibre_pp.window.radius / np.sqrt(2)  # sidelength of the cubic window
-#     bounds = [[-L / 2, L / 2], [-L / 2, L / 2]]
-#     window = BoxWindow(bounds)  # create a cubic window
-#     ginibre_pp_box = ginibre_pp.restrict_to_window(window)
-#     sf_pp = StructureFactor(ginibre_pp_box)
-#     k_norm, si = sf_pp.scattering_intensity(
-#         k_max=6,
-#         meshgrid_shape=(50, 50),
-#     )
-#     sf_pp.plot_scattering_intensity(
-#         k_norm,
-#         si,
-#         plot_type="all",
-#         exact_sf=GinibrePointProcess.structure_factor,
-#         bins=60,  # number of bins
-#         error_bar=True,  # visualizing the error bars
-#     )
-
-
-def test_interpolate_pcf_ginibre(ginibre_pp):
-    sf_pp = StructureFactor(ginibre_pp)
-    r = np.linspace(0, 80, 500)
-    pcf_r = GinibrePointProcess.pair_correlation_function(r)
-    _, interp_pcf = sf_pp.interpolate_pcf(r, pcf_r)
-    x = np.linspace(5, 10, 30)
-    computed_pcf = interp_pcf(x)
-    expected_pcf = GinibrePointProcess.pair_correlation_function(x)
-    np.testing.assert_almost_equal(computed_pcf, expected_pcf)
-
-    np.testing.assert_almost_equal(expected, result)
+    np.testing.assert_almost_equal(tested, expected)
 
 
 @pytest.mark.parametrize(

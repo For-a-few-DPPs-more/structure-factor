@@ -5,20 +5,6 @@ import structure_factor.utils as utils
 from structure_factor.spatial_windows import BoxWindow
 
 
-def test_pair_correlation_function_ginibre():
-    r = np.array([[0], [1], [10 ^ 5]])
-    pcf = utils.pair_correlation_function_ginibre(r)
-    expected = np.array([[0], [1 - 1 / np.exp(1)], [1]])
-    np.testing.assert_array_equal(pcf, expected)
-
-
-def test_structure_factor_ginibre():
-    k = np.array([[0], [1], [10 ^ 5]])
-    sf = utils.structure_factor_ginibre(k)
-    expected = np.array([[0], [1 - 1 / np.exp(1 / 4)], [1]])
-    np.testing.assert_array_equal(sf, expected)
-
-
 # todo: fix successive np.testing.assert_array_equal calls, should be a single assert
 @pytest.mark.parametrize(
     "k, x, y, expected_k_sorted, expected_x_sorted, expected_y_sorted",
