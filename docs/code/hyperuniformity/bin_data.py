@@ -1,6 +1,9 @@
 # Load Ginibre PointPattern and restrict to BoxWindow
 from structure_factor.data import load_data
 from structure_factor.spatial_windows import BoxWindow
+from structure_factor.point_processes import GinibrePointProcess
+import numpy as np
+
 ginibre_pp = load_data.load_ginibre()
 ginibre_pp_box = ginibre_pp.restrict_to_window(BoxWindow([[-35, 35], [-35, 35]]))
 
@@ -27,6 +30,6 @@ fig, axis = plt.subplots(figsize=(7,5))
 axis.plot(k_norm, s_ddmtp, 'b,', label="Before regularization", rasterized=True)
 axis.legend()
 sf_ginibre_box.plot_isotropic_estimator(k_norm_new, s_ddmtp_new, axis=axis, color='m',
-                                        exact_sf=utils.structure_factor_ginibre, 
+                                        exact_sf=GinibrePointProcess.structure_factor, 
                                         label="After regularization")
 plt.show()

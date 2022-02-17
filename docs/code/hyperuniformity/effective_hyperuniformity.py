@@ -15,13 +15,14 @@ H_ginibre, _ = hyperuniformity_test.effective_hyperuniformity(k_norm_stop=0.2)
 
 # Visualization of the results
 import matplotlib.pyplot as plt
-import structure_factor.utils as utils
+from structure_factor.point_processes import GinibrePointProcess
+
 fitted_line = hyperuniformity_test.fitted_line # Fitted line to s_bi
 x = np.linspace(0, 1, 300)
 fig, axis =plt.subplots(figsize=(7,5))
 axis.plot(k_norm, s_bi, 'b', marker=".", label="Approximated structure factor")
 axis.plot(x, fitted_line(x), 'r--', label= "Fitted line")
-axis.plot(k_norm, utils.structure_factor_ginibre(k_norm), 'g', label=r"$S(k)$")
+axis.plot(k_norm, GinibrePointProcess.structure_factor(k_norm), 'g', label=r"$S(k)$")
 axis.annotate('H={}'.format(H_ginibre), xy=(0, 0), xytext=(0.01,0.1),
             arrowprops=dict(facecolor='black', shrink=0.0001))
 axis.legend()
