@@ -95,20 +95,6 @@ def bessel2(order, x):
     return yv(order, x)
 
 
-def _compute_k_min(r_max, step_size):
-    """Estimate a lower bound of the wavenumbers for which the approximation of the Hankel Transform by Ogata's quadrature is confident. See :cite:`Oga05`.
-
-    Args:
-        r_max (float): Maximum radius, on which the input function :math:`f` to be Hankel transformed, was evaluated before the interpolation.
-
-        step_size (float): Stepsize used in the quadrature of Ogata.
-
-    Returns:
-        float: Wavenumbers lower bound's.
-    """
-    return (2.7 * np.pi) / (r_max * step_size)
-
-
 # utils for pair_correlation_function.py
 
 

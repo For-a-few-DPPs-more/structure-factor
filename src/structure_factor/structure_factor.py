@@ -56,9 +56,6 @@ class StructureFactor:
         """
         assert isinstance(point_pattern, PointPattern)
         self.point_pattern = point_pattern  # the point pattern
-        #!todo k_norm_min and K_shape have nothing to do with the StructureFactor object, except for plotting
-        # todo Consider removing them or "hiding" them with an underscore _
-        self.k_norm_min = None  # minimal bounds on the wavenumbers for Ogata method
 
     @property
     def dimension(self):
@@ -503,14 +500,6 @@ class StructureFactor:
         ft = RadiallySymmetricFourierTransform(dimension=self.dimension)
         total_pcf = lambda r: pcf(r) - 1.0
         k_norm, ft_k = ft.transform(total_pcf, k_norm, method=method, **params)
-
-        if method == "Ogata":
-            # ? why this default, it does not match default of compute_transformation_parameters
-            step_size = params.get("step_size", 0.1)
-            if r_max is not None:
-                #! k_norm_min only used for plots see todo in __init__
-                self.k_norm_min = utils._compute_k_min(r_max, step_size)
-
         rho = self.point_pattern.intensity
         sf = 1.0 + rho * ft_k
         return k_norm, sf
