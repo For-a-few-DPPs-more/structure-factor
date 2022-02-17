@@ -221,7 +221,6 @@ class HankelTransformOgata(HankelTransform):
     def __init__(self, order=0):
         super().__init__(order=order)
         self.nodes, self.weights = None, None
-        self.k_min = None
 
     def compute_transformation_parameters(
         self, r_max=None, nb_points=300, step_size=0.01
@@ -248,8 +247,6 @@ class HankelTransformOgata(HankelTransform):
         weights *= self._d_psi(t)
         nodes = (np.pi / h) * self._psi(t)  # Change of variable Equation (5.1)
         self.nodes, self.weights = nodes, weights
-        if r_max is not None:
-            self.k_min = utils._compute_k_min(r_max=r_max, step_size=step_size)
         return nodes, weights
 
     def transform(self, f, k):
