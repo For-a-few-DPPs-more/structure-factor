@@ -17,7 +17,9 @@ class RadiallySymmetricFourierTransform:
 
     def __init__(self, dimension=0):
         assert isinstance(dimension, int)
-        assert dimension % 2 == 0
+        # assert dimension % 2 == 0
+        # required to evaluate zeros of Bessel functions with order = d / 2 - 1 that must integer-valued
+        # error will be raised when calling bessel_zeros
         self.d = dimension
         self.r_max = None
 
@@ -27,7 +29,7 @@ class RadiallySymmetricFourierTransform:
         Args:
             f (callable): Function to transform.
 
-            k (scalar or numpy.ndarray): Point(s) where the Fourier transform is to be evaluated.
+            k (scalar or numpy.ndarray): Point or 1d array of points where the Fourier transform is to be evaluated.
 
             method (str): Name of the method used to compute the underlying Hankel transform: ``"Ogata"`` (see :cite:`Oga05`) or ``"BaddourChouinard"`` (see :cite:`BaCh15`).
 
@@ -38,6 +40,7 @@ class RadiallySymmetricFourierTransform:
 
                     - r_max (float): Threshold radius. Considering that the input function :math:`f` to be Hankel transformed is space-limited, then ``r_max`` is such that :math:`f(r)=0` for r > r_max.
                     - nb_points (int, optional): Number of quadrature nodes. Defaults to 300.
+
                 - If ``method="Ogata"`` (see :cite:`Oga05`):
 
                     - r_max (float, optional): Maximum radius on which the input function :math:`f` to be Hankel transformed was evaluated before the interpolation. Parameter used to conclude a lower bound on :math:`k` on which :math:`f` to be Hankel transformed. Defaults to None.
@@ -45,7 +48,6 @@ class RadiallySymmetricFourierTransform:
                     - step_size (float, optional): Step size of the discretization scheme. Defaults to 0.01.
 
                     - nb_points (int, optional): Number of quadrature nodes. Defaults to 300.
-
 
         Returns:
             tuple (np.array, np.array):
@@ -82,11 +84,13 @@ class RadiallySymmetricFourierTransform:
         ht = self._get_hankel_transformer(order, method)
         interp_params = params.pop("interpolation", dict())
         ht.compute_transformation_parameters(**params)
+
         g = lambda r: f(r) * r ** order
         k, F_k = ht.transform(g, k, **interp_params)
         F_k *= (2 * np.pi) ** (d / 2)
         if order != 0:  # F_k /= k^(d/2-1)
             F_k /= k ** order
+
         return k, F_k
 
     def _get_hankel_transformer(self, order, method):
@@ -184,13 +188,15 @@ class HankelTransformBaddourChouinard(HankelTransform):
         r = jk * (r_max / jN)
         ht_k = (r_max ** 2 / jN) * Y.dot(f(r))  # Equation (23)
         _k = jk / r_max
-        if k is not None:
-            interpolation_params["assume_sorted"] = True
-            interpolation_params.setdefault("fill_value", "extrapolate")
-            interpolation_params.setdefault("kind", "cubic")
-            ht = interpolate.interp1d(_k, ht_k, **interpolation_params)
-            return k, ht(k)
-        return _k, ht_k
+
+        if k is None:
+            return _k, ht_k
+
+        interpolation_params["assume_sorted"] = True
+        interpolation_params.setdefault("fill_value", "extrapolate")
+        interpolation_params.setdefault("kind", "cubic")
+        ht = interpolate.interp1d(_k, ht_k, **interpolation_params)
+        return k, ht(k)
 
 
 class HankelTransformOgata(HankelTransform):
@@ -244,7 +250,7 @@ class HankelTransformOgata(HankelTransform):
         Args:
             f (callable): Function to be Hankel transformed.
 
-            k (np.array, optional): Points of evaluation of the Hankel transform. Defaults to None.
+            k (np.array, optional): Points of evaluation of the Hankel transform (1d array). Defaults to None.
 
         Returns:
             tuple(np.ndarray, np.ndarray):

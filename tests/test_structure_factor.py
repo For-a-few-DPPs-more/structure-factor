@@ -7,11 +7,8 @@ from structure_factor.data import load_data
 from structure_factor.point_pattern import PointPattern
 from structure_factor.spatial_windows import BoxWindow, BallWindow
 from structure_factor.structure_factor import StructureFactor
-from structure_factor.utils import (
-    pair_correlation_function_ginibre,
-    structure_factor_ginibre,
-)
 from structure_factor.tapers import BartlettTaper
+from structure_factor.point_processes import GinibrePointProcess
 
 
 @pytest.fixture
@@ -69,6 +66,39 @@ def test_scattering_intensity_of_ginibre_on_allowed_values(ginibre_pp, to_test):
                 0.13642892,
             ]
         )
+    np.testing.assert_almost_equal(k_norm, expected_k_norm)
+    np.testing.assert_almost_equal(si, expected_si)
+
+
+# def test_plot_scattering_intensity(ginibre_pp):
+#     L = ginibre_pp.window.radius / np.sqrt(2)  # sidelength of the cubic window
+#     bounds = [[-L / 2, L / 2], [-L / 2, L / 2]]
+#     window = BoxWindow(bounds)  # create a cubic window
+#     ginibre_pp_box = ginibre_pp.restrict_to_window(window)
+#     sf_pp = StructureFactor(ginibre_pp_box)
+#     k_norm, si = sf_pp.scattering_intensity(
+#         k_max=6,
+#         meshgrid_shape=(50, 50),
+#     )
+#     sf_pp.plot_scattering_intensity(
+#         k_norm,
+#         si,
+#         plot_type="all",
+#         exact_sf=GinibrePointProcess.structure_factor,
+#         bins=60,  # number of bins
+#         error_bar=True,  # visualizing the error bars
+#     )
+
+
+def test_interpolate_pcf_ginibre(ginibre_pp):
+    sf_pp = StructureFactor(ginibre_pp)
+    r = np.linspace(0, 80, 500)
+    pcf_r = GinibrePointProcess.pair_correlation_function(r)
+    _, interp_pcf = sf_pp.interpolate_pcf(r, pcf_r)
+    x = np.linspace(5, 10, 30)
+    computed_pcf = interp_pcf(x)
+    expected_pcf = GinibrePointProcess.pair_correlation_function(x)
+    np.testing.assert_almost_equal(computed_pcf, expected_pcf)
 
     np.testing.assert_almost_equal(expected, result)
 
@@ -180,9 +210,12 @@ def test_compute_structure_factor_ginibre_with_ogata(ginibre_pp):
     params = dict(r_max=80, step_size=0.01, nb_points=1000)
     k_norm = np.linspace(1, 10, 1000)
     _, sf_computed = sf_pp.hankel_quadrature(
-        pair_correlation_function_ginibre, k_norm=k_norm, method=method, **params
+        GinibrePointProcess.pair_correlation_function,
+        k_norm=k_norm,
+        method=method,
+        **params
     )
-    sf_expected = structure_factor_ginibre(k_norm)
+    sf_expected = GinibrePointProcess.structure_factor(k_norm)
     np.testing.assert_almost_equal(sf_computed, sf_expected)
 
 
@@ -191,7 +224,10 @@ def test_compute_structure_factor_ginibre_with_baddour_chouinard(ginibre_pp):
     method = "BaddourChouinard"
     params = dict(r_max=80, nb_points=800)
     k_norm, sf_computed = sf_pp.hankel_quadrature(
-        pair_correlation_function_ginibre, k_norm=None, method=method, **params
+        GinibrePointProcess.pair_correlation_function,
+        k_norm=None,
+        method=method,
+        **params
     )
-    sf_expected = structure_factor_ginibre(k_norm)
+    sf_expected = GinibrePointProcess.structure_factor(k_norm)
     np.testing.assert_almost_equal(sf_computed, sf_expected)

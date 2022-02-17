@@ -1,4 +1,4 @@
-from structure_factor.homogeneous_poisson_process import HomogeneousPoissonPointProcess
+from structure_factor.point_processes import HomogeneousPoissonPointProcess
 from structure_factor.spatial_windows import BoxWindow
 
 bounds = [[-6, 6], [-6, 6]]

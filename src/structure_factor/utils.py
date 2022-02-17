@@ -16,33 +16,6 @@ def get_random_number_generator(seed=None):
     return np.random.default_rng(seed)
 
 
-# theoretical structure factors and pair correlation functions
-
-
-def pair_correlation_function_ginibre(x):
-    r"""Pair correlation function of the Ginibre Ensemble with intensity  :math:`1/\pi`.
-
-    Args:
-        x (np.array): Points to evaluate on.
-
-    Returns:
-        np.array: Pair correlation function of the Ginibre evaluated on `x`
-    """
-    return 1.0 - np.exp(-(x ** 2))
-
-
-def structure_factor_ginibre(k):
-    r"""Structure factor of the Ginibre Ensemble of intensity :math:`1/\pi`.
-
-    Args:
-        k (np.array): Points to evaluate on.
-
-    Returns:
-        np.array: Structure factor of Ginibre process evaluated on `k`.
-    """
-    return 1.0 - np.exp(-(k ** 2) / 4)
-
-
 # utils for hyperuniformity.py
 
 

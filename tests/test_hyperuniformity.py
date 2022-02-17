@@ -2,17 +2,17 @@ import numpy as np
 import pytest
 
 from structure_factor.hyperuniformity import Hyperuniformity
-from structure_factor.point_process import HomogeneousPoissonPointProcess
-from structure_factor.utils import structure_factor_ginibre
-
-poisson = HomogeneousPoissonPointProcess()
+from structure_factor.point_processes import (
+    GinibrePointProcess,
+    HomogeneousPoissonPointProcess,
+)
 
 
 @pytest.mark.parametrize(
     "sf, expected",
     [
-        (poisson.structure_factor, False),
-        (structure_factor_ginibre, True),
+        (HomogeneousPoissonPointProcess.structure_factor, False),
+        (GinibrePointProcess.structure_factor, True),
     ],
 )
 def test_effective_hyperuniformity(sf, expected):
