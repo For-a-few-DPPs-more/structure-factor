@@ -94,7 +94,7 @@ class HomogeneousPoissonPointProcess(object):
             .. plot:: code/point_processes/poisson_sample.py
                 :include-source: True
                 :caption:
-                :alt: alternate text
+                :alt: code/point_processes/poisson_sample.py
                 :align: center
 
         .. seealso::
@@ -126,7 +126,7 @@ class HomogeneousPoissonPointProcess(object):
             .. plot:: code/point_processes/poisson_pp.py
                 :include-source: True
                 :caption:
-                :alt: alternate text
+                :alt: code/point_processes/poisson_pp.py
                 :align: center
 
         .. seealso::
@@ -225,7 +225,7 @@ class ThomasPointProcess:
             .. plot:: code/point_processes/thomas_sample.py
                 :include-source: True
                 :caption:
-                :alt: alternate text
+                :alt: code/point_processes/thomas_sample.py
                 :align: center
 
         .. seealso::
@@ -272,7 +272,7 @@ class ThomasPointProcess:
             .. plot:: code/point_processes/thomas_pp.py
                 :include-source: True
                 :caption:
-                :alt: alternate text
+                :alt: code/point_processes/thomas_pp.py
                 :align: center
 
         .. seealso::
@@ -354,7 +354,7 @@ class GinibrePointProcess(object):
             .. plot:: code/point_processes/ginibre_sample.py
                 :include-source: True
                 :caption:
-                :alt: alternate text
+                :alt: code/point_processes/ginibre_sample.py
                 :align: center
 
         .. seealso::
@@ -392,7 +392,7 @@ class GinibrePointProcess(object):
             .. plot:: code/point_processes/ginibre_pp.py
                 :include-source: True
                 :caption:
-                :alt: alternate text
+                :alt: code/point_processes/ginibre_pp.py
                 :align: center
 
         .. seealso::
@@ -413,18 +413,25 @@ def mutual_nearest_neighbor_matching(X, Y, **KDTree_params):
     The matching routine involves successive 1-nearest neighbor sweeps performed by `scipy.spatial.KDTree <https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.KDTree.html>`_ with the euclidean distance.
 
     Args:
-        X (numpy.ndarray): Set of points to be matched with a subset of points from ``Y``.
-        Y (numpy.ndarray): Set of points satisfying math:`|Y| \geq |X|`.
+        X (numpy.ndarray): Array of size (m, d) collecting points to be matched with a subset of points from ``Y``.
+        Y (numpy.ndarray): Array of size (n, d) of points satisfying :math:`m \leq n`.
 
-    Keyword arguments:
-        See the documentation of `scipy.spatial.KDTree <https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.KDTree.html>`_
+    Keyword Args:
+        see (documentation): keyword arguments of `scipy.spatial.KDTree <https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.KDTree.html>`_.
 
-        .. note::
+    .. note::
 
-            Only when points belong to a box :math:`\prod_{i=1}^{d} [0, L_i)` (upper boundary excluded), the ``boxsize`` keyword argument allows to consider periodic boundaries, i.e., the toroidal distance is used for searching for nearest neighbors.
+        The ``boxsize`` keyword argument can be used **only** when points belong to a box :math:`\prod_{i=1}^{d} [0, L_i)` (upper boundary excluded). It allows to consider periodic boundaries, i.e., the toroidal distance is used for searching for nearest neighbors.
 
     Returns:
         numpy.ndarray: vector of indices ``matches`` such that ``X[i]`` is matched to ``Y[matches[i]]``.
+
+    Example:
+        .. plot:: code/point_processes/kly_matching.py
+            :include-source: True
+            :caption: KLY  matching
+            :alt: code/point_processes/kly_matching.py
+            :align: center
     """
     if not (X.ndim == Y.ndim == 2):
         raise ValueError(
