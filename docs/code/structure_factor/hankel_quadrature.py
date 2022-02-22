@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-from structure_factor.pair_correlation_function import PairCorrelationFunction as pcf
+import structure_factor.pair_correlation_function as pcf
 from structure_factor.point_processes import HomogeneousPoissonPointProcess
 from structure_factor.spatial_windows import BallWindow
 from structure_factor.structure_factor import StructureFactor

@@ -1,4 +1,6 @@
-from structure_factor.pair_correlation_function import PairCorrelationFunction as pcf
+import matplotlib.pyplot as plt
+
+import structure_factor.pair_correlation_function as pcf
 from structure_factor.point_processes import HomogeneousPoissonPointProcess
 from structure_factor.spatial_windows import BallWindow
 
