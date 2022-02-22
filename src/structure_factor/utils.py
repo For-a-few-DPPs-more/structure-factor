@@ -118,10 +118,15 @@ def _extrapolate_pcf(x, r, pcf_r, **params):
     r_max = np.max(r)  # maximum radius
     pcf = np.zeros_like(x)
     params.setdefault("fill_value", "extrapolate")
-    mask = x <= r_max
-    pcf[mask] = interpolate.interp1d(r, pcf_r, **params)(x[mask])
-    np.logical_not(mask, out=mask)
-    pcf[mask] = 1.0
+
+    mask = x > r_max
+    if np.any(mask):
+        pcf[mask] = 1.0
+        np.logical_not(mask, out=mask)
+        pcf[mask] = interpolate.interp1d(r, pcf_r, **params)(x[mask])
+    else:
+        pcf = interpolate.interp1d(r, pcf_r, **params)(x)
+
     return pcf
 
 
