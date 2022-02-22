@@ -118,10 +118,10 @@ def _extrapolate_pcf(x, r, pcf_r, **params):
     r_max = np.max(r)  # maximum radius
     pcf = np.zeros_like(x)
     params.setdefault("fill_value", "extrapolate")
-    pcf[x <= r_max] = interpolate.interp1d(r, pcf_r, **params)(
-        x[x <= r_max]
-    )  # interpolate for x<=r_max
-    pcf[x > r_max] = np.ones_like(x[x > r_max])  # extrapolation to 1 for x>r_max
+    mask = x <= r_max
+    pcf[mask] = interpolate.interp1d(r, pcf_r, **params)(x[mask])
+    np.logical_not(mask, out=mask)
+    pcf[mask] = 1.0
     return pcf
 
 
@@ -160,12 +160,7 @@ def _reshape_meshgrid(X):
     Returns:
         np.ndarray: where each meshgrid of the original list ``X`` is stacked as a column.
     """
-    T = []
-    d = len(X)
-    for i in range(0, d):
-        T.append(X[i].ravel())
-    n = np.column_stack(T)  # stack in d columns
-    return n
+    return np.column_stack([x.ravel() for x in X])
 
 
 def allowed_wave_vectors(d, L, k_max=5, meshgrid_shape=None):
@@ -198,6 +193,7 @@ def allowed_wave_vectors(d, L, k_max=5, meshgrid_shape=None):
 
     n_max = np.floor(k_max * L / (2 * np.pi))  # maximum of ``n``
 
+    #! todo refactoring needed, too complex and duplicated code
     # warnings
     if meshgrid_shape is None:
         warnings.warn(
