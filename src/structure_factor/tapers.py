@@ -1,16 +1,13 @@
-r"""Collection of classes representing tapers (also called tapering functions or window functions) with two methods:
+r"""Collection of classes representing tapers (also called tapering functions or window functions). Such tapers must have two methods.
 
 - ``.taper(x, window)`` corresponding to the tapering function :math:`t(x, W)`,
 
 - ``.ft_taper(k, window)`` corresponding to the Fourier transform :math:`\mathcal{F}[t(\cdot, W)](k)` of the tapering function.
 
-These tapers satisfy some conditions listed in :cite:`DGRR:22` (Sections 3.1, 4.3).
+These tapers satisfy some conditions listed in :cite:`HGBLR:22` (Sections 3.1, 4.3).
 
-Any taper to be used should be a class with the two methods ``.taper(x, window)`` and ``.ft_taper(k, window)``
-
-Brief example :
-
-     .. literalinclude:: code/structure_factor/taper.py
+Example:
+    .. literalinclude:: code/structure_factor/taper.py
         :language: python
 """
 
@@ -48,12 +45,12 @@ class BartlettTaper:
         r"""Evaluate the Fourier transform :math:`F[t(\cdot, W)](k)` of the taper :math:`t` (:py:meth:`~structure_factor.tapers.BartlettTaper.taper`).
 
         Args:
-            k (numpy.ndarray): Array of size :math:`n \times d`, where :math:`d` is the ambient dimension and :math:`n` the number of points where the Fourier transform :math:`t(k, W)` is evaluated.
+            k (numpy.ndarray): Array of size :math:`n \times d`, where :math:`d` is the ambient dimension and :math:`n` the number of points where the Fourier transform is evaluated.
 
             window (:py:class:`~structure_factor.spatial_windows.BoxWindow`): :math:`d`-dimensional rectangular window :math:`W`.
 
         Return:
-            numpy.ndarray: Evaluation of the Fourier transform :math:`t(k, W)`.
+            numpy.ndarray: Evaluation of the Fourier transform at ``k``.
         """
         assert isinstance(window, BoxWindow)
         widths = 0.5 * np.diff(window.bounds.T, axis=0)
@@ -102,18 +99,19 @@ class SineTaper:
         r"""Evaluate the Fourier transform :math:`F[t(\cdot, W)](k)` of the taper :math:`t` (:py:meth:`~structure_factor.tapers.SineTaper.taper`).
 
         Args:
-            k (numpy.ndarray): Array of size :math:`n \times d`, where :math:`d` is the ambient dimension and :math:`n` the number of points where the Fourier transform :math:`t(k, W)` is evaluated.
+            k (numpy.ndarray): Array of size :math:`n \times d`, where :math:`d` is the ambient dimension and :math:`n` the number of points where the Fourier transform is evaluated.
 
             window (:py:class:`~structure_factor.spatial_windows.BoxWindow`): :math:`d`-dimensional rectangular window :math:`W`.
 
         Return:
-            numpy.ndarray: Evaluation of the Fourier transform :math:`t(k, W)`.
+            numpy.ndarray: Evaluation of the Fourier transform at ``k``.
         """
         assert isinstance(window, BoxWindow)
         widths = np.diff(window.bounds.T, axis=0)
         p = self.p
         a = k - np.pi * p / widths
         b = k + np.pi * p / widths
+        # todo extract duplicate computations in a function
         if (a == 0).any():
             res_1 = np.zeros_like(k)
             widths_matrix = np.ones_like(k) * widths

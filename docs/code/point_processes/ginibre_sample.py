@@ -1,12 +1,14 @@
+import matplotlib.pyplot as plt
+
 from structure_factor.point_processes import GinibrePointProcess
 from structure_factor.spatial_windows import BallWindow
 
-window = BallWindow(center=[0,0], radius=20) # Observation window
-ginibre = GinibrePointProcess() # Ginibre process
-ginibre_sample = ginibre.generate_sample(window=window)  # Sample of points
+point_process = GinibrePointProcess()
 
-# Plot
-import matplotlib.pyplot as plt
+window = BallWindow(center=[0, 0], radius=20)
+points = point_process.generate_sample(window=window)
 
-plt.plot(ginibre_sample[:, 0], ginibre_sample[:, 1], "k.")
-plt.show()
+fig, ax = plt.subplots()
+ax.plot(points[:, 0], points[:, 1], "b.")
+ax.set_aspect("equal", "box")
+plt.tight_layout(pad=1)

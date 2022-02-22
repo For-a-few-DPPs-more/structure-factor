@@ -1,6 +1,4 @@
-"""
-Collection of secondary functions used in the principal modules.
-"""
+"""Collection of secondary functions used in the principal modules."""
 
 import warnings
 from itertools import product
@@ -25,12 +23,12 @@ def _sort_vectors(k, x_k, y_k=None):
     """Sort ``k`` by increasing order and rearranging the associated vectors to ``k``, ``x_k``and ``y_k``.
 
     Args:
-        k (np.array): Vector to be sorted by increasing order.
-        x_k (np.array): Vector of evaluations associated with ``k``.
-        y_k (np.array, optional): Vector of evaluations associated with ``k``. Defaults to None.
+        k (numpy.ndarray): Vector to be sorted by increasing order.
+        x_k (numpy.ndarray): Vector of evaluations associated with ``k``.
+        y_k (numpy.ndarray, optional): Vector of evaluations associated with ``k``. Defaults to None.
 
     Returns:
-        (np.array, np.array, np.array): ``k`` sorted by increasing order and the associated vectors ``x_k``and ``y_k``.
+        (numpy.ndarray, numpy.ndarray, numpy.ndarray): ``k`` sorted by increasing order and the associated vectors ``x_k``and ``y_k``.
     """
     sort_index_k = np.argsort(k)
     k_sorted = k[sort_index_k]
@@ -48,14 +46,15 @@ def _bin_statistics(x, y, **params):
     """Divide ``x`` into bins and evaluate the mean and the standard deviation of the corresponding elements of ``y`` over each bin.
 
     Args:
-        x (np.array): Vector of data.
-        y (np.array): Vector of data associated with the vector ``x``.
+        x (numpy.ndarray): Vector of data.
+        y (numpy.ndarray): Vector of data associated with the vector ``x``.
 
-    Keyword args:
+    Keyword Args:
         params (dict): Keyword arguments (except ``"x"``, ``"values"`` and ``"statistic"``) of `scipy.stats.binned_statistic <https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.binned_statistic.html>`_.
 
     Returns:
         tuple(numpy.ndarray, numpy.ndarray, numpy.ndarray):
+
             - ``bin_centers``: Vector of centers of the bins associated to ``x``.
             - ``bin_mean``: Vector of means of ``y`` over the bins.
             - ``std_mean``: Vector of standard deviations of ``y`` over the bins.
@@ -99,19 +98,22 @@ def bessel2(order, x):
 
 
 def set_nan_inf_to_zero(array, nan=0, posinf=0, neginf=0):
-    """Set nan, posinf, and neginf values of ``array`` to the corresponding input arguments. Default to zero."""
+    """Set nan, posinf, and neginf values of ``array`` to the corresponding input arguments. Defaults to zero."""
     return np.nan_to_num(array, nan=nan, posinf=posinf, neginf=neginf)
 
 
 def _extrapolate_pcf(x, r, pcf_r, **params):
     """Interpolate pcf_r for x=<r_max and set to 1 for x>r_max.
+
     Args:
-        x (np.array): Points on which the pair correlation function is to be evaluated.
-        r (np.array): Vector of the radius on with the pair correlation function was evaluated.
-        pcf_r (np.array): Vector of evaluations of the pair correlation function corresponding to ``r``.
+        x (numpy.ndarray): Points on which the pair correlation function is to be evaluated.
+
+        r (numpy.ndarray): Vector of the radius on with the pair correlation function was evaluated.
+
+        pcf_r (numpy.ndarray): Vector of evaluations of the pair correlation function corresponding to ``r``.
 
     Returns:
-        np.array: evaluation of the extrapolated pair correlation function on ``x``.
+        numpy.ndarray: evaluation of the extrapolated pair correlation function on ``x``.
     """
     r_max = np.max(r)  # maximum radius
     pcf = np.zeros_like(x)
@@ -130,6 +132,7 @@ def norm_k(k):
     return np.linalg.norm(k, axis=1)
 
 
+#! naming, return object is not a generator but a list
 def taper_grid_generator(d, taper_p, p_component_max=2):
     r"""Given a class of taper `taper_p` of parameter `p` of :math:`\mathbb{R}^d`, return the list of taper `taper_p(p)` with :math:`p \in \{1, ..., P\}^d`.
 
@@ -138,10 +141,10 @@ def taper_grid_generator(d, taper_p, p_component_max=2):
 
         taper_p (Class): Class of taper pf parameter p.
 
-        p_component_max (int): Maximum component of the parameters :math:`p` of the family of tapers. Intuitively the number of taper used is :math:`P=\mathrm{p\_component\_max}^d`. Used only when ``tapers=None``. Default to 2.
+        p_component_max (int): Maximum component of the parameters :math:`p` of the family of tapers. Intuitively the number of taper used is :math:`P=\mathrm{p\_component\_max}^d`. Used only when ``tapers=None``. Defaults to 2.
 
     Returns:
-        [type]: List of taper `taper_p(p)` with :math:`p \in \{1, ..., p_component_max\}^d`.
+        list: List of taper `taper_p(p)` with :math:`p \in \{1, ..., p_component_max\}^d`.
     """
     params = product(*(range(1, p_component_max + 1) for _ in range(d)))
     tapers = [taper_p(p) for p in params]
@@ -155,7 +158,7 @@ def _reshape_meshgrid(X):
         X (list): List of meshgrids.
 
     Returns:
-        n: np.ndarray where each meshgrid of the original list ``X`` is stacked as a column.
+        np.ndarray: where each meshgrid of the original list ``X`` is stacked as a column.
     """
     T = []
     d = len(X)
@@ -166,21 +169,20 @@ def _reshape_meshgrid(X):
 
 
 def allowed_wave_vectors(d, L, k_max=5, meshgrid_shape=None):
-    r"""Return a subset of the d-dimensional allowed wave vectors corresponding to a cubic window of length ``L``.
+    r"""Return a subset of the d-dimensional allowed wavevectors corresponding to a cubic window of length ``L``.
 
     Args:
-
         d (int): Dimension of the space containing the point process.
 
-        L (np.array): 1-d array of d rows, where each element correspond to the length of a side of the BoxWindow containing the point process realization.
+        L (numpy.ndarray): 1-d array of d rows, where each element correspond to the length of a side of the BoxWindow containing the point process realization.
 
         k_max (float, optional): Supremum of the components of the allowed wavevectors on which the scattering intensity to be evaluated; i.e., for any allowed wavevector :math:`\mathbf{k}=(k_1,...,k_d)`, :math:`k_i \leq k\_max` for all i. This implies that the maximum of the output vector ``k_norm`` will be approximately equal to the norm of the vector :math:`(k\_max, ... k\_max)`. Defaults to 5.
 
         meshgrid_shape (tuple, optional): Tuple of length `d`, where each element specifies the number of components over an axis. These axes are crossed to form a subset of :math:`\mathbb{Z}^d` used to construct a set of allowed wavevectors. i.g., if d=2, setting meshgid_shape=(2,3) will construct a meshgrid of allowed wavevectors formed by a vector of 2 values over the x-axis and a vector of 3 values over the y-axis. Defaults to None, which will run the calculation over **all** the allowed wavevectors. Defaults to None.
 
     Returns:
-        tuple (np.ndarray, list):
-            - k : np.array with ``d`` columns where each row is an allowed wave vector.
+        tuple (numpy.ndarray, list):
+            - k : np.array with ``d`` columns where each row is an allowed wavevector.
 
     .. proof:definition::
 
@@ -260,9 +262,9 @@ def plot_poisson(x, axis, c="k", linestyle=(0, (5, 10)), label="Poisson"):
     r"""Plot the pair correlation function :math:`g_{poisson}` and the structure factor :math:`S_{poisson}` corresponding to the Poisson point process.
 
     Args:
-        x (np.array): x coordinate.
+        x (numpy.ndarray): x coordinate.
 
-        axis (matplotlib.axis): Axis on which to add the plot.
+        axis (plt.Axes): Axis on which to add the plot.
 
         c (str, optional): Color of the plot. see `matplotlib <https://matplotlib.org/2.1.1/api/_as_gen/matplotlib.pyplot.plot.html>`_ . Defaults to "k".
 
@@ -271,8 +273,7 @@ def plot_poisson(x, axis, c="k", linestyle=(0, (5, 10)), label="Poisson"):
         label (regexp, optional): Label of the plot. Defaults to "Poisson".
 
     Returns:
-        matplotlib.plot: Plot of the pair correlation function and the structure factor of the Poisson point process over ``x``.
-
+        plt.Axes: Plot of the pair correlation function and the structure factor of the Poisson point process over ``x``.
     """
     axis.plot(x, np.ones_like(x), c=c, linestyle=linestyle, label=label)
     return axis
@@ -291,13 +292,16 @@ def plot_summary(
     r"""Loglog plot the summary results of :py:func:`~structure_factor.utils._bin_statistics` i.e., means and errors bars (3 standard deviations).
 
     Args:
-        x (np.ndarray): x coordinate.
-        y (np.ndarray): y coordinate.
-        axis (matplotlib.axis): Axis on which to add the plot.
+        x (numpy.ndarray): x coordinate.
+
+        y (numpy.ndarray): y coordinate.
+
+        axis (plt.Axes): Axis on which to add the plot.
+
         label (regexp, optional):  Label of the plot. Defaults to r"mean $\pm$ 3 $\cdot$ std".
 
     Returns:
-        matplotlib.plot: Plot of the results of :py:meth:`~structure_factor.utils._bin_statistics` applied on ``x`` and ``y`` .
+        plt.Axes: Plot of the results of :py:meth:`~structure_factor.utils._bin_statistics` applied on ``x`` and ``y`` .
     """
     bin_centers, bin_mean, bin_std = _bin_statistics(x, y, **binning_params)
     axis.plot(bin_centers, bin_mean, "b.")
@@ -323,13 +327,16 @@ def plot_exact(x, y, axis, label):
     r"""Loglog plot of a callable function ``y`` evaluated on the vector ``x``.
 
     Args:
-        x (np.ndarray): x coordinate.
-        y (np.ndarray): y coordinate.
-        axis (matplotlib.axis): Axis on which to add the plot.
+        x (numpy.ndarray): x coordinate.
+
+        y (numpy.ndarray): y coordinate.
+
+        axis (plt.Axes): Axis on which to add the plot.
+
         label (regexp, optional):  Label of the plot.
 
     Returns:
-        matplotlib.plot: Plot of ``y`` with respect to ``x``.
+        plt.Axes: Plot of ``y`` with respect to ``x``.
     """
     x, y, _ = _sort_vectors(x, y)
     axis.plot(x, y, "g", label=label)
@@ -342,11 +349,11 @@ def plot_approximation(
     r"""Loglog plot of ``y`` w.r.t. ``x``.
 
     Args:
-        x (np.ndarray): x coordinate.
+        x (numpy.ndarray): x coordinate.
 
-        y (np.ndarray): y coordinate.
+        y (numpy.ndarray): y coordinate.
 
-        axis (matplotlib.axis): Axis on which to add the plot.
+        axis (plt.Axes): Axis on which to add the plot.
 
         rasterized (bool): Rasterized option of `matlplotlib.plot <https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.plot.html#:~:text=float-,rasterized,-bool>`_.
 
@@ -359,10 +366,10 @@ def plot_approximation(
         marker (matplotlib.marker): Marker of `marker <https://matplotlib.org/stable/api/markers_api.html>`_.
         markersize (float): Marker size.
 
-        scale(str, optional): Trigger between plot scales of `matplotlib.plot <https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_xscale.html>`_. Default to `log`.
+        scale(str, optional): Trigger between plot scales of `plt.Axes <https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_xscale.html>`_. Defaults to `log`.
 
     Returns:
-        matplotlib.plot: Loglog plot of ``y`` w.r.t. ``x``
+        plt.Axes: Loglog plot of ``y`` w.r.t. ``x``
     """
     axis.plot(
         x,
@@ -394,21 +401,20 @@ def plot_estimation_showcase(
     r"""Loglog plot of the results of the scattering intensity :py:meth:`~structure_factor.structure_factor.StructureFactor.scattering_intensity`, with the means and error bars over specific number of bins found via :py:func:`~structure_factor.utils._bin_statistics`.
 
     Args:
+        k_norm (numpy.ndarray): Wavenumbers.
 
-        k_norm (np.ndarray): Wavenumbers.
+        estimation (numpy.ndarray): Scattering intensity corresponding to ``k_norm``.
 
-        estimation (np.ndarray): Scattering intensity corresponding to ``k_norm``.
+        axis (plt.Axes, optional): Axis on which to add the plot. Defaults to None.
 
-        axis (matplotlib.axis, optional): Axis on which to add the plot. Defaults to None.
-
-        scale(str, optional): Trigger between plot scales of `matplotlib.plot <https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_xscale.html>`_. Default to `log`.
+        scale(str, optional): Trigger between plot scales of `matplotlib.plot <https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_xscale.html>`_. Defaults to `log`.
 
 
         exact_sf (callable, optional): Structure factor of the point process. Defaults to None.
 
         error_bar (bool, optional): If ``True``, ``k_norm`` and correspondingly ``estimation`` are divided into sub-intervals (bins). Over each bin, the mean and the standard deviation of ``estimation`` are derived and visualized on the plot. Note that each error bar corresponds to the mean +/- 3 standard deviation. To specify the number of bins, add it to the kwargs argument ``binning_params``. For more details see :py:meth:`~structure_factor.utils._bin_statistics`. Defaults to False.
 
-        rasterized (bool, optional): Rasterized option of `matlplotlib.plot <https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.plot.html#:~:text=float-,rasterized,-bool>`_. Default to True.
+        rasterized (bool, optional): Rasterized option of `matlplotlib.plot <https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.plot.html#:~:text=float-,rasterized,-bool>`_. Defaults to True.
 
         file_name (str, optional): Name used to save the figure. The available output formats depend on the backend being used. Defaults to "".
     """
@@ -450,9 +456,12 @@ def plot_estimation_imshow(k_norm, si, axis, file_name):
     r"""Color level 2D plot, centered on zero.
 
     Args:
-        k_norm (np.ndarray): Wavenumbers.
-        si (np.ndarray): Scattering intensity corresponding to ``k_norm``.
-        axis (matplotlib.axis): Axis on which to add the plot.
+        k_norm (numpy.ndarray): Wavenumbers.
+
+        si (numpy.ndarray): Scattering intensity corresponding to ``k_norm``.
+
+        axis (plt.Axes): Axis on which to add the plot.
+
         file_name (str, optional): Name used to save the figure. The available output formats depend on the backend being used. Defaults to "".
     """
     if axis is None:
@@ -498,26 +507,25 @@ def plot_estimation_all(
     Args:
         point_pattern (:py:class:`~structure_factor.point_pattern.PointPattern`): Object of type PointPattern containing a realization ``point_pattern.points`` of a point process, the window where the points were simulated ``point_pattern.window`` and (optionally) the intensity of the point process ``point_pattern.intensity``.
 
-        k_norm (np.ndarray): Wavenumbers.
+        k_norm (numpy.ndarray): Wavenumbers.
 
-        estimation (np.ndarray): Scattering intensity corresponding to ``k_norm``.
+        estimation (numpy.ndarray): Scattering intensity corresponding to ``k_norm``.
 
         exact_sf (callable, optional): Structure factor of the point process. Defaults to None.
 
         error_bar (bool, optional): If ``True``, ``k_norm`` and correspondingly ``estimation`` are divided into sub-intervals (bins). Over each bin, the mean and the standard deviation of ``estimation`` are derived and visualized on the plot. Note that each error bar corresponds to the mean +/- 3 standard deviation. To specify the number of bins, add it to the kwargs argument ``binning_params``. For more details see :py:meth:`~structure_factor.utils._bin_statistics`. Defaults to False.
 
-        rasterized (bool, optional): Rasterized option of `matlplotlib.plot <https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.plot.html#:~:text=float-,rasterized,-bool>`_. Default to True.
+        rasterized (bool, optional): Rasterized option of `matlplotlib.plot <https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.plot.html#:~:text=float-,rasterized,-bool>`_. Defaults to True.
 
         file_name (str, optional): Name used to save the figure. The available output formats depend on the backend being used. Defaults to "".
 
         window_res (:py:class:`~structure_factor.spatial_windows.AbstractSpatialWindow`, optional): New restriction window. It is useful when the sample of points is large, so for time and visualization purposes, it is better to restrict the plot of the point process to a smaller window. Defaults to None.
 
-        scale(str, optional): Trigger between plot scales of `matplotlib.plot <https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_xscale.html>`_. Default to `log`.
-
+        scale(str, optional): Trigger between plot scales of `matplotlib.plot <https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_xscale.html>`_. Defaults to `log`.
     """
     figure, axes = plt.subplots(1, 3, figsize=(24, 6))
 
-    point_pattern.plot(axis=axes[0], window_res=window_res)
+    point_pattern.plot(axis=axes[0], window=window_res)
     plot_estimation_showcase(
         k_norm,
         estimation,
@@ -554,12 +562,11 @@ def plot_sf_hankel_quadrature(
     r"""Plot the approximations of the structure factor (results of :py:meth:`~structure_factor.hankel_quadrature`) with means and error bars over bins, see :py:meth:`~structure_factor.utils._bin_statistics`.
 
     Args:
+        k_norm (numpy.ndarray): Vector of wavenumbers (i.e., norms of waves) on which the structure factor has been approximated.
 
-        k_norm (np.array): Vector of wavenumbers (i.e., norms of waves) on which the structure factor has been approximated.
+        estimation (numpy.ndarray): Approximation of the structure factor corresponding to ``k_norm``.
 
-        estimation (np.array): Approximation of the structure factor corresponding to ``k_norm``.
-
-        axis (matplotlib.axis): Support axis of the plots.
+        axis (plt.Axes): Support axis of the plots.
 
         scale(str): Trigger between plot scales of `matplotlib.plot <https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_xscale.html>`_.
 
@@ -573,10 +580,8 @@ def plot_sf_hankel_quadrature(
 
         label (regexp):  Label of the plot.
 
-
     Keyword Args:
         binning_params: (dict): Used when ``error_bar=True``, by the method :py:meth:`~structure_factor.utils_bin_statistics` as keyword arguments (except ``"statistic"``) of ``scipy.stats.binned_statistic``.
-
     """
     if axis is None:
         fig, axis = plt.subplots(figsize=(8, 5))
