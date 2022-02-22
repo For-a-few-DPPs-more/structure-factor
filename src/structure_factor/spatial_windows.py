@@ -74,9 +74,9 @@ class AbstractSpatialWindow(metaclass=ABCMeta):
 class BallWindow(AbstractSpatialWindow):
     r"""Create a :math:`d` dimensional ball window :math:`B(c, r)`, where :math:`c \in \mathbb{R}^d` and :math:`r>0`.
 
-    Args:
-        center (numpy.ndarray): Center :math:`c` of the ball.
-        radius (float, optional): Radius :math:`r > 0` of the ball. Defaults to 1.0.
+    .. todo::
+
+        list attributes
 
     Example:
         .. plot:: code/spatial_window/ball_window.py
@@ -96,12 +96,12 @@ class BallWindow(AbstractSpatialWindow):
             center (numpy.ndarray): Center :math:`c` of the ball.
             radius (float, optional): Radius :math:`r > 0` of the ball. Defaults to 1.0.
         """
-        _center = np.array(center)
-        if not _center.ndim == 1:
+        center = np.asarray(center)
+        if not center.ndim == 1:
             raise ValueError("center must be 1D numpy.ndarray")
         if not radius > 0:
             raise ValueError("radius must be positive")
-        self.center = _center
+        self.center = center
         self.radius = radius
 
     @property
@@ -131,9 +131,9 @@ class BallWindow(AbstractSpatialWindow):
         return np.pi ** (d / 2) * r ** d / sp.special.gamma(d / 2 + 1)
 
     def __contains__(self, point):
-        _point = np.array(point)
-        assert _point.ndim == 1 and _point.size == self.dimension
-        return self.indicator_function(_point)
+        point = np.asarray(point)
+        assert point.ndim == 1 and point.size == self.dimension
+        return self.indicator_function(point)
 
     def indicator_function(self, points):
         return np.linalg.norm(points - self.center, axis=-1) <= self.radius
@@ -173,9 +173,6 @@ class BallWindow(AbstractSpatialWindow):
 class UnitBallWindow(BallWindow):
     r"""Create a d-dimensional unit ball window :math:`B(c, r=1)`, where :math:`c \in \mathbb{R}^d`.
 
-    Args:
-        center (numpy.ndarray, optional): Center :math:`c` of the ball.
-
     .. note::
 
         ``UnitBallWindow(center) = BallWindow(center, radius=1.0)``
@@ -193,8 +190,9 @@ class UnitBallWindow(BallWindow):
 class BoxWindow(AbstractSpatialWindow):
     r"""Create a :math:`d` dimensional box window :math:`\prod_{i=1}^{d} [a_i, b_i]`.
 
-    Args:
-        bounds (numpy.ndarray): :math:`d \times 2` array describing the bounds of the box.
+    .. todo::
+
+        list attributes
 
     Example:
         .. plot:: code/spatial_window/box_window.py
@@ -213,13 +211,13 @@ class BoxWindow(AbstractSpatialWindow):
         Args:
             bounds (numpy.ndarray): :math:`d \times 2` array describing the bounds of the box.
         """
-        _bounds = np.atleast_2d(bounds)
-        if _bounds.ndim != 2 or _bounds.shape[1] != 2:
+        bounds = np.atleast_2d(bounds)
+        if bounds.ndim != 2 or bounds.shape[1] != 2:
             raise ValueError("bounds must be d x 2 numpy.ndarray")
-        if np.any(np.diff(_bounds, axis=-1) <= 0):
+        if np.any(np.diff(bounds, axis=-1) <= 0):
             raise ValueError("all bounds [a_i, b_i] must satisfy a_i < b_i")
         # use transpose to facilitate operations (unpacking, diff, rand, etc)
-        self._bounds = np.transpose(_bounds)
+        self._bounds = np.transpose(bounds)
 
     @property
     def bounds(self):
@@ -238,9 +236,9 @@ class BoxWindow(AbstractSpatialWindow):
         return np.prod(np.diff(self._bounds, axis=0))
 
     def __contains__(self, point):
-        _point = np.array(point)
-        assert _point.ndim == 1 and _point.size == self.dimension
-        return self.indicator_function(_point)
+        point = np.asarray(point)
+        assert point.ndim == 1 and point.size == self.dimension
+        return self.indicator_function(point)
 
     def indicator_function(self, points):
         a, b = self._bounds
@@ -278,11 +276,7 @@ class BoxWindow(AbstractSpatialWindow):
 
 
 class UnitBoxWindow(BoxWindow):
-    r"""Create a :math:`d` dimensional unit box window :math:`\prod_{i=1}^{d} [c_i - \frac{1}{2}, c_i + \frac{1}{2}]` where :math:`c \in \mathbb{R}^d`.
-
-    Args:
-        center (numpy.ndarray): Center :math:`c` of the box.
-    """
+    r"""Create a :math:`d` dimensional unit box window :math:`\prod_{i=1}^{d} [c_i - \frac{1}{2}, c_i + \frac{1}{2}]` where :math:`c \in \mathbb{R}^d`."""
 
     def __init__(self, center):
         r"""Initialize a :math:`d` dimensional unit box window :math:`\prod_{i=1}^{d} [c_i - \frac{1}{2}, c_i + \frac{1}{2}]`, i.e., a box window with length equal to 1 and prescribed ``center``, such that :math:`c_i=` ``center[i]``.
