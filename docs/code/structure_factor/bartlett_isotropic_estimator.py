@@ -1,7 +1,7 @@
 # Generate a Poisson PointPattern
+from structure_factor.point_pattern import PointPattern
 from structure_factor.point_processes import HomogeneousPoissonPointProcess
 from structure_factor.spatial_windows import BallWindow
-from structure_factor.point_pattern import PointPattern
 
 poisson = HomogeneousPoissonPointProcess(
     intensity=1

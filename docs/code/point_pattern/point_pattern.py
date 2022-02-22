@@ -1,7 +1,7 @@
 # Generate PointPattern of a Poisson Process
+from structure_factor.point_pattern import PointPattern
 from structure_factor.point_processes import HomogeneousPoissonPointProcess
 from structure_factor.spatial_windows import BoxWindow
-from structure_factor.point_pattern import PointPattern
 
 poisson = HomogeneousPoissonPointProcess(
     intensity=1
