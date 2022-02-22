@@ -8,7 +8,7 @@
 """
 import numpy as np
 import scipy.linalg as la
-from py import process
+from scipy.spatial import KDTree
 
 from structure_factor.point_pattern import PointPattern
 from structure_factor.spatial_windows import (
@@ -93,7 +93,7 @@ class HomogeneousPoissonPointProcess(object):
             .. plot:: code/point_processes/poisson_sample.py
                 :include-source: True
                 :caption:
-                :alt: alternate text
+                :alt: code/point_processes/poisson_sample.py
                 :align: center
 
         .. seealso::
@@ -122,7 +122,7 @@ class HomogeneousPoissonPointProcess(object):
             .. plot:: code/point_processes/poisson_pp.py
                 :include-source: True
                 :caption:
-                :alt: alternate text
+                :alt: code/point_processes/poisson_pp.py
                 :align: center
 
         .. seealso::
@@ -225,7 +225,7 @@ class ThomasPointProcess:
             .. plot:: code/point_processes/thomas_sample.py
                 :include-source: True
                 :caption:
-                :alt: alternate text
+                :alt: code/point_processes/thomas_sample.py
                 :align: center
 
         .. seealso::
@@ -271,7 +271,7 @@ class ThomasPointProcess:
             .. plot:: code/point_processes/thomas_pp.py
                 :include-source: True
                 :caption:
-                :alt: alternate text
+                :alt: code/point_processes/thomas_pp.py
                 :align: center
 
         .. seealso::
@@ -357,7 +357,7 @@ class GinibrePointProcess(object):
             .. plot:: code/point_processes/ginibre_sample.py
                 :include-source: True
                 :caption:
-                :alt: alternate text
+                :alt: code/point_processes/ginibre_sample.py
                 :align: center
 
         .. seealso::
@@ -394,7 +394,7 @@ class GinibrePointProcess(object):
             .. plot:: code/point_processes/ginibre_pp.py
                 :include-source: True
                 :caption:
-                :alt: alternate text
+                :alt: code/point_processes/ginibre_pp.py
                 :align: center
 
         .. seealso::
@@ -407,3 +407,70 @@ class GinibrePointProcess(object):
             points=points, window=window, intensity=self.intensity
         )
         return point_pattern
+
+
+def mutual_nearest_neighbor_matching(X, Y, **KDTree_params):
+    r"""Match the set of points ``X`` with a subset of points from ``Y`` based on mutual nearest neighbor matching :cite:`KlaLasYog20`. It is assumed that :math:`|X| \leq |Y|` and that each point in ``X``, resp. ``Y``, can have only one nearest neighbor in ``Y``, resp. ``X``.
+
+    The matching routine involves successive 1-nearest neighbor sweeps performed by `scipy.spatial.KDTree <https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.KDTree.html>`_ with the euclidean distance.
+
+    Args:
+        X (numpy.ndarray): Array of size (m, d) collecting points to be matched with a subset of points from ``Y``.
+        Y (numpy.ndarray): Array of size (n, d) of points satisfying :math:`m \leq n`.
+
+    Keyword Args:
+        see (documentation): keyword arguments of `scipy.spatial.KDTree <https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.KDTree.html>`_.
+
+    .. note::
+
+        The ``boxsize`` keyword argument can be used **only** when points belong to a box :math:`\prod_{i=1}^{d} [0, L_i)` (upper boundary excluded). It allows to consider periodic boundaries, i.e., the toroidal distance is used for searching for nearest neighbors.
+
+    Returns:
+        numpy.ndarray: vector of indices ``matches`` such that ``X[i]`` is matched to ``Y[matches[i]]``.
+
+    Example:
+        .. plot:: code/point_processes/kly_matching.py
+            :include-source: True
+            :caption: KLY  matching
+            :alt: code/point_processes/kly_matching.py
+            :align: center
+    """
+    if not (X.ndim == Y.ndim == 2):
+        raise ValueError(
+            "X and Y must be 2d numpy arrays with respective size (m, d) and (n, d), where d is the ambient dimension."
+        )
+    if X.shape[0] > Y.shape[0]:
+        raise ValueError(
+            "The sets of points represented by X and Y must satisfy |X| <= |Y|."
+        )
+
+    m, n = X.shape[0], Y.shape[0]
+    idx_X_unmatched = np.arange(m, dtype=int)
+    idx_Y_unmatched = np.arange(n, dtype=int)
+    matches = np.zeros(m, dtype=int)
+
+    for _ in range(m):  # at most |X| nearest neighbor sweeps are performed
+
+        X_ = X[idx_X_unmatched]
+        Y_ = Y[idx_Y_unmatched]
+
+        knn = KDTree(Y_, **KDTree_params)
+        X_to_Y = knn.query(X_, k=1, p=2)[1]  # p=2, i.e., euclidean distance
+
+        knn = KDTree(X_, **KDTree_params)
+        Y_to_X = knn.query(Y_, k=1, p=2)[1]
+
+        identity = range(len(idx_X_unmatched))
+        mask_X = np.equal(Y_to_X[X_to_Y], identity)
+
+        matches[idx_X_unmatched[mask_X]] = idx_Y_unmatched[X_to_Y[mask_X]]
+
+        if np.all(mask_X):  # all points from X got matched
+            break
+
+        idx_X_unmatched = idx_X_unmatched[~mask_X]
+        mask_Y = np.full(len(idx_Y_unmatched), True, dtype=bool)
+        mask_Y[X_to_Y[mask_X]] = False
+        idx_Y_unmatched = idx_Y_unmatched[mask_Y]
+
+    return matches
