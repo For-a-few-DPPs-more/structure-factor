@@ -11,7 +11,8 @@ point_pattern = point_process.generate_point_pattern(window=window)
 sf = StructureFactor(point_pattern)
 k_norm, sf_estimated = sf.bartlett_isotropic_estimator(n_allowed_k_norm=50)
 
-sf.plot_isotropic_estimator(
+ax = sf.plot_isotropic_estimator(
     k_norm, sf_estimated, label=r"$\widehat{S}_{\mathrm{BI}}(k)$"
 )
-plt.show()
+
+plt.tight_layout(pad=1)

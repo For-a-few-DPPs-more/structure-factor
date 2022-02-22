@@ -38,6 +38,6 @@ sf.plot_isotropic_estimator(
     exact_sf=point_process.structure_factor,
     label="After regularization",
 )
-
 ax.legend()
-plt.show()
+
+plt.tight_layout(pad=1)

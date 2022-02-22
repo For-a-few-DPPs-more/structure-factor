@@ -17,3 +17,4 @@ pcf.plot(
     color=["grey"],
     style=["."],
 )
+plt.tight_layout(pad=1)

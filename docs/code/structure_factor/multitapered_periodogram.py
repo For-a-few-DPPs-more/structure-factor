@@ -28,4 +28,5 @@ sf.plot_spectral_estimator(
     bins=30,
     label=r"$\widehat{S}_{\mathrm{MDDTP}}((t_j)_1^4, \mathbf{k})$",
 )
-plt.show()
+
+plt.tight_layout(pad=1)

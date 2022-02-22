@@ -26,4 +26,4 @@ pcf_interpolated = pcf.interpolate(
 x = np.linspace(0, 50, 200)
 plt.plot(x, pcf_interpolated(x), "b.")
 plt.plot(x, point_process.pair_correlation_function(x), "g")
-plt.show()
+plt.tight_layout(pad=1)

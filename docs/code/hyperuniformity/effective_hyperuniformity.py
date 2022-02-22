@@ -34,4 +34,5 @@ ax.annotate(
 ax.legend()
 ax.set_xlabel("wavelength (k)")
 ax.set_ylabel(r"Structure factor ($\mathsf{S}(k)$")
-plt.show()
+
+plt.tight_layout(pad=1)

@@ -27,12 +27,13 @@ k_norm, sf_estimated = sf.hankel_quadrature(
     pcf_interpolated, method="BaddourChouinard", k_norm=k_norm, r_max=20, nb_points=1000
 )
 
-fig, axis = plt.subplots(figsize=(7, 6))
+fig, ax = plt.subplots(figsize=(7, 6))
 fig = sf.plot_isotropic_estimator(
     k_norm,
     sf_estimated,
-    axis=axis,
+    axis=ax,
     error_bar=True,
     bins=30,
     label=r"$\widehat{S}_{\mathrm{BC}}(k)$",
 )
+plt.tight_layout(pad=1)

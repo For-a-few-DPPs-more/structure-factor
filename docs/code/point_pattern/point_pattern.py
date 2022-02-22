@@ -1,3 +1,5 @@
+import matplotlib.pyplot as plt
+
 from structure_factor.point_pattern import PointPattern
 from structure_factor.point_processes import HomogeneousPoissonPointProcess
 from structure_factor.spatial_windows import BoxWindow
@@ -9,4 +11,7 @@ points = point_process.generate_sample(window=window)
 point_pattern = PointPattern(
     points=points, window=window, intensity=point_process.intensity
 )
-point_pattern.plot()
+
+ax = point_pattern.plot()
+ax.set_aspect("equal", "box")
+plt.tight_layout(pad=1)

@@ -30,4 +30,5 @@ sf.plot_spectral_estimator(
     bins=30,
     label=r"$\widehat{S}_{\mathrm{DDTP}}(t_1, \mathbf{k})$",
 )
-plt.show()
+
+plt.tight_layout(pad=1)

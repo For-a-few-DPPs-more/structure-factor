@@ -12,4 +12,5 @@ points = point_process.generate_sample(window=window)
 fig = plt.figure(figsize=(9, 6))
 ax = plt.axes(projection="3d")
 ax.scatter3D(points[:, 0], points[:, 1], points[:, 2], c=points[:, 2])
-plt.show()
+
+plt.tight_layout(pad=1)

@@ -525,7 +525,7 @@ def plot_estimation_all(
     """
     figure, axes = plt.subplots(1, 3, figsize=(24, 6))
 
-    point_pattern.plot(axis=axes[0], window_res=window_res)
+    point_pattern.plot(axis=axes[0], window=window_res)
     plot_estimation_showcase(
         k_norm,
         estimation,

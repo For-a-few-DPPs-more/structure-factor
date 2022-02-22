@@ -23,4 +23,5 @@ sf.plot_spectral_estimator(
     scale="log",
     label=r"$\widehat{S}_{\mathrm{SI}}(\mathbf{k})$",
 )
-plt.show()
+
+plt.tight_layout(pad=1)
