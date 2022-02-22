@@ -112,7 +112,7 @@ def bartlett_estimator(point_pattern, k_norm=None, n_allowed_k_norm=60):
                 "The window must be an instance of BallWindow. Hint: use PointPattern.restrict_to_window."
             )
         k_norm = allowed_k_norm(d=d, r=window.radius, n=n_allowed_k_norm)
-
+    k_norm = k_norm.astype(float)  # transfer to float type
     estimation = np.zeros_like(k_norm)
     order = float(d / 2 - 1)
     isotropic_estimator_njit(estimation, k_norm, norm_xi_xj, order)
