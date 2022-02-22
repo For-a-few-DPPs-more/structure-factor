@@ -1,10 +1,9 @@
 """
 Compute the symmetric Fourier transform using two quadratures of the Hankel transform.
 
-**This module contains**:
-    - :py:class:`~structure_factor.transforms.RadiallySymmetricFourierTransform`: Compute the symmetric Fourier transform using the Hankel transform.
-    - :py:class:`~structure_factor.transforms.HankelTransformBaddourChouinard`: Compute the Hankel transform using Baddour and Chouinard discrete Hankel transform.
-    - :py:class:`~structure_factor.transforms.HankelTransformOgata`: Compute the Hankel transform using Ogata quadrature.
+- :py:class:`~structure_factor.transforms.RadiallySymmetricFourierTransform`: Compute the symmetric Fourier transform using the Hankel transform.
+- :py:class:`~structure_factor.transforms.HankelTransformBaddourChouinard`: Compute the Hankel transform using Baddour and Chouinard discrete Hankel transform.
+- :py:class:`~structure_factor.transforms.HankelTransformOgata`: Compute the Hankel transform using Ogata quadrature.
 
 For more details, we refer to :cite:`DGRR:22`.
 """
@@ -59,6 +58,7 @@ class RadiallySymmetricFourierTransform:
 
         Returns:
             tuple (np.array, np.array):
+
                 - k: Point(s) where the Fourier transform is to be evaluated.
                 - F_k: Fourier transform of ``f`` at ``k``.
 

@@ -1,23 +1,20 @@
 """
 Collection of point processes objects, gathering properties s.a. the pair correlation function, the structure factor and methods related to the point process s.a. sampling point in an observation window, generating a PointPattern object.
 
-**This module contains 3 objects** :
-
-    - :py:class:`~structure_factor.point_processes.HomogeneousPoissonPointProcess`: The homogeneous Poisson point process.
-    - :py:class:`~structure_factor.point_processes.ThomasPointProcess`: The Thomas point process.
-    - :py:class:`~structure_factor.point_processes.GinibrePointProcess`: The Ginibre point process.
-
+- :py:class:`~structure_factor.point_processes.HomogeneousPoissonPointProcess`: The homogeneous Poisson point process.
+- :py:class:`~structure_factor.point_processes.ThomasPointProcess`: The Thomas point process.
+- :py:class:`~structure_factor.point_processes.GinibrePointProcess`: The Ginibre point process.
 """
 import numpy as np
-from py import process
 import scipy.linalg as la
+from py import process
 
+from structure_factor.point_pattern import PointPattern
 from structure_factor.spatial_windows import (
     AbstractSpatialWindow,
     BallWindow,
     BoxWindow,
 )
-from structure_factor.point_pattern import PointPattern
 from structure_factor.utils import get_random_number_generator
 
 
@@ -52,7 +49,6 @@ class HomogeneousPoissonPointProcess(object):
 
         Returns:
             float or numpy.ndarray: ``1.0`` if ``r=None``, otherwise a vector of size :math:`n` with entries equal to ``1.0``.
-
         """
         val = 1.0
         if r is None:
@@ -70,7 +66,6 @@ class HomogeneousPoissonPointProcess(object):
 
         Returns:
             float or numpy.ndarray: ``1.0`` if ``k=None``, otherwise a vector of size :math:`n` with entries equal to ``1.0``.
-
         """
         val = 1.0
         if k is None:
@@ -99,8 +94,6 @@ class HomogeneousPoissonPointProcess(object):
         .. seealso::
 
             :py:mod:`~structure_factor.spatial_windows`.
-
-
         """
         if not isinstance(window, AbstractSpatialWindow):
             raise TypeError("window argument must be an AbstractSpatialWindow")
@@ -131,7 +124,6 @@ class HomogeneousPoissonPointProcess(object):
         .. seealso::
 
             :py:mod:`~structure_factor.spatial_windows`, :py:class:`~structure_factor.point_pattern.PointPattern`.
-
         """
         points = self.generate_sample(window=window, seed=seed)
         point_pattern = PointPattern(
@@ -230,7 +222,6 @@ class ThomasPointProcess:
         .. seealso::
 
             :py:mod:`~structure_factor.spatial_windows`.
-
         """
         if not isinstance(window, AbstractSpatialWindow):
             raise TypeError("window argument must be an AbstractSpatialWindow")
@@ -277,7 +268,6 @@ class ThomasPointProcess:
         .. seealso::
 
             :py:mod:`~structure_factor.spatial_windows`, :py:class:`~structure_factor.point_pattern.PointPattern`.
-
         """
         points = self.generate_sample(window=window, seed=seed)
         point_pattern = PointPattern(
@@ -359,7 +349,6 @@ class GinibrePointProcess(object):
         .. seealso::
 
             :py:class:`~structure_factor.spatial_windows.BallWindow`.
-
         """
         if not isinstance(window, BallWindow):
             raise ValueError("The window should be a 2-d centered BallWindow.")
@@ -397,7 +386,6 @@ class GinibrePointProcess(object):
         .. seealso::
 
             :py:class:`~structure_factor.spatial_windows.BallWindow`, :py:class:`~structure_factor.point_pattern.PointPattern`.
-
         """
         points = self.generate_sample(window=window, seed=seed)
         point_pattern = PointPattern(

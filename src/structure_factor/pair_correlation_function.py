@@ -1,19 +1,18 @@
 """
 Class gathering methods for approximating the pair correlation function of an isotropic point process, and transforming the result into a continuous function.
 
-**The available methods:**
-    - :py:meth:`~structure_factor.pair_correlation_function.PairCorrelationFunction.estimate`: Estimates the pair correlation function.
-    - :py:meth:`~structure_factor.pair_correlation_function.PairCorrelationFunction.interpolate`: Cleans, interpolates, and extrapolates the results of :py:meth:`~structure_factor.pair_correlation_function.PairCorrelationFunction.estimate`.
-    - :py:meth:`~structure_factor.pair_correlation_function.PairCorrelationFunction.plot`: Plots the results of :py:meth:`~structure_factor.pair_correlation_function.PairCorrelationFunction.estimate`.
+- :py:meth:`~structure_factor.pair_correlation_function.PairCorrelationFunction.estimate`: Estimates the pair correlation function.
+- :py:meth:`~structure_factor.pair_correlation_function.PairCorrelationFunction.interpolate`: Cleans, interpolates, and extrapolates the results of :py:meth:`~structure_factor.pair_correlation_function.PairCorrelationFunction.estimate`.
+- :py:meth:`~structure_factor.pair_correlation_function.PairCorrelationFunction.plot`: Plots the results of :py:meth:`~structure_factor.pair_correlation_function.PairCorrelationFunction.estimate`.
 """
 import warnings
 
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import rpy2.robjects as robjects
 import scipy.interpolate as interpolate
 from spatstat_interface.interface import SpatstatInterface
-import matplotlib.pyplot as plt
 
 import structure_factor.utils as utils
 
@@ -39,17 +38,21 @@ class PairCorrelationFunction:
 
         Keyword Args:
             params (dict):
+
                 - if ``method = "ppp"``
+
                     - keyword arguments of `spastat.core.pcf.ppp <https://rdrr.io/cran/spatstat.core/man/pcf.ppp.html>`_, ex: r, correction ...
+
                 - if ``method = "fv"``
+
                     - Kest = dict(keyword arguments of `spastat.core.Kest <https://rdrr.io/github/spatstat/spatstat.core/man/Kest.html>`_), ex: rmax ...
+
                     - fv = dict( keyword arguments of `spastat.core.pcf.fv <https://rdrr.io/cran/spatstat.core/man/pcf.fv.html>`_), ex: method, spar ...
 
         Returns:
             pandas.DataFrame: Version of the output of `spatstat.core.pcf.ppp <https://www.rdocumentation.org/packages/spatstat.core/versions/2.1-2/topics/pcf.ppp>`_ or `spatsta.core.pcf.fv <https://www.rdocumentation.org/packages/spatstat.core/versions/2.1-2/topics/pcf.fv>`_. The first column of the DataFrame is the set of radii on which the pair correlation function was approximated. The others correspond to the approximated pair correlation function with different edge corrections.
 
         Example:
-
             .. plot:: code/pair_correlation_function/estimate_pcf.py
                 :include-source: True
 
@@ -136,7 +139,6 @@ class PairCorrelationFunction:
 
             extrapolate_with_one (bool, optional): If True, the discrete approximation vector ``pcf_r`` is first interpolated until the maximal value of ``r``, then the extrapolated values are fixed to 1. If False, the extrapolation method of `scipy.interpolate.interp1d <https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html>`_ is used. Warning: It is important to keep the Default, to ameliorate the approximation of the structure factor by Ogata quadrature Hankel transform. Default to True.
 
-
         Keyword Args:
             params (dict): Keyword arguments of the function `scipy.interpolate.interp1d <https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html>`_.
 
@@ -144,7 +146,6 @@ class PairCorrelationFunction:
             callable: Approximated pair correlation function.
 
         Example:
-
             .. plot:: code/pair_correlation_function/interpolate_pcf.py
                 :include-source: True
 
@@ -152,7 +153,6 @@ class PairCorrelationFunction:
 
             :py:meth:`~structure_factor.point_pattern.PointPattern`, :py:meth:`~structure_factor.pair_correlation_function.PairCorrelationFuntcion.estimate`.
         """
-
         params.setdefault("kind", "cubic")
         if clean:
             if replace:
@@ -184,7 +184,7 @@ class PairCorrelationFunction:
             file_name (str): Name used to save the figure. The available output formats depend on the backend being used.
 
         Keyword Args:
-                kwargs (dict): Keyword arguments of the function `pandas.DataFrame.plot.line <https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.plot.line.html>`_.
+            kwargs (dict): Keyword arguments of the function `pandas.DataFrame.plot.line <https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.plot.line.html>`_.
 
         Return:
             matplotlib.plot: Plot result.

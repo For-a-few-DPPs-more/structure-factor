@@ -8,10 +8,10 @@ These tapers satisfy some conditions listed in :cite:`DGRR:22` (Sections 3.1, 4.
 
 Any taper to be used should be a class with the two methods ``.taper(x, window)`` and ``.ft_taper(k, window)``
 
-Brief example :
+Example:
 
-     .. literalinclude:: code/structure_factor/taper.py
-        :language: python
+.. literalinclude:: code/structure_factor/taper.py
+    :language: python
 """
 
 import numpy as np

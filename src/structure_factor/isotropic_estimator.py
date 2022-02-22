@@ -1,16 +1,15 @@
 """Collection of functions used to implement a fast version of Bartlett's isotropic estimator.
 """
 
-
 import numba_scipy
 import numba_scipy.special
 import numpy as np
 import scipy.special as sc
 from numba import njit
 from scipy.spatial.distance import pdist
-from structure_factor.spatial_windows import BallWindow
 
-from structure_factor.spatial_windows import UnitBallWindow
+from structure_factor.spatial_windows import BallWindow, UnitBallWindow
+
 
 #! doc done (Diala)
 def allowed_k_norm(d, r, n):
@@ -18,7 +17,7 @@ def allowed_k_norm(d, r, n):
 
     .. warning::
 
-            This method is only available when the space dimension d is an even number.
+        This method is only available when the space dimension d is an even number.
 
     Args:
         d (int): Dimension of the underlying space.
@@ -29,25 +28,24 @@ def allowed_k_norm(d, r, n):
         np.array: ``n`` allowed wavenumbers.
 
     Example:
-            .. literalinclude:: code/isotropic_estimator/allowed_k_norm.py
-                :language: python
+        .. literalinclude:: code/isotropic_estimator/allowed_k_norm.py
+            :language: python
 
-            .. testoutput::
+        .. testoutput::
 
-                [0.1915853  0.35077933 0.50867341 0.6661846  0.8235315  0.98079293]
-
+            [0.1915853  0.35077933 0.50867341 0.6661846  0.8235315  0.98079293]
 
     .. proof:definition::
 
         The allowed wavenumbers of a realization from a point process :math:`\mathcal{X}` of :math:`\mathbb{R}^d` observed in a ball window :math:`W=B(\mathbf{0}, R)` are the :math:`k` s.t.,
 
         .. math::
+
             k \in \left\{ \frac{x}{R} \in \mathbb{R} \text{ s.t. }  J_{d/2}(x)=0 \right \}
 
     .. seealso::
 
         :py:func:`~structure_factor.isotropic_estimator.bartlett_estimator`.
-
     """
     if np.floor(d / 2) != d / 2:
         raise ValueError(
@@ -57,8 +55,6 @@ def allowed_k_norm(d, r, n):
 
 
 #! care about case k=0
-
-
 def bartlett_estimator(point_pattern, k_norm=None, n_allowed_k_norm=60):
     r"""Compute Bartlett's isotropic estimator :math:`\widehat{S}_{\mathrm{BI}}` of the point process (isotropic) encapsulated in  ``point_pattern``.
 
@@ -75,24 +71,26 @@ def bartlett_estimator(point_pattern, k_norm=None, n_allowed_k_norm=60):
                 - estimation: Evaluation(s) of Bartlett's isotropic estimator at ``k``.
 
     Example:
-            .. literalinclude:: code/isotropic_estimator/bartlett_estimator.py
-                :language: python
-                :emphasize-lines: 12-15
+        .. literalinclude:: code/isotropic_estimator/bartlett_estimator.py
+            :language: python
+            :emphasize-lines: 12-15
 
     .. proof:definition::
 
-            Bartlett's isotropic estimator :math:`\widehat{S}_{\mathrm{BI}}` of a realization :math:`\{\mathbf{x}_i\}_{i=1}^N` of a point process :math:`\mathcal{X}` observed in a ball window :math:`W=B(\mathbf{0}, R)` is defined by,
+        Bartlett's isotropic estimator :math:`\widehat{S}_{\mathrm{BI}}` of a realization :math:`\{\mathbf{x}_i\}_{i=1}^N` of a point process :math:`\mathcal{X}` observed in a ball window :math:`W=B(\mathbf{0}, R)` is defined by,
 
-            .. math::
-                \widehat{S}_{\mathrm{BI}}(k) =1 + \frac{ (2\pi)^{d/2} }{\rho \mathcal{L}^d(W) \omega_{d-1}} \sum_{ \substack{j, q =1 \\ j\neq q } }^{N }
-                 \frac{1}{(k \|\mathbf{x}_j - \mathbf{x}_q\|_2)^{d/2 - 1}}
-                J_{d/2 - 1}(k \|\mathbf{x}_j - \mathbf{x}_q\|_2).
+        .. math::
 
-            For more details, we refer to :cite:`DGRR:22`, (Section 3.2).
+            \widehat{S}_{\mathrm{BI}}(k) =1 + \frac{ (2\pi)^{d/2} }{\rho \mathcal{L}^d(W) \omega_{d-1}} \sum_{ \substack{j, q =1 \\ j\neq q } }^{N }
+                \frac{1}{(k \|\mathbf{x}_j - \mathbf{x}_q\|_2)^{d/2 - 1}}
+            J_{d/2 - 1}(k \|\mathbf{x}_j - \mathbf{x}_q\|_2).
+
+        For more details, we refer to :cite:`DGRR:22`, (Section 3.2).
 
     .. seealso::
-            :py:class:`~structure_factor.spatial_windows.BallWindow`,
-            :py:meth:`~structure_factor.point_pattern.PointPattern.restrict_to_window`, :py:meth:`~structure_factor.structure_factor.StructureFactor.bartlett_isotropic_estimator`, :py:func:`~structure_factor.isotropic_estimator.allowed_k_norm`.
+
+        :py:class:`~structure_factor.spatial_windows.BallWindow`,
+        :py:meth:`~structure_factor.point_pattern.PointPattern.restrict_to_window`, :py:meth:`~structure_factor.structure_factor.StructureFactor.bartlett_isotropic_estimator`, :py:func:`~structure_factor.isotropic_estimator.allowed_k_norm`.
     """
     window = point_pattern.window
     d = window.dimension

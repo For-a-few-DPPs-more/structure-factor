@@ -1,20 +1,20 @@
 """Class gathering methods, designed to study the hyperuniformity of a point process given an estimation of its structure factor.
 
-**The available methods:**
-            - :py:meth:`~structure_factor.hyperuniformity.Hyperuniformity.bin_data`: Method for regularizing the structure factor estimation.
-            - :py:meth:`~structure_factor.hyperuniformity.Hyperuniformity.effective_hyperuniformity`: Test of effective hyperuniformity.
-            - :py:meth:`~structure_factor.hyperuniformity.Hyperuniformity.hyperuniformity_class`: Test of the possible class of hyperuniformity.
+- :py:meth:`~structure_factor.hyperuniformity.Hyperuniformity.bin_data`: Method for regularizing the structure factor estimation.
+- :py:meth:`~structure_factor.hyperuniformity.Hyperuniformity.effective_hyperuniformity`: Test of effective hyperuniformity.
+- :py:meth:`~structure_factor.hyperuniformity.Hyperuniformity.hyperuniformity_class`: Test of the possible class of hyperuniformity.
 
 .. note::
 
-        **Typical usage**:
-            1. Estimate the structure factor of the point process by one of the methods of :py:class:`~structure_factor.structure_factor.StructureFactor`.
+    **Typical usage**
 
-            2. Regularize the results using :py:meth:`~structure_factor.hyperuniformity.Hyperuniformity.bin_data`, if needed.
+    1. Estimate the structure factor of the point process by one of the methods of :py:class:`~structure_factor.structure_factor.StructureFactor`.
 
-            3. Test the effective hyperuniformity using :py:meth:`~structure_factor.hyperuniformity.Hyperuniformity.effective_hyperuniformity`.
+    2. Regularize the results using :py:meth:`~structure_factor.hyperuniformity.Hyperuniformity.bin_data`, if needed.
 
-            4. If the results of :py:meth:`~structure_factor.hyperuniformity.Hyperuniformity.effective_hyperuniformity` approve the effective hyperuniformity hypothesis, find the possible class of hyperuniformity using :py:meth:`~structure_factor.hyperuniformity.Hyperuniformity.hyperuniformity_class`.
+    3. Test the effective hyperuniformity using :py:meth:`~structure_factor.hyperuniformity.Hyperuniformity.effective_hyperuniformity`.
+
+    4. If the results of :py:meth:`~structure_factor.hyperuniformity.Hyperuniformity.effective_hyperuniformity` approve the effective hyperuniformity hypothesis, find the possible class of hyperuniformity using :py:meth:`~structure_factor.hyperuniformity.Hyperuniformity.hyperuniformity_class`.
 """
 import numpy as np
 from scipy.optimize import curve_fit
@@ -38,7 +38,6 @@ class Hyperuniformity:
 
             A stationary point process :math:`\mathcal{X}` is said to be hyperunifrom if its structure factor :math:`S`, vanishes at 0.
             For more details, we refer to :cite:`DGRR:22`, (Section 2).
-
     """
 
     def __init__(self, k_norm, sf, std_sf=None):
@@ -50,7 +49,6 @@ class Hyperuniformity:
             sf (numpy.array): Vector of evaluations of the structure factor, of the given point process, at :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.k_norm`.
 
             std (np.array, optional): Vector of standard deviations associated to :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.sf`. Defaults to None.
-
         """
         assert isinstance(k_norm, np.ndarray)
         assert isinstance(sf, np.ndarray)
@@ -77,15 +75,12 @@ class Hyperuniformity:
                 - self.std_sf: Standard deviations of the structure factor over the bins, (update the attribute :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.std_sf`).
 
         Example:
-
             .. plot:: code/hyperuniformity/bin_data.py
                 :include-source: True
 
         .. seealso::
+
             :py:class:`~structure_factor.structure_factor.StructureFactor`.
-
-
-
         """
         self.k_norm, self.sf, self.std_sf = _bin_statistics(
             self.k_norm, self.sf, **params
@@ -116,6 +111,7 @@ class Hyperuniformity:
             A stationary isotropic point process :math:`\mathcal{X} \subset \mathbb{R}^d`, is said to be effectively hyperuniform  if :math:`H \leq 10^{-3}` where :math:`H` is defined following :cite:`Tor18` (Section 11.1.6) and :cite:`KlaAl19` (supplementary Section 8) by,
 
             .. math::
+
                 H = \frac{\hat{S}(\mathbf{0})}{S(\mathbf{k}_{peak})}\cdot
 
             - :math:`S` is the structure factor of :math:`\mathcal{X}`,
@@ -123,8 +119,6 @@ class Hyperuniformity:
             - :math:`\mathbf{k}_{peak}` is the location of the first dominant peak value of :math:`S`.
 
             For more details, we refer to :cite:`DGRR:22` (Section 2.5).
-
-
 
         .. important::
 
@@ -169,7 +163,6 @@ class Hyperuniformity:
                 - c: The approximated value of the structure factor on the origin.
 
         Example:
-
             .. plot:: code/hyperuniformity/hyperuniformity_class.py
                 :include-source: True
 

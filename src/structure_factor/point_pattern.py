@@ -1,16 +1,15 @@
 """
 Object designed to encapsulate a realization from a point process, the observation window, and the intensity of the point process. We denote the final encapsulation by a point pattern.
 
-**This class contains also**:
-    - :py:meth:`restrict_to_window`: Restrict the point pattern to a specific window.
-    - :py:meth:`convert_to_spatstat_ppp`: Converts the point pattern into a ``spatstat.geom.ppp`` R object.
-    - :py:meth:`plot`: Plots the point pattern.
+- :py:meth:`restrict_to_window`: Restrict the point pattern to a specific window.
+- :py:meth:`convert_to_spatstat_ppp`: Converts the point pattern into a ``spatstat.geom.ppp`` R object.
+- :py:meth:`plot`: Plots the point pattern.
 
 .. note::
 
-        **Typical usage**:
-            - The class :py:class:`~structure_factor.structure_factor.StructureFactor` gets initialized using a :py:class:`~structure_factor.point_pattern.PointPattern`.
+    **Typical usage**
 
+    - The class :py:class:`~structure_factor.structure_factor.StructureFactor` gets initialized using a :py:class:`~structure_factor.point_pattern.PointPattern`.
 """
 
 import matplotlib.pyplot as plt
@@ -19,6 +18,7 @@ from rpy2 import robjects
 from spatstat_interface.interface import SpatstatInterface
 
 from structure_factor.spatial_windows import AbstractSpatialWindow
+
 
 #! pass on doc done (Diala)
 class PointPattern(object):
@@ -40,7 +40,8 @@ class PointPattern(object):
             :align: center
 
     .. seealso::
-            :py:mod:`~structure_factor.spatial_windows`,  :py:mod:`~structure_factor.point_processes`, :py:meth:`~structure_factor.point_pattern.PointPattern.restrict_to_window`, :py:meth:`~structure_factor.point_pattern.PointPattern.plot`.
+
+        :py:mod:`~structure_factor.spatial_windows`,  :py:mod:`~structure_factor.point_processes`, :py:meth:`~structure_factor.point_pattern.PointPattern.restrict_to_window`, :py:meth:`~structure_factor.point_pattern.PointPattern.plot`.
     """
 
     def __init__(self, points, window, intensity=None, **params):
@@ -55,7 +56,6 @@ class PointPattern(object):
 
         Keyword Args:
             params: Possible additional parameters of the point process.
-
         """
         _points = np.array(points)
         assert _points.ndim == 2
@@ -100,8 +100,8 @@ class PointPattern(object):
                 :align: center
 
         .. seealso::
-            :py:mod:`~structure_factor.spatial_windows`,  :py:mod:`~structure_factor.point_processes`, :py:meth:`~structure_factor.point_pattern.PointPattern.plot`.
 
+            :py:mod:`~structure_factor.spatial_windows`,  :py:mod:`~structure_factor.point_processes`, :py:meth:`~structure_factor.point_pattern.PointPattern.plot`.
         """
         assert isinstance(window, AbstractSpatialWindow)
         points = self.points[window.indicator_function(self.points)]

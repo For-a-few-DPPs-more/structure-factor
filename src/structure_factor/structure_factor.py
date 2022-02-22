@@ -1,23 +1,25 @@
 r"""Class collecting estimators of the structure factor :math:`S(\mathbf{k})` of stationary point process given one realization encapsulated in a :py:class:`~structure_factor.point_pattern.PointPattern` together with the simulation window (:ref:`spatial_windows`), and the corresponding intensity.
 
 **The available estimators:**
-    - :py:meth:`~structure_factor.structure_factor.StructureFactor.scattering_intensity`: The scattering intensity and the corresponding debiased versions.
-    - :py:meth:`~structure_factor.structure_factor.StructureFactor.tapered_periodogram`: The scaled tapered periodogram and the corresponding debiased versions.
-    - :py:meth:`~structure_factor.structure_factor.StructureFactor.multitapered_periodogram`: The scaled multitapered periodogram and the corresponding debiased versions.
-    - :py:meth:`~structure_factor.structure_factor.StructureFactor.bartlett_isotropic_estimator`: Bartlett's isotropic estimator.
-    - :py:meth:`~structure_factor.structure_factor.StructureFactor.hankel_quadrature`: Integral estimation using Hankel transform quadrature.
+
+- :py:meth:`~structure_factor.structure_factor.StructureFactor.scattering_intensity`: The scattering intensity and the corresponding debiased versions.
+- :py:meth:`~structure_factor.structure_factor.StructureFactor.tapered_periodogram`: The scaled tapered periodogram and the corresponding debiased versions.
+- :py:meth:`~structure_factor.structure_factor.StructureFactor.multitapered_periodogram`: The scaled multitapered periodogram and the corresponding debiased versions.
+- :py:meth:`~structure_factor.structure_factor.StructureFactor.bartlett_isotropic_estimator`: Bartlett's isotropic estimator.
+- :py:meth:`~structure_factor.structure_factor.StructureFactor.hankel_quadrature`: Integral estimation using Hankel transform quadrature.
 
 **The available plot methods:**
-    - :py:meth:`~structure_factor.structure_factor.StructureFactor.plot_spectral_estimator`: Visualize the results of :py:meth:`~structure_factor.structure_factor.StructureFactor.scattering_intensity`, :py:meth:`~structure_factor.structure_factor.StructureFactor.tapered_periodogram`, or :py:meth:`~structure_factor.structure_factor.StructureFactor.multitapered_periodogram`.
-    - :py:meth:`~structure_factor.structure_factor.StructureFactor.plot_isotropic_estimator`: Visualize the results of :py:meth:`~structure_factor.structure_factor.StructureFactor.bartlett_isotropic_estimator` or :py:meth:`~structure_factor.structure_factor.StructureFactor.hankel_quadrature`.
+
+- :py:meth:`~structure_factor.structure_factor.StructureFactor.plot_spectral_estimator`: Visualize the results of :py:meth:`~structure_factor.structure_factor.StructureFactor.scattering_intensity`, :py:meth:`~structure_factor.structure_factor.StructureFactor.tapered_periodogram`, or :py:meth:`~structure_factor.structure_factor.StructureFactor.multitapered_periodogram`.
+- :py:meth:`~structure_factor.structure_factor.StructureFactor.plot_isotropic_estimator`: Visualize the results of :py:meth:`~structure_factor.structure_factor.StructureFactor.bartlett_isotropic_estimator` or :py:meth:`~structure_factor.structure_factor.StructureFactor.hankel_quadrature`.
 
 For the theoretical derivation and definitions of these estimators, we refer to :cite:`DGRR:22`.
 """
 
 import warnings
-from isort import file
 
 import numpy as np
+from isort import file
 
 import structure_factor.isotropic_estimator as ise
 import structure_factor.utils as utils
@@ -29,6 +31,7 @@ from structure_factor.spectral_estimators import (
 )
 from structure_factor.tapers import BartlettTaper, SineTaper
 from structure_factor.transforms import RadiallySymmetricFourierTransform
+
 
 #! docs done (Diala)
 class StructureFactor:
@@ -51,6 +54,7 @@ class StructureFactor:
 
     def __init__(self, point_pattern):
         r"""Initialize StructureFactor from ``point_pattern``.
+
         Args:
             point_pattern (:py:class:`~structure_factor.point_pattern.PointPattern`): Object of type point pattern which contains a realization ``point_pattern.points`` of a point process, the window where the points were simulated ``point_pattern.window`` and (optionally) the intensity of the point process ``point_pattern.intensity``.
         """
@@ -76,15 +80,16 @@ class StructureFactor:
                 - if ``k`` is not None and ``direct=False``, the undirect debiased scattering intensity will be used.
 
             direct (bool, optional): If ``debiased`` is True, trigger the use of the direct/undirect debiased scattering intensity. Parameter related to ``debiased``. Default to True.
+
         Keyword Args:
             params (dict): Keyword arguments ``k_max`` and ``meshgrid_shape`` of :py:attr:`~structure_factor.utils.allowed_wave_vectors`. Used when ``k=None`` and ``debiased=True``.
+
         Returns:
             tuple(numpy.ndarray, numpy.ndarray):
                 - k: Wavevector(s) on which the scattering intensity has been evaluated.
                 - estimation: Evaluation(s) of the scattering intensity or a debiased version at ``k``.
 
         Example:
-
              .. plot:: code/structure_factor/scattering_intensity.py
                 :include-source: True
 
@@ -103,16 +108,16 @@ class StructureFactor:
 
         .. note::
 
-            **Typical usage**:
-                - If the observation window is not a :py:class:`~structure_factor.spatial_windows.BoxWindow`, use the method :py:class:`~structure_factor.point_pattern.PointPattern.restrict_to_window` to extract a sub-sample in a :py:class:`~structure_factor.spatial_windows.BoxWindow`.
+            **Typical usage**
+
+            - If the observation window is not a :py:class:`~structure_factor.spatial_windows.BoxWindow`, use the method :py:class:`~structure_factor.point_pattern.PointPattern.restrict_to_window` to extract a sub-sample in a :py:class:`~structure_factor.spatial_windows.BoxWindow`.
 
         .. seealso::
+
             :py:meth:`~structure_factor.structure_factor.StructureFactor.plot_spectral_estimator`,
             :py:class:`~structure_factor.spatial_windows.BoxWindow`,
             :py:meth:`~structure_factor.point_pattern.PointPattern.restrict_to_window`, :py:func:`~structure_factor.utils.allowed_wave_vectors`.
-
         """
-
         point_pattern = self.point_pattern
         d = point_pattern.dimension
 
@@ -151,12 +156,12 @@ class StructureFactor:
             debiased (bool, optional): Trigger the use of a debiased estimator. Default to True.
 
             direct (bool, optional): If ``debiased`` is True, trigger the use of the direct/undirect debiased scaled tapered periodogram. Parameter related to ``debiased``. Default to True.
+
         Returns:
             numpy.ndarray: Evaluation(s) of the scaled tapered periodogram or a debiased version at ``k``.
 
         Example:
-
-             .. plot:: code/structure_factor/tapered_periodogram.py
+            .. plot:: code/structure_factor/tapered_periodogram.py
                 :include-source: True
 
         .. proof:definition::
@@ -172,15 +177,14 @@ class StructureFactor:
 
         .. note::
 
-            **Typical usage**:
+            **Typical usage**
                 - If the observation window is not a :py:class:`~structure_factor.spatial_windows.BoxWindow`, use the method :py:class:`~structure_factor.point_pattern.PointPattern.restrict_to_window` to extract a sub-sample in a :py:class:`~structure_factor.spatial_windows.BoxWindow`.
 
         .. seealso::
+
             :py:meth:`~structure_factor.structure_factor.StructureFactor.plot_spectral_estimator`,
             :py:class:`~structure_factor.spatial_windows.BoxWindow`,
             :py:meth:`~structure_factor.point_pattern.PointPattern.restrict_to_window`, :ref:`tapers`, :py:class:`~structure_factor.tapers.BartlettTaper`, :py:func:`~structure_factor.spectral_estimators.tapered_spectral_estimator_core`, :py:func:`~structure_factor.spectral_estimators.tapered_spectral_estimator_debiased_direct`, :py:func:`~structure_factor.spectral_estimators.tapered_spectral_estimator_debiased_undirect`.
-
-
         """
         estimator = select_tapered_spectral_estimator(debiased, direct)
         estimation = estimator(k, self.point_pattern, taper)
@@ -200,13 +204,14 @@ class StructureFactor:
             debiased (bool, optional): Trigger the use of a debiased estimator. Default to True.
 
             direct (bool, optional): If ``debiased`` is True, trigger the use of the direct/undirect debiased scaled tapered periodogram. Parameter related to ``debiased``. Default to True.
+
         Keyword Args:
             params (dict): Keyword argument ``p_component_max`` of :py:func:`~structure_factor.utils.taper_grid_generator`. Maximum component of the parameters :math:`p` of the family of :py:class:`~structure_factor.tapers.SineTaper`. Intuitively the number of taper used is :math:`P=\mathrm{p\_component\_max}^d`. Used only when ``tapers=None``. See :py:func:`~structure_factor.utils.tapered_generator`. Default to 2.
+
         Returns:
             numpy.ndarray: Evaluation(s) of the scaled multitapered periodogram or a debiased version at ``k``.
 
         Example:
-
             .. plot:: code/structure_factor/multitapered_periodogram.py
                 :include-source: True
 
@@ -218,20 +223,20 @@ class StructureFactor:
 
                 \widehat{S}_{ \mathrm{MTP}}((t_{q})_{q=1}^P, \mathbf{k}) = \frac{1}{P}\sum_{q=1}^{P} \widehat{S}(t_{q}, \mathbf{k})
 
-
             where, :math:`(t_{q})_{q}` is a family of tapers supported on the observation window (satisfying some conditions), :math:`P` is the number of tapers used, and :math:`k \in \mathbb{R}^d`.
             For more details, we refer to :cite:`DGRR:22`, (Section 3.1).
 
         .. note::
 
-            **Typical usage**:
-                - If the observation window is not a :py:class:`~structure_factor.spatial_windows.BoxWindow`, use the method :py:class:`~structure_factor.point_pattern.PointPattern.restrict_to_window` to extract a sub-sample in a :py:class:`~structure_factor.spatial_windows.BoxWindow`.
+            **Typical usage**
+
+            - If the observation window is not a :py:class:`~structure_factor.spatial_windows.BoxWindow`, use the method :py:class:`~structure_factor.point_pattern.PointPattern.restrict_to_window` to extract a sub-sample in a :py:class:`~structure_factor.spatial_windows.BoxWindow`.
 
         .. seealso::
+
             :py:meth:`~structure_factor.structure_factor.StructureFactor.plot_spectral_estimator`,
             :py:class:`~structure_factor.spatial_windows.BoxWindow`,
             :py:meth:`~structure_factor.point_pattern.PointPattern.restrict_to_window`, :ref:`tapers`, :py:class:`~structure_factor.tapers.SineTaper`, :py:func:`~structure_factor.spectral_estimators.multitapered_spectral_estimator`.
-
         """
         d = self.point_pattern.dimension
         if tapers is None:
@@ -274,11 +279,13 @@ class StructureFactor:
             scale(str, optional): Trigger between plot scales of `matplotlib.plot <https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_xscale.html>`_. Default to "log".
 
             plot_type (str, optional): Type of the plot to visualize, "radial", "imshow", or "all". Defaults to "radial".
-                    - If "radial", the output is a 1D plot of `estimation` w.r.t. the norm(s) of `k`.
-                    - If "imshow" (option available only for a 2D point process), the output is a 2D color level plot.
-                    - If "all" (option available only for a 2D point process), the result contains 3 subplots: the point pattern (or a restriction to a specific window if ``window_res`` is set), the radial plot, and the color level plot. Note that the options "imshow" and "all" couldn't be used, if ``k`` couldn't be reshaped as a meshgrid.
+
+                - If "radial", the output is a 1D plot of `estimation` w.r.t. the norm(s) of `k`.
+                - If "imshow" (option available only for a 2D point process), the output is a 2D color level plot.
+                - If "all" (option available only for a 2D point process), the result contains 3 subplots: the point pattern (or a restriction to a specific window if ``window_res`` is set), the radial plot, and the color level plot. Note that the options "imshow" and "all" couldn't be used, if ``k`` couldn't be reshaped as a meshgrid.
 
             positive (bool, optional): If True, plots only the positive values of `estimation`. Default to False.
+
             exact_sf (callable, optional): Theoretical structure factor of the point process. Defaults to None.
 
             error_bar (bool, optional): If ``True``, ``k_norm`` and correspondingly ``estimation``, are divided into sub-intervals (bins). Over each bin, the mean and the standard deviation of ``estimation`` are derived and visualized on the plot. Note that each error bar corresponds to the mean :math:`\pm 3 \times` standard deviation. To specify the number of bins, add it as a keyword argument. For more details see :py:meth:`~structure_factor.utils._bin_statistics`. Defaults to False.
@@ -294,7 +301,6 @@ class StructureFactor:
 
         Returns:
             matplotlib.plot: Plot of the approximated structure factor.
-
         """
         k_norm = np.linalg.norm(k, axis=1)
 
@@ -369,6 +375,7 @@ class StructureFactor:
 
         Args:
             k_norm (np.ndarray, optional): n rows of wavenumbers where the estimator is to be evaluated. If ``k_norm=None`` (recommended)and the space's dimension is an even number, the estimator will be evaluated on the corresponding set of allowed wavenumbers; In this case, the parameters ``n_allowed_k_norm`` allows to specify the number of allowed wavenumbers. See :py:func:`~structure_factor.isotropic_estimator.allowed_k_norm`. Defaults to None.
+
         Keyword Args:
             params (dict): Keyword argument ``n_allowed_k_norm`` of :py:func:`~structure_factor.isotropic_estimator.bartlett_estimator`. Used when ``k_norm=None`` to specify the number of allowed wavenumbers to be used.
 
@@ -378,7 +385,6 @@ class StructureFactor:
                 - estimation: Evaluation(s) of Bartlett's isotropic estimator at ``k``.
 
         Example:
-
             .. plot:: code/structure_factor/bartlett_isotropic_estimator.py
                 :include-source: True
 
@@ -395,13 +401,13 @@ class StructureFactor:
 
         .. note::
 
-            **Typical usage**:
+            **Typical usage**
                 - If the observation window is not a :py:class:`~structure_factor.spatial_windows.BallWindow`, use the method :py:class:`~structure_factor.point_pattern.PointPattern.restrict_to_window` to extract a sub-sample in a :py:class:`~structure_factor.spatial_windows.BallWindow`.
 
         .. seealso::
+
             :py:class:`~structure_factor.spatial_windows.BallWindow`,
             :py:meth:`~structure_factor.point_pattern.PointPattern.restrict_to_window`, :py:func:`~structure_factor.isotropic_estimator`.
-
         """
         window = self.point_pattern.window
         warnings.warn(
@@ -429,7 +435,9 @@ class StructureFactor:
 
         Args:
             pcf (callable): Pair correlation function.
+
             k_norm (numpy.ndarray, optional): Vector of wavenumbers (i.e., norms of wavevectors) where the structure factor is to be evaluated. Optional if ``method="BaddourChouinard"`` (since this method evaluates the Hankel transform on a specific set of wavenumbers), but it is **non optional** if ``method="Ogata"``. Defaults to None.
+
             method (str, optional): Trigger the use of ``"BaddourChouinard"`` or ``"Ogata"`` quadrature to estimate the structure factor. Defaults to ``"BaddourChouinard"``,
 
                 - if ``"BaddourChouinard"``: The Hankel transform is approximated using the Discrete Hankel transform :cite:`BaCh15`. See :py:class:`~structure_factor.transforms.HankelTransformBaddourChouinard`,
@@ -442,11 +450,13 @@ class StructureFactor:
 
                     - ``step_size``
                     - ``nb_points``
+
                 - ``method == "BaddourChouinard"``, see :py:meth:`~structure_factor.transforms.HankelTransformBaddourChouinard.compute_transformation_parameters`
 
                     - ``r_max``
                     - ``nb_points``
                     - ``interpolotation`` dictionnary containing the keyword arguments of `scipy.integrate.interp1d <https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html>`_ parameters.
+
         Returns:
             tuple (np.array, np.array):
                 - k_norm: Vector of wavenumbers.
@@ -467,22 +477,24 @@ class StructureFactor:
                 \quad \tilde g: x \mapsto g(x) x^{d/2 -1},
 
             where, :math:`g` is the pair correlation function of :math:`\mathcal{X}`.
+
             This is a result of the relation between the Symmetric Fourier transform and the Hankel Transform.
             For more details, we refer to :cite:`DGRR:22`, (Section 3.2).
 
         .. note::
 
-            **Typical usage**:
-                1. Estimate the pair correlation function using :py:meth:`~structure_factor.pair_correlation_function.PairCorrelationFonction.estimate`.
+            **Typical usage**
 
-                2. Clean and interpolate/extrapolate the resulting estimation using :py:meth:`~structure_factor.pair_correlation_function.PairCorrelationFonction.interpolate` to get a **function**.
+            1. Estimate the pair correlation function using :py:meth:`~structure_factor.pair_correlation_function.PairCorrelationFonction.estimate`.
 
-                3. Use the result as the input ``pcf``.
+            2. Clean and interpolate/extrapolate the resulting estimation using :py:meth:`~structure_factor.pair_correlation_function.PairCorrelationFonction.interpolate` to get a **function**.
+
+            3. Use the result as the input ``pcf``.
 
         .. seealso::
+
             :py:meth:`~structure_factor.pair_correlation_function.PairCorrelationFonction.estimate`, :py:meth:`~structure_factor.pair_correlation_function.PairCorrelationFonction.interpolate`, :py:meth:`~structure_factor.structure_factor.StructureFactor.plot_isotropic_estimator`, :py:class:`~structure_factor.spatial_windows`,
             :py:meth:`~structure_factor.point_pattern.PointPattern`, :py:class:`~structure_factor.transforms.HankelTransformBaddourChouinard`, :py:class:`~structure_factor.transforms.HankelTransformOgata`.
-
         """
         assert callable(pcf)
 
@@ -541,10 +553,8 @@ class StructureFactor:
         Keyword Args:
             binning_params: (dict): Used when ``error_bar=True``, by the method :py:meth:`~structure_factor.utils_bin_statistics` as keyword arguments (except ``"statistic"``) of `scipy.stats.binned_statistic <https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.binned_statistic.html>`_.
 
-
         Returns:
             matplotlib.plot: Plot of the approximated structure factor.
-
         """
         return utils.plot_sf_hankel_quadrature(
             k_norm=k_norm,

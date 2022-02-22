@@ -1,14 +1,14 @@
 """
 Collection of classes designed to create box and ball window objects.
 
-**The available classes are**:
-        - :py:class:`~structure_factor.spatial_windows.BallWindow`: Ball window object.
-        - :py:class:`~structure_factor.spatial_windows.BoxWindow`: Box window object.
+- :py:class:`~structure_factor.spatial_windows.BallWindow`: Ball window object.
+- :py:class:`~structure_factor.spatial_windows.BoxWindow`: Box window object.
 
 .. note::
 
-        **Typical usage**:
-            - :py:class:`~structure_factor.point_pattern.PointPattern` has a :py:attr:`~structure_factor.point_pattern.PointPattern.window` argument/attribute.
+    **Typical usage**
+
+    - :py:class:`~structure_factor.point_pattern.PointPattern` has a :py:attr:`~structure_factor.point_pattern.PointPattern.window` argument/attribute.
 """
 #! quick pass on docs (Diala)
 from abc import ABCMeta, abstractmethod
@@ -47,6 +47,7 @@ class AbstractSpatialWindow(metaclass=ABCMeta):
 
         Args:
             points (numpy.ndarray): Vector of size :math:`d` or array of size :math:`n \times d` containing the point(s) to be tested.
+
         Returns:
             bool or numpy.ndarray:
             - If :math:`n=1`, bool.
@@ -84,7 +85,8 @@ class BallWindow(AbstractSpatialWindow):
             :align: center
 
     .. seealso::
-            :py:mod:`~structure_factor.point_pattern`,   :py:class:`~structure_factor.spatial_windows.BoxWindow`.
+
+        :py:mod:`~structure_factor.point_pattern`,   :py:class:`~structure_factor.spatial_windows.BoxWindow`.
     """
 
     def __init__(self, center, radius=1.0):
@@ -200,7 +202,8 @@ class BoxWindow(AbstractSpatialWindow):
             :align: center
 
     .. seealso::
-            :py:mod:`~structure_factor.point_pattern`,   :py:class:`~structure_factor.spatial_windows.BoxWindow`.
+
+        :py:mod:`~structure_factor.point_pattern`,   :py:class:`~structure_factor.spatial_windows.BoxWindow`.
     """
 
     def __init__(self, bounds):
