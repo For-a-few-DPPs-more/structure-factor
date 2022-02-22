@@ -110,7 +110,7 @@ class PointPattern(object):
     def convert_to_spatstat_ppp(self, **params):
         """Convert the object attributes :py:attr:`~structure_factor.point_pattern.PointPattern.points` and :py:attr:`~structure_factor.point_pattern.PointPattern.window` into a point pattern ``spatstat.geom.ppp`` R object.
 
-        Keyword args:
+        Keyword Args:
             params (dict): Optional keyword arguments passed to ``spatstat.geom.ppp``.
 
         Returns:

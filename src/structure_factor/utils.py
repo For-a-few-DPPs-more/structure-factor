@@ -51,7 +51,7 @@ def _bin_statistics(x, y, **params):
         x (np.array): Vector of data.
         y (np.array): Vector of data associated with the vector ``x``.
 
-    Keyword args:
+    Keyword Args:
         params (dict): Keyword arguments (except ``"x"``, ``"values"`` and ``"statistic"``) of `scipy.stats.binned_statistic <https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.binned_statistic.html>`_.
 
     Returns:
