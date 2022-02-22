@@ -73,7 +73,6 @@ def bartlett_estimator(point_pattern, k_norm=None, n_allowed_k_norm=60):
     Example:
         .. literalinclude:: code/isotropic_estimator/bartlett_estimator.py
             :language: python
-            :emphasize-lines: 12-15
 
     .. proof:definition::
 

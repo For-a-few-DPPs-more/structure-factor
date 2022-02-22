@@ -1,14 +1,13 @@
+import matplotlib.pyplot as plt
+
 from structure_factor.point_processes import HomogeneousPoissonPointProcess
 from structure_factor.spatial_windows import BoxWindow
 
-bounds = [[-6, 6], [-6, 10], [-5, 6]]  # Window bounds
-window = BoxWindow(bounds)  # Observation window
-poisson = HomogeneousPoissonPointProcess(intensity=1 / 4)  # Poisson process
-poisson_sample = poisson.generate_sample(window)  # Sample of points
+point_process = HomogeneousPoissonPointProcess(intensity=0.25)
 
-# Plot
-import matplotlib.pyplot as plt
+window = BoxWindow([[-6, 6], [-6, 10], [-5, 6]])
+points = point_process.generate_sample(window)
 
 ax = plt.axes(projection="3d")
-ax.scatter3D(poisson_sample[:, 0], poisson_sample[:, 1], poisson_sample[:, 2], c="grey")
+ax.scatter3D(points[:, 0], points[:, 1], points[:, 2], c="grey")
 plt.show()
