@@ -6,13 +6,13 @@ from structure_factor.hyperuniformity import Hyperuniformity
 from structure_factor.point_processes import GinibrePointProcess
 from structure_factor.structure_factor import StructureFactor
 
-ginibre_pp = load_data.load_ginibre()
-
 point_pattern = load_data.load_ginibre()
+point_process = GinibrePointProcess()
+
 sf = StructureFactor(point_pattern)
 k_norm, sf_estimated = sf.bartlett_isotropic_estimator(n_allowed_k_norm=50)
 
-sf_theoretical = GinibrePointProcess.structure_factor(k_norm)
+sf_theoretical = point_process.structure_factor(k_norm)
 
 hyperuniformity = Hyperuniformity(k_norm, sf_estimated)
 H_ginibre, _ = hyperuniformity.effective_hyperuniformity(k_norm_stop=0.2)

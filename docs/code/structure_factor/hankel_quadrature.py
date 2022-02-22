@@ -22,7 +22,7 @@ pcf_interpolated = pcf.interpolate(r=r, pcf_r=pcf_r, drop=True)
 
 # Estimate the structure factor using Baddour Chouinard quadrature
 sf = StructureFactor(point_pattern)
-k_norm = np.linspace(1, 10, 500)  # vector of wave length
+k_norm = np.linspace(1, 10, 500)  # vector of wavelength
 k_norm, sf_estimated = sf.hankel_quadrature(
     pcf_interpolated, method="BaddourChouinard", k_norm=k_norm, r_max=20, nb_points=1000
 )

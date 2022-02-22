@@ -1,5 +1,4 @@
-"""
-Collection of classes designed to create box and ball window objects.
+"""Collection of classes representing observation windows (box, ball, etc).
 
 - :py:class:`~structure_factor.spatial_windows.BallWindow`: Ball window object.
 - :py:class:`~structure_factor.spatial_windows.BoxWindow`: Box window object.
@@ -10,7 +9,7 @@ Collection of classes designed to create box and ball window objects.
 
     - :py:class:`~structure_factor.point_pattern.PointPattern` has a :py:attr:`~structure_factor.point_pattern.PointPattern.window` argument/attribute.
 """
-#! quick pass on docs (Diala)
+
 from abc import ABCMeta, abstractmethod
 
 import numpy as np
@@ -86,7 +85,8 @@ class BallWindow(AbstractSpatialWindow):
 
     .. seealso::
 
-        :py:mod:`~structure_factor.point_pattern`,   :py:class:`~structure_factor.spatial_windows.BoxWindow`.
+        - :py:mod:`~structure_factor.point_pattern`
+        - :py:class:`~structure_factor.spatial_windows.BoxWindow`
     """
 
     def __init__(self, center, radius=1.0):
@@ -161,7 +161,7 @@ class BallWindow(AbstractSpatialWindow):
 
         .. seealso::
 
-            `https://rdocumentation.org/packages/spatstat.geom/versions/2.2-0/topics/disc <https://rdocumentation.org/packages/spatstat.geom/versions/2.2-0/topics/disc>`_
+            - `https://rdocumentation.org/packages/spatstat.geom/versions/2.2-0/topics/disc <https://rdocumentation.org/packages/spatstat.geom/versions/2.2-0/topics/disc>`_
         """
         spatstat = SpatstatInterface(update=False)
         spatstat.import_package("geom", update=False)
@@ -203,7 +203,8 @@ class BoxWindow(AbstractSpatialWindow):
 
     .. seealso::
 
-        :py:mod:`~structure_factor.point_pattern`,   :py:class:`~structure_factor.spatial_windows.BoxWindow`.
+        - :py:mod:`~structure_factor.point_pattern`
+        - :py:class:`~structure_factor.spatial_windows.BoxWindow`
     """
 
     def __init__(self, bounds):
@@ -264,7 +265,7 @@ class BoxWindow(AbstractSpatialWindow):
 
         .. seealso::
 
-            `https://rdocumentation.org/packages/spatstat.geom/versions/2.2-0/topics/owin <https://rdocumentation.org/packages/spatstat.geom/versions/2.2-0/topics/owin>`_
+            - `https://rdocumentation.org/packages/spatstat.geom/versions/2.2-0/topics/owin <https://rdocumentation.org/packages/spatstat.geom/versions/2.2-0/topics/owin>`_
         """
         if self.dimension != 2:
             raise NotImplementedError("spatstat only handles 2D windows")
@@ -297,10 +298,14 @@ class UnitBoxWindow(BoxWindow):
 
 
 def check_cubic_window(window):
-    """Check if a window is a cubic window.
+    """Check whether ``window`` is represents a cubic window.
 
     Args:
-        window (AbstractSpatialWindow): Window.
+        window (:py:class:`~structure_factor.spatial_windows.BoxWindow`):
+
+    Raises:
+        TypeError: ``window`` must be a :py:class:`~structure_factor.spatial_windows.BoxWindow`.
+        ValueError: ``window.bounds`` must have the same length.
     """
     if not isinstance(window, BoxWindow):
         raise TypeError("window must be an instance of BoxWindow.")

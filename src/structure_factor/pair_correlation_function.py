@@ -1,8 +1,9 @@
-"""
-Class gathering methods for approximating the pair correlation function of an isotropic point process, and transforming the result into a continuous function.
+"""The class :py:meth:`~structure_factor.pair_correlation_function.PairCorrelationFunction` collects methods to estimate the pair correlation function of an isotropic point process. The underlying routines call the `R` package `spatstat <https://github.com/spatstat/spatstat>`_.
 
 - :py:meth:`~structure_factor.pair_correlation_function.PairCorrelationFunction.estimate`: Estimates the pair correlation function.
+
 - :py:meth:`~structure_factor.pair_correlation_function.PairCorrelationFunction.interpolate`: Cleans, interpolates, and extrapolates the results of :py:meth:`~structure_factor.pair_correlation_function.PairCorrelationFunction.estimate`.
+
 - :py:meth:`~structure_factor.pair_correlation_function.PairCorrelationFunction.plot`: Plots the results of :py:meth:`~structure_factor.pair_correlation_function.PairCorrelationFunction.estimate`.
 """
 import warnings
@@ -16,13 +17,11 @@ from spatstat_interface.interface import SpatstatInterface
 
 import structure_factor.utils as utils
 
+# ? the class structure is not necessary, the corresponding methods are all staticmethods. Suggestion: delete the class, convert methods to simple functions
 
-#! Diala: pass over doc done
+
 class PairCorrelationFunction:
-    """This class contains 2 methods for approximating the pair correlation function of a stationary point process using the `R` package `spatstat <https://github.com/spatstat/spatstat>`_.
-
-    Also, it contains a method to clean, interpolate, extrapolate and a method to visualize the results.
-    """
+    """This class collects methods to estimate the pair correlation function of an isotropic point process. The underlying routines call the `R` package `spatstat <https://github.com/spatstat/spatstat>`_."""
 
     @staticmethod
     def estimate(point_pattern, method="fv", install_spatstat=False, **params):
@@ -33,9 +32,11 @@ class PairCorrelationFunction:
             This function requires the `R programming language <https://cran.r-project.org/>`_ to be installed on your local machine but, it doesn't require any knowledge of the programming language R.
 
         Args:
-            method (str, optional): Trigger the use of `pcf.ppp <https://www.rdocumentation.org/packages/spatstat/versions/1.64-1/topics/pcf.ppp>`_ / `pcf.fv <https://www.rdocumentation.org/packages/spatstat.core/versions/2.3-1/topics/pcf.fv>`_ corresponding to the input argument ``"ppp"``/``"fv"``. These 2 methods approximate the pair correlation function of a point process from a corresponding realization using some edge corrections and some basic approximations. For more details see :cite:`Rbook15`. Defaults to ``"fv"``.
+            point_pattern (:py:class:`~structure_factor.point_pattern.PointPattern`): Realization of the underlying point process.
 
-            install_spatstat (bool, optional): If ``True``, the `R` package `spatstat <https://github.com/spatstat/spatstat>`_  will be automatically updated or installed (if not present) on your local machine, see also `spatstat-interface <https://github.com/For-a-few-DPPs-more/spatstat-interface>`_. Note that this requires the installation of the `R programming language <https://cran.r-project.org/>`_ on your local machine.
+            method (str, optional): Trigger the use of the routine `pcf.ppp <https://www.rdocumentation.org/packages/spatstat/versions/1.64-1/topics/pcf.ppp>`_ or `pcf.fv <https://www.rdocumentation.org/packages/spatstat.core/versions/2.3-1/topics/pcf.fv>`_ according to the value ``"ppp"`` or ``"fv"``. These 2 methods approximate the pair correlation function of a point process from one realization encapsulated in ``point_pattern``. For more details see :cite:`Rbook15`. Defaults to ``"fv"``.
+
+            install_spatstat (bool, optional): If ``True``, the `R` package `spatstat <https://github.com/spatstat/spatstat>`_  will be automatically updated or installed (if not present) on your local machine, see also `spatstat-interface <https://github.com/For-a-few-DPPs-more/spatstat-interface>`_. Note that this requires the installation of the `R programming language <https://cran.r-project.org/>`_.
 
         Keyword Args:
             params (dict):
@@ -46,12 +47,12 @@ class PairCorrelationFunction:
 
                 - if ``method = "fv"``
 
-                    - Kest = dict(keyword arguments of `spastat.core.Kest <https://rdrr.io/github/spatstat/spatstat.core/man/Kest.html>`_), ex: rmax ...
+                    - **Kest** = dict(keyword arguments of `spastat.core.Kest <https://rdrr.io/github/spatstat/spatstat.core/man/Kest.html>`_), ex: rmax ...
 
-                    - fv = dict( keyword arguments of `spastat.core.pcf.fv <https://rdrr.io/cran/spatstat.core/man/pcf.fv.html>`_), ex: method, spar ...
+                    - **fv** = dict(keyword arguments of `spastat.core.pcf.fv <https://rdrr.io/cran/spatstat.core/man/pcf.fv.html>`_), ex: method, spar ...
 
         Returns:
-            pandas.DataFrame: Version of the output of `spatstat.core.pcf.ppp <https://www.rdocumentation.org/packages/spatstat.core/versions/2.1-2/topics/pcf.ppp>`_ or `spatsta.core.pcf.fv <https://www.rdocumentation.org/packages/spatstat.core/versions/2.1-2/topics/pcf.fv>`_. The first column of the DataFrame is the set of radii on which the pair correlation function was approximated. The others correspond to the approximated pair correlation function with different edge corrections.
+            pandas.DataFrame: output of `spatstat.core.pcf.ppp <https://www.rdocumentation.org/packages/spatstat.core/versions/2.1-2/topics/pcf.ppp>`_ or `spatsta.core.pcf.fv <https://www.rdocumentation.org/packages/spatstat.core/versions/2.1-2/topics/pcf.fv>`_. The first column of the DataFrame is the set of radii on which the pair correlation function was approximated. The others correspond to the approximated pair correlation function with different edge corrections.
 
         Example:
             .. plot:: code/pair_correlation_function/estimate_pcf.py
@@ -66,13 +67,15 @@ class PairCorrelationFunction:
                 \mathbb{E} \bigg[ \sum_{\mathbf{x}, \mathbf{y} \in \mathcal{X}}^{\neq}
                 f(\mathbf{x}, \mathbf{y}) \bigg] = \int_{\mathbb{R}^d \times \mathbb{R}^d} f(\mathbf{x}+\mathbf{y}, \mathbf{y})\rho^{2} g(\mathbf{x}) \mathrm{d} \mathbf{x} \mathrm{d}\mathbf{y},
 
-            for any non-negative smooth function :math:`f`  with compact support.
+            for any non-negative smooth function :math:`f` with compact support.
+
             For more details, we refer to :cite:`DGRR:22`, (Section 2).
 
         .. seealso::
 
-            :py:meth:`~structure_factor.point_pattern.PointPattern`, :py:meth:`~structure_factor.pair_correlation_function.PairCorrelationFuntcion.interpolate`,
-            :py:meth:`~structure_factor.pair_correlation_function.PairCorrelationFuntcion.plot`.
+            - :py:meth:`~structure_factor.point_pattern.PointPattern`
+            - :py:meth:`~structure_factor.pair_correlation_function.PairCorrelationFuntcion.interpolate`
+            - :py:meth:`~structure_factor.pair_correlation_function.PairCorrelationFuntcion.plot`
         """
         assert point_pattern.dimension in (2, 3)
         assert method in ("ppp", "fv")
@@ -104,6 +107,7 @@ class PairCorrelationFunction:
         return pcf_pd
 
     # todo add test
+    # todo clean up arguments: only drop, nan, posinf, neginf are necessary, clean and replace can be removed
     @staticmethod
     def interpolate(
         r,
@@ -111,40 +115,40 @@ class PairCorrelationFunction:
         clean=True,
         drop=True,
         replace=False,
-        nan=0,
-        posinf=0,
-        neginf=0,
+        nan=0.0,
+        posinf=0.0,
+        neginf=0.0,
         extrapolate_with_one=True,
         **params
     ):
-        r"""Interpolate and extrapolate the vector ``pcf_r`` (or a corresponding cleaned version) evaluated at ``r``.
+        r"""Interpolate and then extrapolate the evaluation ``pcf_r`` of the pair correlation function (pcf) ``r``.
 
         The interpolation is performed with `scipy.interpolate.interp1d <https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html>`_.
 
         Args:
-            r (numpy.ndarray): Vector of radii. Typically, the first column of the output of the method :py:meth:`~structure_factor.structure_factor.StructureFactor.estimate`.
+            r (numpy.ndarray): Vector of radii. Typically, the first column of the output of :py:meth:`~structure_factor.structure_factor.StructureFactor.estimate`.
 
-            pcf_r (numpy.ndarray): Vector of approximations of the pair correlation function. Typically, a column from the output of the method :py:meth:`~structure_factor.structure_factor.StructureFactor.estimate`.
+            pcf_r (numpy.ndarray): Vector of evaluations of the pair correlation function at ``r``. Typically, a column from the output of :py:meth:`~structure_factor.structure_factor.StructureFactor.estimate`.
 
-            clean (bool, optional): If ``True``, a method is chosen to deal with possible outliers (nan, posinf, neginf) of ``pcf_r``. The chosen method depends on the parameters ``replace`` and ``drop``. Default to True.
+            clean (bool, optional): If ``True``, a method is chosen to deal with possible outliers (nan, posinf, neginf) of ``pcf_r``. The chosen method depends on the parameters ``replace`` and ``drop``. Defaults to True.
 
             drop (bool, optional): Cleaning method for ``pcf_r`` active when it's set to True simultaneously with ``clean=True``. Drops possible nan, posinf, and neginf from ``pcf_r`` with the corresponding values of ``r``.
 
             replace (bool, optional): Cleaning method for ``pcf_r`` active when it's set to True simultaneously with ``clean=True``. Replaces possible nan, posinf, and neginf values of ``pcf_r`` by the values set in the corresponding arguments. Defaults to True.
 
-            nan (float, optional): Value to replace the possible nan of ``pcf_r`` with. Active when ``clean=True`` and ``replace=True``. Default to zero.
+            nan (float, optional): When ``replace=True``, replacing value of nan present in ``pcf_r``. Defaults to 0.0.
 
-            posinf (float, optional): Value to replace the possible posinf of ``pcf_r`` with. Active when ``clean=True`` and ``replace=True``. Default to zero.
+            posinf (float, optional): When ``replace=True``, replacing value of +inf values present in ``pcf_r``. Defaults to 0.0.
 
-            neginf (float, optional): Value to replace the possible neginf of ``pcf_r`` with. Active when ``clean=True`` and ``replace=True``. Default to zero.
+            neginf (float, optional): When is ``replace=True``, replacing value of -inf present in ``pcf_r``. Defaults to 0.0.
 
-            extrapolate_with_one (bool, optional): If True, the discrete approximation vector ``pcf_r`` is first interpolated until the maximal value of ``r``, then the extrapolated values are fixed to 1. If False, the extrapolation method of `scipy.interpolate.interp1d <https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html>`_ is used. Warning: It is important to keep the Default, to ameliorate the approximation of the structure factor by Ogata quadrature Hankel transform. Default to True.
+            extrapolate_with_one (bool, optional): If True, the discrete approximation vector ``pcf_r`` is first interpolated until the maximal value of ``r``, then the extrapolated values are fixed to 1. If False, the extrapolation method of `scipy.interpolate.interp1d <https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html>`_ is used. Note that, the approximation of the structure factor by Ogata quadrature Hankel transform is usually better when set to True. Defaults to True.
 
         Keyword Args:
             params (dict): Keyword arguments of the function `scipy.interpolate.interp1d <https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html>`_.
 
         Returns:
-            callable: Approximated pair correlation function.
+            callable: Interpolated pair correlation function.
 
         Example:
             .. plot:: code/pair_correlation_function/interpolate_pcf.py
@@ -152,7 +156,8 @@ class PairCorrelationFunction:
 
         .. seealso::
 
-            :py:meth:`~structure_factor.point_pattern.PointPattern`, :py:meth:`~structure_factor.pair_correlation_function.PairCorrelationFuntcion.estimate`.
+            - :py:meth:`~structure_factor.point_pattern.PointPattern`
+            - :py:meth:`~structure_factor.pair_correlation_function.PairCorrelationFuntcion.estimate`
         """
         params.setdefault("kind", "cubic")
         if clean:
@@ -175,7 +180,7 @@ class PairCorrelationFunction:
     #! todo add example in the doc
     @staticmethod
     def plot(pcf_dataframe, exact_pcf=None, file_name="", **kwargs):
-        r"""Plot the columns of a DataFrame, as a function of the first one.
+        r"""Plot the columns of ``pcf_dataframe`` with respect to the column ``pcf_dataframe["r"]``.
 
         Args:
             pcf_dataframe (pandas.DataFrame): DataFrame to be visualized. Typically the output of :py:meth:`~structure_factor.structure_factor.StructureFactor.estimate`.
@@ -188,7 +193,7 @@ class PairCorrelationFunction:
             kwargs (dict): Keyword arguments of the function `pandas.DataFrame.plot.line <https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.plot.line.html>`_.
 
         Return:
-            matplotlib.plot: Plot result.
+            plt.Axes: Plot result.
         """
         axis = pcf_dataframe.plot.line(x="r", **kwargs)
         if exact_pcf is not None:

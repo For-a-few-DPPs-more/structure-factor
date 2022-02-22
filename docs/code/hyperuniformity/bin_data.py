@@ -8,14 +8,15 @@ from structure_factor.point_processes import GinibrePointProcess
 from structure_factor.spatial_windows import BoxWindow
 from structure_factor.structure_factor import StructureFactor
 
-ginibre_pp = load_data.load_ginibre()
+point_pattern = load_data.load_ginibre()
+point_process = GinibrePointProcess()
 
 # Restrict point pattern to smaller window
 window = BoxWindow([[-35, 35], [-35, 35]])
-ginibre_pp_box = ginibre_pp.restrict_to_window(window)
+point_pattern_box = point_pattern.restrict_to_window(window)
 
 # Estimated the structure factor on a grid of wavevectors
-sf = StructureFactor(ginibre_pp_box)
+sf = StructureFactor(point_pattern_box)
 x = np.linspace(0, 3, 80)
 x = x[x != 0]
 X, Y = np.meshgrid(x, x)
@@ -34,7 +35,7 @@ sf.plot_isotropic_estimator(
     sf_estimated_binned,
     axis=ax,
     color="m",
-    exact_sf=GinibrePointProcess.structure_factor,
+    exact_sf=point_process.structure_factor,
     label="After regularization",
 )
 
