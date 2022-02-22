@@ -39,6 +39,7 @@ class PointPattern(object):
         - :py:meth:`~structure_factor.point_pattern.PointPattern.plot`
     """
 
+    #! what are **params?
     def __init__(self, points, window, intensity=None, **params):
         r"""Initialize the object from a realization ``points`` of the underlying point process with intensity ``intensity`` observed in ``window``.
 
@@ -52,9 +53,9 @@ class PointPattern(object):
         Keyword Args:
             params: Possible additional parameters of the point process.
         """
-        _points = np.array(points)
-        assert _points.ndim == 2
-        self.points = _points
+        points = np.asarray(points)
+        assert points.ndim == 2
+        self.points = points
 
         if window is not None:
             assert isinstance(window, AbstractSpatialWindow)
@@ -65,6 +66,7 @@ class PointPattern(object):
         elif window is not None:
             intensity = self.points.shape[0] / window.volume
         self.intensity = intensity
+
         self.params = params
 
     @property
@@ -97,8 +99,8 @@ class PointPattern(object):
             - :py:meth:`~structure_factor.point_pattern.PointPattern.plot`
         """
         assert isinstance(window, AbstractSpatialWindow)
-        points = self.points[window.indicator_function(self.points)]
-        return PointPattern(points, window, self.intensity)
+        mask = window.indicator_function(self.points)
+        return PointPattern(self.points[mask], window, self.intensity)
 
     def convert_to_spatstat_ppp(self, **params):
         """Convert the object into a point pattern ``spatstat.geom.ppp`` R object.
@@ -140,8 +142,8 @@ class PointPattern(object):
             points = self.points
         else:
             assert isinstance(window, AbstractSpatialWindow)
-            res_pp = self.restrict_to_window(window=window)
-            points = res_pp.points
+            mask = window.indicator_function(self.points)
+            points = self.points[mask]
 
         kwargs.setdefault("c", "k")
         kwargs.setdefault("s", 0.5)

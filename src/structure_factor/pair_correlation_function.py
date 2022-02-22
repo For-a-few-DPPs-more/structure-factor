@@ -162,12 +162,13 @@ def interpolate(
             index_outlier = np.isnan(pcf_r) | np.isinf(pcf_r)
             pcf_r = pcf_r[~index_outlier]
             r = r[~index_outlier]
+
     if extrapolate_with_one:
         pcf = lambda x: utils._extrapolate_pcf(x, r, pcf_r, **params)
-
     else:
         params.setdefault("fill_value", "extrapolate")
         pcf = interpolate.interp1d(r, pcf_r, **params)
+
     return pcf
 
 
