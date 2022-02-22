@@ -3,11 +3,11 @@ import pytest
 from scipy.stats import norm
 
 from structure_factor.point_processes import (
-    HomogeneousPoissonPointProcess,
     GinibrePointProcess,
+    HomogeneousPoissonPointProcess,
     ThomasPointProcess,
 )
-from structure_factor.spatial_windows import BoxWindow, BallWindow
+from structure_factor.spatial_windows import BallWindow, BoxWindow
 
 
 @pytest.mark.parametrize(

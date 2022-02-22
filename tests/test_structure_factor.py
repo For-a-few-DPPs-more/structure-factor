@@ -1,14 +1,14 @@
 import numpy as np
 import pytest
-import structure_factor.utils as utils
 import scipy.special as sc
 
+import structure_factor.utils as utils
 from structure_factor.data import load_data
 from structure_factor.point_pattern import PointPattern
-from structure_factor.spatial_windows import BoxWindow, BallWindow
+from structure_factor.point_processes import GinibrePointProcess
+from structure_factor.spatial_windows import BallWindow, BoxWindow
 from structure_factor.structure_factor import StructureFactor
 from structure_factor.tapers import BartlettTaper
-from structure_factor.point_processes import GinibrePointProcess
 
 
 @pytest.fixture

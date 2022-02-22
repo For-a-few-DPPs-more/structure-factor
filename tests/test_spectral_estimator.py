@@ -1,21 +1,17 @@
-from ctypes import util
-from curses import window
 import numpy as np
 import pytest
 
 import structure_factor.spectral_estimators as spe
-from structure_factor.spectral_estimators import (
-    tapered_spectral_estimator_core as s_tp,
-)
+import structure_factor.utils as utils
+from structure_factor.point_pattern import PointPattern
+from structure_factor.spatial_windows import BoxWindow
+from structure_factor.spectral_estimators import tapered_spectral_estimator_core as s_tp
 from structure_factor.spectral_estimators import (
     tapered_spectral_estimator_debiased_direct as s_ddtp,
 )
 from structure_factor.spectral_estimators import (
     tapered_spectral_estimator_debiased_undirect as s_udtp,
 )
-from structure_factor.point_pattern import PointPattern
-from structure_factor.spatial_windows import BoxWindow
-import structure_factor.utils as utils
 from structure_factor.tapers import BartlettTaper, SineTaper
 
 #! Please explain what is supposed to be tested, it is difficult to guess as is

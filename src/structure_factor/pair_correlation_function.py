@@ -6,7 +6,6 @@
 
 - :py:meth:`~structure_factor.pair_correlation_function.PairCorrelationFunction.plot`: Plots the results of :py:meth:`~structure_factor.pair_correlation_function.PairCorrelationFunction.estimate`.
 """
-import warnings
 
 import matplotlib.pyplot as plt
 import numpy as np

@@ -24,7 +24,6 @@ For the theoretical derivation and definitions of these estimators, we refer to 
 import warnings
 
 import numpy as np
-from isort import file
 
 import structure_factor.isotropic_estimator as ise
 import structure_factor.utils as utils

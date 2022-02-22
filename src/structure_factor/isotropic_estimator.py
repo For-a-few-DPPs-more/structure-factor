@@ -1,6 +1,5 @@
 """Collection of functions used to implement a fast version of Bartlett's isotropic estimator."""
 
-import numba_scipy
 import numba_scipy.special
 import numpy as np
 import scipy.special as sc
