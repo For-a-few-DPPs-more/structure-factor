@@ -9,9 +9,6 @@ from structure_factor.pair_correlation_function import PairCorrelationFunction a
 from structure_factor.hyperuniformity import Hyperuniformity
 
 
-#! Work for DSE actually
-
-
 class SummaryStatistics:
     def __init__(self, list_point_pattern):
         self.list_point_pattern = list_point_pattern  # list of PointPattern
@@ -231,6 +228,17 @@ def sample_statistics(k=None, k_norm=None, approximation=None, exact=None):
     mse = var + bias ** 2
     imse = np.sum(k_norm_diff * (mse[1:] + mse[:-1]) / 2)
 
+    ise = integrated_square_error(k_norm, approximation=approximation, exact=exact)
+
+    # var(imse) = var(ise)/M
+    imse_var, _ = sample_variance(ise)
+    imse_var /= M
+    return k_norm, mean, ivar, ibias, imse, imse_var
+
+
+def integrated_square_error(k_norm, approximation, exact):
+    k_norm, approximation = list_vertical_sample_mean(k_norm, approximation)
+    k_norm_diff = k_norm[1:] - k_norm[:-1]  # k_{j+1} - k_j
     square_error = (
         approximation - exact(k_norm)
     ) ** 2  # se(approx_S)(k)=(approx_S(k) - S(k))^2
@@ -238,7 +246,18 @@ def sample_statistics(k=None, k_norm=None, approximation=None, exact=None):
         k_norm_diff * (square_error[:, 1:] + square_error[:, :-1]) / 2, axis=1
     )  # ise=sum_j (k_{j+1} - k_j)(se(k_{j+1}) + se(k_{j}))/2
     ise = list(ise)
-    # var(imse) = var(ise)/M
-    imse_var, _ = sample_variance(ise)
-    imse_var /= M
-    return k_norm, mean, ivar, ibias, imse, imse_var
+    return ise
+
+
+def paired_student_test(k_norm_1, approximation_1, k_norm_2, approximation_2, exact):
+    ise_1 = integrated_square_error(
+        k_norm_1, approximation=approximation_1, exact=exact
+    )  # ise of the first estimator
+    ise_2 = integrated_square_error(
+        k_norm_2, approximation=approximation_2, exact=exact
+    )  # ise of the second estimator
+    M = len(ise_1)
+    diff = np.array(ise_1) - np.array(ise_2)  # difference of ise of estimators
+    var_diff, mean_diff = sample_variance(list(diff))  # mean and variance of diff
+    t = mean_diff / np.sqrt(var_diff / M)
+    return t
