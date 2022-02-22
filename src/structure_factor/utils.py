@@ -1,6 +1,4 @@
-"""
-Collection of secondary functions used in the principal modules.
-"""
+"""Collection of secondary functions used in the principal modules."""
 
 import warnings
 from itertools import product

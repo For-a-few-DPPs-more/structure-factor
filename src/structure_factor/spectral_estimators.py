@@ -7,7 +7,7 @@ import numpy as np
 
 
 def tapered_dft(k, point_pattern, taper):
-    r"""Compute the tapered discrete Fourier transform (tapered DFT) associated with ``point_pattern`` evaluated at ``k``, using ``taper`` :math:`t`
+    r"""Compute the tapered discrete Fourier transform (tapered DFT) associated with ``point_pattern`` evaluated at ``k``, using ``taper`` :math:`t`.
 
     .. math::
 

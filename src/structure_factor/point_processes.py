@@ -325,7 +325,7 @@ class GinibrePointProcess(object):
 
     #! complete doc done (Diala)
     def generate_sample(self, window, seed=None):
-        r"""Generate an exact sample (or realization) of the Ginibre point process of size `n`
+        r"""Generate an exact sample (or realization) of the Ginibre point process of size `n`.
 
         This is done by computing the eigenvalues of a random matrix :math:`G`, filled with i.i.d. standard complex Gaussian variables, i.e.,
 

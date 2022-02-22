@@ -531,7 +531,7 @@ class StructureFactor:
         file_name="",
         **binning_params
     ):
-        r"""Display the outputs of the method :py:meth:`~structure_factor.structure_factor.StructureFactor.hankel_quadrature`, or :py:meth:`~structure_factor.structure_factor.StructureFactor.bartlett_isotropic_estimator`
+        r"""Display the outputs of the method :py:meth:`~structure_factor.structure_factor.StructureFactor.hankel_quadrature`, or :py:meth:`~structure_factor.structure_factor.StructureFactor.bartlett_isotropic_estimator`.
 
         Args:
             k_norm (np.array): Vector of wavenumbers (i.e., norms of wavevectors) on which the structure factor has been approximated.

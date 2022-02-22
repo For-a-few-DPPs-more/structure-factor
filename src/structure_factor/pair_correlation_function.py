@@ -20,6 +20,7 @@ import structure_factor.utils as utils
 #! Diala: pass over doc done
 class PairCorrelationFunction:
     """This class contains 2 methods for approximating the pair correlation function of a stationary point process using the `R` package `spatstat <https://github.com/spatstat/spatstat>`_.
+
     Also, it contains a method to clean, interpolate, extrapolate and a method to visualize the results.
     """
 

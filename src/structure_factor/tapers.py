@@ -1,4 +1,4 @@
-r"""Collection of classes representing tapers (also called tapering functions or window functions) with two methods:
+r"""Collection of classes representing tapers (also called tapering functions or window functions) with two methods.
 
 - ``.taper(x, window)`` corresponding to the tapering function :math:`t(x, W)`,
 
@@ -9,9 +9,8 @@ These tapers satisfy some conditions listed in :cite:`DGRR:22` (Sections 3.1, 4.
 Any taper to be used should be a class with the two methods ``.taper(x, window)`` and ``.ft_taper(k, window)``
 
 Example:
-
-.. literalinclude:: code/structure_factor/taper.py
-    :language: python
+    .. literalinclude:: code/structure_factor/taper.py
+        :language: python
 """
 
 import numpy as np
