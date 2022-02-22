@@ -46,11 +46,13 @@ def allowed_k_norm(dimension, radius, nb_values):
 
         - :py:func:`~structure_factor.isotropic_estimator.bartlett_estimator`
     """
-    if np.floor(dimension / 2) != dimension / 2:
+    d_2, mod_ = divmod(dimension, 2)
+    is_even_dimension = mod_ == 0
+    if not is_even_dimension:  # dimension is not even
         raise ValueError(
             "Allowed wavenumber could be used only when the dimension of the space `d` is an even number (i.e., d/2 is an integer)."
         )
-    return sc.jn_zeros(dimension / 2, nb_values) / radius
+    return sc.jn_zeros(d_2, nb_values) / radius
 
 
 #! care about case k=0
@@ -104,29 +106,24 @@ def bartlett_estimator(point_pattern, k_norm=None, n_allowed_k_norm=60):
 
     # allowed wavenumbers
     if k_norm is None:
-        if np.floor(d / 2) != d / 2:
-            raise ValueError(
-                "Allowed wavenumber could be used only when the dimension of the space `d` is even (i.e., d/2 is an integer). Hint: use the argument `k_norm` to specify the wavenumbers."
-            )
         if not isinstance(window, BallWindow):
             raise TypeError(
                 "The window must be an instance of BallWindow. Hint: use PointPattern.restrict_to_window."
             )
         k_norm = allowed_k_norm(
             dimension=d, radius=window.radius, nb_values=n_allowed_k_norm
-        )
-        k_norm = k_norm.astype(float)
+        ).astype(float)
 
-    estimation = np.zeros_like(k_norm)
     order = float(d / 2 - 1)
-    isotropic_estimator_njit(estimation, k_norm, norm_xi_xj, order)
+    sf_estimated = np.zeros_like(k_norm)
+    isotropic_estimator_njit(sf_estimated, k_norm, norm_xi_xj, order)
 
     surface, volume = unit_ball.surface, window.volume
     rho = point_pattern.intensity
-    estimation *= (2 * np.pi) ** (d / 2) / (surface * volume * rho)
-    estimation += 1
+    sf_estimated *= (2 * np.pi) ** (d / 2) / (surface * volume * rho)
+    sf_estimated += 1
 
-    return k_norm, estimation
+    return k_norm, sf_estimated
 
 
 @njit("double(double, double)")
