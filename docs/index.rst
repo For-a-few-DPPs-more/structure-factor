@@ -48,15 +48,15 @@ Contents
    :maxdepth: 3
 
    hyperuniformity
-   isotropic_estimator
-   pair_correlation_function
-   point_pattern
-   point_processes
-   spatial_windows
    structure_factor
    spectral_estimators
+   isotropic_estimator
    tapers
    transforms
+   point_processes
+   pair_correlation_function
+   point_pattern
+   spatial_windows
    utils
    bibliography/index
 

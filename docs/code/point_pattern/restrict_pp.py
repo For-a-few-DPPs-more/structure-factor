@@ -1,15 +1,17 @@
-# Generate PointPattern of a Poisson Process in a box window
-from structure_factor.point_processes import HomogeneousPoissonPointProcess
-from structure_factor.spatial_windows import BoxWindow, BallWindow
-from structure_factor.point_pattern import PointPattern
+import matplotlib.pyplot as plt
 
-poisson = HomogeneousPoissonPointProcess(
-    intensity=1
-)  # Initialize a Poisson point process
+from structure_factor.point_processes import HomogeneousPoissonPointProcess
+from structure_factor.spatial_windows import BallWindow, BoxWindow
+
+point_process = HomogeneousPoissonPointProcess(intensity=1)
+
 window = BoxWindow([[-50, 50], [-50, 50]])
-poisson_points = poisson.generate_sample(window=window)  # Sample a realization
-poisson_pp = PointPattern(points=poisson_points, window=window)  # Poisson PointPattern
+point_pattern = point_process.generate_point_pattern(window=window)
 
 # Restrict to a BallWindow
-poisson_pp_ball = poisson_pp.restrict_to_window(BallWindow(radius=30, center=[0, 0]))
-poisson_pp_ball.plot()
+ball = BallWindow(center=[0, 0], radius=30)
+restricted_point_pattern = point_pattern.restrict_to_window(ball)
+
+ax = restricted_point_pattern.plot()
+ax.set_aspect("equal", "box")
+plt.tight_layout(pad=1)

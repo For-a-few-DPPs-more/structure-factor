@@ -1,35 +1,43 @@
-# Load Ginibre PointPattern and restrict to BoxWindow
-from structure_factor.data import load_data
-from structure_factor.spatial_windows import BoxWindow
-from structure_factor.point_processes import GinibrePointProcess
+import matplotlib.pyplot as plt
 import numpy as np
 
-ginibre_pp = load_data.load_ginibre()
-ginibre_pp_box = ginibre_pp.restrict_to_window(BoxWindow([[-35, 35], [-35, 35]]))
-
-# Approximate the structure factor
-from structure_factor.structure_factor import StructureFactor
-sf_ginibre_box = StructureFactor(ginibre_pp_box)
-## Wavevectors
-x = np.linspace(0, 3, 80) 
-x = x[x != 0] # Eliminate zero
-X, Y = np.meshgrid(x, x)
-k = np.column_stack((X.ravel(), Y.ravel())) # Wavevectors
-s_ddmtp = sf_ginibre_box.multitapered_periodogram(k) # Estimate the structure factor
-
-# Regularize the results
 import structure_factor.utils as utils
+from structure_factor.data import load_data
 from structure_factor.hyperuniformity import Hyperuniformity
-k_norm = utils.norm_k(k)
-hyperuniformity_test = Hyperuniformity(k_norm, s_ddmtp) # Initialize Hyperuniformity
-k_norm_new, s_ddmtp_new, _ = hyperuniformity_test.bin_data(bins=40) # Regularization 
+from structure_factor.point_processes import GinibrePointProcess
+from structure_factor.spatial_windows import BoxWindow
+from structure_factor.structure_factor import StructureFactor
 
-# Visualization of the results
-import matplotlib.pyplot as plt
-fig, axis = plt.subplots(figsize=(7,5))
-axis.plot(k_norm, s_ddmtp, 'b,', label="Before regularization", rasterized=True)
-axis.legend()
-sf_ginibre_box.plot_isotropic_estimator(k_norm_new, s_ddmtp_new, axis=axis, color='m',
-                                        exact_sf=GinibrePointProcess.structure_factor, 
-                                        label="After regularization")
-plt.show()
+point_pattern = load_data.load_ginibre()
+point_process = GinibrePointProcess()
+
+# Restrict point pattern to smaller window
+window = BoxWindow([[-35, 35], [-35, 35]])
+point_pattern_box = point_pattern.restrict_to_window(window)
+
+# Estimated the structure factor on a grid of wavevectors
+sf = StructureFactor(point_pattern_box)
+x = np.linspace(0, 3, 80)
+x = x[x != 0]
+X, Y = np.meshgrid(x, x)
+k = np.column_stack((X.ravel(), Y.ravel()))
+sf_estimated = sf.multitapered_periodogram(k)
+
+k_norm = utils.norm_k(k)
+hyperuniformity = Hyperuniformity(k_norm, sf_estimated)
+k_norm_binned, sf_estimated_binned, _ = hyperuniformity.bin_data(bins=40)
+
+fig, ax = plt.subplots(figsize=(7, 5))
+
+ax.plot(k_norm, sf_estimated, "b,", label="Before regularization", rasterized=True)
+sf.plot_isotropic_estimator(
+    k_norm_binned,
+    sf_estimated_binned,
+    axis=ax,
+    color="m",
+    exact_sf=point_process.structure_factor,
+    label="After regularization",
+)
+ax.legend()
+
+plt.tight_layout(pad=1)

@@ -1,16 +1,13 @@
-r"""Collection of classes representing tapers (also called tapering functions or window functions) with two methods:
+r"""Collection of classes representing tapers (also called tapering functions or window functions). Such tapers must have two methods.
 
 - ``.taper(x, window)`` corresponding to the tapering function :math:`t(x, W)`,
 
 - ``.ft_taper(k, window)`` corresponding to the Fourier transform :math:`\mathcal{F}[t(\cdot, W)](k)` of the tapering function.
 
-These tapers satisfy some conditions listed in :cite:`DGRR:22` (Sections 3.1, 4.3).
+These tapers satisfy some conditions listed in :cite:`HGBLR:22` (Sections 3.1, 4.3).
 
-Any taper to be used should be a class with the two methods ``.taper(x, window)`` and ``.ft_taper(k, window)``
-
-Brief example :
-
-     .. literalinclude:: code/structure_factor/taper.py
+Example:
+    .. literalinclude:: code/structure_factor/taper.py
         :language: python
 """
 
@@ -48,20 +45,23 @@ class BartlettTaper:
         r"""Evaluate the Fourier transform :math:`F[t(\cdot, W)](k)` of the taper :math:`t` (:py:meth:`~structure_factor.tapers.BartlettTaper.taper`).
 
         Args:
-            k (numpy.ndarray): Array of size :math:`n \times d`, where :math:`d` is the ambient dimension and :math:`n` the number of points where the Fourier transform :math:`t(k, W)` is evaluated.
+            k (numpy.ndarray): Array of size :math:`n \times d`, where :math:`d` is the ambient dimension and :math:`n` the number of points where the Fourier transform is evaluated.
 
             window (:py:class:`~structure_factor.spatial_windows.BoxWindow`): :math:`d`-dimensional rectangular window :math:`W`.
 
         Return:
-            numpy.ndarray: Evaluation of the Fourier transform :math:`t(k, W)`.
+            numpy.ndarray: Evaluation of the Fourier transform at ``k``.
         """
         assert isinstance(window, BoxWindow)
         widths = 0.5 * np.diff(window.bounds.T, axis=0)
-        if (k == 0).any():
+
+        mask = k == 0
+        if np.any(mask):
             sines = np.zeros_like(k)
             widths_matrix = np.ones_like(k) * widths
-            sines[k == 0] = 2.0 * widths_matrix[k == 0]
-            sines[k != 0] = 2.0 * np.sin(k[k != 0] * widths_matrix[k != 0]) / k[k != 0]
+            sines[mask] = 2.0 * widths_matrix[mask]
+            np.logical_not(mask, out=mask)
+            sines[mask] = 2.0 * np.sin(k[mask] * widths_matrix[mask]) / k[mask]
         else:
             sines = 2.0 * np.sin(k * widths) / k
 
@@ -102,33 +102,36 @@ class SineTaper:
         r"""Evaluate the Fourier transform :math:`F[t(\cdot, W)](k)` of the taper :math:`t` (:py:meth:`~structure_factor.tapers.SineTaper.taper`).
 
         Args:
-            k (numpy.ndarray): Array of size :math:`n \times d`, where :math:`d` is the ambient dimension and :math:`n` the number of points where the Fourier transform :math:`t(k, W)` is evaluated.
+            k (numpy.ndarray): Array of size :math:`n \times d`, where :math:`d` is the ambient dimension and :math:`n` the number of points where the Fourier transform is evaluated.
 
             window (:py:class:`~structure_factor.spatial_windows.BoxWindow`): :math:`d`-dimensional rectangular window :math:`W`.
 
         Return:
-            numpy.ndarray: Evaluation of the Fourier transform :math:`t(k, W)`.
+            numpy.ndarray: Evaluation of the Fourier transform at ``k``.
         """
         assert isinstance(window, BoxWindow)
         widths = np.diff(window.bounds.T, axis=0)
         p = self.p
         a = k - np.pi * p / widths
         b = k + np.pi * p / widths
-        if (a == 0).any():
-            res_1 = np.zeros_like(k)
-            widths_matrix = np.ones_like(k) * widths
-            res_1[a == 0] = 0.5 * widths_matrix[a == 0]
-            res_1[a != 0] = np.sin(a[a != 0] * 0.5 * widths_matrix[a != 0]) / a[a != 0]
-        else:
-            res_1 = np.sin(a * 0.5 * widths) / a
-        if (b == 0).any():
-            res_2 = np.zeros_like(k)
-            widths_matrix = np.ones_like(k) * widths
-            res_2[b == 0] = 0.5 * widths_matrix[b == 0]
-            res_2[b != 0] = np.sin(b[b != 0] * 0.5 * widths_matrix[b != 0]) / b[b != 0]
-        else:
-            res_2 = np.sin(b * 0.5 * widths) / b
-        res = (1j) ** (p + 1) * np.sqrt(2) * (res_1 - (-1) ** p * res_2)
+
+        def compute_factor(x, k, widths):
+            mask = x == 0
+            if np.any(mask):
+                out = np.zeros_like(k)
+                widths_matrix = np.ones_like(k) * widths
+                out[mask] = 0.5 * widths_matrix[mask]
+                np.logical_not(mask, out=mask)
+                out[mask] = np.sin(x[mask] * 0.5 * widths_matrix[mask]) / x[mask]
+            else:
+                out = np.sin(x * 0.5 * widths) / x
+            return out
+
+        res_a = compute_factor(a, k, widths)
+        res_b = compute_factor(b, k, widths)
+
+        res = (1j) ** (p + 1) * np.sqrt(2) * (res_a - (-1) ** p * res_b)
         ft = np.prod(res, axis=1)
         ft /= np.sqrt(window.volume)
+
         return ft
