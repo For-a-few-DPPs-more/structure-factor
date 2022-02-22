@@ -4,7 +4,7 @@ r"""Collection of classes representing tapers (also called tapering functions or
 
 - ``.ft_taper(k, window)`` corresponding to the Fourier transform :math:`\mathcal{F}[t(\cdot, W)](k)` of the tapering function.
 
-These tapers satisfy some conditions listed in :cite:`DGRR:22` (Sections 3.1, 4.3).
+These tapers satisfy some conditions listed in :cite:`HGBLR:22` (Sections 3.1, 4.3).
 
 Example:
     .. literalinclude:: code/structure_factor/taper.py

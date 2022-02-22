@@ -33,7 +33,7 @@ class Hyperuniformity:
     .. proof:definition::
 
         A stationary point process :math:`\mathcal{X}` is said to be hyperuniform if its structure factor :math:`S` vanishes at 0.
-        For more details, we refer to :cite:`DGRR:22`, (Section 2).
+        For more details, we refer to :cite:`HGBLR:22`, (Section 2).
     """
 
     def __init__(self, k_norm, sf, std_sf=None):
@@ -112,7 +112,7 @@ class Hyperuniformity:
             - :math:`\hat{S}(\mathbf{0})` is a linear extrapolation of the structure factor at :math:`\mathbf{k}=\mathbf{0}`,
             - :math:`\mathbf{k}_{peak}` is the location of the first dominant peak value of :math:`S`.
 
-            For more details, we refer to :cite:`DGRR:22` (Section 2.5).
+            For more details, we refer to :cite:`HGBLR:22` (Section 2.5).
 
         .. important::
 
@@ -177,7 +177,7 @@ class Hyperuniformity:
             | III   | :math:`]0, 1[` | :math:`\mathcal{O}(R^{d-\alpha})`                             |
             +-------+----------------+---------------------------------------------------------------+
 
-            For more details, we refer to :cite:`DGRR:22`, (Section 2.5).
+            For more details, we refer to :cite:`HGBLR:22`, (Section 2.5).
 
         .. seealso::
 

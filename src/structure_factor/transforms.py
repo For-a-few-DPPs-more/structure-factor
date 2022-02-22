@@ -6,7 +6,7 @@
 
 - :py:class:`~structure_factor.transforms.HankelTransformOgata`: Compute the Hankel transform using Ogata quadrature
 
-For more details, we refer to :cite:`DGRR:22`.
+For more details, we refer to :cite:`HGBLR:22`.
 """
 
 import numpy as np

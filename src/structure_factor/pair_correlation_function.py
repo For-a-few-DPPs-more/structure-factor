@@ -69,7 +69,7 @@ class PairCorrelationFunction:
 
             for any non-negative smooth function :math:`f` with compact support.
 
-            For more details, we refer to :cite:`DGRR:22`, (Section 2).
+            For more details, we refer to :cite:`HGBLR:22`, (Section 2).
 
         .. seealso::
 

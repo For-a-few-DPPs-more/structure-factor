@@ -18,7 +18,7 @@ r"""Class collecting estimators of the structure factor :math:`S(\mathbf{k})` of
 
 - :py:meth:`~structure_factor.structure_factor.StructureFactor.plot_isotropic_estimator`: Visualize the results of :py:meth:`~structure_factor.structure_factor.StructureFactor.bartlett_isotropic_estimator` or :py:meth:`~structure_factor.structure_factor.StructureFactor.hankel_quadrature`.
 
-For the theoretical derivation and definitions of these estimators, we refer to :cite:`DGRR:22`.
+For the theoretical derivation and definitions of these estimators, we refer to :cite:`HGBLR:22`.
 """
 
 import warnings
@@ -54,7 +54,7 @@ class StructureFactor:
             S(\mathbf{k}) = 1 + \rho \mathcal{F}(g-1)(\mathbf{k}),
 
         where :math:`\mathcal{F}` denotes the Fourier transform, :math:`g` the pair correlation function of :math:`\mathcal{X}`, :math:`\mathbf{k}` a wavevector of :math:`\mathbb{R}^d`.
-        For more details we refer to :cite:`DGRR:22`, (Section 2) or :cite:`Tor18`, (Section 2.1, equation (13)).
+        For more details we refer to :cite:`HGBLR:22`, (Section 2) or :cite:`Tor18`, (Section 2.1, equation (13)).
     """
 
     def __init__(self, point_pattern):
@@ -108,7 +108,7 @@ class StructureFactor:
                          \exp(- i \left\langle \mathbf{k}, \mathbf{x_j} \right\rangle)
                  \right\rvert^2 .
 
-            For more details we refer to :cite:`DGRR:22`, (Section 3.1).
+            For more details we refer to :cite:`HGBLR:22`, (Section 3.1).
 
         .. note::
 
@@ -177,7 +177,7 @@ class StructureFactor:
                 \widehat{S}_{\mathrm{TP}}(t, \mathbf{k}) = \frac{1}{\rho} \left\lvert \sum_{j=1}^N t(x_j, W) \exp(- i \left\langle k, x_j \right\rangle)\right\rvert^2,
 
             where, :math:`t` is a taper supported on the observation window (satisfying some conditions) and :math:`k \in \mathbb{R}^d`.
-            For more details we refer to :cite:`DGRR:22`, (Section 3.1).
+            For more details we refer to :cite:`HGBLR:22`, (Section 3.1).
 
         .. note::
 
@@ -232,7 +232,7 @@ class StructureFactor:
                 \widehat{S}_{ \mathrm{MTP}}((t_{q})_{q=1}^P, \mathbf{k}) = \frac{1}{P}\sum_{q=1}^{P} \widehat{S}(t_{q}, \mathbf{k})
 
             where, :math:`(t_{q})_{q}` is a family of tapers supported on the observation window (satisfying some conditions), :math:`P` is the number of tapers used, and :math:`k \in \mathbb{R}^d`.
-            For more details, we refer to :cite:`DGRR:22`, (Section 3.1).
+            For more details, we refer to :cite:`HGBLR:22`, (Section 3.1).
 
         .. note::
 
@@ -406,7 +406,7 @@ class StructureFactor:
                  \frac{1}{(k \|\mathbf{x}_j - \mathbf{x}_q\|_2)^{d/2 - 1}}
                 J_{d/2 - 1}(k \|\mathbf{x}_j - \mathbf{x}_q\|_2).
 
-            For more details, we refer to :cite:`DGRR:22`, (Section 3.2).
+            For more details, we refer to :cite:`HGBLR:22`, (Section 3.2).
 
         .. note::
 
@@ -489,7 +489,7 @@ class StructureFactor:
             where, :math:`g` is the pair correlation function of :math:`\mathcal{X}`.
 
             This is a result of the relation between the Symmetric Fourier transform and the Hankel Transform.
-            For more details, we refer to :cite:`DGRR:22`, (Section 3.2).
+            For more details, we refer to :cite:`HGBLR:22`, (Section 3.2).
 
         .. note::
 
