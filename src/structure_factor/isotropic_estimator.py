@@ -134,6 +134,9 @@ def bessel1_njit(order, x):
     return sc.jv(order, x)
 
 
+# todo use cuda.jit to decrease computational time https://towardsdatascience.com/python-performance-and-gpus-1be860ffd58d#:~:text=x%5B%201%2C%201%5D)%20//%209-,GPU%20%E2%80%94%203%20ms,-%40numba.cuda.jit
+
+
 @njit("void(double[:], double[:], double[:], double)")
 def isotropic_estimator_njit(result, k_norm, norm_xi_xj, order):
     for k in range(len(k_norm)):
