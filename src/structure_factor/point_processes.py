@@ -81,7 +81,7 @@ class HomogeneousPoissonPointProcess(object):
         return np.full(k.shape[0], val)
 
     def generate_sample(self, window, seed=None):
-        r"""Generate an exact sample (or realization) of the point process restricted to the :math:`d` dimensional `window`.
+        r"""Generate an exact sample of the point process restricted to the :math:`d` dimensional `window`.
 
         Args:
             window (:py:class:`~structure_factor.spatial_windows.AbstractSpatialWindow`): :math:`d`-dimensional observation window where the points will be generated.
@@ -254,7 +254,8 @@ class ThomasPointProcess:
         points = np.vstack(
             [rng.normal(c, s, (n, d)) for (c, n) in zip(centers, n_per_cluster)]
         )
-        return points[window.indicator_function(points)]
+        mask = window.indicator_function(points)
+        return points[mask]
 
     def generate_point_pattern(self, window, seed=None):
         """Generate a :py:class:`~structure_factor.point_pattern.PointPattern` of the point process.
@@ -338,17 +339,19 @@ class GinibrePointProcess(object):
         """
         return 1.0 - np.exp(-0.25 * (k_norm ** 2))
 
-    def generate_sample(self, window, seed=None):
-        r"""Generate an exact sample (or realization) of the Ginibre point process of size `n`.
+    def generate_sample(self, window, n=None, seed=None):
+        r"""Generate a sample of the Ginibre point process made of ``n`` points, inside the observation ``window``.
 
-        This is done by computing the eigenvalues of a random matrix :math:`G`, filled with i.i.d. standard complex Gaussian variables, i.e.,
+        This is done by computing the eigenvalues of a random matrix :math:`G` of size :math:`n \times n`, filled with i.i.d. standard complex Gaussian variables, i.e.,
 
         .. math::
 
-            G_{ij} = \frac{1}{\sqrt{2}} (X_{ij} + \mathbf{i} Y_{ij})
+            G_{ij} = \frac{1}{\sqrt{2}} (X_{ij} + \mathbf{i} Y_{ij}).
 
         Args:
             window (:py:class:`~structure_factor.spatial_windows.BallWindow`): :math:`2`-dimensional centered ball window where the points will be generated.
+
+            n (int, optional): Number of points of the output sample. If ``n`` is None (default), it is set to the integer part of :math:`\rho |W| = \frac{1}{\pi} |W|`. Defaults to None.
 
         Returns:
             numpy.ndarray: Array of size :math:`n \times 2`, representing the :math:`n` points forming the sample.
@@ -368,22 +371,32 @@ class GinibrePointProcess(object):
             raise ValueError("The window should be a 2-d centered BallWindow.")
         if window.dimension != 2:
             raise ValueError("The window should be a 2-d window.")
-        if (window.center != np.array([0, 0])).any():
+        if not np.array_equal(window.center, 0.0):
             raise ValueError("The window should be a centered window.")
-        n = int(window.volume * self.intensity)
+
+        if n is None:
+            n = int(window.volume * self.intensity)
+        assert isinstance(n, int)
+
         rng = get_random_number_generator(seed)
+
         A = np.zeros((n, n), dtype=complex)
         A.real = rng.standard_normal((n, n))
         A.imag = rng.standard_normal((n, n))
         eigvals = la.eigvals(A) / np.sqrt(2.0)
-        points = np.vstack((eigvals.real, eigvals.imag))
-        return points.T
 
-    def generate_point_pattern(self, window, seed=None):
+        points = np.vstack((eigvals.real, eigvals.imag)).T
+        mask = window.indicator_function(points)
+
+        return points[mask]
+
+    def generate_point_pattern(self, window, n=None, seed=None):
         r"""Generate a :math:`2`-dimensional :py:class:`~structure_factor.point_pattern.PointPattern` of the point process, with a centered :py:class:`~structure_factor.spatial_windows.BallWindow`.
 
         Args:
             window (:py:class:`~structure_factor.spatial_windows.AbstractSpatialWindow`): :math:`2`-dimensional observation centered :py:class:`~structure_factor.spatial_windows.BallWindow`.
+
+            n (int, optional): Number of points of the output sample. If ``n`` is None (default), it is set to the integer part of :math:`\rho |W| = \frac{1}{\pi} |W|`. Defaults to None.
 
             seed (int, optional): Seed to initialize the points generator. Defaults to None.
 
@@ -402,7 +415,7 @@ class GinibrePointProcess(object):
             - :py:class:`~structure_factor.spatial_windows.BallWindow`
             - :py:class:`~structure_factor.point_pattern.PointPattern`
         """
-        points = self.generate_sample(window=window, seed=seed)
+        points = self.generate_sample(window=window, n=n, seed=seed)
         point_pattern = PointPattern(
             points=points, window=window, intensity=self.intensity
         )
