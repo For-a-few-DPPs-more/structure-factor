@@ -12,7 +12,6 @@ For more details, we refer to :cite:`HGBLR:22`.
 import numpy as np
 from scipy import interpolate
 
-import structure_factor.utils as utils
 from structure_factor.utils import bessel1, bessel1_zeros, bessel2
 
 
@@ -145,7 +144,7 @@ class HankelTransform:
             order (int, optional): Order of the Hankel transform.
         """
         assert order == np.floor(order)
-        self.order = order
+        self.order = int(order)
 
 
 class HankelTransformBaddourChouinard(HankelTransform):
