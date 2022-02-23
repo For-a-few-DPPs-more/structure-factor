@@ -8,7 +8,7 @@ from structure_factor.structure_factor import StructureFactor
 point_process = GinibrePointProcess()
 point_pattern = load_data.load_ginibre()
 sf = StructureFactor(point_pattern)
-k_norm, sf_estimated = sf.bartlett_isotropic_estimator(n_allowed_k_norm=40)
+k_norm, sf_estimated = sf.tapered_estimators_isotropic(n_allowed_k_norm=40)
 
 sf_theoretical = point_process.structure_factor(k_norm)
 

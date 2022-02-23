@@ -10,7 +10,7 @@ point_pattern = load_data.load_ginibre()
 point_process = GinibrePointProcess()
 
 sf = StructureFactor(point_pattern)
-k_norm, sf_estimated = sf.bartlett_isotropic_estimator(n_allowed_k_norm=50)
+k_norm, sf_estimated = sf.tapered_estimators_isotropic(n_allowed_k_norm=50)
 
 sf_theoretical = point_process.structure_factor(k_norm)
 

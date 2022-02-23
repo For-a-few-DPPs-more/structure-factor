@@ -19,9 +19,9 @@ X, Y = np.meshgrid(x, x)
 k = np.column_stack((X.ravel(), Y.ravel()))
 
 taper = SineTaper([1, 1])
-sf_estimated = sf.tapered_periodogram(k=k, taper=taper, debiased=True, direct=True)
+sf_estimated = sf.tapered_estimator(k=k, taper=taper, debiased=True, direct=True)
 
-sf.plot_spectral_estimator(
+sf.plot_tapered_estimator(
     k,
     sf_estimated,
     plot_type="all",

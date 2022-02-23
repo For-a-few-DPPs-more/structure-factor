@@ -9,7 +9,7 @@ window = BallWindow(center=[0, 0], radius=50)
 point_pattern = point_process.generate_point_pattern(window=window)
 
 sf = StructureFactor(point_pattern)
-k_norm, sf_estimated = sf.bartlett_isotropic_estimator(n_allowed_k_norm=50)
+k_norm, sf_estimated = sf.tapered_estimators_isotropic(n_allowed_k_norm=50)
 
 ax = sf.plot_isotropic_estimator(
     k_norm, sf_estimated, label=r"$\widehat{S}_{\mathrm{BI}}(k)$"

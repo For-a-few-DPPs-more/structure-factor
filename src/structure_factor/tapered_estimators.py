@@ -1,4 +1,4 @@
-"""Collection of functions that compute tapered spectral estimates of the structure factor :math:`S(k)` of a stationary point process given one realization.
+"""Collection of functions that compute tapered estimates of the structure factor :math:`S(k)` of a stationary point process given one realization.
 
 Some tapers (tapering function) are available in :ref:`tapers`.
 """
@@ -58,7 +58,7 @@ def periodogram_from_dft(dft):
         \right\rvert ^ 2,
 
     Args:
-        dft (numpy.ndarray): Discrete Fourier transform computed via :py:func:`~structure_factor.spectral_estimators.tapered_dft`.
+        dft (numpy.ndarray): Discrete Fourier transform computed via :py:func:`~structure_factor.tapered_estimators.tapered_dft`.
 
     Returns:
         numpy.ndarray: ``abs(dft)**2``.
@@ -69,8 +69,8 @@ def periodogram_from_dft(dft):
     return periodogram
 
 
-def tapered_spectral_estimator_core(k, point_pattern, taper):
-    r"""Compute the tapered spectral estimator :math:`S_{TP}(t, k)` of the structure factor :math:`S(k)` evaluated at ``k`` w.r.t. the ``taper`` :math:`t` and the realization ``point_pattern`` of the underlying stationary point process.
+def tapered_estimator_core(k, point_pattern, taper):
+    r"""Compute the tapered estimator :math:`S_{TP}(t, k)` of the structure factor :math:`S(k)` evaluated at ``k`` w.r.t. the ``taper`` :math:`t` and the realization ``point_pattern`` of the underlying stationary point process.
 
     Args:
         k (numpy.ndarray): Array of size :math:`n \times d`, where :math:`d` is the ambient dimension and :math:`n` the number of points where the estimator is evaluated.
@@ -80,11 +80,11 @@ def tapered_spectral_estimator_core(k, point_pattern, taper):
         taper (object): Class with static method or instance with method ``.taper(x, window)`` corresponding to :math:`t(x, W)`.
 
     Returns:
-        numpy.ndarray: Evaluation of the tapered spectral estimator :math:`S_{TP}(t, k)` at ``k``.
+        numpy.ndarray: Evaluation of the tapered estimator :math:`S_{TP}(t, k)` at ``k``.
 
     .. proof:definition::
 
-        The tapered spectral estimator :math:`S_{TP}(t, k)`, constructed from a realization :math:`\{x_1, \dots, x_N\} \subset \mathbb{R}^d`, is defined by,
+        The tapered estimator :math:`S_{TP}(t, k)`, constructed from a realization :math:`\{x_1, \dots, x_N\} \subset \mathbb{R}^d`, is defined by,
 
         .. math::
 
@@ -105,8 +105,8 @@ def tapered_spectral_estimator_core(k, point_pattern, taper):
     return estimated_sf_k
 
 
-def select_tapered_spectral_estimator(debiased, direct):
-    """Select the tapered spectral estimator of the structure factor.
+def select_tapered_estimator(debiased, direct):
+    """Select the tapered estimator of the structure factor.
 
     Args:
         debiased (bool): Trigger the use of a debiased tapered estimator.
@@ -115,19 +115,19 @@ def select_tapered_spectral_estimator(debiased, direct):
     Returns:
         callable: According to ``debiased`` and ``direct`` return
 
-            - :py:func:`~structure_factor.spectral_estimators.tapered_spectral_estimator_debiased_direct`
-            - :py:func:`~structure_factor.spectral_estimators.tapered_spectral_estimator_debiased_undirect`
-            - :py:func:`~structure_factor.spectral_estimators.tapered_spectral_estimator_core`
+            - :py:func:`~structure_factor.tapered_estimators.tapered_estimator_debiased_direct`
+            - :py:func:`~structure_factor.tapered_estimators.tapered_estimator_debiased_undirect`
+            - :py:func:`~structure_factor.tapered_estimators.tapered_estimator_core`
     """
     if debiased:
         if direct:
-            return tapered_spectral_estimator_debiased_direct
-        return tapered_spectral_estimator_debiased_undirect
-    return tapered_spectral_estimator_core
+            return tapered_estimator_debiased_direct
+        return tapered_estimator_debiased_undirect
+    return tapered_estimator_core
 
 
-def tapered_spectral_estimator_debiased_direct(k, point_pattern, taper):
-    r"""Compute the direct debiased tapered spectral estimator :math:`S_{DDTP}(t, k)` of the structure factor :math:`S(k)` evaluated at ``k`` w.r.t. the ``taper`` :math:`t` and the realization ``point_pattern`` of the underlying stationary point process.
+def tapered_estimator_debiased_direct(k, point_pattern, taper):
+    r"""Compute the direct debiased tapered estimator :math:`S_{DDTP}(t, k)` of the structure factor :math:`S(k)` evaluated at ``k`` w.r.t. the ``taper`` :math:`t` and the realization ``point_pattern`` of the underlying stationary point process.
 
     .. math::
 
@@ -169,8 +169,8 @@ def tapered_spectral_estimator_debiased_direct(k, point_pattern, taper):
     return estimated_sf_k
 
 
-def tapered_spectral_estimator_debiased_undirect(k, point_pattern, taper):
-    r"""Compute the undirect debiased tapered spectral estimator :math:`S_{UDTP}(t, k)` of the structure factor :math:`S(k)` evaluated at ``k`` w.r.t. the ``taper`` :math:`t` and the realization ``point_pattern`` of the underlying stationary point process.
+def tapered_estimator_debiased_undirect(k, point_pattern, taper):
+    r"""Compute the undirect debiased tapered estimator :math:`S_{UDTP}(t, k)` of the structure factor :math:`S(k)` evaluated at ``k`` w.r.t. the ``taper`` :math:`t` and the realization ``point_pattern`` of the underlying stationary point process.
 
     .. math::
 
@@ -206,7 +206,7 @@ def tapered_spectral_estimator_debiased_undirect(k, point_pattern, taper):
     window = point_pattern.window
     rho = point_pattern.intensity
 
-    estimated_sf_k = tapered_spectral_estimator_core(k, point_pattern, taper)
+    estimated_sf_k = tapered_estimator_core(k, point_pattern, taper)
     Hk_2 = np.abs(taper.ft_taper(k, window))
     np.square(Hk_2, out=Hk_2)
     estimated_sf_k -= rho * Hk_2
@@ -214,10 +214,8 @@ def tapered_spectral_estimator_debiased_undirect(k, point_pattern, taper):
 
 
 #! add test
-def multitapered_spectral_estimator(
-    k, point_pattern, *tapers, debiased=False, direct=True
-):
-    r"""Compute the multitaped spectral estimator :math:`\widehat{S}_{MTP}((t_i)_{i=1}^p, k)` of the structure factor :math:`S(k)` evaluated at ``k`` w.r.t. the ``tapers`` :math:`(t_i)_{i=1}^p` and the realization ``point_pattern`` of the underlying stationary point process.
+def multitapered_estimator(k, point_pattern, *tapers, debiased=False, direct=True):
+    r"""Compute the multitapered estimator :math:`\widehat{S}_{MTP}((t_i)_{i=1}^p, k)` of the structure factor :math:`S(k)` evaluated at ``k`` w.r.t. the ``tapers`` :math:`(t_i)_{i=1}^p` and the realization ``point_pattern`` of the underlying stationary point process.
 
     .. math::
 
@@ -236,18 +234,18 @@ def multitapered_spectral_estimator(
 
             - ``.ft_taper(k, window)`` corresponding to the Fourier transform :math:`\mathcal{F}[t(\cdot, W)](k)` of the taper function, if ``debiased`` is True.
 
-        debiased (bool): trigger the use of debiased tapered spectral estimators.
+        debiased (bool): trigger the use of debiased tapered estimators.
 
-        direct (bool): if ``debiased`` is True, trigger the use of the tapered direct/undirect debiased spectral estimators.
+        direct (bool): if ``debiased`` is True, trigger the use of the tapered direct/undirect debiased tapered estimators.
 
     Returns:
-        numpy.ndarray: Vector of size :math:`n` containing the evaluation of the multitapered spectral estimator :math:`\widehat{S}_{MTP}((t_i)_{i=1}^p, k)`.
+        numpy.ndarray: Vector of size :math:`n` containing the evaluation of the multitapered estimator :math:`\widehat{S}_{MTP}((t_i)_{i=1}^p, k)`.
 
     .. seealso::
 
-        - :py:func:`~structure_factor.spectral_estimators.select_tapered_spectral_estimator`
+        - :py:func:`~structure_factor.tapered_estimators.select_tapered_estimator`
     """
-    estimator = select_tapered_spectral_estimator(debiased, direct)
+    estimator = select_tapered_estimator(debiased, direct)
     estimated_sf_k = np.zeros(k.shape[0], dtype=float)
     for taper in tapers:
         estimated_sf_k += estimator(k, point_pattern, taper)

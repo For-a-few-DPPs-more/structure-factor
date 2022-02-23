@@ -1,16 +1,16 @@
 import numpy as np
 import pytest
 
-import structure_factor.spectral_estimators as spe
+import structure_factor.tapered_estimators as spe
 import structure_factor.utils as utils
 from structure_factor.point_pattern import PointPattern
 from structure_factor.spatial_windows import BoxWindow
-from structure_factor.spectral_estimators import tapered_spectral_estimator_core as s_tp
-from structure_factor.spectral_estimators import (
-    tapered_spectral_estimator_debiased_direct as s_ddtp,
+from structure_factor.tapered_estimators import tapered_estimator_core as s_tp
+from structure_factor.tapered_estimators import (
+    tapered_estimator_debiased_direct as s_ddtp,
 )
-from structure_factor.spectral_estimators import (
-    tapered_spectral_estimator_debiased_undirect as s_udtp,
+from structure_factor.tapered_estimators import (
+    tapered_estimator_debiased_undirect as s_udtp,
 )
 from structure_factor.tapers import BartlettTaper, SineTaper
 
@@ -31,7 +31,7 @@ class Taper2:
         return np.linalg.norm(x, axis=1) * np.sqrt(n / window_volume)
 
 
-# test the results of the functions of spectral_estimators with simple tapers and trying to recover many dimension
+# test the results of the functions of tapered_estimators with simple tapers and trying to recover many dimension
 #! unreadable test
 @pytest.mark.parametrize(
     "k, points, window, taper, expected",
@@ -84,9 +84,9 @@ def test_periodogram_from_dft(dft, expected):
         )
     ],
 )
-def test_tapered_spectral_estimator_core(k, points, window, taper, expected):
+def test_tapered_estimator_core(k, points, window, taper, expected):
     point_pattern = PointPattern(points, window)
-    tp = spe.tapered_spectral_estimator_core(k, point_pattern, taper)
+    tp = spe.tapered_estimator_core(k, point_pattern, taper)
     np.testing.assert_almost_equal(tp, expected)
 
 
@@ -161,7 +161,7 @@ def test_multitapered_with_one_taper_equal_monotaper(debiased, direct, monotaper
 
     k = np.random.rand(10, 3) * 6  # arbitrary points in 3-d
 
-    s_estimated = spe.multitapered_spectral_estimator(
+    s_estimated = spe.multitapered_estimator(
         k, point_pattern, *tapers, debiased=debiased, direct=direct
     )
     s_expected = monotaper(k, point_pattern, taper)

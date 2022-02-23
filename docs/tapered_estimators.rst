@@ -1,9 +1,9 @@
-.. _spectral_estimators:
+.. _tapered_estimators:
 
-Spectral estimators
+Tapered estimators
 ###################
 
-.. automodule:: structure_factor.spectral_estimators
+.. automodule:: structure_factor.tapered_estimators
     :members:
     :inherited-members:
     :show-inheritance:

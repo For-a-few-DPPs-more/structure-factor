@@ -21,7 +21,7 @@ x = np.linspace(0, 3, 80)
 x = x[x != 0]
 X, Y = np.meshgrid(x, x)
 k = np.column_stack((X.ravel(), Y.ravel()))
-sf_estimated = sf.multitapered_periodogram(k)
+sf_estimated = sf.multitapered_estimator(k)
 
 k_norm = utils.norm_k(k)
 hyperuniformity = Hyperuniformity(k_norm, sf_estimated)

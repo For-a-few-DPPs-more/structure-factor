@@ -16,11 +16,11 @@ x = np.linspace(-2, 2, 80)
 x = x[x != 0]
 X, Y = np.meshgrid(x, x)
 k = np.column_stack((X.ravel(), Y.ravel()))
-sf_estimated = sf.multitapered_periodogram(
+sf_estimated = sf.multitapered_estimator(
     k, debiased=True, direct=True, p_component_max=2
 )
 
-sf.plot_spectral_estimator(
+sf.plot_tapered_estimator(
     k,
     sf_estimated,
     plot_type="all",

@@ -49,8 +49,8 @@ Contents
 
    hyperuniformity
    structure_factor
-   spectral_estimators
-   isotropic_estimator
+   tapered_estimators
+   tapered_estimators_isotropic
    tapers
    transforms
    point_processes

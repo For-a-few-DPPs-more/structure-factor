@@ -1,6 +1,6 @@
 """Collection of functions used to implement a fast version of Bartlett's isotropic estimator."""
 
-import numba_scipy.special
+
 import numpy as np
 import scipy.special as sc
 from numba import njit
@@ -44,7 +44,7 @@ def allowed_k_norm(dimension, radius, nb_values):
 
     .. seealso::
 
-        - :py:func:`~structure_factor.isotropic_estimator.bartlett_estimator`
+        - :py:func:`~structure_factor.tapered_estimators_isotropic.bartlett_estimator`
     """
     d_2, mod_ = divmod(dimension, 2)
     is_even_dimension = mod_ == 0
@@ -62,9 +62,9 @@ def bartlett_estimator(point_pattern, k_norm=None, n_allowed_k_norm=60):
     Args:
         point_pattern (:py:class:`~structure_factor.point_pattern.PointPattern`): Realization of the underlying point process.
 
-        k_norm (numpy.ndarray, optional): Array of size :math:`n` corresponding to the wavenumbers where the estimator is to be evaluated. If None (default) and the observation window ``point_pattern.window`` is a :py:class:`~structure_factor.spatial_windows.BallWindow` and the ambient dimension is even, the estimator will be evaluated on the corresponding set of allowed wavenumbers returned by :py:func:`~structure_factor.isotropic_estimator.allowed_k_norm`. Defaults to None.
+        k_norm (numpy.ndarray, optional): Array of size :math:`n` corresponding to the wavenumbers where the estimator is to be evaluated. If None (default) and the observation window ``point_pattern.window`` is a :py:class:`~structure_factor.spatial_windows.BallWindow` and the ambient dimension is even, the estimator will be evaluated on the corresponding set of allowed wavenumbers returned by :py:func:`~structure_factor.tapered_estimators_isotropic.allowed_k_norm`. Defaults to None.
 
-        n_allowed_k_norm (int, optional): Number of allowed wavenumbers to be used when ``k_norm`` is None. See :py:func:`~structure_factor.isotropic_estimator.allowed_k_norm`. Defaults to 60.
+        n_allowed_k_norm (int, optional): Number of allowed wavenumbers to be used when ``k_norm`` is None. See :py:func:`~structure_factor.tapered_estimators_isotropic.allowed_k_norm`. Defaults to 60.
 
     Returns:
         tuple(numpy.ndarray, numpy.ndarray):
@@ -94,8 +94,8 @@ def bartlett_estimator(point_pattern, k_norm=None, n_allowed_k_norm=60):
 
         - :py:class:`~structure_factor.spatial_windows.BallWindow`
         - :py:meth:`~structure_factor.point_pattern.PointPattern.restrict_to_window`
-        - :py:meth:`~structure_factor.structure_factor.StructureFactor.bartlett_isotropic_estimator`
-        - :py:func:`~structure_factor.isotropic_estimator.allowed_k_norm`
+        - :py:meth:`~structure_factor.structure_factor.StructureFactor.tapered_estimators_isotropic`
+        - :py:func:`~structure_factor.tapered_estimators_isotropic.allowed_k_norm`
     """
     window = point_pattern.window
     d = window.dimension

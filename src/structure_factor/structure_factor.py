@@ -4,19 +4,19 @@ r"""Class collecting estimators of the structure factor :math:`S(\mathbf{k})` of
 
 - :py:meth:`~structure_factor.structure_factor.StructureFactor.scattering_intensity`: The scattering intensity and the corresponding debiased versions.
 
-- :py:meth:`~structure_factor.structure_factor.StructureFactor.tapered_periodogram`: The scaled tapered periodogram and the corresponding debiased versions.
+- :py:meth:`~structure_factor.structure_factor.StructureFactor.tapered_estimator`: The scaled tapered estimator and the corresponding debiased versions.
 
-- :py:meth:`~structure_factor.structure_factor.StructureFactor.multitapered_periodogram`: The scaled multitapered periodogram and the corresponding debiased versions.
+- :py:meth:`~structure_factor.structure_factor.StructureFactor.multitapered_estimator`: The scaled multitapered estimator and the corresponding debiased versions.
 
-- :py:meth:`~structure_factor.structure_factor.StructureFactor.bartlett_isotropic_estimator`: Bartlett's isotropic estimator.
+- :py:meth:`~structure_factor.structure_factor.StructureFactor.tapered_estimators_isotropic`: Bartlett's isotropic estimator.
 
 - :py:meth:`~structure_factor.structure_factor.StructureFactor.hankel_quadrature`: Integral estimation using Hankel transform quadrature.
 
 **The available plot methods:**
 
-- :py:meth:`~structure_factor.structure_factor.StructureFactor.plot_spectral_estimator`: Visualize the results of :py:meth:`~structure_factor.structure_factor.StructureFactor.scattering_intensity`, :py:meth:`~structure_factor.structure_factor.StructureFactor.tapered_periodogram`, or :py:meth:`~structure_factor.structure_factor.StructureFactor.multitapered_periodogram`.
+- :py:meth:`~structure_factor.structure_factor.StructureFactor.plot_tapered_estimator`: Visualize the results of :py:meth:`~structure_factor.structure_factor.StructureFactor.scattering_intensity`, :py:meth:`~structure_factor.structure_factor.StructureFactor.tapered_estimator`, or :py:meth:`~structure_factor.structure_factor.StructureFactor.multitapered_estimator`.
 
-- :py:meth:`~structure_factor.structure_factor.StructureFactor.plot_isotropic_estimator`: Visualize the results of :py:meth:`~structure_factor.structure_factor.StructureFactor.bartlett_isotropic_estimator` or :py:meth:`~structure_factor.structure_factor.StructureFactor.hankel_quadrature`.
+- :py:meth:`~structure_factor.structure_factor.StructureFactor.plot_isotropic_estimator`: Visualize the results of :py:meth:`~structure_factor.structure_factor.StructureFactor.tapered_estimators_isotropic` or :py:meth:`~structure_factor.structure_factor.StructureFactor.hankel_quadrature`.
 
 For the theoretical derivation and definitions of these estimators, we refer to :cite:`HGBLR:22`.
 """
@@ -25,13 +25,13 @@ import warnings
 
 import numpy as np
 
-import structure_factor.isotropic_estimator as ise
+import structure_factor.tapered_estimators_isotropic as ise
 import structure_factor.utils as utils
 from structure_factor.point_pattern import PointPattern
 from structure_factor.spatial_windows import BallWindow, BoxWindow
-from structure_factor.spectral_estimators import (
-    multitapered_spectral_estimator,
-    select_tapered_spectral_estimator,
+from structure_factor.tapered_estimators import (
+    multitapered_estimator,
+    select_tapered_estimator,
 )
 from structure_factor.tapers import BartlettTaper, SineTaper
 from structure_factor.transforms import RadiallySymmetricFourierTransform
@@ -117,7 +117,7 @@ class StructureFactor:
 
         .. seealso::
 
-            - :py:meth:`~structure_factor.structure_factor.StructureFactor.plot_spectral_estimator`
+            - :py:meth:`~structure_factor.structure_factor.StructureFactor.plot_tapered_estimator`
             - :py:class:`~structure_factor.spatial_windows.BoxWindow`
             - :py:meth:`~structure_factor.point_pattern.PointPattern.restrict_to_window`
             - :py:func:`~structure_factor.utils.allowed_wave_vectors`
@@ -142,34 +142,34 @@ class StructureFactor:
                 "`k` should have d columns, where d is the dimension of the ambient space where the points forming the point pattern live."
             )
 
-        estimation = self.tapered_periodogram(
+        estimation = self.tapered_estimator(
             k, taper=BartlettTaper(), debiased=debiased, direct=direct
         )
 
         return k, estimation
 
-    def tapered_periodogram(self, k, taper=BartlettTaper, debiased=True, direct=True):
-        r"""Compute the scaled tapered periodogram :math:`\widehat{S}_{\mathrm{TP}}` (or a debiased version :math:`\widehat{S}_{\mathrm{DDTP}}`, :math:`\widehat{S}_{\mathrm{UDTP}}`) of the point process encapsulated in the ``PointPattern`` for a specific choice of ``taper``.
+    def tapered_estimator(self, k, taper=BartlettTaper, debiased=True, direct=True):
+        r"""Compute the scaled tapered estimator :math:`\widehat{S}_{\mathrm{TP}}` (or a debiased version :math:`\widehat{S}_{\mathrm{DDTP}}`, :math:`\widehat{S}_{\mathrm{UDTP}}`) of the point process encapsulated in the ``PointPattern`` for a specific choice of ``taper``.
 
         Args:
-            k (numpy.ndarray): Array of size :math:`n \times d`  where :math:`d` is the dimension of the space, and :math:`n` is the number of wavevectors where the scaled tapered periodogram is evaluated.
+            k (numpy.ndarray): Array of size :math:`n \times d`  where :math:`d` is the dimension of the space, and :math:`n` is the number of wavevectors where the scaled tapered estimator is evaluated.
 
             taper (object, optional): Class with two  methods ``.taper(x, window)`` corresponding to the taper function :math:`t(x, W)` , and ``.ft_taper(k, window)`` corresponding to the Fourier transform :math:`\mathcal{F}[t(\cdot, W)](k)` of the taper. Some tapers and a model of implementing a new taper are available in :ref:`tapers`. Defaults to :py:class:`~structure_factor.tapers.BartlettTaper`.
 
             debiased (bool, optional): Trigger the use of a debiased estimator. Defaults to True.
 
-            direct (bool, optional): If ``debiased`` is True, trigger the use of the direct/undirect debiased scaled tapered periodogram. Parameter related to ``debiased``. Defaults to True.
+            direct (bool, optional): If ``debiased`` is True, trigger the use of the direct/undirect debiased scaled tapered estimator. Parameter related to ``debiased``. Defaults to True.
 
         Returns:
-            numpy.ndarray: Evaluation(s) of the scaled tapered periodogram or a debiased version at ``k``.
+            numpy.ndarray: Evaluation(s) of the scaled tapered estimator or a debiased version at ``k``.
 
         Example:
-            .. plot:: code/structure_factor/tapered_periodogram.py
+            .. plot:: code/structure_factor/tapered_estimator.py
                 :include-source: True
 
         .. proof:definition::
 
-            The scaled tapered periodogram :math:`\widehat{S}_{\mathrm{TP}}(t, k)`, is an estimator of the structure factor :math:`S` of a stationary point process :math:`\mathcal{X} \subset \mathbb{R}^d` of intensity :math:`\rho`. It is accessible from a realization :math:`\mathcal{X}\cap W =\{\mathbf{x}_i\}_{i=1}^N` of :math:`\mathcal{X}` within a box window :math:`W`.
+            The scaled tapered estimator :math:`\widehat{S}_{\mathrm{TP}}(t, k)`, is an estimator of the structure factor :math:`S` of a stationary point process :math:`\mathcal{X} \subset \mathbb{R}^d` of intensity :math:`\rho`. It is accessible from a realization :math:`\mathcal{X}\cap W =\{\mathbf{x}_i\}_{i=1}^N` of :math:`\mathcal{X}` within a box window :math:`W`.
 
             .. math::
 
@@ -185,46 +185,46 @@ class StructureFactor:
 
         .. seealso::
 
-            - :py:meth:`~structure_factor.structure_factor.StructureFactor.plot_spectral_estimator`
+            - :py:meth:`~structure_factor.structure_factor.StructureFactor.plot_tapered_estimator`
             - :py:class:`~structure_factor.spatial_windows.BoxWindow`
             - :py:meth:`~structure_factor.point_pattern.PointPattern.restrict_to_window`
             - :ref:`tapers`
             - :py:class:`~structure_factor.tapers.BartlettTaper`
-            - :py:func:`~structure_factor.spectral_estimators.tapered_spectral_estimator_core`
-            - :py:func:`~structure_factor.spectral_estimators.tapered_spectral_estimator_debiased_direct`
-            - :py:func:`~structure_factor.spectral_estimators.tapered_spectral_estimator_debiased_undirect`
+            - :py:func:`~structure_factor.tapered_estimators.tapered_estimator_core`
+            - :py:func:`~structure_factor.tapered_estimators.tapered_estimator_debiased_direct`
+            - :py:func:`~structure_factor.tapered_estimators.tapered_estimator_debiased_undirect`
         """
-        estimator = select_tapered_spectral_estimator(debiased, direct)
+        estimator = select_tapered_estimator(debiased, direct)
         estimation = estimator(k, self.point_pattern, taper)
         return estimation
 
-    def multitapered_periodogram(
+    def multitapered_estimator(
         self, k, tapers=None, debiased=True, direct=True, **params
     ):
-        r"""Compute the scaled multitapered periodogram :math:`\widehat{S}_{\mathrm{MTP}}` (or a debiased version :math:`\widehat{S}_{\mathrm{MDDTP}}`, :math:`\widehat{S}_{\mathrm{MUDTP}}`) of the point process encapsulated in the ``PointPattern`` for the family of tapers  ``tapers``.
+        r"""Compute the scaled multitapered estimator :math:`\widehat{S}_{\mathrm{MTP}}` (or a debiased version :math:`\widehat{S}_{\mathrm{MDDTP}}`, :math:`\widehat{S}_{\mathrm{MUDTP}}`) of the point process encapsulated in the ``PointPattern`` for the family of tapers  ``tapers``.
 
         Args:
-            k (numpy.ndarray): Array of size :math:`n \times d`  where :math:`d` is the dimension of the space, and :math:`n` is the number of wavevectors where the scaled tapered periodogram is evaluated.
+            k (numpy.ndarray): Array of size :math:`n \times d`  where :math:`d` is the dimension of the space, and :math:`n` is the number of wavevectors where the scaled tapered estimator is evaluated.
 
             tapers (list, optional): List of tapers. A taper is a class with methods ``.taper(x, window)`` corresponding to the taper function :math:`t(x, W)` , and ``.ft_taper(k, window)`` corresponding to the Fourier transform :math:`\mathcal{F}[t(\cdot, W)](k)` of the taper. Some tapers and a model of implementing a new taper are available in :ref:`tapers`. Defaults to :py:class:`~structure_factor.tapers.SineTaper`.
 
             debiased (bool, optional): Trigger the use of a debiased estimator. Defaults to True.
 
-            direct (bool, optional): If ``debiased`` is True, trigger the use of the direct/undirect debiased scaled tapered periodogram. Parameter related to ``debiased``. Defaults to True.
+            direct (bool, optional): If ``debiased`` is True, trigger the use of the direct/undirect debiased scaled tapered estimator. Parameter related to ``debiased``. Defaults to True.
 
         Keyword Args:
             params (dict): Keyword argument ``p_component_max`` of :py:func:`~structure_factor.utils.taper_grid_generator`. Maximum component of the parameters :math:`p` of the family of :py:class:`~structure_factor.tapers.SineTaper`. Intuitively the number of taper used is :math:`P=\mathrm{p\_component\_max}^d`. Used only when ``tapers=None``. See :py:func:`~structure_factor.utils.tapered_generator`. Defaults to 2.
 
         Returns:
-            numpy.ndarray: Evaluation(s) of the scaled multitapered periodogram or a debiased version at ``k``.
+            numpy.ndarray: Evaluation(s) of the scaled multitapered estimator or a debiased version at ``k``.
 
         Example:
-            .. plot:: code/structure_factor/multitapered_periodogram.py
+            .. plot:: code/structure_factor/multitapered_estimator.py
                 :include-source: True
 
         .. proof:definition::
 
-            The scaled multitapered periodogram :math:`\widehat{S}_{\mathrm{MTP}}(t, k)`, is an estimator of the structure factor :math:`S` of a stationary point process :math:`\mathcal{X} \subset \mathbb{R}^d` of intensity :math:`\rho`. It is accessible from a realization :math:`\mathcal{X}\cap W =\{\mathbf{x}_i\}_{i=1}^N` of :math:`\mathcal{X}` within a box window :math:`W`.
+            The scaled multitapered estimator :math:`\widehat{S}_{\mathrm{MTP}}(t, k)`, is an estimator of the structure factor :math:`S` of a stationary point process :math:`\mathcal{X} \subset \mathbb{R}^d` of intensity :math:`\rho`. It is accessible from a realization :math:`\mathcal{X}\cap W =\{\mathbf{x}_i\}_{i=1}^N` of :math:`\mathcal{X}` within a box window :math:`W`.
 
             .. math::
 
@@ -241,17 +241,17 @@ class StructureFactor:
 
         .. seealso::
 
-            - :py:meth:`~structure_factor.structure_factor.StructureFactor.plot_spectral_estimator`
+            - :py:meth:`~structure_factor.structure_factor.StructureFactor.plot_tapered_estimator`
             - :py:class:`~structure_factor.spatial_windows.BoxWindow`
             - :py:meth:`~structure_factor.point_pattern.PointPattern.restrict_to_window`
             - :ref:`tapers`
             - :py:class:`~structure_factor.tapers.SineTaper`
-            - :py:func:`~structure_factor.spectral_estimators.multitapered_spectral_estimator`
+            - :py:func:`~structure_factor.tapered_estimators.multitapered_estimator`
         """
         d = self.point_pattern.dimension
         if tapers is None:
             tapers = utils.taper_grid_generator(d=d, taper_p=SineTaper, **params)
-        estimation = multitapered_spectral_estimator(
+        estimation = multitapered_estimator(
             k,
             self.point_pattern,
             *tapers,
@@ -260,7 +260,7 @@ class StructureFactor:
         )
         return estimation
 
-    def plot_spectral_estimator(
+    def plot_tapered_estimator(
         self,
         k,
         estimation,
@@ -276,7 +276,7 @@ class StructureFactor:
         window_res=None,
         **binning_params
     ):
-        r"""Display the outputs of the method :py:meth:`~structure_factor.structure_factor.StructureFactor.scattering_intensity`, :py:meth:`~structure_factor.structure_factor.StructureFactor.tapered_periodogram`, or :py:meth:`~structure_factor.structure_factor.StructureFactor.multitapered_periodogram`.
+        r"""Display the outputs of the method :py:meth:`~structure_factor.structure_factor.StructureFactor.scattering_intensity`, :py:meth:`~structure_factor.structure_factor.StructureFactor.tapered_estimator`, or :py:meth:`~structure_factor.structure_factor.StructureFactor.multitapered_estimator`.
 
         Args:
             k (numpy.ndarray): Wavevector(s) on which the scattering intensity has been approximated. Array of size :math:`n \times d`  where :math:`d` is the dimension of the space, and :math:`n` is the number of wavevectors.
@@ -378,14 +378,14 @@ class StructureFactor:
                 "plot_type must be chosen among ('all', 'radial', 'imshow')."
             )
 
-    def bartlett_isotropic_estimator(self, k_norm=None, **params):
+    def tapered_estimators_isotropic(self, k_norm=None, **params):
         r"""Compute Bartlett's isotropic estimator :math:`\widehat{S}_{\mathrm{BI}}` of the point process (isotropic) encapsulated in the ``PointPattern``.
 
         Args:
-            k_norm (numpy.ndarray, optional): n rows of wavenumbers where the estimator is to be evaluated. If ``k_norm=None`` (recommended)and the space's dimension is an even number, the estimator will be evaluated on the corresponding set of allowed wavenumbers; In this case, the parameters ``n_allowed_k_norm`` allows to specify the number of allowed wavenumbers. See :py:func:`~structure_factor.isotropic_estimator.allowed_k_norm`. Defaults to None.
+            k_norm (numpy.ndarray, optional): n rows of wavenumbers where the estimator is to be evaluated. If ``k_norm=None`` (recommended)and the space's dimension is an even number, the estimator will be evaluated on the corresponding set of allowed wavenumbers; In this case, the parameters ``n_allowed_k_norm`` allows to specify the number of allowed wavenumbers. See :py:func:`~structure_factor.tapered_estimators_isotropic.allowed_k_norm`. Defaults to None.
 
         Keyword Args:
-            params (dict): Keyword argument ``n_allowed_k_norm`` of :py:func:`~structure_factor.isotropic_estimator.bartlett_estimator`. Used when ``k_norm=None`` to specify the number of allowed wavenumbers to be used.
+            params (dict): Keyword argument ``n_allowed_k_norm`` of :py:func:`~structure_factor.tapered_estimators_isotropic.bartlett_estimator`. Used when ``k_norm=None`` to specify the number of allowed wavenumbers to be used.
 
         Returns:
             tuple(numpy.ndarray, numpy.ndarray):
@@ -416,7 +416,7 @@ class StructureFactor:
 
             - :py:class:`~structure_factor.spatial_windows.BallWindow`
             - :py:meth:`~structure_factor.point_pattern.PointPattern.restrict_to_window`
-            - :py:func:`~structure_factor.isotropic_estimator`
+            - :py:func:`~structure_factor.tapered_estimators_isotropic`
         """
         window = self.point_pattern.window
         warnings.warn(
@@ -544,7 +544,7 @@ class StructureFactor:
         file_name="",
         **binning_params
     ):
-        r"""Display the outputs of the method :py:meth:`~structure_factor.structure_factor.StructureFactor.hankel_quadrature`, or :py:meth:`~structure_factor.structure_factor.StructureFactor.bartlett_isotropic_estimator`.
+        r"""Display the outputs of the method :py:meth:`~structure_factor.structure_factor.StructureFactor.hankel_quadrature`, or :py:meth:`~structure_factor.structure_factor.StructureFactor.tapered_estimators_isotropic`.
 
         Args:
             k_norm (numpy.ndarray): Vector of wavenumbers (i.e., norms of wavevectors) on which the structure factor has been approximated.

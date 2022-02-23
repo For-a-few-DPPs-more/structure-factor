@@ -1,8 +1,8 @@
 import numpy as np
 
-from structure_factor.isotropic_estimator import bartlett_estimator
 from structure_factor.point_processes import HomogeneousPoissonPointProcess
 from structure_factor.spatial_windows import BallWindow
+from structure_factor.tapered_estimators_isotropic import bartlett_estimator
 
 point_process = HomogeneousPoissonPointProcess(intensity=1 / (4 * np.pi))
 window = BallWindow(radius=20, center=[0, 0, 0])
