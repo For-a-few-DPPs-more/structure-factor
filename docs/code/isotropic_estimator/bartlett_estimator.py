@@ -9,4 +9,4 @@ window = BallWindow(radius=20, center=[0, 0, 0])
 point_pattern = point_process.generate_point_pattern(window=window)
 
 k_norm = np.linspace(1, 5, 3)
-k_norm, estimation = bartlett_estimator(point_pattern, k_norm=k_norm)
+k_norm, estimation = bartlett_estimator(k_norm, point_pattern)

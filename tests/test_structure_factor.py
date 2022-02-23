@@ -132,11 +132,11 @@ def test_tapered_estimator_with_bartlett_taper_equal_scattering_intensity(
     # StructureFactor
     sf = StructureFactor(point_pattern)
     k = np.random.randn(10, 3)
-    taper = BartlettTaper
+    tapers = [BartlettTaper]
 
     # Scattering intensity and tapered estimator
     _, s_si = sf.scattering_intensity(k, debiased=debiased, direct=direct)
-    s_tp = sf.tapered_estimator(k, taper, debiased=debiased, direct=direct)
+    s_tp = sf.tapered_estimator(k, tapers=tapers, debiased=debiased, direct=direct)
 
     np.testing.assert_almost_equal(s_si, s_tp)
 
@@ -154,7 +154,7 @@ def test_tapered_estimators_isotropic_on_origin():
 
     # s_bi
     sf = StructureFactor(point_pattern)
-    _, s_bi = sf.tapered_estimators_isotropic(k_norm)
+    _, s_bi = sf.tapered_estimator_isotropic(k_norm)
 
     # Expected s_bi
     d = points.shape[1]

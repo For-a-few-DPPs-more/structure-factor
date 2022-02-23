@@ -6,7 +6,7 @@ import scipy.special as sc
 from numba import njit
 from scipy.spatial.distance import pdist
 
-from structure_factor.spatial_windows import BallWindow, UnitBallWindow
+from structure_factor.spatial_windows import UnitBallWindow
 
 
 def allowed_k_norm(dimension, radius, nb_values):
@@ -56,7 +56,7 @@ def allowed_k_norm(dimension, radius, nb_values):
 
 
 #! care about case k=0
-def bartlett_estimator(point_pattern, k_norm=None, n_allowed_k_norm=60):
+def bartlett_estimator(k_norm, point_pattern):
     r"""Compute an estimation of the structure factor of a stationary isotropic point process from one realization encapsulated in ``point_pattern``, evaluated at ``k_norm``.
 
     Args:
@@ -94,7 +94,7 @@ def bartlett_estimator(point_pattern, k_norm=None, n_allowed_k_norm=60):
 
         - :py:class:`~structure_factor.spatial_windows.BallWindow`
         - :py:meth:`~structure_factor.point_pattern.PointPattern.restrict_to_window`
-        - :py:meth:`~structure_factor.structure_factor.StructureFactor.tapered_estimators_isotropic`
+        - :py:meth:`~structure_factor.structure_factor.StructureFactor.tapered_estimator_isotropic`
         - :py:func:`~structure_factor.tapered_estimators_isotropic.allowed_k_norm`
     """
     window = point_pattern.window
@@ -104,16 +104,7 @@ def bartlett_estimator(point_pattern, k_norm=None, n_allowed_k_norm=60):
     X = np.atleast_2d(point_pattern.points)
     norm_xi_xj = pdist(X, metric="euclidean")
 
-    # allowed wavenumbers
-    if k_norm is None:
-        if not isinstance(window, BallWindow):
-            raise TypeError(
-                "The window must be an instance of BallWindow. Hint: use PointPattern.restrict_to_window."
-            )
-        k_norm = allowed_k_norm(
-            dimension=d, radius=window.radius, nb_values=n_allowed_k_norm
-        ).astype(float)
-
+    k_norm = k_norm.astype(float)
     order = float(d / 2 - 1)
     sf_estimated = np.zeros_like(k_norm)
     isotropic_estimator_njit(sf_estimated, k_norm, norm_xi_xj, order)

@@ -4,6 +4,7 @@ import numpy as np
 from structure_factor.point_processes import HomogeneousPoissonPointProcess
 from structure_factor.spatial_windows import BoxWindow
 from structure_factor.structure_factor import StructureFactor
+from structure_factor.tapers import multi_sinetaper_grid
 
 point_process = HomogeneousPoissonPointProcess(intensity=1)
 window = BoxWindow([[-50, 50], [-50, 50]])
@@ -16,9 +17,9 @@ x = np.linspace(-2, 2, 80)
 x = x[x != 0]
 X, Y = np.meshgrid(x, x)
 k = np.column_stack((X.ravel(), Y.ravel()))
-sf_estimated = sf.multitapered_estimator(
-    k, debiased=True, direct=True, p_component_max=2
-)
+
+tapers = multi_sinetaper_grid(point_pattern.dimension, p_component_max=2)
+sf_estimated = sf.tapered_estimator(k, tapers=tapers, debiased=True, direct=True)
 
 sf.plot_tapered_estimator(
     k,

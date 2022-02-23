@@ -137,25 +137,6 @@ def norm_k(k):
     return np.linalg.norm(k, axis=1)
 
 
-#! naming, return object is not a generator but a list
-def taper_grid_generator(d, taper_p, p_component_max=2):
-    r"""Given a class of taper `taper_p` of parameter `p` of :math:`\mathbb{R}^d`, return the list of taper `taper_p(p)` with :math:`p \in \{1, ..., P\}^d`.
-
-    Args:
-        d (int): Space dimension.
-
-        taper_p (Class): Class of taper pf parameter p.
-
-        p_component_max (int): Maximum component of the parameters :math:`p` of the family of tapers. Intuitively the number of taper used is :math:`P=\mathrm{p\_component\_max}^d`. Used only when ``tapers=None``. Defaults to 2.
-
-    Returns:
-        list: List of taper `taper_p(p)` with :math:`p \in \{1, ..., p_component_max\}^d`.
-    """
-    params = product(*(range(1, p_component_max + 1) for _ in range(d)))
-    tapers = [taper_p(p) for p in params]
-    return tapers
-
-
 def _reshape_meshgrid(X):
     r"""Reshape the list of meshgrids ``X`` as np.ndarray, where each column is associated to an element (meshgrid) of the list `X``.
 

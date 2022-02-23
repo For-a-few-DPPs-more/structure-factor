@@ -18,8 +18,8 @@ x = x[x != 0]
 X, Y = np.meshgrid(x, x)
 k = np.column_stack((X.ravel(), Y.ravel()))
 
-taper = SineTaper([1, 1])
-sf_estimated = sf.tapered_estimator(k=k, taper=taper, debiased=True, direct=True)
+tapers = [SineTaper([1, 1])]
+sf_estimated = sf.tapered_estimator(k, tapers=tapers, debiased=True, direct=True)
 
 sf.plot_tapered_estimator(
     k,
