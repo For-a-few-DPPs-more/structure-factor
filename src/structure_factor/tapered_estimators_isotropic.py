@@ -83,7 +83,7 @@ def bartlett_estimator(k_norm, point_pattern):
 
             \widehat{S}_{\mathrm{BI}}(k)
             = 1
-            + \frac{ (2\pi)^{d/2} }{\rho \mathcal{L}^d(W) \omega_{d-1}}
+            + \frac{ (2\pi)^{d/2} }{\rho |W| \omega_{d-1}}
             \sum_{ \substack{j, q =1 \\ j\neq q } }^{N}
                 \frac{1}{(k \|\mathbf{x}_j - \mathbf{x}_q\|_2)^{d/2 - 1}}
                 J_{d/2 - 1}(k \|\mathbf{x}_j - \mathbf{x}_q\|_2).
