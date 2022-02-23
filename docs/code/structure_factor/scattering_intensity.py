@@ -13,7 +13,7 @@ point_pattern = point_process.generate_point_pattern(window=window)
 sf = StructureFactor(point_pattern)
 k, sf_estimated = sf.scattering_intensity(k_max=4)
 
-sf.plot_tapered_estimator(
+sf.plot_non_isotropic_estimator(
     k,
     sf_estimated,
     plot_type="all",

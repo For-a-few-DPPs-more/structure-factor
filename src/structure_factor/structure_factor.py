@@ -8,13 +8,13 @@ r"""Class collecting estimators of the structure factor :math:`S(\mathbf{k})` of
 
 - :py:meth:`~structure_factor.structure_factor.StructureFactor.tapered_estimator_isotropic`: Bartlett's isotropic estimator.
 
-- :py:meth:`~structure_factor.structure_factor.StructureFactor.hankel_quadrature`: Integral estimation using Hankel transform quadrature.
+- :py:meth:`~structure_factor.structure_factor.StructureFactor.quadrature_estimator_isotropic`: Integral estimation using Hankel transform quadrature.
 
 **The available plot methods:**
 
-- :py:meth:`~structure_factor.structure_factor.StructureFactor.plot_tapered_estimator`: Visualize the results of :py:meth:`~structure_factor.structure_factor.StructureFactor.scattering_intensity`, :py:meth:`~structure_factor.structure_factor.StructureFactor.tapered_estimator`, or :py:meth:`~structure_factor.structure_factor.StructureFactor.multitapered_estimator`.
+- :py:meth:`~structure_factor.structure_factor.StructureFactor.plot_non_isotropic_estimator`: Visualize the results of :py:meth:`~structure_factor.structure_factor.StructureFactor.scattering_intensity`, :py:meth:`~structure_factor.structure_factor.StructureFactor.tapered_estimator`, or :py:meth:`~structure_factor.structure_factor.StructureFactor.multitapered_estimator`.
 
-- :py:meth:`~structure_factor.structure_factor.StructureFactor.plot_isotropic_estimator`: Visualize the results of :py:meth:`~structure_factor.structure_factor.StructureFactor.tapered_estimator_isotropic` or :py:meth:`~structure_factor.structure_factor.StructureFactor.hankel_quadrature`.
+- :py:meth:`~structure_factor.structure_factor.StructureFactor.plot_isotropic_estimator`: Visualize the results of :py:meth:`~structure_factor.structure_factor.StructureFactor.tapered_estimator_isotropic` or :py:meth:`~structure_factor.structure_factor.StructureFactor.quadrature_estimator_isotropic`.
 
 For the theoretical derivation and definitions of these estimators, we refer to :cite:`HGBLR:22`.
 """
@@ -113,7 +113,7 @@ class StructureFactor:
         .. seealso::
 
             - :py:meth:`~structure_factor.structure_factor.StructureFactor.tapered_estimator`
-            - :py:meth:`~structure_factor.structure_factor.StructureFactor.plot_tapered_estimator`
+            - :py:meth:`~structure_factor.structure_factor.StructureFactor.plot_non_isotropic_estimator`
             - :py:class:`~structure_factor.spatial_windows.BoxWindow`
             - :py:meth:`~structure_factor.point_pattern.PointPattern.restrict_to_window`
             - :py:func:`~structure_factor.utils.allowed_wave_vectors`
@@ -193,7 +193,7 @@ class StructureFactor:
         .. seealso::
 
             - :py:meth:`~structure_factor.structure_factor.StructureFactor.scattering_intensity`
-            - :py:meth:`~structure_factor.structure_factor.StructureFactor.plot_tapered_estimator`
+            - :py:meth:`~structure_factor.structure_factor.StructureFactor.plot_non_isotropic_estimator`
             - :py:class:`~structure_factor.spatial_windows.BoxWindow`
             - :py:meth:`~structure_factor.point_pattern.PointPattern.restrict_to_window`
             - :ref:`tapers`
@@ -257,8 +257,9 @@ class StructureFactor:
             )
         return ise.bartlett_estimator(k_norm, self.point_pattern)
 
-    # ? change name to integral_estimator
-    def hankel_quadrature(self, pcf, k_norm=None, method="BaddourChouinard", **params):
+    def quadrature_estimator_isotropic(
+        self, pcf, k_norm=None, method="BaddourChouinard", **params
+    ):
         # ? mettre k_nom avant pcf et donner le choix à l'utilisateur d'enter un None
         r"""Approximate the structure factor of a stationary isotropic point process at values ``k_norm``, given its pair correlation function ``pcf``, using a quadrature ``method``.
 
@@ -369,7 +370,7 @@ class StructureFactor:
         file_name="",
         **binning_params
     ):
-        r"""Display the outputs of the method :py:meth:`~structure_factor.structure_factor.StructureFactor.hankel_quadrature`, or :py:meth:`~structure_factor.structure_factor.StructureFactor.tapered_estimator_isotropic`.
+        r"""Display the outputs of the method :py:meth:`~structure_factor.structure_factor.StructureFactor.quadrature_estimator_isotropic`, or :py:meth:`~structure_factor.structure_factor.StructureFactor.tapered_estimator_isotropic`.
 
         Args:
             k_norm (numpy.ndarray): Vector of wavenumbers (i.e., norms of wavevectors) on which the structure factor has been approximated.
@@ -394,6 +395,7 @@ class StructureFactor:
         Returns:
             plt.Axes: Plot of the approximated structure factor.
         """
+        # todo normalize names of method and plotting routine
         return utils.plot_sf_hankel_quadrature(
             k_norm=k_norm,
             estimation=estimation,
@@ -408,7 +410,7 @@ class StructureFactor:
             **binning_params,
         )
 
-    def plot_tapered_estimator(
+    def plot_non_isotropic_estimator(
         self,
         k,
         estimation,

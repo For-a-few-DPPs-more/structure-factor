@@ -21,7 +21,7 @@ k = np.column_stack((X.ravel(), Y.ravel()))
 tapers = multi_sinetaper_grid(point_pattern.dimension, p_component_max=2)
 sf_estimated = sf.tapered_estimator(k, tapers=tapers, debiased=True, direct=True)
 
-sf.plot_tapered_estimator(
+sf.plot_non_isotropic_estimator(
     k,
     sf_estimated,
     plot_type="all",

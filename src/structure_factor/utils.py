@@ -541,7 +541,7 @@ def plot_sf_hankel_quadrature(
     file_name,
     **binning_params
 ):
-    r"""Plot the approximations of the structure factor (results of :py:meth:`~structure_factor.hankel_quadrature`) with means and error bars over bins, see :py:meth:`~structure_factor.utils._bin_statistics`.
+    r"""Plot the approximations of the structure factor (results of :py:meth:`~structure_factor.structure_factor.StructureFactor.quadrature_estimator_isotropic`) with means and error bars over bins, see :py:meth:`~structure_factor.utils._bin_statistics`.
 
     Args:
         k_norm (numpy.ndarray): Vector of wavenumbers (i.e., norms of waves) on which the structure factor has been approximated.
