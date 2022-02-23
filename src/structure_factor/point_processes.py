@@ -371,7 +371,7 @@ class GinibrePointProcess(object):
             raise ValueError("The window should be a 2-d centered BallWindow.")
         if window.dimension != 2:
             raise ValueError("The window should be a 2-d window.")
-        if not np.array_equal(window.center, 0.0):
+        if not np.all(np.equal(window.center, 0.0)):
             raise ValueError("The window should be a centered window.")
 
         if n is None:
