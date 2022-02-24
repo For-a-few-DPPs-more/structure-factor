@@ -119,7 +119,7 @@ def test_scattering_intensity_on_specific_points_and_wavevector(
     "debiased, direct",
     [(False, False), (True, True), (True, False)],
 )
-def test_tapered_periodogram_with_bartlett_taper_equal_scattering_intensity(
+def test_tapered_estimator_with_bartlett_taper_equal_scattering_intensity(
     debiased, direct
 ):
     r"""Test that the debiased versions of :math:`\widehat{S}_{\mathrm{TP}}` with Bartlett taper gave the scattering intensity and the debiased verions."""
@@ -132,16 +132,16 @@ def test_tapered_periodogram_with_bartlett_taper_equal_scattering_intensity(
     # StructureFactor
     sf = StructureFactor(point_pattern)
     k = np.random.randn(10, 3)
-    taper = BartlettTaper
+    tapers = [BartlettTaper]
 
-    # Scattering intensity and tapered periodogram
+    # Scattering intensity and tapered estimator
     _, s_si = sf.scattering_intensity(k, debiased=debiased, direct=direct)
-    s_tp = sf.tapered_periodogram(k, taper, debiased=debiased, direct=direct)
+    s_tp = sf.tapered_estimator(k, tapers=tapers, debiased=debiased, direct=direct)
 
     np.testing.assert_almost_equal(s_si, s_tp)
 
 
-def test_bartlett_isotropic_estimator_on_origin():
+def test_tapered_estimators_isotropic_on_origin():
     r"""Test the estimator :math:`\widehat{S}_{\mathrm{BI}}`, for simple choice of parameters in 3-d"""
     # window
     r = 4
@@ -154,7 +154,7 @@ def test_bartlett_isotropic_estimator_on_origin():
 
     # s_bi
     sf = StructureFactor(point_pattern)
-    _, s_bi = sf.bartlett_isotropic_estimator(k_norm)
+    _, s_bi = sf.tapered_estimator_isotropic(k_norm)
 
     # Expected s_bi
     d = points.shape[1]
@@ -175,7 +175,7 @@ def test_compute_structure_factor_ginibre_with_ogata(ginibre_pp):
     method = "Ogata"
     params = dict(r_max=80, step_size=0.01, nb_points=1000)
     k_norm = np.linspace(1, 10, 1000)
-    _, sf_computed = sf_pp.hankel_quadrature(
+    _, sf_computed = sf_pp.quadrature_estimator_isotropic(
         GinibrePointProcess.pair_correlation_function,
         k_norm=k_norm,
         method=method,
@@ -189,7 +189,7 @@ def test_compute_structure_factor_ginibre_with_baddour_chouinard(ginibre_pp):
     sf_pp = StructureFactor(ginibre_pp)
     method = "BaddourChouinard"
     params = dict(r_max=80, nb_points=800)
-    k_norm, sf_computed = sf_pp.hankel_quadrature(
+    k_norm, sf_computed = sf_pp.quadrature_estimator_isotropic(
         GinibrePointProcess.pair_correlation_function,
         k_norm=None,
         method=method,

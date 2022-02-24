@@ -57,14 +57,12 @@ class PointPattern(object):
         assert points.ndim == 2
         self.points = points
 
-        if window is not None:
-            assert isinstance(window, AbstractSpatialWindow)
+        assert isinstance(window, AbstractSpatialWindow)
         self.window = window
 
-        if intensity is not None:
-            assert intensity > 0
-        elif window is not None:
+        if intensity is None:
             intensity = self.points.shape[0] / window.volume
+        assert intensity > 0
         self.intensity = intensity
 
         self.params = params
