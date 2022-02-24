@@ -213,7 +213,7 @@ class StructureFactor:
         r"""Compute Bartlett's isotropic estimator :math:`\widehat{S}_{\mathrm{BI}}` of the point process (isotropic) encapsulated in the ``PointPattern``.
 
         Args:
-            k_norm (numpy.ndarray, optional): n rows of wavenumbers where the estimator is to be evaluated. If ``k_norm=None`` (recommended)and the space's dimension is an even number, the estimator will be evaluated on the corresponding set of allowed wavenumbers; In this case, the parameters ``n_allowed_k_norm`` allows to specify the number of allowed wavenumbers. See :py:func:`~structure_factor.tapered_estimators_isotropic.allowed_k_norm`. Defaults to None.
+            k_norm (numpy.ndarray, optional): n rows of wavenumbers where the estimator is to be evaluated. Defaults to None.
 
         Returns:
             tuple(numpy.ndarray, numpy.ndarray):
@@ -443,7 +443,7 @@ class StructureFactor:
                 - If "imshow" (option available only for a 2D point process), the output is a 2D color level plot.
                 - If "all" (option available only for a 2D point process), the result contains 3 subplots: the point pattern (or a restriction to a specific window if ``window_res`` is set), the radial plot, and the color level plot. Note that the options "imshow" and "all" couldn't be used, if ``k`` couldn't be reshaped as a meshgrid.
 
-            positive (bool, optional): If True, plots only the positive values of `estimation`. Defaults to False.
+            positive (bool, optional): If True, consider only the positive values of `estimation`. Defaults to False.
 
             exact_sf (callable, optional): Theoretical structure factor of the point process. Defaults to None.
 

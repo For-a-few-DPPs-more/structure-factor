@@ -12,7 +12,7 @@ point_pattern = point_process.generate_point_pattern(window=window)
 
 sf = StructureFactor(point_pattern)
 
-# Use the family of sine tapers (default)
+# Use the family of sine tapers
 x = np.linspace(-2, 2, 80)
 x = x[x != 0]
 X, Y = np.meshgrid(x, x)
