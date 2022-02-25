@@ -7,6 +7,7 @@ from structure_factor.point_processes import (
     mutual_nearest_neighbor_matching,
 )
 from structure_factor.spatial_windows import BoxWindow
+from structure_factor.utils import meshgrid_to_column_matrix
 
 seed = None
 rng = np.random.default_rng(seed)
@@ -17,8 +18,7 @@ window = BoxWindow(bounds)
 # Perturbed grid
 stepsize = 1.0
 ranges = (np.arange(a, b, step=stepsize) for a, b in window.bounds)
-coords = np.meshgrid(*ranges)
-X = np.vstack([x.ravel() for x in coords]).T
+X = meshgrid_to_column_matrix(np.meshgrid(*ranges))
 shift = rng.uniform(0.0, stepsize, size=window.dimension)
 X += shift
 

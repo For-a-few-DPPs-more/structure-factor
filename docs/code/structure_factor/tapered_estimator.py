@@ -5,6 +5,7 @@ from structure_factor.point_processes import HomogeneousPoissonPointProcess
 from structure_factor.spatial_windows import BoxWindow
 from structure_factor.structure_factor import StructureFactor
 from structure_factor.tapers import SineTaper
+from structure_factor.utils import meshgrid_to_column_matrix
 
 point_process = HomogeneousPoissonPointProcess(intensity=1 / np.pi)
 
@@ -15,8 +16,7 @@ sf = StructureFactor(point_pattern)
 
 x = np.linspace(-3, 3, 100)
 x = x[x != 0]
-X, Y = np.meshgrid(x, x)
-k = np.column_stack((X.ravel(), Y.ravel()))
+k = meshgrid_to_column_matrix(np.meshgrid(x, x))
 
 tapers = [SineTaper([1, 1])]
 sf_estimated = sf.tapered_estimator(k, tapers=tapers, debiased=True, direct=True)

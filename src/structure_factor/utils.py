@@ -137,14 +137,18 @@ def norm(k):
     return np.linalg.norm(k, axis=-1)
 
 
-def _reshape_meshgrid(X):
-    r"""Reshape the list of meshgrids ``X`` as np.ndarray, where each column is associated to an element (meshgrid) of the list `X``.
+def meshgrid_to_column_matrix(X):
+    r"""Transform output ``X`` of numpy.meshgrid to a 2d numpy array with columns formed by flattened versions of the elements of ``X``.
+
+    .. code-block:: python
+
+        np.column_stack([x.ravel() for x in X])
 
     Args:
-        X (list): List of meshgrids.
+        X (list): output of numpy.meshgrid.
 
     Returns:
-        np.ndarray: where each meshgrid of the original list ``X`` is stacked as a column.
+        np.ndarray: 2d array.
     """
     return np.column_stack([x.ravel() for x in X])
 
@@ -212,12 +216,10 @@ def allowed_wave_vectors(d, L, k_max=5, meshgrid_shape=None):
                 n_i = np.arange(-n, n + 1, step=1)
                 n_i = n_i[n_i != 0]
                 ranges.append(n_i)
-            X = np.meshgrid(*ranges, copy=False)
-            # K = [X_i * 2 * np.pi / L for X_i in X]  # meshgrid of allowed wavevectors
-            n = _reshape_meshgrid(X)  # reshape as d columns
+            n = meshgrid_to_column_matrix(np.meshgrid(*ranges, copy=False))
 
         else:
-            n_all = []
+            ranges = []
             i = 0
             for s in meshgrid_shape:
                 n_i = np.linspace(-n_max[i], n_max[i], num=s, dtype=int, endpoint=True)
@@ -227,11 +229,8 @@ def allowed_wave_vectors(d, L, k_max=5, meshgrid_shape=None):
                     )
                 i += 1
                 n_i = n_i[n_i != 0]
-                n_all.append(n_i)
-
-            X = np.meshgrid(*n_all, copy=False)
-            # K = [X_i * 2 * np.pi / L for X_i in X]  # meshgrid of allowed wavevectors
-            n = _reshape_meshgrid(X)  # reshape as d columns
+                ranges.append(n_i)
+            n = meshgrid_to_column_matrix(np.meshgrid(*ranges, copy=False))
 
         k = 2 * np.pi * n / L.T
     return k
