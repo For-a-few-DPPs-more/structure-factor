@@ -214,7 +214,7 @@ class StructureFactor:
         for t in _tapers:
             estimated_sf_k += estimator(k, point_pattern, t)
         estimated_sf_k /= len(_tapers)
-        return estimated_sf_k
+        return k, estimated_sf_k
 
     def bartlett_isotropic_estimator(self, k_norm=None, **params):
         r"""Compute Bartlett's isotropic estimator :math:`\widehat{S}_{\mathrm{BI}}` from one realization of an isotropic point process encapsulated in the :py:attr:`~structure_factor.structure_factor.StructureFactor.point_pattern` attribute.

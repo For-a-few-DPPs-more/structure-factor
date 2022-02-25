@@ -164,6 +164,6 @@ def test_multitapered_with_one_taper_equal_monotaper(debiased, direct, monotaper
     tapers = [taper]
     k = np.random.rand(10, 3) * 6  # arbitrary points in 3-d
 
-    s_estimated = sf.tapered_estimator(k, tapers, debiased=debiased, direct=direct)
+    k, s_estimated = sf.tapered_estimator(k, tapers, debiased=debiased, direct=direct)
     s_expected = monotaper(k, point_pattern, taper)
     np.testing.assert_array_equal(s_estimated, s_expected)

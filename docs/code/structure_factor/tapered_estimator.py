@@ -19,7 +19,7 @@ x = x[x != 0]
 k = meshgrid_to_column_matrix(np.meshgrid(x, x))
 
 tapers = [SineTaper([1, 1])]
-sf_estimated = sf.tapered_estimator(k, tapers=tapers, debiased=True, direct=True)
+k, sf_estimated = sf.tapered_estimator(k, tapers=tapers, debiased=True, direct=True)
 
 sf.plot_non_isotropic_estimator(
     k,

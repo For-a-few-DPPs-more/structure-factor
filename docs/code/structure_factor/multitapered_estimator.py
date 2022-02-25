@@ -20,7 +20,7 @@ k = meshgrid_to_column_matrix(np.meshgrid(x, x))
 
 
 tapers = multi_sinetaper_grid(point_pattern.dimension, p_component_max=2)
-sf_estimated = sf.tapered_estimator(k, tapers=tapers, debiased=True, direct=True)
+k, sf_estimated = sf.tapered_estimator(k, tapers=tapers, debiased=True, direct=True)
 
 sf.plot_non_isotropic_estimator(
     k,
