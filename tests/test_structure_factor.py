@@ -70,12 +70,10 @@ def test_scattering_intensity_of_ginibre_on_allowed_k_norm(ginibre_pp, to_test):
 
 
 @pytest.mark.parametrize(
-    " debiased, direct, estimator",
-    [(False, False, "si"), (True, True, "si_ddtp"), (True, False, "si_udtp")],
+    "debiased, direct",
+    [(False, False), (True, True), (True, False)],
 )
-def test_scattering_intensity_on_specific_points_and_wavevector(
-    debiased, direct, estimator
-):
+def test_scattering_intensity_on_specific_points_and_wavevector(debiased, direct):
     """Test the scattering intensity and the debiased versions on simple choice of wavevectors in 1-d, and specific points allowing to simplify the calculation"""
     # BoxWindow
     L = 8
@@ -93,25 +91,17 @@ def test_scattering_intensity_on_specific_points_and_wavevector(
     k = np.array([[1], [2]])
     _, result = sf.scattering_intensity(k, debiased=debiased, direct=direct)
 
-    # Expected
-    unscaled_expected = np.array([0, 4])
-    if estimator == "si":
-        expected = unscaled_expected / (window.volume * rho)
-    elif estimator == "si_ddtp":
-        expected = (
-            1
-            / rho
-            * (
-                np.sqrt(unscaled_expected / window.volume)
-                - rho * BartlettTaper.ft_taper(k, window)
-            )
-            ** 2
-        )
-    elif estimator == "si_udtp":
-        expected = (
-            unscaled_expected / (window.volume * rho)
-            - rho * BartlettTaper.ft_taper(k, window) ** 2
-        )
+    taper = BartlettTaper()
+    dft = np.sum(np.exp(-1j * k.dot(points.T)), axis=1)
+    dft /= np.sqrt(window.volume)
+
+    if not direct and not debiased:
+        expected = np.abs(dft) ** 2 / rho
+    elif not direct and debiased:
+        expected = np.abs(dft) ** 2 / rho - rho * np.abs(taper.ft_taper(k, window)) ** 2
+    elif direct and debiased:
+        expected = (np.abs(dft - rho * taper.ft_taper(k, window)) ** 2) / rho
+
     np.testing.assert_almost_equal(result, expected)
 
 
@@ -132,7 +122,7 @@ def test_tapered_estimator_with_bartlett_taper_equal_scattering_intensity(
     # StructureFactor
     sf = StructureFactor(point_pattern)
     k = np.random.randn(10, 3)
-    tapers = [BartlettTaper]
+    tapers = [BartlettTaper()]
 
     # Scattering intensity and tapered estimator
     _, s_si = sf.scattering_intensity(k, debiased=debiased, direct=direct)

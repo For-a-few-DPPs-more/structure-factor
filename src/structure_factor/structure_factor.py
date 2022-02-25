@@ -24,13 +24,16 @@ import warnings
 import numpy as np
 
 import structure_factor.plotting as plots
-import structure_factor.tapered_estimators_isotropic as ise
-import structure_factor.utils as utils
 from structure_factor.point_pattern import PointPattern
 from structure_factor.spatial_windows import BallWindow, BoxWindow
 from structure_factor.tapered_estimators import (
     allowed_k_scattering_intensity,
-    multitapered_estimator,
+    scattering_intensity,
+    select_tapered_estimator,
+)
+from structure_factor.tapered_estimators_isotropic import (
+    allowed_k_norm_bartlett_isotropic,
+    bartlett_estimator,
 )
 from structure_factor.tapers import BartlettTaper
 from structure_factor.transforms import RadiallySymmetricFourierTransform
@@ -116,11 +119,12 @@ class StructureFactor:
 
         .. seealso::
 
+            - :py:func:`~structure_factor.tapered_estimators.scattering_intensity`
+            - :py:func:`~structure_factor.tapered_estimators.allowed_k_scattering_intensity`
             - :py:meth:`~structure_factor.structure_factor.StructureFactor.tapered_estimator`
             - :py:meth:`~structure_factor.structure_factor.StructureFactor.plot_non_isotropic_estimator`
             - :py:class:`~structure_factor.spatial_windows.BoxWindow`
             - :py:meth:`~structure_factor.point_pattern.PointPattern.restrict_to_window`
-            - :py:func:`~structure_factor.tapered_estimators.allowed_k_scattering_intensity`
         """
         if not isinstance(self.point_pattern.window, BoxWindow):
             warnings.warn(
@@ -135,19 +139,19 @@ class StructureFactor:
             L = np.diff(window.bounds)
             k = allowed_k_scattering_intensity(d, L, **params)
 
-        tapers = BartlettTaper()
-        estimation = self.tapered_estimator(
-            k, tapers=tapers, debiased=debiased, direct=direct
+        estimated_sf_k = scattering_intensity(
+            k, self.point_pattern, debiased=debiased, direct=direct
         )
-        return k, estimation
+        return k, estimated_sf_k
 
-    def tapered_estimator(self, k, tapers=BartlettTaper(), debiased=True, direct=True):
+    # todo consider unpacking *tapers to cover single/multiple taper/s at once?
+    def tapered_estimator(self, k, tapers, debiased=True, direct=True):
         r"""Compute the (multi)tapered estimator parametrized by ``tapers`` of the structure factor of a stationary point process given a realization encapsulated in ``point_pattern``.
 
         Args:
             k (numpy.ndarray): Array of size :math:`n \times d`  where :math:`d` is the dimension of the space, and :math:`n` is the number of wavevectors where the tapered estimator is evaluated.
 
-            tapers (object or list, optional): Concrete instance of a taper or list of concrete instances of tapers with methods ``.taper(x, window)`` corresponding to the taper function :math:`t(x, W)` , and ``.ft_taper(k, window)`` corresponding to the Fourier transform :math:`\mathcal{F}[t(\cdot, W)](k)` of the taper. See also :ref:`tapers`. Defaults to concrete instance of :py:class:`~structure_factor.tapers.BarlettTaper`.
+            t1, t2, ... : sequence of concrete tapers with methods ``.taper(x, window)`` corresponding to the taper function :math:`t(x, W)` , and ``.ft_taper(k, window)`` corresponding to the Fourier transform :math:`\mathcal{F}[t(\cdot, W)](k)` of the taper. See also :ref:`tapers`.
 
             debiased (bool, optional): Trigger the use of a debiased estimator. Defaults to True.
 
@@ -197,14 +201,20 @@ class StructureFactor:
             - :py:class:`~structure_factor.tapers.SineTaper`
             - :py:func:`~structure_factor.tapered_estimators.multitapered_estimator`
         """
-        _tapers = tapers if isinstance(tapers, list) else [tapers]
-        return multitapered_estimator(
-            k,
-            self.point_pattern,
-            *_tapers,
-            debiased=debiased,
-            direct=direct,
-        )
+        point_pattern = self.point_pattern
+        n, d = k.shape
+        if d != point_pattern.dimension:
+            raise ValueError(
+                f"k must be of size (n, d) where d=point_pattern.dimension. Given k {k.shape} and d d = {point_pattern.dimension}"
+            )
+
+        _tapers = list(tapers)
+        estimator = select_tapered_estimator(debiased, direct)
+        estimated_sf_k = np.zeros(n, dtype=float)
+        for t in _tapers:
+            estimated_sf_k += estimator(k, point_pattern, t)
+        estimated_sf_k /= len(_tapers)
+        return estimated_sf_k
 
     def bartlett_isotropic_estimator(self, k_norm=None, **params):
         r"""Compute Bartlett's isotropic estimator :math:`\widehat{S}_{\mathrm{BI}}` from one realization of an isotropic point process encapsulated in the :py:attr:`~structure_factor.structure_factor.StructureFactor.point_pattern` attribute.
@@ -265,11 +275,11 @@ class StructureFactor:
 
             window = self.point_pattern.window
             d, r = window.dimension, window.radius
-            k_norm = ise.allowed_k_norm_bartlett_isotropic(
+            k_norm = allowed_k_norm_bartlett_isotropic(
                 dimension=d, radius=r, **params
             ).astype(float)
 
-        sf_k_norm = ise.bartlett_estimator(k_norm, self.point_pattern)
+        sf_k_norm = bartlett_estimator(k_norm, self.point_pattern)
         return k_norm, sf_k_norm
 
     def quadrature_estimator_isotropic(
@@ -383,7 +393,7 @@ class StructureFactor:
         error_bar=False,
         label=r"$\widehat{S}$",
         file_name="",
-        **binning_params
+        **binning_params,
     ):
         r"""Display the outputs of the method :py:meth:`~structure_factor.structure_factor.StructureFactor.quadrature_estimator_isotropic`, or :py:meth:`~structure_factor.structure_factor.StructureFactor.tapered_estimator_isotropic`.
 
@@ -439,7 +449,7 @@ class StructureFactor:
         rasterized=True,
         file_name="",
         window_res=None,
-        **binning_params
+        **binning_params,
     ):
         r"""Display the outputs of the method :py:meth:`~structure_factor.structure_factor.StructureFactor.scattering_intensity`, :py:meth:`~structure_factor.structure_factor.StructureFactor.tapered_estimator`.
 

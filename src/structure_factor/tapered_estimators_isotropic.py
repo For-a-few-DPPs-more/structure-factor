@@ -9,52 +9,6 @@ from scipy.spatial.distance import pdist
 from structure_factor.spatial_windows import BallWindow, UnitBallWindow
 
 
-def allowed_k_norm_bartlett_isotropic(dimension, radius, nb_values=60):
-    r"""Allowed wavenumbers of the Bartlett isotropic estimator, for a ``d``-dimensional point process observed in a ball window with radius ``radius``.
-
-    .. warning::
-
-        This method is only available when the ambient dimension is even.
-
-    Args:
-        dimension (int): Dimension of the underlying space.
-        radius (float): Radius of the observation window.
-        nb_values (int): Number of required allowed wavenumbers. Defaults to 60.
-
-    Returns:
-        numpy.ndarray: Vector of size ``nb_values`` containing the allowed wavenumbers.
-
-    Example:
-        .. literalinclude:: code/isotropic_estimator/allowed_k_norm.py
-            :language: python
-
-        .. testoutput::
-
-            [0.1915853  0.35077933 0.50867341 0.6661846  0.8235315  0.98079293]
-
-    .. proof:definition::
-
-        The allowed wavenumbers of a realization from a point process :math:`\mathcal{X}` of :math:`\mathbb{R}^d` observed in a ball window :math:`W=B(\mathbf{0}, R)` correspond to
-
-        .. math::
-
-            \left\{
-            \frac{x}{R} \in \mathbb{R} \text{ s.t. }  J_{d/2}(x)=0
-            \right\}
-
-    .. seealso::
-
-        - :py:func:`~structure_factor.tapered_estimators_isotropic.bartlett_estimator`
-    """
-    d_2, mod_ = divmod(dimension, 2)
-    is_even_dimension = mod_ == 0
-    if not is_even_dimension:  # dimension is not even
-        raise ValueError(
-            "Allowed wavenumber could be used only when the dimension of the space `d` is an even number (i.e., d/2 is an integer)."
-        )
-    return sc.jn_zeros(d_2, nb_values) / radius
-
-
 #! care about case k=0
 def bartlett_estimator(k_norm, point_pattern):
     r"""Compute an estimation of the structure factor of a stationary isotropic point process from one realization encapsulated in ``point_pattern``, evaluated at ``k_norm``.
@@ -110,7 +64,7 @@ def bartlett_estimator(k_norm, point_pattern):
     k_norm = k_norm.astype(float)
     sf_estimated = np.zeros_like(k_norm)
     order = float(d / 2 - 1)
-    isotropic_estimator_njit(sf_estimated, k_norm, norm_xi_xj, order)
+    bartlett_estimator_njit(sf_estimated, k_norm, norm_xi_xj, order)
 
     surface = UnitBallWindow(np.zeros(d)).surface
     volume = window.volume
@@ -119,6 +73,52 @@ def bartlett_estimator(k_norm, point_pattern):
     sf_estimated += 1.0
 
     return sf_estimated
+
+
+def allowed_k_norm_bartlett_isotropic(dimension, radius, nb_values=60):
+    r"""Allowed wavenumbers of the Bartlett isotropic estimator, for a ``d``-dimensional point process observed in a ball window with radius ``radius``.
+
+    .. warning::
+
+        This method is only available when the ambient dimension is even.
+
+    Args:
+        dimension (int): Dimension of the underlying space.
+        radius (float): Radius of the observation window.
+        nb_values (int): Number of required allowed wavenumbers. Defaults to 60.
+
+    Returns:
+        numpy.ndarray: Vector of size ``nb_values`` containing the allowed wavenumbers.
+
+    Example:
+        .. literalinclude:: code/isotropic_estimator/allowed_k_norm.py
+            :language: python
+
+        .. testoutput::
+
+            [0.1915853  0.35077933 0.50867341 0.6661846  0.8235315  0.98079293]
+
+    .. proof:definition::
+
+        The allowed wavenumbers of a realization from a point process :math:`\mathcal{X}` of :math:`\mathbb{R}^d` observed in a ball window :math:`W=B(\mathbf{0}, R)` correspond to
+
+        .. math::
+
+            \left\{
+            \frac{x}{R} \in \mathbb{R} \text{ s.t. }  J_{d/2}(x)=0
+            \right\}
+
+    .. seealso::
+
+        - :py:func:`~structure_factor.tapered_estimators_isotropic.bartlett_estimator`
+    """
+    d_2, mod_ = divmod(dimension, 2)
+    is_even_dimension = mod_ == 0
+    if not is_even_dimension:  # dimension is not even
+        raise ValueError(
+            "Allowed wavenumber could be used only when the dimension of the space `d` is an even number (i.e., d/2 is an integer)."
+        )
+    return sc.jn_zeros(d_2, nb_values) / radius
 
 
 @njit("double(double, double)")
@@ -134,7 +134,7 @@ def bessel1_njit(order, x):
 
 
 @njit("void(double[:], double[:], double[:], double)")
-def isotropic_estimator_njit(result, k_norm, norm_xi_xj, order):
+def bartlett_estimator_njit(result, k_norm, norm_xi_xj, order):
     for k in range(len(k_norm)):
         sum_k = 0.0
         for ij in range(len(norm_xi_xj)):

@@ -4,6 +4,7 @@ import pytest
 import structure_factor.tapered_estimators as spe
 from structure_factor.point_pattern import PointPattern
 from structure_factor.spatial_windows import BoxWindow
+from structure_factor.structure_factor import StructureFactor
 from structure_factor.tapered_estimators import allowed_k_scattering_intensity
 from structure_factor.tapered_estimators import tapered_estimator_core as s_tp
 from structure_factor.tapered_estimators import (
@@ -156,13 +157,13 @@ def test_multitapered_with_one_taper_equal_monotaper(debiased, direct, monotaper
     window = BoxWindow([[-5, 5], [-6, 5], [-5, 7]])
     points = window.rand(20)
     point_pattern = PointPattern(points, window)
+
+    sf = StructureFactor(point_pattern)
+
     taper = SineTaper([1, 1, 2])
     tapers = [taper]
-
     k = np.random.rand(10, 3) * 6  # arbitrary points in 3-d
 
-    s_estimated = spe.multitapered_estimator(
-        k, point_pattern, *tapers, debiased=debiased, direct=direct
-    )
+    s_estimated = sf.tapered_estimator(k, tapers, debiased=debiased, direct=direct)
     s_expected = monotaper(k, point_pattern, taper)
     np.testing.assert_array_equal(s_estimated, s_expected)
