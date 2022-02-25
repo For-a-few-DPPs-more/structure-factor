@@ -37,7 +37,7 @@ from structure_factor.transforms import RadiallySymmetricFourierTransform
 
 
 class StructureFactor:
-    r"""Implementation of various estimators of the structure factor :math:`S(\mathbf{k})` of a :py:class:`~structure_factor.point_pattern.PointPattern`.
+    r"""Implementation of various estimators of the structure factor :math:`S(\mathbf{k})` of a stationary point process given one realization encapsulated in the :py:attr:`~structure_factor.structure_factor.StructureFactor.point_pattern` attribute.
 
     .. todo::
 
@@ -62,7 +62,7 @@ class StructureFactor:
             point_pattern (:py:class:`~structure_factor.point_pattern.PointPattern`): Object of type point pattern which contains a realization ``point_pattern.points`` of a point process, the window where the points were simulated ``point_pattern.window`` and (optionally) the intensity of the point process ``point_pattern.intensity``.
         """
         assert isinstance(point_pattern, PointPattern)
-        self.point_pattern = point_pattern  # the point pattern
+        self.point_pattern = point_pattern
 
     @property
     def dimension(self):
@@ -70,10 +70,10 @@ class StructureFactor:
         return self.point_pattern.dimension
 
     def scattering_intensity(self, k=None, debiased=True, direct=True, **params):
-        r"""Compute the scattering intensity :math:`\widehat{S}_{\mathrm{SI}}` (or a debiased version) of the point process encapsulated in the ``PointPattern``.
+        r"""Compute the scattering intensity :math:`\widehat{S}_{\mathrm{SI}}` estimate of the structure factor from one realization of a stationary point process encapsulated in the :py:attr:`~structure_factor.structure_factor.StructureFactor.point_pattern` attribute.
 
         Args:
-            k (numpy.ndarray, optional): Array of size :math:`n \times d`  where :math:`d` is the dimension of the space, and :math:`n` is the number of wavevectors where the scattering intensity is evaluated. If ``k=None`` and ``debiased=True``, the scattering intensity will be evaluated on the corresponding set of allowed wavevectors; In this case, the parameters ``k_max``, and ``meshgrid_shape`` could be used. See :py:attr:`~structure_factor.tapered_estimators.allowed_k_scattering_intensity`, for more details about ``k_max``, and ``meshgrid_shape``. Defaults to None.
+            k (numpy.ndarray, optional): Array of size :math:`n \times d`  where :math:`d` is the dimension of the space, and :math:`n` is the number of wavevectors where the scattering intensity is evaluated. If ``k=None`` and ``debiased=True``, the scattering intensity will be evaluated on the corresponding set of allowed wavevectors; In this case, the keyword arguments ``k_max``, and ``meshgrid_shape`` can be used. Defaults to None.
 
             debiased (bool, optional): Trigger the use of a debiased tapered estimator. Defaults to True. If ``debiased=True``, the estimator is debiased as follows,
 
@@ -84,12 +84,12 @@ class StructureFactor:
             direct (bool, optional): If ``debiased`` is True, trigger the use of the direct/undirect debiased scattering intensity. Parameter related to ``debiased``. Defaults to True.
 
         Keyword Args:
-            params (dict): Keyword arguments ``k_max`` and ``meshgrid_shape`` of :py:attr:`~structure_factor.tapered_estimators.allowed_k_scattering_intensity`, used when ``k=None`` and ``debiased=True``.
+            params (dict): Keyword arguments ``k_max`` and ``meshgrid_shape`` of :py:func:`~structure_factor.tapered_estimators.allowed_k_scattering_intensity`, used when ``k=None`` and ``debiased=True``.
 
         Returns:
             tuple(numpy.ndarray, numpy.ndarray):
                 - k: Wavevector(s) on which the scattering intensity has been evaluated.
-                - estimation: Evaluation(s) of the scattering intensity or a debiased version at ``k``.
+                - estimation: Evaluation of the scattering intensity estimator of the structure factor at ``k``.
 
         Example:
              .. plot:: code/structure_factor/scattering_intensity.py
@@ -97,7 +97,7 @@ class StructureFactor:
 
         .. proof:definition::
 
-            The scattering intensity :math:`\widehat{S}_{\mathrm{SI}}` is an estimator of the structure factor :math:`S` of a stationary point process :math:`\mathcal{X} \subset \mathbb{R}^d` of intensity :math:`\rho`. It is accessible from a realization :math:`\mathcal{X}\cap W =\{\mathbf{x}_i\}_{i=1}^N` of :math:`\mathcal{X}` within a box window :math:`W=\prod_{j=1}^d[-L_j/2, L_j/2]`.
+            The scattering intensity :math:`\widehat{S}_{\mathrm{SI}}` is an estimator of the structure factor :math:`S` of a stationary point process :math:`\mathcal{X} \subset \mathbb{R}^d` with intensity :math:`\rho`. It is computed from one realization :math:`\mathcal{X}\cap W =\{\mathbf{x}_i\}_{i=1}^N` of :math:`\mathcal{X}` within a box window :math:`W=\prod_{j=1}^d[-L_j/2, L_j/2]`.
 
             .. math::
                 \widehat{S}_{\mathrm{SI}}(\mathbf{k}) =
@@ -112,7 +112,7 @@ class StructureFactor:
 
             **Typical usage**
 
-            If the observation window is not a :py:class:`~structure_factor.spatial_windows.BoxWindow`, use the method :py:class:`~structure_factor.point_pattern.PointPattern.restrict_to_window` to extract a sub-sample in a :py:class:`~structure_factor.spatial_windows.BoxWindow`.
+            - If the observation window is not a :py:class:`~structure_factor.spatial_windows.BoxWindow`, use the method :py:meth:`~structure_factor.point_pattern.PointPattern.restrict_to_window` to extract a sub-sample in a :py:class:`~structure_factor.spatial_windows.BoxWindow`.
 
         .. seealso::
 
@@ -122,25 +122,18 @@ class StructureFactor:
             - :py:meth:`~structure_factor.point_pattern.PointPattern.restrict_to_window`
             - :py:func:`~structure_factor.tapered_estimators.allowed_k_scattering_intensity`
         """
-        point_pattern = self.point_pattern
-        d = point_pattern.dimension
-
-        window = point_pattern.window
-        if not isinstance(window, BoxWindow):
+        if not isinstance(self.point_pattern.window, BoxWindow):
             warnings.warn(
-                message="The window should be a BoxWindow to minimize the approximation error. Hint: use point_pattern.restrict_to_window."
+                message="The observation window should be a BoxWindow to minimize the approximation error. Hint: use point_pattern.restrict_to_window."
             )
 
+        window = self.point_pattern.window
+        d = window.dimension
         if k is None:
             if not debiased:
-                raise ValueError("when k is None debiased must be True.")
+                raise ValueError("debiased argument must be True when k is None .")
             L = np.diff(window.bounds)
             k = allowed_k_scattering_intensity(d, L, **params)
-
-        elif k.shape[1] != d:
-            raise ValueError(
-                "`k` should have d columns, where d is the dimension of the ambient space where the points forming the point pattern live."
-            )
 
         tapers = BartlettTaper()
         estimation = self.tapered_estimator(
@@ -173,7 +166,7 @@ class StructureFactor:
 
         .. proof:definition::
 
-            The tapered estimator :math:`\widehat{S}_{\mathrm{TP}}(t, k)`, is an estimator of the structure factor :math:`S` of a stationary point process :math:`\mathcal{X} \subset \mathbb{R}^d` with intensity :math:`\rho`. It is accessible from a realization :math:`\mathcal{X}\cap W =\{\mathbf{x}_i\}_{i=1}^N` of :math:`\mathcal{X}` within a box window :math:`W`.
+            The tapered estimator :math:`\widehat{S}_{\mathrm{TP}}(t, k)`, is an estimator of the structure factor :math:`S` of a stationary point process :math:`\mathcal{X} \subset \mathbb{R}^d` with intensity :math:`\rho`. It is computed from one realization :math:`\mathcal{X}\cap W =\{\mathbf{x}_i\}_{i=1}^N` of :math:`\mathcal{X}` within a box window :math:`W`.
 
             .. math::
 
@@ -192,7 +185,7 @@ class StructureFactor:
 
             **Typical usage**
 
-            - If the observation window is not a :py:class:`~structure_factor.spatial_windows.BoxWindow`, use the method :py:class:`~structure_factor.point_pattern.PointPattern.restrict_to_window` to extract a sub-sample in a :py:class:`~structure_factor.spatial_windows.BoxWindow`.
+            - If the observation window is not a :py:class:`~structure_factor.spatial_windows.BoxWindow`, use the method :py:meth:`~structure_factor.point_pattern.PointPattern.restrict_to_window` to extract a sub-sample in a :py:class:`~structure_factor.spatial_windows.BoxWindow`.
 
         .. seealso::
 
@@ -214,10 +207,10 @@ class StructureFactor:
         )
 
     def bartlett_isotropic_estimator(self, k_norm=None, **params):
-        r"""Compute Bartlett's isotropic estimator :math:`\widehat{S}_{\mathrm{BI}}` from a realization of an isotropic point process encapsulated in the :py:attr:`~structure_factor.structure_factor.StructureFactor.point_pattern` attribute.
+        r"""Compute Bartlett's isotropic estimator :math:`\widehat{S}_{\mathrm{BI}}` from one realization of an isotropic point process encapsulated in the :py:attr:`~structure_factor.structure_factor.StructureFactor.point_pattern` attribute.
 
         Args:
-            k_norm (numpy.ndarray, optional): n rows of wavenumbers where the estimator is to be evaluated. Defaults to None.
+            k_norm (numpy.ndarray, optional): Array of wavenumbers of size :math:`n` where the estimator is to be evaluated. Defaults to None.
 
         Keyword Args:
             params (dict): Keyword argument ``nb_values`` of :py:func:`~structure_factor.tapered_estimators_isotropic.allowed_k_norm_bartlett_isotropic used when ``k_norm=None`` to specify the number of allowed wavenumbers to be considered.
@@ -233,7 +226,7 @@ class StructureFactor:
 
         .. proof:definition::
 
-            Bartlett's isotropic estimator :math:`\widehat{S}_{\mathrm{BI}}` is an estimator of the structure factor :math:`S` of a stationary isotropic point process :math:`\mathcal{X} \subset \mathbb{R}^d` of intensity :math:`\rho`. It is accessible from a realization :math:`\mathcal{X}\cap W =\{\mathbf{x}_i\}_{i=1}^N` of :math:`\mathcal{X}` within a ball window :math:`W=B(\mathbf{0}, R)`.
+            Bartlett's isotropic estimator :math:`\widehat{S}_{\mathrm{BI}}` is an estimator of the structure factor :math:`S` of a stationary isotropic point process :math:`\mathcal{X} \subset \mathbb{R}^d` with intensity :math:`\rho`. It is computed from one realization :math:`\mathcal{X}\cap W =\{\mathbf{x}_i\}_{i=1}^N` of :math:`\mathcal{X}` within a ball window :math:`W=B(\mathbf{0}, R)`.
 
             .. math::
                 \widehat{S}_{\mathrm{BI}}(k)
@@ -246,7 +239,8 @@ class StructureFactor:
         .. note::
 
             **Typical usage**
-                - If the observation window is not a :py:class:`~structure_factor.spatial_windows.BallWindow`, use the method :py:class:`~structure_factor.point_pattern.PointPattern.restrict_to_window` to extract a sub-sample in a :py:class:`~structure_factor.spatial_windows.BallWindow`.
+
+            - If the observation window is not a :py:class:`~structure_factor.spatial_windows.BallWindow`, use the method :py:meth:`~structure_factor.point_pattern.PointPattern.restrict_to_window` to extract a sub-sample in a :py:class:`~structure_factor.spatial_windows.BallWindow`.
 
         .. seealso::
 
@@ -254,20 +248,22 @@ class StructureFactor:
             - :py:meth:`~structure_factor.point_pattern.PointPattern.restrict_to_window`
             - :py:func:`~structure_factor.tapered_estimators_isotropic`
         """
-        window = self.point_pattern.window
         warnings.warn(
             message="The computation may take some time for a big number of points in the PointPattern. The complexity is quadratic in the number of points. Start by restricting the PointPattern to a smaller window using  PointPattern.restrict_to_window, then increasing the window progressively."
         )
-        if not isinstance(window, BallWindow):
+
+        if not isinstance(self.point_pattern.window, BallWindow):
             warnings.warn(
-                message="The window should be a BallWindow to minimize the approximation error. Hint: use point_pattern.restrict_to_window."
+                message="The observation window should be a BallWindow to minimize the approximation error. Hint: use point_pattern.restrict_to_window."
             )
 
         if k_norm is None:
-            if not isinstance(window, BallWindow):
+            if not isinstance(self.point_pattern.window, BallWindow):
                 raise TypeError(
-                    "The window must be an instance of BallWindow. Hint: use point_pattern.restrict_to_window."
+                    "The observation window must be an instance of BallWindow. Hint: use point_pattern.restrict_to_window."
                 )
+
+            window = self.point_pattern.window
             d, r = window.dimension, window.radius
             k_norm = ise.allowed_k_norm_bartlett_isotropic(
                 dimension=d, radius=r, **params
