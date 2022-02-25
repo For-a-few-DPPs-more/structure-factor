@@ -47,8 +47,8 @@ Contents
 .. toctree::
    :maxdepth: 3
 
-   hyperuniformity
    structure_factor
+   hyperuniformity
    tapered_estimators
    tapered_estimators_isotropic
    tapers
