@@ -20,7 +20,7 @@ sf = StructureFactor(point_pattern_box)
 x = np.linspace(0, 3, 80)
 x = x[x != 0]
 k = utils.meshgrid_to_column_matrix(np.meshgrid(x, x))
-sf_estimated = sf.tapered_estimator(k)
+k, sf_estimated = sf.scattering_intensity(k)
 
 k_norm = utils.norm(k)
 hyperuniformity = Hyperuniformity(k_norm, sf_estimated)

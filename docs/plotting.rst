@@ -1,9 +1,9 @@
-.. _utils:
+.. _plotting:
 
-Utils
+Plotting
 ################
 
-.. automodule:: structure_factor.utils
+.. automodule:: structure_factor.plotting
     :members:
     :inherited-members:
     :show-inheritance:
