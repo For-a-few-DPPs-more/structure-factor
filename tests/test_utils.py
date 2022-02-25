@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 
 import structure_factor.utils as utils
-from structure_factor.spatial_windows import BoxWindow
+from structure_factor.tapered_estimators import allowed_k_scattering_intensity
 
 
 # todo: fix successive np.testing.assert_array_equal calls, should be a single assert
@@ -71,7 +71,7 @@ def test_sort_vectors(k, x, y, expected_k_sorted, expected_x_sorted, expected_y_
         ),
     ],
 )
-def test_allowed_wave_vectors(d, L, max_k, meshgrid_size, result):
+def test_allowed_k_scattering_intensity(d, L, max_k, meshgrid_size, result):
     # ? seems like a copy paste from original code
-    computed = utils.allowed_wave_vectors(d, L, max_k, meshgrid_size)
+    computed = allowed_k_scattering_intensity(d, L, max_k, meshgrid_size)
     np.testing.assert_array_equal(computed, result)

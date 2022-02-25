@@ -2,9 +2,9 @@ import numpy as np
 import pytest
 
 import structure_factor.tapered_estimators as spe
-import structure_factor.utils as utils
 from structure_factor.point_pattern import PointPattern
 from structure_factor.spatial_windows import BoxWindow
+from structure_factor.tapered_estimators import allowed_k_scattering_intensity
 from structure_factor.tapered_estimators import tapered_estimator_core as s_tp
 from structure_factor.tapered_estimators import (
     tapered_estimator_debiased_direct as s_ddtp,
@@ -113,7 +113,7 @@ def test_debiased_and_non_debiased_estimators_are_equal_on_allowed_values(
     # creat allowed values
     L = np.diff(window.bounds)
     d = points.shape[1]
-    k = utils.allowed_wave_vectors(d, L)
+    k = allowed_k_scattering_intensity(d, L)
 
     taper = BartlettTaper
     s_debiased = debiased_estimator(k, point_pattern, taper)

@@ -28,7 +28,10 @@ import structure_factor.tapered_estimators_isotropic as ise
 import structure_factor.utils as utils
 from structure_factor.point_pattern import PointPattern
 from structure_factor.spatial_windows import BallWindow, BoxWindow
-from structure_factor.tapered_estimators import multitapered_estimator
+from structure_factor.tapered_estimators import (
+    allowed_k_scattering_intensity,
+    multitapered_estimator,
+)
 from structure_factor.tapers import BartlettTaper
 from structure_factor.transforms import RadiallySymmetricFourierTransform
 
@@ -70,7 +73,7 @@ class StructureFactor:
         r"""Compute the scattering intensity :math:`\widehat{S}_{\mathrm{SI}}` (or a debiased version) of the point process encapsulated in the ``PointPattern``.
 
         Args:
-            k (numpy.ndarray, optional): Array of size :math:`n \times d`  where :math:`d` is the dimension of the space, and :math:`n` is the number of wavevectors where the scattering intensity is evaluated. If ``k=None`` and ``debiased=True``, the scattering intensity will be evaluated on the corresponding set of allowed wavevectors; In this case, the parameters ``k_max``, and ``meshgrid_shape`` could be used. See :py:attr:`~structure_factor.utils.allowed_wave_vectors`, for more details about ``k_max``, and ``meshgrid_shape``. Defaults to None.
+            k (numpy.ndarray, optional): Array of size :math:`n \times d`  where :math:`d` is the dimension of the space, and :math:`n` is the number of wavevectors where the scattering intensity is evaluated. If ``k=None`` and ``debiased=True``, the scattering intensity will be evaluated on the corresponding set of allowed wavevectors; In this case, the parameters ``k_max``, and ``meshgrid_shape`` could be used. See :py:attr:`~structure_factor.tapered_estimators.allowed_k_scattering_intensity`, for more details about ``k_max``, and ``meshgrid_shape``. Defaults to None.
 
             debiased (bool, optional): Trigger the use of a debiased tapered estimator. Defaults to True. If ``debiased=True``, the estimator is debiased as follows,
 
@@ -81,7 +84,7 @@ class StructureFactor:
             direct (bool, optional): If ``debiased`` is True, trigger the use of the direct/undirect debiased scattering intensity. Parameter related to ``debiased``. Defaults to True.
 
         Keyword Args:
-            params (dict): Keyword arguments ``k_max`` and ``meshgrid_shape`` of :py:attr:`~structure_factor.utils.allowed_wave_vectors`. Used when ``k=None`` and ``debiased=True``.
+            params (dict): Keyword arguments ``k_max`` and ``meshgrid_shape`` of :py:attr:`~structure_factor.tapered_estimators.allowed_k_scattering_intensity`. Used when ``k=None`` and ``debiased=True``.
 
         Returns:
             tuple(numpy.ndarray, numpy.ndarray):
@@ -117,7 +120,7 @@ class StructureFactor:
             - :py:meth:`~structure_factor.structure_factor.StructureFactor.plot_non_isotropic_estimator`
             - :py:class:`~structure_factor.spatial_windows.BoxWindow`
             - :py:meth:`~structure_factor.point_pattern.PointPattern.restrict_to_window`
-            - :py:func:`~structure_factor.utils.allowed_wave_vectors`
+            - :py:func:`~structure_factor.tapered_estimators.allowed_k_scattering_intensity`
         """
         point_pattern = self.point_pattern
         d = point_pattern.dimension
@@ -132,7 +135,7 @@ class StructureFactor:
             if not debiased:
                 raise ValueError("when k is None debiased must be True.")
             L = np.diff(window.bounds)
-            k = utils.allowed_wave_vectors(d, L, **params)
+            k = allowed_k_scattering_intensity(d, L, **params)
 
         elif k.shape[1] != d:
             raise ValueError(

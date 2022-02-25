@@ -3,7 +3,94 @@
 Some tapers (tapering function) are available in :ref:`tapers`.
 """
 
+import warnings
+
 import numpy as np
+
+from structure_factor.utils import meshgrid_to_column_matrix
+
+
+def allowed_k_scattering_intensity(d, L, k_max=5, meshgrid_shape=None):
+    r"""Return a subset of the d-dimensional allowed wavevectors corresponding to a cubic window of length ``L``.
+
+    Args:
+        d (int): Dimension of the space containing the point process.
+
+        L (numpy.ndarray): 1d array of size ``d``, where each element correspond to the length of a side of the BoxWindow containing the point process realization.
+
+        k_max (float, optional): Supremum of the components of the allowed wavevectors on which the scattering intensity to be evaluated; i.e., for any allowed wavevector :math:`\mathbf{k}=(k_1,...,k_d)`, :math:`k_i \leq k\_max` for all i. This implies that the maximum of the output vector ``k_norm`` will be approximately equal to the norm of the vector :math:`(k\_max, ... k\_max)`. Defaults to 5.
+
+        meshgrid_shape (tuple, optional): Tuple of length `d`, where each element specifies the number of components over an axis. These axes are crossed to form a subset of :math:`\mathbb{Z}^d` used to construct a set of allowed wavevectors. i.g., if d=2, setting meshgid_shape=(2,3) will construct a meshgrid of allowed wavevectors formed by a vector of 2 values over the x-axis and a vector of 3 values over the y-axis. Defaults to None, which will run the calculation over **all** the allowed wavevectors. Defaults to None.
+
+    Returns:
+        tuple (numpy.ndarray, list):
+            - k : np.array with ``d`` columns where each row is an allowed wavevector.
+
+    .. proof:definition::
+
+        The set of the allowed wavevectors :math:`\{\mathbf{k}_i\}_i` is defined by
+
+        .. math::
+
+            \{\mathbf{k}_i\}_i = \{\frac{2 \pi}{L} \mathbf{n} ~ ; ~ \mathbf{n} \in (\mathbb{Z}^d)^\ast \}.
+
+        Note that the maximum ``n`` and the number of output allowed wavevectors returned by :py:func:`~structure_factor.tapered_estimators.allowed_k_scattering_intensity`, are specified by the input parameters ``k_max`` and ``meshgrid_shape``.
+    """
+    assert isinstance(k_max, (float, int))
+
+    n_max = np.floor(k_max * L / (2 * np.pi))  # maximum of ``n``
+
+    #! todo refactoring needed, too complex and duplicated code
+    # warnings
+    if meshgrid_shape is None:
+        warnings.warn(
+            message="The computation on all allowed wavevectors may be time-consuming."
+        )
+    elif (np.array(meshgrid_shape) > (2 * n_max)).any():
+        warnings.warn(
+            message="Each component of the argument 'meshgrid_shape' should be less than or equal to the cardinality of the (total) set of allowed wavevectors."
+        )
+
+    # meshgrid_shape = np.fmin(meshgrid_shape, 2 * n_max)
+    # case d=1
+    if d == 1:
+        if meshgrid_shape is None or (meshgrid_shape > (2 * n_max)):
+            n = np.arange(-n_max, n_max + 1, step=1)
+            n = n[n != 0]
+        else:
+            n = np.linspace(-n_max, n_max, num=meshgrid_shape, dtype=int, endpoint=True)
+            if np.count_nonzero(n == 0) != 0:
+                n = np.linspace(
+                    -n_max, n_max, num=meshgrid_shape + 1, dtype=int, endpoint=True
+                )
+        k = 2 * np.pi * n / L
+        k = k.reshape(-1, 1)
+    # case d>1
+    else:
+        if meshgrid_shape is None or (np.array(meshgrid_shape) > (2 * n_max)).any():
+            ranges = []
+            for n in n_max:
+                n_i = np.arange(-n, n + 1, step=1)
+                n_i = n_i[n_i != 0]
+                ranges.append(n_i)
+            n = meshgrid_to_column_matrix(np.meshgrid(*ranges, copy=False))
+
+        else:
+            ranges = []
+            i = 0
+            for s in meshgrid_shape:
+                n_i = np.linspace(-n_max[i], n_max[i], num=s, dtype=int, endpoint=True)
+                if np.count_nonzero(n_i == 0) != 0:
+                    n_i = np.linspace(
+                        -n_max[i], n_max[i], num=s + 1, dtype=int, endpoint=True
+                    )
+                i += 1
+                n_i = n_i[n_i != 0]
+                ranges.append(n_i)
+            n = meshgrid_to_column_matrix(np.meshgrid(*ranges, copy=False))
+
+        k = 2 * np.pi * n / L.T
+    return k
 
 
 def tapered_dft(k, point_pattern, taper):
