@@ -23,6 +23,7 @@ import warnings
 
 import numpy as np
 
+import structure_factor.plotting as plots
 import structure_factor.tapered_estimators_isotropic as ise
 import structure_factor.utils as utils
 from structure_factor.point_pattern import PointPattern
@@ -396,7 +397,7 @@ class StructureFactor:
             plt.Axes: Plot of the approximated structure factor.
         """
         # todo normalize names of method and plotting routine
-        return utils.plot_sf_hankel_quadrature(
+        return plots.plot_sf_hankel_quadrature(
             k_norm=k_norm,
             estimation=estimation,
             axis=axis,
@@ -470,7 +471,7 @@ class StructureFactor:
             k_norm = k_norm[si_ >= 0]
 
         if plot_type == "radial":
-            return utils.plot_estimation_showcase(
+            return plots.plot_estimation_showcase(
                 k_norm,
                 estimation,
                 axis=axes,
@@ -497,7 +498,7 @@ class StructureFactor:
             grid_shape = (n_grid, n_grid)
             estimation = estimation.reshape(grid_shape)
             k_norm = k_norm.reshape(grid_shape)
-            return utils.plot_estimation_imshow(k_norm, estimation, axes, file_name)
+            return plots.plot_estimation_imshow(k_norm, estimation, axes, file_name)
 
         elif plot_type == "all":
 
@@ -510,7 +511,7 @@ class StructureFactor:
 
             estimation = estimation.reshape(grid_shape)
             k_norm = k_norm.reshape(grid_shape)
-            return utils.plot_estimation_all(
+            return plots.plot_estimation_all(
                 self.point_pattern,
                 k_norm,
                 estimation,

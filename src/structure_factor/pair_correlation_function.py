@@ -14,6 +14,7 @@ import rpy2.robjects as robjects
 import scipy.interpolate as interpolate
 from spatstat_interface.interface import SpatstatInterface
 
+import structure_factor.plotting as plots
 import structure_factor.utils as utils
 
 
@@ -197,7 +198,7 @@ def plot(pcf_dataframe, exact_pcf=None, file_name="", **kwargs):
             "g",
             label=r"Exact $g(r)$",
         )
-    utils.plot_poisson(pcf_dataframe["r"], axis=axis, linestyle=(0, (5, 5)))
+    plots.plot_poisson(pcf_dataframe["r"], axis=axis, linestyle=(0, (5, 5)))
 
     axis.legend()
     axis.set_xlabel(r"Radius ($r$)")
