@@ -99,7 +99,7 @@ def test_tapered_estimator_core(k, points, window, taper, expected):
         ([[-1, 1], [-1, 1]], s_udtp),
     ],
 )
-def test_debiased_and_non_debiased_estimators_are_equal_on_allowed_values(
+def test_debiased_and_non_debiased_estimators_are_equal_on_allowed_k_norm(
     bounds, debiased_estimator
 ):
     r"""Test that the debiased versions of :math:`\widehat{S}_{\mathrm{TP}}`

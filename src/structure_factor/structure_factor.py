@@ -84,7 +84,7 @@ class StructureFactor:
             direct (bool, optional): If ``debiased`` is True, trigger the use of the direct/undirect debiased scattering intensity. Parameter related to ``debiased``. Defaults to True.
 
         Keyword Args:
-            params (dict): Keyword arguments ``k_max`` and ``meshgrid_shape`` of :py:attr:`~structure_factor.tapered_estimators.allowed_k_scattering_intensity`. Used when ``k=None`` and ``debiased=True``.
+            params (dict): Keyword arguments ``k_max`` and ``meshgrid_shape`` of :py:attr:`~structure_factor.tapered_estimators.allowed_k_scattering_intensity`, used when ``k=None`` and ``debiased=True``.
 
         Returns:
             tuple(numpy.ndarray, numpy.ndarray):
@@ -128,7 +128,7 @@ class StructureFactor:
         window = point_pattern.window
         if not isinstance(window, BoxWindow):
             warnings.warn(
-                message="The window should be a BoxWindow to minimize the approximation error. Hint: use PointPattern.restrict_to_window."
+                message="The window should be a BoxWindow to minimize the approximation error. Hint: use point_pattern.restrict_to_window."
             )
 
         if k is None:
@@ -213,11 +213,14 @@ class StructureFactor:
             direct=direct,
         )
 
-    def tapered_estimator_isotropic(self, k_norm):
-        r"""Compute Bartlett's isotropic estimator :math:`\widehat{S}_{\mathrm{BI}}` of the point process (isotropic) encapsulated in the ``PointPattern``.
+    def bartlett_isotropic_estimator(self, k_norm=None, **params):
+        r"""Compute Bartlett's isotropic estimator :math:`\widehat{S}_{\mathrm{BI}}` from a realization of an isotropic point process encapsulated in the :py:attr:`~structure_factor.structure_factor.StructureFactor.point_pattern` attribute.
 
         Args:
             k_norm (numpy.ndarray, optional): n rows of wavenumbers where the estimator is to be evaluated. Defaults to None.
+
+        Keyword Args:
+            params (dict): Keyword argument ``nb_values`` of :py:func:`~structure_factor.tapered_estimators_isotropic.allowed_k_norm_bartlett_isotropic used when ``k_norm=None`` to specify the number of allowed wavenumbers to be considered.
 
         Returns:
             tuple(numpy.ndarray, numpy.ndarray):
@@ -257,9 +260,21 @@ class StructureFactor:
         )
         if not isinstance(window, BallWindow):
             warnings.warn(
-                message="The window should be a BallWindow to minimize the approximation error. Hint: use PointPattern.restrict_to_window."
+                message="The window should be a BallWindow to minimize the approximation error. Hint: use point_pattern.restrict_to_window."
             )
-        return ise.bartlett_estimator(k_norm, self.point_pattern)
+
+        if k_norm is None:
+            if not isinstance(window, BallWindow):
+                raise TypeError(
+                    "The window must be an instance of BallWindow. Hint: use point_pattern.restrict_to_window."
+                )
+            d, r = window.dimension, window.radius
+            k_norm = ise.allowed_k_norm_bartlett_isotropic(
+                dimension=d, radius=r, **params
+            ).astype(float)
+
+        sf_k_norm = ise.bartlett_estimator(k_norm, self.point_pattern)
+        return k_norm, sf_k_norm
 
     def quadrature_estimator_isotropic(
         self, pcf, k_norm=None, method="BaddourChouinard", **params

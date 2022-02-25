@@ -306,7 +306,5 @@ def check_cubic_window(window):
     lengths = np.diff(window.bounds, axis=1)
     L = lengths[0]
     if np.any(lengths != L):
-        raise ValueError(
-            "The The window should be a 'cubic' BoxWindow for that the scattering intensity consists an approximation of the structure factor. Hint: use PointPattern.restrict_to_window."
-        )
+        raise ValueError("window should be a 'cubic' BoxWindow.")
     return None

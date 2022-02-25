@@ -6,10 +6,10 @@ import scipy.special as sc
 from numba import njit
 from scipy.spatial.distance import pdist
 
-from structure_factor.spatial_windows import UnitBallWindow
+from structure_factor.spatial_windows import BallWindow, UnitBallWindow
 
 
-def allowed_values_bartlett_isotropic(dimension, radius, nb_values):
+def allowed_k_norm_bartlett_isotropic(dimension, radius, nb_values=60):
     r"""Allowed wavenumbers of the Bartlett isotropic estimator, for a ``d``-dimensional point process observed in a ball window with radius ``radius``.
 
     .. warning::
@@ -19,7 +19,7 @@ def allowed_values_bartlett_isotropic(dimension, radius, nb_values):
     Args:
         dimension (int): Dimension of the underlying space.
         radius (float): Radius of the observation window.
-        nb_values (int): Number of required allowed wavenumbers.
+        nb_values (int): Number of required allowed wavenumbers. Defaults to 60.
 
     Returns:
         numpy.ndarray: Vector of size ``nb_values`` containing the allowed wavenumbers.
@@ -97,24 +97,28 @@ def bartlett_estimator(k_norm, point_pattern):
         - :py:meth:`~structure_factor.structure_factor.StructureFactor.tapered_estimator_isotropic`
         - :py:func:`~structure_factor.tapered_estimators_isotropic.allowed_k_norm`
     """
+    if not isinstance(point_pattern.window, BallWindow):
+        raise TypeError(
+            "The window must be an instance of BallWindow. Hint: use point_pattern.restrict_to_window."
+        )
     window = point_pattern.window
     d = window.dimension
-    unit_ball = UnitBallWindow(np.zeros(d))
 
     X = np.atleast_2d(point_pattern.points)
     norm_xi_xj = pdist(X, metric="euclidean")
 
     k_norm = k_norm.astype(float)
-    order = float(d / 2 - 1)
     sf_estimated = np.zeros_like(k_norm)
+    order = float(d / 2 - 1)
     isotropic_estimator_njit(sf_estimated, k_norm, norm_xi_xj, order)
 
-    surface, volume = unit_ball.surface, window.volume
+    surface = UnitBallWindow(np.zeros(d)).surface
+    volume = window.volume
     rho = point_pattern.intensity
-    sf_estimated *= (2 * np.pi) ** (d / 2) / (surface * volume * rho)
-    sf_estimated += 1
+    sf_estimated *= (2.0 * np.pi) ** (d / 2) / (surface * volume * rho)
+    sf_estimated += 1.0
 
-    return k_norm, sf_estimated
+    return sf_estimated
 
 
 @njit("double(double, double)")

@@ -21,7 +21,7 @@ def ginibre_pp():
     "to_test",
     ["k_norm", "s_si"],
 )
-def test_scattering_intensity_of_ginibre_on_allowed_values(ginibre_pp, to_test):
+def test_scattering_intensity_of_ginibre_on_allowed_k_norm(ginibre_pp, to_test):
     """Test scattering intensity of the Ginibre on allowed wavevectors"""
     # PointPattern
     point_pattern = ginibre_pp
@@ -154,7 +154,7 @@ def test_tapered_estimators_isotropic_on_origin():
 
     # s_bi
     sf = StructureFactor(point_pattern)
-    _, s_bi = sf.tapered_estimator_isotropic(k_norm)
+    _, s_bi = sf.bartlett_isotropic_estimator(k_norm)
 
     # Expected s_bi
     d = points.shape[1]
