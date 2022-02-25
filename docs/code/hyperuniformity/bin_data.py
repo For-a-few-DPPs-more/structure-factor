@@ -23,7 +23,7 @@ X, Y = np.meshgrid(x, x)
 k = np.column_stack((X.ravel(), Y.ravel()))
 sf_estimated = sf.tapered_estimator(k)
 
-k_norm = utils.norm_k(k)
+k_norm = utils.norm(k)
 hyperuniformity = Hyperuniformity(k_norm, sf_estimated)
 k_norm_binned, sf_estimated_binned, _ = hyperuniformity.bin_data(bins=40)
 

@@ -39,7 +39,7 @@ def test_scattering_intensity_of_ginibre_on_allowed_values(ginibre_pp, to_test):
         meshgrid_shape=(2, 3),
     )
     if to_test == "k_norm":
-        expected = utils.norm_k(k)
+        expected = utils.norm(k)
         tested = np.array(
             [
                 1.38230077,

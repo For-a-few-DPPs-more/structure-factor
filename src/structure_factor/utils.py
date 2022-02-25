@@ -133,8 +133,8 @@ def _extrapolate_pcf(x, r, pcf_r, **params):
 # utils for structure_factor.py
 
 
-def norm_k(k):
-    return np.linalg.norm(k, axis=1)
+def norm(k):
+    return np.linalg.norm(k, axis=-1)
 
 
 def _reshape_meshgrid(X):
@@ -155,7 +155,7 @@ def allowed_wave_vectors(d, L, k_max=5, meshgrid_shape=None):
     Args:
         d (int): Dimension of the space containing the point process.
 
-        L (numpy.ndarray): 1-d array of d rows, where each element correspond to the length of a side of the BoxWindow containing the point process realization.
+        L (numpy.ndarray): 1d array of size ``d``, where each element correspond to the length of a side of the BoxWindow containing the point process realization.
 
         k_max (float, optional): Supremum of the components of the allowed wavevectors on which the scattering intensity to be evaluated; i.e., for any allowed wavevector :math:`\mathbf{k}=(k_1,...,k_d)`, :math:`k_i \leq k\_max` for all i. This implies that the maximum of the output vector ``k_norm`` will be approximately equal to the norm of the vector :math:`(k\_max, ... k\_max)`. Defaults to 5.
 
@@ -190,6 +190,7 @@ def allowed_wave_vectors(d, L, k_max=5, meshgrid_shape=None):
             message="Each component of the argument 'meshgrid_shape' should be less than or equal to the cardinality of the (total) set of allowed wavevectors."
         )
 
+    meshgrid_shape = np.fmin(meshgrid_shape, 2 * n_max)
     # case d=1
     if d == 1:
         if meshgrid_shape is None or (meshgrid_shape > (2 * n_max)):
@@ -202,17 +203,16 @@ def allowed_wave_vectors(d, L, k_max=5, meshgrid_shape=None):
                     -n_max, n_max, num=meshgrid_shape + 1, dtype=int, endpoint=True
                 )
         k = 2 * np.pi * n / L
-        k = np.reshape(k, (k.shape[0], 1))
+        k = k.reshape(-1, 1)
     # case d>1
     else:
         if meshgrid_shape is None or (np.array(meshgrid_shape) > (2 * n_max)).any():
-            # n_all = ()
-            n_i_all = []
-            for i in range(d):
-                n_i = np.arange(-n_max[i], n_max[i] + 1, step=1)
+            ranges = []
+            for n in n_max:
+                n_i = np.arange(-n, n + 1, step=1)
                 n_i = n_i[n_i != 0]
-                n_i_all.append(n_i)
-            X = np.meshgrid(*n_i_all, copy=False)
+                ranges.append(n_i)
+            X = np.meshgrid(*ranges, copy=False)
             # K = [X_i * 2 * np.pi / L for X_i in X]  # meshgrid of allowed wavevectors
             n = _reshape_meshgrid(X)  # reshape as d columns
 
