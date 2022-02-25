@@ -9,7 +9,7 @@ from scipy.spatial.distance import pdist
 from structure_factor.spatial_windows import UnitBallWindow
 
 
-def allowed_k_norm(dimension, radius, nb_values):
+def allowed_values_bartlett_isotropic(dimension, radius, nb_values):
     r"""Allowed wavenumbers of the Bartlett isotropic estimator, for a ``d``-dimensional point process observed in a ball window with radius ``radius``.
 
     .. warning::

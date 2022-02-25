@@ -5,14 +5,16 @@ from structure_factor.data import load_data
 from structure_factor.hyperuniformity import Hyperuniformity
 from structure_factor.point_processes import GinibrePointProcess
 from structure_factor.structure_factor import StructureFactor
-from structure_factor.tapered_estimators_isotropic import allowed_k_norm
+from structure_factor.tapered_estimators_isotropic import (
+    allowed_values_bartlett_isotropic,
+)
 
 point_pattern = load_data.load_ginibre()
 point_process = GinibrePointProcess()
 
 sf = StructureFactor(point_pattern)
 d, r = point_pattern.dimension, point_pattern.window.radius
-k_norm = allowed_k_norm(dimension=d, radius=r, nb_values=60)
+k_norm = allowed_values_bartlett_isotropic(dimension=d, radius=r, nb_values=60)
 k_norm, sf_estimated = sf.tapered_estimator_isotropic(k_norm)
 
 sf_theoretical = point_process.structure_factor(k_norm)
