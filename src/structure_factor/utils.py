@@ -15,6 +15,19 @@ def get_random_number_generator(seed=None):
 # utils for hyperuniformity.py
 
 
+def sort_by_keys(keys, *arrays, **argsort_params):
+    """Return a sorted version of ``arrays`` according to the indices that would sort ``keys`` by calling ``numpy.argsort(keys, **argsort_params)``.
+
+    Args:
+        keys (array_like): Array to extract the sorting indices from.
+        arrays (array_like): Sequence of arrays to be sorted. These arrays must have a length larger or equal to the length of keys.
+    Returns:
+        list: sorted version of ``arrays``.
+    """
+    idx = np.argsort(keys, **argsort_params)
+    return [arr[idx] for arr in arrays]
+
+
 def _sort_vectors(k, x_k, y_k=None):
     """Sort ``k`` by increasing order and rearranging the associated vectors to ``k``, ``x_k``and ``y_k``.
 
@@ -26,13 +39,9 @@ def _sort_vectors(k, x_k, y_k=None):
     Returns:
         (numpy.ndarray, numpy.ndarray, numpy.ndarray): ``k`` sorted by increasing order and the associated vectors ``x_k``and ``y_k``.
     """
-    sort_index_k = np.argsort(k)
-    k_sorted = k[sort_index_k]
-    x_k_sorted = x_k[sort_index_k]
-    if y_k is not None:
-        y_k_sorted = y_k[sort_index_k]
-        return k_sorted, x_k_sorted, y_k_sorted
-    return k_sorted, x_k_sorted, y_k
+    if y_k is None:
+        return (*sort_by_keys(k, k, x_k), y_k)
+    return sort_by_keys(k, k, x_k, y_k)
 
 
 # utils for hyperuniformity.py and structure_factor.py
