@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import rpy2.robjects as robjects
-import scipy.interpolate as interpolate
+from scipy.interpolate import interp1d
 from spatstat_interface.interface import SpatstatInterface
 
 import structure_factor.plotting as plots
@@ -165,10 +165,10 @@ def interpolate(
             r = r[~index_outlier]
 
     if extrapolate_with_one:
-        pcf = lambda x: utils._extrapolate_pcf(x, r, pcf_r, **params)
+        pcf = lambda x: _extrapolate_pcf(x, r, pcf_r, **params)
     else:
         params.setdefault("fill_value", "extrapolate")
-        pcf = interpolate.interp1d(r, pcf_r, **params)
+        pcf = interp1d(r, pcf_r, **params)
 
     return pcf
 
@@ -208,3 +208,31 @@ def plot(pcf_dataframe, exact_pcf=None, file_name="", **kwargs):
         fig = axis.get_figure()
         fig.savefig(file_name, bbox_inches="tight")
     return axis
+
+
+def _extrapolate_pcf(x, r, pcf_r, **params):
+    """Interpolate pcf_r for x=<r_max and set to 1 for x>r_max.
+
+    Args:
+        x (numpy.ndarray): Points on which the pair correlation function is to be evaluated.
+
+        r (numpy.ndarray): Vector of the radius on with the pair correlation function was evaluated.
+
+        pcf_r (numpy.ndarray): Vector of evaluations of the pair correlation function corresponding to ``r``.
+
+    Returns:
+        numpy.ndarray: evaluation of the extrapolated pair correlation function on ``x``.
+    """
+    r_max = np.max(r)  # maximum radius
+    pcf = np.zeros_like(x)
+    params.setdefault("fill_value", "extrapolate")
+
+    mask = x > r_max
+    if np.any(mask):
+        pcf[mask] = 1.0
+        np.logical_not(mask, out=mask)
+        pcf[mask] = interp1d(r, pcf_r, **params)(x[mask])
+    else:
+        pcf = interp1d(r, pcf_r, **params)(x)
+
+    return pcf
