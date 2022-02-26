@@ -63,7 +63,7 @@ class PointPattern(object):
         if intensity is None:
             intensity = self.points.shape[0] / window.volume
         assert intensity > 0
-        self.intensity = intensity
+        self.intensity = float(intensity)
 
         self.params = params
 
