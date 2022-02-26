@@ -102,7 +102,7 @@ class BallWindow(AbstractSpatialWindow):
         if not radius > 0:
             raise ValueError("radius must be positive")
         self.center = center
-        self.radius = radius
+        self.radius = float(radius)
 
     @property
     def dimension(self):
