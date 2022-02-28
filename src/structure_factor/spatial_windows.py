@@ -14,6 +14,8 @@ from abc import ABCMeta, abstractmethod
 
 import numpy as np
 import scipy as sp
+from matplotlib import pyplot as plt
+from matplotlib.patches import Circle, Rectangle
 from rpy2 import robjects
 from spatstat_interface.interface import SpatstatInterface
 
@@ -169,6 +171,30 @@ class BallWindow(AbstractSpatialWindow):
         c = robjects.vectors.FloatVector(self.center)
         return spatstat.geom.disc(radius=r, centre=c, **params)
 
+    def plot(self, axis=None, **kwargs):
+        """Display the window on matplotlib `axis`.
+
+        Args:
+            axis (plt.Axes, optional): Support axis of the plot. Defaults to None.
+
+        Keyword Args:
+            kwargs (dict): Keyword arguments of ``matplotlib.patches.Circle`` with default ``fill=False``.
+
+        Returns:
+            plt.Axes: Plot axis.
+        """
+        if self.dimension != 2:
+            raise NotImplementedError("Method implemented only for 2D window")
+
+        if axis is None:
+            fig, axis = plt.subplots(figsize=(5, 5))
+
+        kwargs.setdefault("fill", False)
+        circle = Circle(self.center, self.radius, **kwargs)
+
+        axis.add_patch(circle)
+        return axis
+
 
 class UnitBallWindow(BallWindow):
     r"""Create a d-dimensional unit ball window :math:`B(c, r=1)`, where :math:`c \in \mathbb{R}^d`.
@@ -273,6 +299,33 @@ class BoxWindow(AbstractSpatialWindow):
         x = robjects.vectors.FloatVector(a)
         y = robjects.vectors.FloatVector(b)
         return spatstat.geom.owin(xrange=x, yrange=y, **params)
+
+    def plot(self, axis=None, **kwargs):
+        """Display the window on matplotlib `axis`.
+
+        Args:
+            axis (plt.Axes, optional): Support axis of the plot. Defaults to None.
+
+        Keyword Args:
+            kwargs (dict): Keyword arguments of ``matplotlib.patches.Rectangle`` with default ``fill=False``.
+
+        Returns:
+            plt.Axes: Plot axis.
+        """
+        if self.dimension != 2:
+            raise NotImplementedError("Method implemented only for 2D window")
+
+        if axis is None:
+            fig, axis = plt.subplots(figsize=(5, 5))
+
+        kwargs.setdefault("fill", False)
+
+        xy = self._bounds[0]
+        width, height = np.diff(self._bounds, axis=0).ravel()
+        rectangle = Rectangle(xy, width, height, **kwargs)
+
+        axis.add_patch(rectangle)
+        return axis
 
 
 class UnitBoxWindow(BoxWindow):

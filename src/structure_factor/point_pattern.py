@@ -122,13 +122,15 @@ class PointPattern(object):
             params["window"] = window.to_spatstat_owin()
         return spatstat.geom.ppp(x, y, **params)
 
-    def plot(self, axis=None, window=None, file_name="", **kwargs):
+    def plot(self, axis=None, window=None, show_window=False, file_name="", **kwargs):
         """Scatter plot of :py:attr:`~structure_factor.point_pattern.PointPattern.points`.
 
         Args:
             axis (plt.Axes, optional): Support axis of the plot. Defaults to None.
 
             window (:py:class:`~structure_factor.spatial_windows.AbstractSpatialWindow`, optional): Output observation window. Defaults to None.
+
+            show_window (bool, optional): Display the ``window``, ambient dimension should be 2.
 
         Returns:
             plt.Axes: Plot axis.
@@ -137,18 +139,22 @@ class PointPattern(object):
             fig, axis = plt.subplots(figsize=(5, 5))
 
         if window is None:
+            window = self.window
             points = self.points
         else:
             assert isinstance(window, AbstractSpatialWindow)
             mask = window.indicator_function(self.points)
             points = self.points[mask]
 
+        if show_window:
+            window.plot(axis=axis)
+
         kwargs.setdefault("c", "k")
         kwargs.setdefault("s", 0.5)
         axis.scatter(points[:, 0], points[:, 1], **kwargs)
-        axis.set_aspect("equal", "box")
+        axis.set_aspect("equal")
 
         if file_name:
-            #! fig not defined if axis is not None
+            fig = axis.get_figure()
             fig.savefig(file_name, bbox_inches="tight")
         return axis
