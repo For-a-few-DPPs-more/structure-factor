@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pair correlation function &mdash; structure-factor  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/proof.css" type="text/css" />
+      <link rel="stylesheet" href="_static/plot_directive.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/proof.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Point pattern" href="point_pattern.html" />
+    <link rel="prev" title="Point processes" href="point_processes.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> structure-factor
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="structure_factor.html">Structure factor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hyperuniformity.html">Hyperuniformity</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tapered_estimators.html">Tapered estimators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tapered_estimators_isotropic.html">Tapered isotropic estimators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tapers.html">Tapers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transforms.html">Transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="point_processes.html">Point processes</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Pair correlation function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="point_pattern.html">Point pattern</a></li>
+<li class="toctree-l1"><a class="reference internal" href="spatial_windows.html">Spatial windows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plotting.html">Plotting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bibliography/index.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">structure-factor</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Pair correlation function</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/For-a-few-DPPs-more/structure-factor/blob/main/docs/pair_correlation_function.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-structure_factor.pair_correlation_function">
+<span id="id1"></span><span id="pair-correlation-function"></span><h1>Pair correlation function<a class="headerlink" href="#module-structure_factor.pair_correlation_function" title="Permalink to this headline"></a></h1>
+<p>Collection of functions used to estimate the pair correlation function of an isotropic point process. The underlying routines call the <cite>R</cite> package <a class="reference external" href="https://github.com/spatstat/spatstat">spatstat</a>.</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#structure_factor.pair_correlation_function.estimate" title="structure_factor.pair_correlation_function.estimate"><code class="xref py py-meth docutils literal notranslate"><span class="pre">estimate()</span></code></a>: Estimates the pair correlation function.</p></li>
+<li><p><a class="reference internal" href="#structure_factor.pair_correlation_function.interpolate" title="structure_factor.pair_correlation_function.interpolate"><code class="xref py py-meth docutils literal notranslate"><span class="pre">interpolate()</span></code></a>: Cleans, interpolates, and extrapolates the results of <a class="reference internal" href="#structure_factor.pair_correlation_function.estimate" title="structure_factor.pair_correlation_function.estimate"><code class="xref py py-meth docutils literal notranslate"><span class="pre">estimate()</span></code></a>.</p></li>
+<li><p><a class="reference internal" href="#structure_factor.pair_correlation_function.plot" title="structure_factor.pair_correlation_function.plot"><code class="xref py py-meth docutils literal notranslate"><span class="pre">plot()</span></code></a>: Plots the results of <a class="reference internal" href="#structure_factor.pair_correlation_function.estimate" title="structure_factor.pair_correlation_function.estimate"><code class="xref py py-meth docutils literal notranslate"><span class="pre">estimate()</span></code></a>.</p></li>
+</ul>
+<dl class="py function">
+<dt class="sig sig-object py" id="structure_factor.pair_correlation_function.estimate">
+<span class="sig-prename descclassname"><span class="pre">structure_factor.pair_correlation_function.</span></span><span class="sig-name descname"><span class="pre">estimate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">point_pattern</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'fv'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">install_spatstat</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/pair_correlation_function.html#estimate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.pair_correlation_function.estimate" title="Permalink to this definition"></a></dt>
+<dd><p>Estimate the pair correlation function (pcf) of a point process encapsulated in <code class="docutils literal notranslate"><span class="pre">point_pattern</span></code> (only for stationary isotropic point processes of <span class="math notranslate nohighlight">\(\mathbb{R}^2\)</span>). The available methods are the methods <code class="docutils literal notranslate"><span class="pre">spastat.core.pcf_ppp</span></code> and <code class="docutils literal notranslate"><span class="pre">spastat.core.pcf_fv</span></code> of the <cite>R</cite> package <a class="reference external" href="https://github.com/spatstat/spatstat">spatstat</a>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This function requires the <a class="reference external" href="https://cran.r-project.org/">R programming language</a> to be installed on your local machine but, it doesn’t require any knowledge of the programming language R.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>point_pattern</strong> (<a class="reference internal" href="point_pattern.html#structure_factor.point_pattern.PointPattern" title="structure_factor.point_pattern.PointPattern"><code class="xref py py-class docutils literal notranslate"><span class="pre">PointPattern</span></code></a>) – Realization of the underlying point process.</p></li>
+<li><p><strong>method</strong> (<em>str</em><em>, </em><em>optional</em>) – Trigger the use of the routine <a class="reference external" href="https://www.rdocumentation.org/packages/spatstat/versions/1.64-1/topics/pcf.ppp">pcf.ppp</a> or <a class="reference external" href="https://www.rdocumentation.org/packages/spatstat.core/versions/2.3-1/topics/pcf.fv">pcf.fv</a> according to the value <code class="docutils literal notranslate"><span class="pre">&quot;ppp&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;fv&quot;</span></code>. These 2 methods approximate the pair correlation function of a point process from one realization encapsulated in <code class="docutils literal notranslate"><span class="pre">point_pattern</span></code>. For more details see <span id="id3">[<a class="reference internal" href="bibliography/index.html#id9" title="Adrian Baddeley, Ege Rubak, and Rolf Turner. Spatial Point Patterns: Methodology and Applications with R. Chapman and Hall/CRC Press, London, 2015. URL: https://www.routledge.com/Spatial-Point-Patterns-Methodology-and-Applications-with-R/Baddeley-Rubak-Turner/9781482210200/.">BRT15</a>]</span>. Defaults to <code class="docutils literal notranslate"><span class="pre">&quot;fv&quot;</span></code>.</p></li>
+<li><p><strong>install_spatstat</strong> (<em>bool</em><em>, </em><em>optional</em>) – <p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the <cite>R</cite> package <a class="reference external" href="https://github.com/spatstat/spatstat">spatstat</a>  will be automatically updated or installed (if not present) on your local machine, see also <a class="reference external" href="https://github.com/For-a-few-DPPs-more/spatstat-interface">spatstat-interface</a>. Note that this requires the installation of the <a class="reference external" href="https://cran.r-project.org/">R programming language</a>.</p>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><p><strong>params</strong> (<em>dict</em>) – <ul>
+<li><p>if <code class="docutils literal notranslate"><span class="pre">method</span> <span class="pre">=</span> <span class="pre">&quot;ppp&quot;</span></code></p>
+<blockquote>
+<div><ul class="simple">
+<li><p>keyword arguments of <a class="reference external" href="https://rdrr.io/cran/spatstat.core/man/pcf.ppp.html">spastat.core.pcf.ppp</a>, ex: r, correction …</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p>if <code class="docutils literal notranslate"><span class="pre">method</span> <span class="pre">=</span> <span class="pre">&quot;fv&quot;</span></code></p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Kest</strong> = dict(keyword arguments of <a class="reference external" href="https://rdrr.io/github/spatstat/spatstat.core/man/Kest.html">spastat.core.Kest</a>), ex: rmax …</p></li>
+<li><p><strong>fv</strong> = dict(keyword arguments of <a class="reference external" href="https://rdrr.io/cran/spatstat.core/man/pcf.fv.html">spastat.core.pcf.fv</a>), ex: method, spar …</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>output of <a class="reference external" href="https://www.rdocumentation.org/packages/spatstat.core/versions/2.1-2/topics/pcf.ppp">spatstat.core.pcf.ppp</a> or <a class="reference external" href="https://www.rdocumentation.org/packages/spatstat.core/versions/2.1-2/topics/pcf.fv">spatsta.core.pcf.fv</a>. The first column of the DataFrame is the set of radii on which the pair correlation function was approximated. The others correspond to the approximated pair correlation function with different edge corrections.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>pandas.DataFrame</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="kn">import</span> <span class="nn">structure_factor.pair_correlation_function</span> <span class="k">as</span> <span class="nn">pcf</span>
+<span class="kn">from</span> <span class="nn">structure_factor.point_processes</span> <span class="kn">import</span> <span class="n">HomogeneousPoissonPointProcess</span>
+<span class="kn">from</span> <span class="nn">structure_factor.spatial_windows</span> <span class="kn">import</span> <span class="n">BallWindow</span>
+
+<span class="n">point_process</span> <span class="o">=</span> <span class="n">HomogeneousPoissonPointProcess</span><span class="p">(</span><span class="n">intensity</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">window</span> <span class="o">=</span> <span class="n">BallWindow</span><span class="p">(</span><span class="n">center</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">radius</span><span class="o">=</span><span class="mi">40</span><span class="p">)</span>
+<span class="n">point_pattern</span> <span class="o">=</span> <span class="n">point_process</span><span class="o">.</span><span class="n">generate_point_pattern</span><span class="p">(</span><span class="n">window</span><span class="o">=</span><span class="n">window</span><span class="p">)</span>
+
+<span class="n">pcf_estimated</span> <span class="o">=</span> <span class="n">pcf</span><span class="o">.</span><span class="n">estimate</span><span class="p">(</span>
+    <span class="n">point_pattern</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;fv&quot;</span><span class="p">,</span> <span class="n">Kest</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">rmax</span><span class="o">=</span><span class="mi">20</span><span class="p">),</span> <span class="n">fv</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;c&quot;</span><span class="p">,</span> <span class="n">spar</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+<span class="p">)</span>
+
+<span class="n">pcf</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+    <span class="n">pcf_estimated</span><span class="p">,</span>
+    <span class="n">exact_pcf</span><span class="o">=</span><span class="n">point_process</span><span class="o">.</span><span class="n">pair_correlation_function</span><span class="p">,</span>
+    <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span>
+    <span class="n">color</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;grey&quot;</span><span class="p">],</span>
+    <span class="n">style</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;.&quot;</span><span class="p">],</span>
+<span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">(</span><span class="n">pad</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>(<a class="reference external" href="./code/pair_correlation_function/estimate_pcf.py">Source code</a>, <a class="reference external" href="./code/pair_correlation_function/estimate_pcf.png">png</a>, <a class="reference external" href="./code/pair_correlation_function/estimate_pcf.hires.png">hires.png</a>, <a class="reference external" href="./code/pair_correlation_function/estimate_pcf.pdf">pdf</a>)</p>
+<figure class="align-default">
+<img alt="_images/estimate_pcf.png" class="plot-directive" src="_images/estimate_pcf.png" />
+</figure>
+<div class="proof proof-type-definition" id="id9">
+
+    <div class="proof-title">
+        <span class="proof-type">Definition </span>
+        
+    </div><div class="proof-content">
+<p>The pair correlation function of a stationary isotropic point process <span class="math notranslate nohighlight">\(\mathcal{X}\)</span> of intensity <span class="math notranslate nohighlight">\(\rho\)</span> is the function <span class="math notranslate nohighlight">\(g\)</span> satisfying (when it exists),</p>
+<div class="math notranslate nohighlight">
+\[\mathbb{E} \bigg[ \sum_{\mathbf{x}, \mathbf{y} \in \mathcal{X}}^{\neq}
+f(\mathbf{x}, \mathbf{y}) \bigg] = \int_{\mathbb{R}^d \times \mathbb{R}^d} f(\mathbf{x}+\mathbf{y}, \mathbf{y})\rho^{2} g(\mathbf{x}) \mathrm{d} \mathbf{x} \mathrm{d}\mathbf{y},\]</div>
+<p>for any non-negative smooth function <span class="math notranslate nohighlight">\(f\)</span> with compact support.</p>
+<p>For more details, we refer to <span id="id6">[<a class="reference internal" href="bibliography/index.html#id4" title="D. Hawat, G. Gautier, R. Bardenet, and R. Lachieze-Rey. Exploring the hyperuniformity of point processes with python. ():, Feb 2022. URL:, doi:.">HGBLR22</a>]</span>, (Section 2).</p>
+</div></div><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="point_pattern.html#structure_factor.point_pattern.PointPattern" title="structure_factor.point_pattern.PointPattern"><code class="xref py py-meth docutils literal notranslate"><span class="pre">PointPattern()</span></code></a></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">interpolate()</span></code></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">plot()</span></code></p></li>
+</ul>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="structure_factor.pair_correlation_function.interpolate">
+<span class="sig-prename descclassname"><span class="pre">structure_factor.pair_correlation_function.</span></span><span class="sig-name descname"><span class="pre">interpolate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pcf_r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clean</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nan</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">posinf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">neginf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extrapolate_with_one</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/pair_correlation_function.html#interpolate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.pair_correlation_function.interpolate" title="Permalink to this definition"></a></dt>
+<dd><p>Interpolate and then extrapolate the evaluation <code class="docutils literal notranslate"><span class="pre">pcf_r</span></code> of the pair correlation function (pcf) <code class="docutils literal notranslate"><span class="pre">r</span></code>.</p>
+<p>The interpolation is performed with <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html">scipy.interpolate.interp1d</a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>r</strong> (<em>numpy.ndarray</em>) – Vector of radii. Typically, the first column of the output of <code class="xref py py-meth docutils literal notranslate"><span class="pre">estimate()</span></code>.</p></li>
+<li><p><strong>pcf_r</strong> (<em>numpy.ndarray</em>) – Vector of evaluations of the pair correlation function at <code class="docutils literal notranslate"><span class="pre">r</span></code>. Typically, a column from the output of <code class="xref py py-meth docutils literal notranslate"><span class="pre">estimate()</span></code>.</p></li>
+<li><p><strong>clean</strong> (<em>bool</em><em>, </em><em>optional</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, a method is chosen to deal with possible outliers (nan, posinf, neginf) of <code class="docutils literal notranslate"><span class="pre">pcf_r</span></code>. The chosen method depends on the parameters <code class="docutils literal notranslate"><span class="pre">replace</span></code> and <code class="docutils literal notranslate"><span class="pre">drop</span></code>. Defaults to True.</p></li>
+<li><p><strong>drop</strong> (<em>bool</em><em>, </em><em>optional</em>) – Cleaning method for <code class="docutils literal notranslate"><span class="pre">pcf_r</span></code> active when it’s set to True simultaneously with <code class="docutils literal notranslate"><span class="pre">clean=True</span></code>. Drops possible nan, posinf, and neginf from <code class="docutils literal notranslate"><span class="pre">pcf_r</span></code> with the corresponding values of <code class="docutils literal notranslate"><span class="pre">r</span></code>.</p></li>
+<li><p><strong>replace</strong> (<em>bool</em><em>, </em><em>optional</em>) – Cleaning method for <code class="docutils literal notranslate"><span class="pre">pcf_r</span></code> active when it’s set to True simultaneously with <code class="docutils literal notranslate"><span class="pre">clean=True</span></code>. Replaces possible nan, posinf, and neginf values of <code class="docutils literal notranslate"><span class="pre">pcf_r</span></code> by the values set in the corresponding arguments. Defaults to True.</p></li>
+<li><p><strong>nan</strong> (<em>float</em><em>, </em><em>optional</em>) – When <code class="docutils literal notranslate"><span class="pre">replace=True</span></code>, replacing value of nan present in <code class="docutils literal notranslate"><span class="pre">pcf_r</span></code>. Defaults to 0.0.</p></li>
+<li><p><strong>posinf</strong> (<em>float</em><em>, </em><em>optional</em>) – When <code class="docutils literal notranslate"><span class="pre">replace=True</span></code>, replacing value of +inf values present in <code class="docutils literal notranslate"><span class="pre">pcf_r</span></code>. Defaults to 0.0.</p></li>
+<li><p><strong>neginf</strong> (<em>float</em><em>, </em><em>optional</em>) – When is <code class="docutils literal notranslate"><span class="pre">replace=True</span></code>, replacing value of -inf present in <code class="docutils literal notranslate"><span class="pre">pcf_r</span></code>. Defaults to 0.0.</p></li>
+<li><p><strong>extrapolate_with_one</strong> (<em>bool</em><em>, </em><em>optional</em>) – <p>If True, the discrete approximation vector <code class="docutils literal notranslate"><span class="pre">pcf_r</span></code> is first interpolated until the maximal value of <code class="docutils literal notranslate"><span class="pre">r</span></code>, then the extrapolated values are fixed to 1. If False, the extrapolation method of <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html">scipy.interpolate.interp1d</a> is used. Note that, the approximation of the structure factor by Ogata quadrature Hankel transform is usually better when set to True. Defaults to True.</p>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><p><strong>params</strong> (<em>dict</em>) – <p>Keyword arguments of the function <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html">scipy.interpolate.interp1d</a>.</p>
+</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Interpolated pair correlation function.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>callable</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">import</span> <span class="nn">structure_factor.pair_correlation_function</span> <span class="k">as</span> <span class="nn">pcf</span>
+<span class="kn">from</span> <span class="nn">structure_factor.point_pattern</span> <span class="kn">import</span> <span class="n">PointPattern</span>
+<span class="kn">from</span> <span class="nn">structure_factor.point_processes</span> <span class="kn">import</span> <span class="n">HomogeneousPoissonPointProcess</span>
+<span class="kn">from</span> <span class="nn">structure_factor.spatial_windows</span> <span class="kn">import</span> <span class="n">BallWindow</span>
+
+<span class="n">point_process</span> <span class="o">=</span> <span class="n">HomogeneousPoissonPointProcess</span><span class="p">(</span><span class="n">intensity</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">window</span> <span class="o">=</span> <span class="n">BallWindow</span><span class="p">(</span><span class="n">center</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">radius</span><span class="o">=</span><span class="mi">40</span><span class="p">)</span>
+<span class="n">point_pattern</span> <span class="o">=</span> <span class="n">point_process</span><span class="o">.</span><span class="n">generate_point_pattern</span><span class="p">(</span><span class="n">window</span><span class="o">=</span><span class="n">window</span><span class="p">)</span>
+
+<span class="n">pcf_estimated</span> <span class="o">=</span> <span class="n">pcf</span><span class="o">.</span><span class="n">estimate</span><span class="p">(</span>
+    <span class="n">point_pattern</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;fv&quot;</span><span class="p">,</span> <span class="n">Kest</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">rmax</span><span class="o">=</span><span class="mi">20</span><span class="p">),</span> <span class="n">fv</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;c&quot;</span><span class="p">,</span> <span class="n">spar</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+<span class="p">)</span>
+
+<span class="c1"># Interpolate/extrapolate the results</span>
+<span class="n">r</span> <span class="o">=</span> <span class="n">pcf_estimated</span><span class="p">[</span><span class="s2">&quot;r&quot;</span><span class="p">]</span>
+<span class="n">pcf_r</span> <span class="o">=</span> <span class="n">pcf_estimated</span><span class="p">[</span><span class="s2">&quot;pcf&quot;</span><span class="p">]</span>
+<span class="n">pcf_interpolated</span> <span class="o">=</span> <span class="n">pcf</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span>
+    <span class="n">r</span><span class="o">=</span><span class="n">r</span><span class="p">,</span>
+    <span class="n">pcf_r</span><span class="o">=</span><span class="n">pcf_r</span><span class="p">,</span>
+    <span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">pcf_interpolated</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="s2">&quot;b.&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">point_process</span><span class="o">.</span><span class="n">pair_correlation_function</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="s2">&quot;g&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">(</span><span class="n">pad</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>(<a class="reference external" href="./code/pair_correlation_function/interpolate_pcf.py">Source code</a>, <a class="reference external" href="./code/pair_correlation_function/interpolate_pcf.png">png</a>, <a class="reference external" href="./code/pair_correlation_function/interpolate_pcf.hires.png">hires.png</a>, <a class="reference external" href="./code/pair_correlation_function/interpolate_pcf.pdf">pdf</a>)</p>
+<figure class="align-default">
+<img alt="_images/interpolate_pcf.png" class="plot-directive" src="_images/interpolate_pcf.png" />
+</figure>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="point_pattern.html#structure_factor.point_pattern.PointPattern" title="structure_factor.point_pattern.PointPattern"><code class="xref py py-meth docutils literal notranslate"><span class="pre">PointPattern()</span></code></a></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">estimate()</span></code></p></li>
+</ul>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="structure_factor.pair_correlation_function.plot">
+<span class="sig-prename descclassname"><span class="pre">structure_factor.pair_correlation_function.</span></span><span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pcf_dataframe</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exact_pcf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/pair_correlation_function.html#plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.pair_correlation_function.plot" title="Permalink to this definition"></a></dt>
+<dd><p>Plot the columns of <code class="docutils literal notranslate"><span class="pre">pcf_dataframe</span></code> with respect to the column <code class="docutils literal notranslate"><span class="pre">pcf_dataframe[&quot;r&quot;]</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pcf_dataframe</strong> (<em>pandas.DataFrame</em>) – DataFrame to be visualized. Typically the output of <code class="xref py py-meth docutils literal notranslate"><span class="pre">estimate()</span></code>.</p></li>
+<li><p><strong>exact_pcf</strong> (<em>callable</em>) – Theoretical pair correlation function of the point process.</p></li>
+<li><p><strong>file_name</strong> (<em>str</em>) – Name used to save the figure. The available output formats depend on the backend being used.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><p><strong>kwargs</strong> (<em>dict</em>) – Keyword arguments of the function <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.plot.line.html">pandas.DataFrame.plot.line</a>.</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Plot result.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>plt.Axes</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="point_processes.html" class="btn btn-neutral float-left" title="Point processes" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="point_pattern.html" class="btn btn-neutral float-right" title="Point pattern" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021-2022, Diala Hawat.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

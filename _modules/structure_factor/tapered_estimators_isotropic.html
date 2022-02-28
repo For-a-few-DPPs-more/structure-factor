@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>structure_factor.tapered_estimators_isotropic &mdash; structure-factor  documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/proof.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/plot_directive.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/proof.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> structure-factor
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../structure_factor.html">Structure factor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../hyperuniformity.html">Hyperuniformity</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tapered_estimators.html">Tapered estimators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tapered_estimators_isotropic.html">Tapered isotropic estimators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tapers.html">Tapers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../transforms.html">Transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../point_processes.html">Point processes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pair_correlation_function.html">Pair correlation function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../point_pattern.html">Point pattern</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../spatial_windows.html">Spatial windows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../utils.html">Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../plotting.html">Plotting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibliography/index.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">structure-factor</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      <li>structure_factor.tapered_estimators_isotropic</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for structure_factor.tapered_estimators_isotropic</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Collection of functions used to implement a fast version of Bartlett&#39;s isotropic estimator.&quot;&quot;&quot;</span>
+
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">scipy.special</span> <span class="k">as</span> <span class="nn">sc</span>
+<span class="kn">from</span> <span class="nn">numba</span> <span class="kn">import</span> <span class="n">njit</span>
+<span class="kn">from</span> <span class="nn">scipy.spatial.distance</span> <span class="kn">import</span> <span class="n">pdist</span>
+
+<span class="kn">from</span> <span class="nn">structure_factor.spatial_windows</span> <span class="kn">import</span> <span class="n">BallWindow</span><span class="p">,</span> <span class="n">UnitBallWindow</span>
+
+
+<span class="c1">#! care about case k=0</span>
+<div class="viewcode-block" id="bartlett_estimator"><a class="viewcode-back" href="../../tapered_estimators_isotropic.html#structure_factor.tapered_estimators_isotropic.bartlett_estimator">[docs]</a><span class="k">def</span> <span class="nf">bartlett_estimator</span><span class="p">(</span><span class="n">k_norm</span><span class="p">,</span> <span class="n">point_pattern</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute an estimation of the structure factor of a stationary isotropic point process from one realization encapsulated in ``point_pattern``, evaluated at ``k_norm``.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        point_pattern (:py:class:`~structure_factor.point_pattern.PointPattern`): Realization of the underlying point process.</span>
+
+<span class="sd">        k_norm (numpy.ndarray, optional): Array of size :math:`n` corresponding to the wavenumbers where the estimator is to be evaluated. If None (default) and the observation window ``point_pattern.window`` is a :py:class:`~structure_factor.spatial_windows.BallWindow` and the ambient dimension is even, the estimator will be evaluated on the corresponding set of allowed wavenumbers returned by :py:func:`~structure_factor.tapered_estimators_isotropic.allowed_k_norm`. Defaults to None.</span>
+
+<span class="sd">        n_allowed_k_norm (int, optional): Number of allowed wavenumbers to be used when ``k_norm`` is None. See :py:func:`~structure_factor.tapered_estimators_isotropic.allowed_k_norm`. Defaults to 60.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        tuple(numpy.ndarray, numpy.ndarray):</span>
+<span class="sd">            - k_norm: Wavenumber(s) at which the estimator has been evaluated.</span>
+<span class="sd">            - estimation: Evaluation(s) of the estimator at ``k_norm``.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        .. literalinclude:: code/isotropic_estimator/bartlett_estimator.py</span>
+<span class="sd">            :language: python</span>
+
+<span class="sd">    .. proof:definition::</span>
+
+<span class="sd">        The Bartlett&#39;s isotropic estimator :math:`\widehat{S}_{\mathrm{BI}}` is constructed from a realization :math:`\{\mathbf{x}_i\}_{i=1}^N` of the point process :math:`\mathcal{X}` observed in a ball window :math:`W=B(\mathbf{0}, R)`.</span>
+
+<span class="sd">        .. math::</span>
+
+<span class="sd">            \widehat{S}_{\mathrm{BI}}(k)</span>
+<span class="sd">            = 1</span>
+<span class="sd">            + \frac{ (2\pi)^{d/2} }{\rho |W| \omega_{d-1}}</span>
+<span class="sd">            \sum_{ \substack{j, q =1 \\ j\neq q } }^{N}</span>
+<span class="sd">                \frac{1}{(k \|\mathbf{x}_j - \mathbf{x}_q\|_2)^{d/2 - 1}}</span>
+<span class="sd">                J_{d/2 - 1}(k \|\mathbf{x}_j - \mathbf{x}_q\|_2).</span>
+
+<span class="sd">        For more details, we refer to :cite:`HGBLR:22`, (Section 3.2).</span>
+
+<span class="sd">    .. seealso::</span>
+
+<span class="sd">        - :py:class:`~structure_factor.spatial_windows.BallWindow`</span>
+<span class="sd">        - :py:meth:`~structure_factor.point_pattern.PointPattern.restrict_to_window`</span>
+<span class="sd">        - :py:meth:`~structure_factor.structure_factor.StructureFactor.tapered_estimator_isotropic`</span>
+<span class="sd">        - :py:func:`~structure_factor.tapered_estimators_isotropic.allowed_k_norm`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">point_pattern</span><span class="o">.</span><span class="n">window</span><span class="p">,</span> <span class="n">BallWindow</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+            <span class="s2">&quot;The window must be an instance of BallWindow. Hint: use point_pattern.restrict_to_window.&quot;</span>
+        <span class="p">)</span>
+    <span class="n">window</span> <span class="o">=</span> <span class="n">point_pattern</span><span class="o">.</span><span class="n">window</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">window</span><span class="o">.</span><span class="n">dimension</span>
+
+    <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">point_pattern</span><span class="o">.</span><span class="n">points</span><span class="p">)</span>
+    <span class="n">norm_xi_xj</span> <span class="o">=</span> <span class="n">pdist</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="s2">&quot;euclidean&quot;</span><span class="p">)</span>
+
+    <span class="n">k_norm</span> <span class="o">=</span> <span class="n">k_norm</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">sf_estimated</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">k_norm</span><span class="p">)</span>
+    <span class="n">order</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">d</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">bartlett_estimator_njit</span><span class="p">(</span><span class="n">sf_estimated</span><span class="p">,</span> <span class="n">k_norm</span><span class="p">,</span> <span class="n">norm_xi_xj</span><span class="p">,</span> <span class="n">order</span><span class="p">)</span>
+
+    <span class="n">surface</span> <span class="o">=</span> <span class="n">UnitBallWindow</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">d</span><span class="p">))</span><span class="o">.</span><span class="n">surface</span>
+    <span class="n">volume</span> <span class="o">=</span> <span class="n">window</span><span class="o">.</span><span class="n">volume</span>
+    <span class="n">rho</span> <span class="o">=</span> <span class="n">point_pattern</span><span class="o">.</span><span class="n">intensity</span>
+    <span class="n">sf_estimated</span> <span class="o">*=</span> <span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="n">d</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">surface</span> <span class="o">*</span> <span class="n">volume</span> <span class="o">*</span> <span class="n">rho</span><span class="p">)</span>
+    <span class="n">sf_estimated</span> <span class="o">+=</span> <span class="mf">1.0</span>
+
+    <span class="k">return</span> <span class="n">sf_estimated</span></div>
+
+
+<div class="viewcode-block" id="allowed_k_norm_bartlett_isotropic"><a class="viewcode-back" href="../../tapered_estimators_isotropic.html#structure_factor.tapered_estimators_isotropic.allowed_k_norm_bartlett_isotropic">[docs]</a><span class="k">def</span> <span class="nf">allowed_k_norm_bartlett_isotropic</span><span class="p">(</span><span class="n">dimension</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="n">nb_values</span><span class="o">=</span><span class="mi">60</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Allowed wavenumbers of the Bartlett isotropic estimator, for a ``d``-dimensional point process observed in a ball window with radius ``radius``.</span>
+
+<span class="sd">    .. warning::</span>
+
+<span class="sd">        This method is only available when the ambient dimension is even.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        dimension (int): Dimension of the underlying space.</span>
+<span class="sd">        radius (float): Radius of the observation window.</span>
+<span class="sd">        nb_values (int): Number of required allowed wavenumbers. Defaults to 60.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        numpy.ndarray: Vector of size ``nb_values`` containing the allowed wavenumbers.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        .. literalinclude:: code/isotropic_estimator/allowed_k_norm.py</span>
+<span class="sd">            :language: python</span>
+
+<span class="sd">        .. testoutput::</span>
+
+<span class="sd">            [0.1915853  0.35077933 0.50867341 0.6661846  0.8235315  0.98079293]</span>
+
+<span class="sd">    .. proof:definition::</span>
+
+<span class="sd">        The allowed wavenumbers of a realization from a point process :math:`\mathcal{X}` of :math:`\mathbb{R}^d` observed in a ball window :math:`W=B(\mathbf{0}, R)` correspond to</span>
+
+<span class="sd">        .. math::</span>
+
+<span class="sd">            \left\{</span>
+<span class="sd">            \frac{x}{R} \in \mathbb{R} \text{ s.t. }  J_{d/2}(x)=0</span>
+<span class="sd">            \right\}</span>
+
+<span class="sd">    .. seealso::</span>
+
+<span class="sd">        - :py:func:`~structure_factor.tapered_estimators_isotropic.bartlett_estimator`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">d_2</span><span class="p">,</span> <span class="n">mod_</span> <span class="o">=</span> <span class="nb">divmod</span><span class="p">(</span><span class="n">dimension</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">is_even_dimension</span> <span class="o">=</span> <span class="n">mod_</span> <span class="o">==</span> <span class="mi">0</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">is_even_dimension</span><span class="p">:</span>  <span class="c1"># dimension is not even</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;Allowed wavenumber could be used only when the dimension of the space `d` is an even number (i.e., d/2 is an integer).&quot;</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">sc</span><span class="o">.</span><span class="n">jn_zeros</span><span class="p">(</span><span class="n">d_2</span><span class="p">,</span> <span class="n">nb_values</span><span class="p">)</span> <span class="o">/</span> <span class="n">radius</span></div>
+
+
+<span class="nd">@njit</span><span class="p">(</span><span class="s2">&quot;double(double, double)&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">bessel1_njit</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">order</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">sc</span><span class="o">.</span><span class="n">j0</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">order</span> <span class="o">==</span> <span class="mf">1.0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">sc</span><span class="o">.</span><span class="n">j1</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">sc</span><span class="o">.</span><span class="n">jv</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+
+
+<span class="c1"># todo use cuda.jit to decrease computational time https://towardsdatascience.com/python-performance-and-gpus-1be860ffd58d#:~:text=x%5B%201%2C%201%5D)%20//%209-,GPU%20%E2%80%94%203%20ms,-%40numba.cuda.jit</span>
+
+
+<span class="nd">@njit</span><span class="p">(</span><span class="s2">&quot;void(double[:], double[:], double[:], double)&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">bartlett_estimator_njit</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">k_norm</span><span class="p">,</span> <span class="n">norm_xi_xj</span><span class="p">,</span> <span class="n">order</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">k_norm</span><span class="p">)):</span>
+        <span class="n">sum_k</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">for</span> <span class="n">ij</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">norm_xi_xj</span><span class="p">)):</span>
+            <span class="n">k_xi_xj</span> <span class="o">=</span> <span class="n">k_norm</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">*</span> <span class="n">norm_xi_xj</span><span class="p">[</span><span class="n">ij</span><span class="p">]</span>
+            <span class="n">tmp</span> <span class="o">=</span> <span class="n">bessel1_njit</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="n">k_xi_xj</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">order</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">k_xi_xj</span> <span class="o">=</span> <span class="n">k_xi_xj</span> <span class="o">**</span> <span class="n">order</span>
+                <span class="n">tmp</span> <span class="o">/=</span> <span class="n">k_xi_xj</span>
+            <span class="n">sum_k</span> <span class="o">+=</span> <span class="n">tmp</span>
+        <span class="n">result</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">sum_k</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021-2022, Diala Hawat.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

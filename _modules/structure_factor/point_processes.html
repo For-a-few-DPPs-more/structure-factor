@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>structure_factor.point_processes &mdash; structure-factor  documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/proof.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/plot_directive.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/proof.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> structure-factor
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../structure_factor.html">Structure factor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../hyperuniformity.html">Hyperuniformity</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tapered_estimators.html">Tapered estimators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tapered_estimators_isotropic.html">Tapered isotropic estimators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tapers.html">Tapers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../transforms.html">Transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../point_processes.html">Point processes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pair_correlation_function.html">Pair correlation function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../point_pattern.html">Point pattern</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../spatial_windows.html">Spatial windows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../utils.html">Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../plotting.html">Plotting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibliography/index.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">structure-factor</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      <li>structure_factor.point_processes</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for structure_factor.point_processes</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Collection of point processes at related properties, e.g., intensity, pair correlation function, structure factor.</span>
+
+<span class="sd">- :py:class:`~structure_factor.point_processes.HomogeneousPoissonPointProcess`: The homogeneous Poisson point process.</span>
+
+<span class="sd">- :py:class:`~structure_factor.point_processes.ThomasPointProcess`: The Thomas point process.</span>
+
+<span class="sd">- :py:class:`~structure_factor.point_processes.GinibrePointProcess`: The Ginibre point process.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">scipy.linalg</span> <span class="k">as</span> <span class="nn">la</span>
+<span class="kn">from</span> <span class="nn">scipy.spatial</span> <span class="kn">import</span> <span class="n">KDTree</span>
+
+<span class="kn">from</span> <span class="nn">structure_factor.point_pattern</span> <span class="kn">import</span> <span class="n">PointPattern</span>
+<span class="kn">from</span> <span class="nn">structure_factor.spatial_windows</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">AbstractSpatialWindow</span><span class="p">,</span>
+    <span class="n">BallWindow</span><span class="p">,</span>
+    <span class="n">BoxWindow</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">structure_factor.utils</span> <span class="kn">import</span> <span class="n">get_random_number_generator</span>
+
+
+<div class="viewcode-block" id="HomogeneousPoissonPointProcess"><a class="viewcode-back" href="../../point_processes.html#structure_factor.point_processes.HomogeneousPoissonPointProcess">[docs]</a><span class="k">class</span> <span class="nc">HomogeneousPoissonPointProcess</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;`Homogeneous Poisson point process &lt;https://en.wikipedia.org/wiki/Poisson_point_process#Spatial_Poisson_point_process&gt;`_.</span>
+
+<span class="sd">    .. todo::</span>
+
+<span class="sd">        list attributes</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="HomogeneousPoissonPointProcess.__init__"><a class="viewcode-back" href="../../point_processes.html#structure_factor.point_processes.HomogeneousPoissonPointProcess.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">intensity</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a `homogeneous Poisson point process &lt;https://en.wikipedia.org/wiki/Poisson_point_process#Spatial_Poisson_point_process&gt;`_ with prescribed (positive) ``intensity`` parameter.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            intensity (float, optional): intensity of the homogeneous Poisson point process. Defaults to 1.0.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">intensity</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;intensity argument must be 2positive&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_intensity</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">intensity</span><span class="p">)</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">intensity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the intensity :math:`\rho_1(r) = \rho` of the homogeneous Poisson point process.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: Constant intensity.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_intensity</span>
+
+<div class="viewcode-block" id="HomogeneousPoissonPointProcess.pair_correlation_function"><a class="viewcode-back" href="../../point_processes.html#structure_factor.point_processes.HomogeneousPoissonPointProcess.pair_correlation_function">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">pair_correlation_function</span><span class="p">(</span><span class="n">r</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Evaluate the pair correlation function :math:`g(r)=1` of the homogeneous Poisson process.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            r (numpy.ndarray): Array of size :math:`n \times d`, where :math:`d` is the ambient dimension and :math:`n` the number of points where the pair correlation function is evaluated. Since the homogeneous Poisson process is isotropic, a vector of size :math:`n` corresponding to the norm of the :math:`n` points can also be passed. Defaults to None.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float or numpy.ndarray: ``1.0`` if ``r=None``, otherwise a vector of size :math:`n` with entries equal to ``1.0``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="mf">1.0</span>
+        <span class="k">if</span> <span class="n">r</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">val</span>
+
+        <span class="k">assert</span> <span class="n">r</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&lt;=</span> <span class="mi">2</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">val</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="HomogeneousPoissonPointProcess.structure_factor"><a class="viewcode-back" href="../../point_processes.html#structure_factor.point_processes.HomogeneousPoissonPointProcess.structure_factor">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">structure_factor</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Evaluate the structure factor :math:`S(k)=1` of the homogeneous Poisson process.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            k (numpy.ndarray): Array of size :math:`n \times d`, where :math:`d` is the ambient dimension and :math:`n` the number of points where the structure factor is evaluated. Since the homogeneous Poisson process is isotropic, a vector of size :math:`n` corresponding to the norm of the :math:`n` points can also be passed. Defaults to None.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float or numpy.ndarray: ``1.0`` if ``k=None``, otherwise a vector of size :math:`n` with entries equal to ``1.0``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="mf">1.0</span>
+        <span class="k">if</span> <span class="n">k</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">val</span>
+
+        <span class="k">assert</span> <span class="n">k</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&lt;=</span> <span class="mi">2</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">k</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">val</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="HomogeneousPoissonPointProcess.generate_sample"><a class="viewcode-back" href="../../point_processes.html#structure_factor.point_processes.HomogeneousPoissonPointProcess.generate_sample">[docs]</a>    <span class="k">def</span> <span class="nf">generate_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">window</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Generate an exact sample of the point process restricted to the :math:`d` dimensional `window`.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            window (:py:class:`~structure_factor.spatial_windows.AbstractSpatialWindow`): :math:`d`-dimensional observation window where the points will be generated.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            numpy.ndarray: Array of size :math:`n \times d`, where :math:`n` is the number of points forming the sample.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            .. plot:: code/point_processes/poisson_sample.py</span>
+<span class="sd">                :include-source: True</span>
+<span class="sd">                :caption:</span>
+<span class="sd">                :alt: code/point_processes/poisson_sample.py</span>
+<span class="sd">                :align: center</span>
+
+<span class="sd">        .. seealso::</span>
+
+<span class="sd">            - :py:mod:`~structure_factor.spatial_windows`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">window</span><span class="p">,</span> <span class="n">AbstractSpatialWindow</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;window argument must be an AbstractSpatialWindow&quot;</span><span class="p">)</span>
+
+        <span class="n">rng</span> <span class="o">=</span> <span class="n">get_random_number_generator</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+        <span class="n">rho</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">intensity</span>
+        <span class="n">nb_points</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">poisson</span><span class="p">(</span><span class="n">rho</span> <span class="o">*</span> <span class="n">window</span><span class="o">.</span><span class="n">volume</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">window</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">nb_points</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">rng</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="HomogeneousPoissonPointProcess.generate_point_pattern"><a class="viewcode-back" href="../../point_processes.html#structure_factor.point_processes.HomogeneousPoissonPointProcess.generate_point_pattern">[docs]</a>    <span class="k">def</span> <span class="nf">generate_point_pattern</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">window</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Generate a :py:class:`~structure_factor.point_pattern.PointPattern` of the point process.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            window (:py:class:`~structure_factor.spatial_windows.AbstractSpatialWindow`): Observation window.</span>
+<span class="sd">            seed (int, optional): Seed to initialize the points generator. Defaults to None.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            :py:class:`~structure_factor.point_pattern.PointPattern`:Object of type :py:class:`~structure_factor.point_pattern.PointPattern` containing a realization of the point process, the observation window, and (optionally) the intensity of the point process (see :py:class:`~structure_factor.point_pattern.PointPattern`).</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            .. plot:: code/point_processes/poisson_pp.py</span>
+<span class="sd">                :include-source: True</span>
+<span class="sd">                :caption:</span>
+<span class="sd">                :alt: code/point_processes/poisson_pp.py</span>
+<span class="sd">                :align: center</span>
+
+<span class="sd">        .. seealso::</span>
+
+<span class="sd">            - :py:mod:`~structure_factor.spatial_windows`</span>
+<span class="sd">            - :py:class:`~structure_factor.point_pattern.PointPattern`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_sample</span><span class="p">(</span><span class="n">window</span><span class="o">=</span><span class="n">window</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span>
+        <span class="n">point_pattern</span> <span class="o">=</span> <span class="n">PointPattern</span><span class="p">(</span>
+            <span class="n">points</span><span class="o">=</span><span class="n">points</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="n">window</span><span class="p">,</span> <span class="n">intensity</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">intensity</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">point_pattern</span></div></div>
+
+
+<div class="viewcode-block" id="ThomasPointProcess"><a class="viewcode-back" href="../../point_processes.html#structure_factor.point_processes.ThomasPointProcess">[docs]</a><span class="k">class</span> <span class="nc">ThomasPointProcess</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Homogeneous Thomas point process with Gaussian clusters.</span>
+
+<span class="sd">    .. todo::</span>
+
+<span class="sd">        list attributes</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ThomasPointProcess.__init__"><a class="viewcode-back" href="../../point_processes.html#structure_factor.point_processes.ThomasPointProcess.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kappa</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">sigma</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a homogeneous Thomas point process.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            kappa (float): Mean number of clusters per unit volume. Intensity of the parent Poisson point process.</span>
+
+<span class="sd">            mu (float): Mean number of points per clusters. Mean of the child Gaussian distribution.</span>
+
+<span class="sd">            sigma (float): Standard deviation of the child Gaussian distribution.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kappa</span> <span class="o">=</span> <span class="n">kappa</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mu</span> <span class="o">=</span> <span class="n">mu</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sigma</span> <span class="o">=</span> <span class="n">sigma</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_intensity</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">kappa</span> <span class="o">*</span> <span class="n">mu</span><span class="p">)</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">intensity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the intensity :math:`\rho_1(r) = \kappa \mu` of the Thomas point process.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: Constant intensity.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_intensity</span>
+
+<div class="viewcode-block" id="ThomasPointProcess.pair_correlation_function"><a class="viewcode-back" href="../../point_processes.html#structure_factor.point_processes.ThomasPointProcess.pair_correlation_function">[docs]</a>    <span class="k">def</span> <span class="nf">pair_correlation_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r_norm</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Evaluate the pair correlation function of the Thomas point process.</span>
+
+<span class="sd">        .. math::</span>
+
+<span class="sd">            g(r)</span>
+<span class="sd">            = 1</span>
+<span class="sd">            + \kappa (4 \pi \sigma^2)^{d / 2} \exp(-\frac{1}{4\sigma^2} \|r\|^2)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            r_norm (numpy.ndarray): Vector of size :math:`n` corresponding to the norm of the :math:`n` points where the pair correlation function is evaluated.</span>
+
+<span class="sd">            d (int, optional): Ambient dimension. Defaults to 2.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            numpy.ndarray: Vector of size :math:`n` containing the evaluation of the pair correlation function.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kappa</span>
+        <span class="n">s2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sigma</span> <span class="o">**</span> <span class="mi">2</span>
+
+        <span class="n">pcf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">r_norm</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="o">-</span><span class="mi">4</span> <span class="o">*</span> <span class="n">s2</span><span class="p">))</span>
+        <span class="n">pcf</span> <span class="o">/=</span> <span class="n">k</span> <span class="o">*</span> <span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">s2</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="n">d</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">pcf</span> <span class="o">+=</span> <span class="mf">1.0</span>
+        <span class="k">return</span> <span class="n">pcf</span></div>
+
+<div class="viewcode-block" id="ThomasPointProcess.structure_factor"><a class="viewcode-back" href="../../point_processes.html#structure_factor.point_processes.ThomasPointProcess.structure_factor">[docs]</a>    <span class="k">def</span> <span class="nf">structure_factor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k_norm</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Evaluate the structure factor of the Thomas point process.</span>
+
+<span class="sd">        .. math::</span>
+
+<span class="sd">            S(k) = 1 + \mu \exp(- \sigma^2 * \|k\|^2).</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            k_norm (numpy.ndarray): Vector of size :math:`n` corresponding to the norm of the :math:`n` points where the structure factor is evaluated.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            numpy.ndarray: Vector of size :math:`n` containing the evaluation of the structure factor.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">mu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mu</span>
+        <span class="n">s2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sigma</span> <span class="o">**</span> <span class="mi">2</span>
+        <span class="k">return</span> <span class="mf">1.0</span> <span class="o">+</span> <span class="n">mu</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">s2</span> <span class="o">*</span> <span class="n">k_norm</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ThomasPointProcess.generate_sample"><a class="viewcode-back" href="../../point_processes.html#structure_factor.point_processes.ThomasPointProcess.generate_sample">[docs]</a>    <span class="k">def</span> <span class="nf">generate_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">window</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Generate an exact sample from the corresponding :py:class:`~structure_factor.thomas_process.ThomasPointProcess` restricted to the :math:`d` dimensional `window`.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            window (:py:class:`~structure_factor.spatial_windows.AbstractSpatialWindow`): :math:`d`-dimensional observation window where the points will be generated.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            numpy.ndarray: Array of size :math:`n \times d`, where :math:`n` is the number of points forming the sample.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            .. plot:: code/point_processes/thomas_sample.py</span>
+<span class="sd">                :include-source: True</span>
+<span class="sd">                :caption:</span>
+<span class="sd">                :alt: code/point_processes/thomas_sample.py</span>
+<span class="sd">                :align: center</span>
+
+<span class="sd">        .. seealso::</span>
+
+<span class="sd">            - :py:mod:`~structure_factor.spatial_windows`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">window</span><span class="p">,</span> <span class="n">AbstractSpatialWindow</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;window argument must be an AbstractSpatialWindow&quot;</span><span class="p">)</span>
+
+        <span class="n">rng</span> <span class="o">=</span> <span class="n">get_random_number_generator</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+
+        <span class="n">tol</span> <span class="o">=</span> <span class="mi">6</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">sigma</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">window</span><span class="p">,</span> <span class="n">BoxWindow</span><span class="p">):</span>
+            <span class="n">extended_bounds</span> <span class="o">=</span> <span class="n">window</span><span class="o">.</span><span class="n">bounds</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="n">tol</span><span class="p">,</span> <span class="o">+</span><span class="n">tol</span><span class="p">])</span>
+            <span class="n">extended_window</span> <span class="o">=</span> <span class="n">BoxWindow</span><span class="p">(</span><span class="n">extended_bounds</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">window</span><span class="p">,</span> <span class="n">BallWindow</span><span class="p">):</span>
+            <span class="n">exented_radius</span> <span class="o">=</span> <span class="n">window</span><span class="o">.</span><span class="n">radius</span> <span class="o">+</span> <span class="n">tol</span>
+            <span class="n">extended_window</span> <span class="o">=</span> <span class="n">BallWindow</span><span class="p">(</span><span class="n">window</span><span class="o">.</span><span class="n">center</span><span class="p">,</span> <span class="n">exented_radius</span><span class="p">)</span>
+
+        <span class="n">pp</span> <span class="o">=</span> <span class="n">HomogeneousPoissonPointProcess</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kappa</span><span class="p">)</span>
+        <span class="n">centers</span> <span class="o">=</span> <span class="n">pp</span><span class="o">.</span><span class="n">generate_sample</span><span class="p">(</span><span class="n">extended_window</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">rng</span><span class="p">)</span>
+        <span class="n">n_per_cluster</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">poisson</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mu</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">centers</span><span class="p">))</span>
+
+        <span class="n">d</span> <span class="o">=</span> <span class="n">window</span><span class="o">.</span><span class="n">dimension</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sigma</span>
+        <span class="n">points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">d</span><span class="p">))</span> <span class="k">for</span> <span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">centers</span><span class="p">,</span> <span class="n">n_per_cluster</span><span class="p">)]</span>
+        <span class="p">)</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">window</span><span class="o">.</span><span class="n">indicator_function</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">points</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="ThomasPointProcess.generate_point_pattern"><a class="viewcode-back" href="../../point_processes.html#structure_factor.point_processes.ThomasPointProcess.generate_point_pattern">[docs]</a>    <span class="k">def</span> <span class="nf">generate_point_pattern</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">window</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Generate a :py:class:`~structure_factor.point_pattern.PointPattern` of the point process.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            window (:py:class:`~structure_factor.spatial_windows.AbstractSpatialWindow`): Observation window.</span>
+
+<span class="sd">            seed (int, optional): Seed to initialize the points generator. Defaults to None.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            :py:class:`~structure_factor.point_pattern.PointPattern`:Object of type :py:class:`~structure_factor.point_pattern.PointPattern` containing a realization of the point process, the observation window, and (optionally) the intensity of the point process (see :py:class:`~structure_factor.point_pattern.PointPattern`).</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            .. plot:: code/point_processes/thomas_pp.py</span>
+<span class="sd">                :include-source: True</span>
+<span class="sd">                :caption:</span>
+<span class="sd">                :alt: code/point_processes/thomas_pp.py</span>
+<span class="sd">                :align: center</span>
+
+<span class="sd">        .. seealso::</span>
+
+<span class="sd">            - :py:mod:`~structure_factor.spatial_windows`</span>
+<span class="sd">            - :py:class:`~structure_factor.point_pattern.PointPattern`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_sample</span><span class="p">(</span><span class="n">window</span><span class="o">=</span><span class="n">window</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span>
+        <span class="n">point_pattern</span> <span class="o">=</span> <span class="n">PointPattern</span><span class="p">(</span>
+            <span class="n">points</span><span class="o">=</span><span class="n">points</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="n">window</span><span class="p">,</span> <span class="n">intensity</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">intensity</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">point_pattern</span></div></div>
+
+
+<div class="viewcode-block" id="GinibrePointProcess"><a class="viewcode-back" href="../../point_processes.html#structure_factor.point_processes.GinibrePointProcess">[docs]</a><span class="k">class</span> <span class="nc">GinibrePointProcess</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Ginibre point process corresponds to the complex eigenvalues of a standard complex Gaussian matrix.</span>
+
+<span class="sd">    .. todo::</span>
+
+<span class="sd">        list attributes</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="GinibrePointProcess.__init__"><a class="viewcode-back" href="../../point_processes.html#structure_factor.point_processes.GinibrePointProcess.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_intensity</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">intensity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the intensity :math:`\rho_1(r) = \frac{1}{\pi}` of the Ginibre point process.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: Constant intensity.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_intensity</span>
+
+<div class="viewcode-block" id="GinibrePointProcess.pair_correlation_function"><a class="viewcode-back" href="../../point_processes.html#structure_factor.point_processes.GinibrePointProcess.pair_correlation_function">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">pair_correlation_function</span><span class="p">(</span><span class="n">r_norm</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Evaluate the pair correlation function of the Ginibre point process.</span>
+
+<span class="sd">        .. math::</span>
+
+<span class="sd">            g(r) = 1 - \exp(- \|r\|^2)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            r_norm (numpy.ndarray): Vector of size :math:`n` corresponding to the norm of the :math:`n` points where the pair correlation function is evaluated.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            numpy.ndarray: Vector of size :math:`n` containing the evaluation of the pair correlation function.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">r_norm</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="GinibrePointProcess.structure_factor"><a class="viewcode-back" href="../../point_processes.html#structure_factor.point_processes.GinibrePointProcess.structure_factor">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">structure_factor</span><span class="p">(</span><span class="n">k_norm</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Evaluate the structure factor of the Ginibre point process.</span>
+
+<span class="sd">        .. math::</span>
+
+<span class="sd">            S(k) = 1 - \exp(- \frac{1}{4} \|k\|^2).</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            k_norm (numpy.ndarray): Vector of size :math:`n` corresponding to the norm of the :math:`n` points where the structure factor is evaluated.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            numpy.ndarray: Vector of size :math:`n` containing the evaluation of the structure factor.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mf">0.25</span> <span class="o">*</span> <span class="p">(</span><span class="n">k_norm</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="GinibrePointProcess.generate_sample"><a class="viewcode-back" href="../../point_processes.html#structure_factor.point_processes.GinibrePointProcess.generate_sample">[docs]</a>    <span class="k">def</span> <span class="nf">generate_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">window</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Generate a sample of the Ginibre point process made of ``n`` points, inside the observation ``window``.</span>
+
+<span class="sd">        This is done by computing the eigenvalues of a random matrix :math:`G` of size :math:`n \times n`, filled with i.i.d. standard complex Gaussian variables, i.e.,</span>
+
+<span class="sd">        .. math::</span>
+
+<span class="sd">            G_{ij} = \frac{1}{\sqrt{2}} (X_{ij} + \mathbf{i} Y_{ij}).</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            window (:py:class:`~structure_factor.spatial_windows.BallWindow`): :math:`2`-dimensional centered ball window where the points will be generated.</span>
+
+<span class="sd">            n (int, optional): Number of points of the output sample. If ``n`` is None (default), it is set to the integer part of :math:`\rho |W| = \frac{1}{\pi} |W|`. Defaults to None.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            numpy.ndarray: Array of size :math:`n \times 2`, representing the :math:`n` points forming the sample.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            .. plot:: code/point_processes/ginibre_sample.py</span>
+<span class="sd">                :include-source: True</span>
+<span class="sd">                :caption:</span>
+<span class="sd">                :alt: code/point_processes/ginibre_sample.py</span>
+<span class="sd">                :align: center</span>
+
+<span class="sd">        .. seealso::</span>
+
+<span class="sd">            - :py:class:`~structure_factor.spatial_windows.BallWindow`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">window</span><span class="p">,</span> <span class="n">BallWindow</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The window should be a 2-d centered BallWindow.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">window</span><span class="o">.</span><span class="n">dimension</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The window should be a 2-d window.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">equal</span><span class="p">(</span><span class="n">window</span><span class="o">.</span><span class="n">center</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The window should be a centered window.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">n</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">n</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">window</span><span class="o">.</span><span class="n">volume</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">intensity</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
+
+        <span class="n">rng</span> <span class="o">=</span> <span class="n">get_random_number_generator</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+
+        <span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">complex</span><span class="p">)</span>
+        <span class="n">A</span><span class="o">.</span><span class="n">real</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">))</span>
+        <span class="n">A</span><span class="o">.</span><span class="n">imag</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">))</span>
+        <span class="n">eigvals</span> <span class="o">=</span> <span class="n">la</span><span class="o">.</span><span class="n">eigvals</span><span class="p">(</span><span class="n">A</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">2.0</span><span class="p">)</span>
+
+        <span class="n">points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">eigvals</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="n">eigvals</span><span class="o">.</span><span class="n">imag</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">window</span><span class="o">.</span><span class="n">indicator_function</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">points</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="GinibrePointProcess.generate_point_pattern"><a class="viewcode-back" href="../../point_processes.html#structure_factor.point_processes.GinibrePointProcess.generate_point_pattern">[docs]</a>    <span class="k">def</span> <span class="nf">generate_point_pattern</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">window</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Generate a :math:`2`-dimensional :py:class:`~structure_factor.point_pattern.PointPattern` of the point process, with a centered :py:class:`~structure_factor.spatial_windows.BallWindow`.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            window (:py:class:`~structure_factor.spatial_windows.AbstractSpatialWindow`): :math:`2`-dimensional observation centered :py:class:`~structure_factor.spatial_windows.BallWindow`.</span>
+
+<span class="sd">            n (int, optional): Number of points of the output sample. If ``n`` is None (default), it is set to the integer part of :math:`\rho |W| = \frac{1}{\pi} |W|`. Defaults to None.</span>
+
+<span class="sd">            seed (int, optional): Seed to initialize the points generator. Defaults to None.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            :py:class:`~structure_factor.point_pattern.PointPattern`:Object of type :py:class:`~structure_factor.point_pattern.PointPattern` containing a realization of the point process, the observation window, and (optionally) the intensity of the point process (see :py:class:`~structure_factor.point_pattern.PointPattern`).</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            .. plot:: code/point_processes/ginibre_pp.py</span>
+<span class="sd">                :include-source: True</span>
+<span class="sd">                :caption:</span>
+<span class="sd">                :alt: code/point_processes/ginibre_pp.py</span>
+<span class="sd">                :align: center</span>
+
+<span class="sd">        .. seealso::</span>
+
+<span class="sd">            - :py:class:`~structure_factor.spatial_windows.BallWindow`</span>
+<span class="sd">            - :py:class:`~structure_factor.point_pattern.PointPattern`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_sample</span><span class="p">(</span><span class="n">window</span><span class="o">=</span><span class="n">window</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">n</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span>
+        <span class="n">point_pattern</span> <span class="o">=</span> <span class="n">PointPattern</span><span class="p">(</span>
+            <span class="n">points</span><span class="o">=</span><span class="n">points</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="n">window</span><span class="p">,</span> <span class="n">intensity</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">intensity</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">point_pattern</span></div></div>
+
+
+<div class="viewcode-block" id="mutual_nearest_neighbor_matching"><a class="viewcode-back" href="../../point_processes.html#structure_factor.point_processes.mutual_nearest_neighbor_matching">[docs]</a><span class="k">def</span> <span class="nf">mutual_nearest_neighbor_matching</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="o">**</span><span class="n">KDTree_params</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Match the set of points ``X`` with a subset of points from ``Y`` based on mutual nearest neighbor matching :cite:`KlaLasYog20`. It is assumed that :math:`|X| \leq |Y|` and that each point in ``X``, resp. ``Y``, can have only one nearest neighbor in ``Y``, resp. ``X``.</span>
+
+<span class="sd">    The matching routine involves successive 1-nearest neighbor sweeps performed by `scipy.spatial.KDTree &lt;https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.KDTree.html&gt;`_ with the euclidean distance.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        X (numpy.ndarray): Array of size (m, d) collecting points to be matched with a subset of points from ``Y``.</span>
+<span class="sd">        Y (numpy.ndarray): Array of size (n, d) of points satisfying :math:`m \leq n`.</span>
+
+<span class="sd">    Keyword Args:</span>
+<span class="sd">        see (documentation): keyword arguments of `scipy.spatial.KDTree &lt;https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.KDTree.html&gt;`_.</span>
+
+<span class="sd">    .. note::</span>
+
+<span class="sd">        The ``boxsize`` keyword argument can be used **only** when points belong to a box :math:`\prod_{i=1}^{d} [0, L_i)` (upper boundary excluded). It allows to consider periodic boundaries, i.e., the toroidal distance is used for searching for nearest neighbors.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        numpy.ndarray: vector of indices ``matches`` such that ``X[i]`` is matched to ``Y[matches[i]]``.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        .. plot:: code/point_processes/kly_matching.py</span>
+<span class="sd">            :include-source: True</span>
+<span class="sd">            :caption: KLY  matching</span>
+<span class="sd">            :alt: code/point_processes/kly_matching.py</span>
+<span class="sd">            :align: center</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="n">Y</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;X and Y must be 2d numpy arrays with respective size (m, d) and (n, d), where d is the ambient dimension.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">Y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;The sets of points represented by X and Y must satisfy |X| &lt;= |Y|.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="n">m</span><span class="p">,</span> <span class="n">n</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">Y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">idx_X_unmatched</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+    <span class="n">idx_Y_unmatched</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+    <span class="n">matches</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>  <span class="c1"># at most |X| nearest neighbor sweeps are performed</span>
+
+        <span class="n">X_</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">idx_X_unmatched</span><span class="p">]</span>
+        <span class="n">Y_</span> <span class="o">=</span> <span class="n">Y</span><span class="p">[</span><span class="n">idx_Y_unmatched</span><span class="p">]</span>
+
+        <span class="n">knn</span> <span class="o">=</span> <span class="n">KDTree</span><span class="p">(</span><span class="n">Y_</span><span class="p">,</span> <span class="o">**</span><span class="n">KDTree_params</span><span class="p">)</span>
+        <span class="n">X_to_Y</span> <span class="o">=</span> <span class="n">knn</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">X_</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mi">2</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># p=2, i.e., euclidean distance</span>
+
+        <span class="n">knn</span> <span class="o">=</span> <span class="n">KDTree</span><span class="p">(</span><span class="n">X_</span><span class="p">,</span> <span class="o">**</span><span class="n">KDTree_params</span><span class="p">)</span>
+        <span class="n">Y_to_X</span> <span class="o">=</span> <span class="n">knn</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">Y_</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mi">2</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="n">identity</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">idx_X_unmatched</span><span class="p">))</span>
+        <span class="n">mask_X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">equal</span><span class="p">(</span><span class="n">Y_to_X</span><span class="p">[</span><span class="n">X_to_Y</span><span class="p">],</span> <span class="n">identity</span><span class="p">)</span>
+
+        <span class="n">matches</span><span class="p">[</span><span class="n">idx_X_unmatched</span><span class="p">[</span><span class="n">mask_X</span><span class="p">]]</span> <span class="o">=</span> <span class="n">idx_Y_unmatched</span><span class="p">[</span><span class="n">X_to_Y</span><span class="p">[</span><span class="n">mask_X</span><span class="p">]]</span>
+
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">mask_X</span><span class="p">):</span>  <span class="c1"># all points from X got matched</span>
+            <span class="k">break</span>
+
+        <span class="n">idx_X_unmatched</span> <span class="o">=</span> <span class="n">idx_X_unmatched</span><span class="p">[</span><span class="o">~</span><span class="n">mask_X</span><span class="p">]</span>
+        <span class="n">mask_Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">idx_Y_unmatched</span><span class="p">),</span> <span class="kc">True</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+        <span class="n">mask_Y</span><span class="p">[</span><span class="n">X_to_Y</span><span class="p">[</span><span class="n">mask_X</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">idx_Y_unmatched</span> <span class="o">=</span> <span class="n">idx_Y_unmatched</span><span class="p">[</span><span class="n">mask_Y</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">matches</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021-2022, Diala Hawat.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

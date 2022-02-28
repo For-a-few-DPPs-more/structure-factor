@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Point processes &mdash; structure-factor  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/proof.css" type="text/css" />
+      <link rel="stylesheet" href="_static/plot_directive.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/proof.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Pair correlation function" href="pair_correlation_function.html" />
+    <link rel="prev" title="Transforms" href="transforms.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> structure-factor
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="structure_factor.html">Structure factor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hyperuniformity.html">Hyperuniformity</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tapered_estimators.html">Tapered estimators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tapered_estimators_isotropic.html">Tapered isotropic estimators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tapers.html">Tapers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transforms.html">Transforms</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Point processes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pair_correlation_function.html">Pair correlation function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="point_pattern.html">Point pattern</a></li>
+<li class="toctree-l1"><a class="reference internal" href="spatial_windows.html">Spatial windows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plotting.html">Plotting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bibliography/index.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">structure-factor</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Point processes</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/For-a-few-DPPs-more/structure-factor/blob/main/docs/point_processes.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-structure_factor.point_processes">
+<span id="id1"></span><span id="point-processes"></span><h1>Point processes<a class="headerlink" href="#module-structure_factor.point_processes" title="Permalink to this headline"></a></h1>
+<p>Collection of point processes at related properties, e.g., intensity, pair correlation function, structure factor.</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#structure_factor.point_processes.HomogeneousPoissonPointProcess" title="structure_factor.point_processes.HomogeneousPoissonPointProcess"><code class="xref py py-class docutils literal notranslate"><span class="pre">HomogeneousPoissonPointProcess</span></code></a>: The homogeneous Poisson point process.</p></li>
+<li><p><a class="reference internal" href="#structure_factor.point_processes.ThomasPointProcess" title="structure_factor.point_processes.ThomasPointProcess"><code class="xref py py-class docutils literal notranslate"><span class="pre">ThomasPointProcess</span></code></a>: The Thomas point process.</p></li>
+<li><p><a class="reference internal" href="#structure_factor.point_processes.GinibrePointProcess" title="structure_factor.point_processes.GinibrePointProcess"><code class="xref py py-class docutils literal notranslate"><span class="pre">GinibrePointProcess</span></code></a>: The Ginibre point process.</p></li>
+</ul>
+<dl class="py class">
+<dt class="sig sig-object py" id="structure_factor.point_processes.HomogeneousPoissonPointProcess">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">structure_factor.point_processes.</span></span><span class="sig-name descname"><span class="pre">HomogeneousPoissonPointProcess</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">intensity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/point_processes.html#HomogeneousPoissonPointProcess"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.point_processes.HomogeneousPoissonPointProcess" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p><a class="reference external" href="https://en.wikipedia.org/wiki/Poisson_point_process#Spatial_Poisson_point_process">Homogeneous Poisson point process</a>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="structure_factor.point_processes.HomogeneousPoissonPointProcess.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">intensity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/point_processes.html#HomogeneousPoissonPointProcess.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.point_processes.HomogeneousPoissonPointProcess.__init__" title="Permalink to this definition"></a></dt>
+<dd><p>Create a <a class="reference external" href="https://en.wikipedia.org/wiki/Poisson_point_process#Spatial_Poisson_point_process">homogeneous Poisson point process</a> with prescribed (positive) <code class="docutils literal notranslate"><span class="pre">intensity</span></code> parameter.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>intensity</strong> (<em>float</em><em>, </em><em>optional</em>) – intensity of the homogeneous Poisson point process. Defaults to 1.0.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="structure_factor.point_processes.HomogeneousPoissonPointProcess.intensity">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">intensity</span></span><a class="headerlink" href="#structure_factor.point_processes.HomogeneousPoissonPointProcess.intensity" title="Permalink to this definition"></a></dt>
+<dd><p>Return the intensity <span class="math notranslate nohighlight">\(\rho_1(r) = \rho\)</span> of the homogeneous Poisson point process.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Constant intensity.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="structure_factor.point_processes.HomogeneousPoissonPointProcess.pair_correlation_function">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pair_correlation_function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/point_processes.html#HomogeneousPoissonPointProcess.pair_correlation_function"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.point_processes.HomogeneousPoissonPointProcess.pair_correlation_function" title="Permalink to this definition"></a></dt>
+<dd><p>Evaluate the pair correlation function <span class="math notranslate nohighlight">\(g(r)=1\)</span> of the homogeneous Poisson process.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>r</strong> (<em>numpy.ndarray</em>) – Array of size <span class="math notranslate nohighlight">\(n \times d\)</span>, where <span class="math notranslate nohighlight">\(d\)</span> is the ambient dimension and <span class="math notranslate nohighlight">\(n\)</span> the number of points where the pair correlation function is evaluated. Since the homogeneous Poisson process is isotropic, a vector of size <span class="math notranslate nohighlight">\(n\)</span> corresponding to the norm of the <span class="math notranslate nohighlight">\(n\)</span> points can also be passed. Defaults to None.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">1.0</span></code> if <code class="docutils literal notranslate"><span class="pre">r=None</span></code>, otherwise a vector of size <span class="math notranslate nohighlight">\(n\)</span> with entries equal to <code class="docutils literal notranslate"><span class="pre">1.0</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float or numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="structure_factor.point_processes.HomogeneousPoissonPointProcess.structure_factor">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">structure_factor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/point_processes.html#HomogeneousPoissonPointProcess.structure_factor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.point_processes.HomogeneousPoissonPointProcess.structure_factor" title="Permalink to this definition"></a></dt>
+<dd><p>Evaluate the structure factor <span class="math notranslate nohighlight">\(S(k)=1\)</span> of the homogeneous Poisson process.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>k</strong> (<em>numpy.ndarray</em>) – Array of size <span class="math notranslate nohighlight">\(n \times d\)</span>, where <span class="math notranslate nohighlight">\(d\)</span> is the ambient dimension and <span class="math notranslate nohighlight">\(n\)</span> the number of points where the structure factor is evaluated. Since the homogeneous Poisson process is isotropic, a vector of size <span class="math notranslate nohighlight">\(n\)</span> corresponding to the norm of the <span class="math notranslate nohighlight">\(n\)</span> points can also be passed. Defaults to None.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">1.0</span></code> if <code class="docutils literal notranslate"><span class="pre">k=None</span></code>, otherwise a vector of size <span class="math notranslate nohighlight">\(n\)</span> with entries equal to <code class="docutils literal notranslate"><span class="pre">1.0</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float or numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="structure_factor.point_processes.HomogeneousPoissonPointProcess.generate_sample">
+<span class="sig-name descname"><span class="pre">generate_sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">window</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/point_processes.html#HomogeneousPoissonPointProcess.generate_sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.point_processes.HomogeneousPoissonPointProcess.generate_sample" title="Permalink to this definition"></a></dt>
+<dd><p>Generate an exact sample of the point process restricted to the <span class="math notranslate nohighlight">\(d\)</span> dimensional <cite>window</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>window</strong> (<a class="reference internal" href="spatial_windows.html#structure_factor.spatial_windows.AbstractSpatialWindow" title="structure_factor.spatial_windows.AbstractSpatialWindow"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractSpatialWindow</span></code></a>) – <span class="math notranslate nohighlight">\(d\)</span>-dimensional observation window where the points will be generated.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Array of size <span class="math notranslate nohighlight">\(n \times d\)</span>, where <span class="math notranslate nohighlight">\(n\)</span> is the number of points forming the sample.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="kn">from</span> <span class="nn">structure_factor.point_processes</span> <span class="kn">import</span> <span class="n">HomogeneousPoissonPointProcess</span>
+<span class="kn">from</span> <span class="nn">structure_factor.spatial_windows</span> <span class="kn">import</span> <span class="n">BoxWindow</span>
+
+<span class="n">point_process</span> <span class="o">=</span> <span class="n">HomogeneousPoissonPointProcess</span><span class="p">(</span><span class="n">intensity</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
+
+<span class="n">window</span> <span class="o">=</span> <span class="n">BoxWindow</span><span class="p">([[</span><span class="o">-</span><span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mi">6</span><span class="p">,</span> <span class="mi">10</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">]])</span>
+<span class="n">points</span> <span class="o">=</span> <span class="n">point_process</span><span class="o">.</span><span class="n">generate_sample</span><span class="p">(</span><span class="n">window</span><span class="p">)</span>
+
+<span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">axes</span><span class="p">(</span><span class="n">projection</span><span class="o">=</span><span class="s2">&quot;3d&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">scatter3D</span><span class="p">(</span><span class="n">points</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">points</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">points</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">(</span><span class="n">pad</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>(<a class="reference external" href="./code/point_processes/poisson_sample.py">Source code</a>, <a class="reference external" href="./code/point_processes/poisson_sample.png">png</a>, <a class="reference external" href="./code/point_processes/poisson_sample.hires.png">hires.png</a>, <a class="reference external" href="./code/point_processes/poisson_sample.pdf">pdf</a>)</p>
+<figure class="align-center">
+<img alt="code/point_processes/poisson_sample.py" class="plot-directive" src="_images/poisson_sample.png" />
+</figure>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="spatial_windows.html#module-structure_factor.spatial_windows" title="structure_factor.spatial_windows"><code class="xref py py-mod docutils literal notranslate"><span class="pre">spatial_windows</span></code></a></p></li>
+</ul>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="structure_factor.point_processes.HomogeneousPoissonPointProcess.generate_point_pattern">
+<span class="sig-name descname"><span class="pre">generate_point_pattern</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">window</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/point_processes.html#HomogeneousPoissonPointProcess.generate_point_pattern"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.point_processes.HomogeneousPoissonPointProcess.generate_point_pattern" title="Permalink to this definition"></a></dt>
+<dd><p>Generate a <a class="reference internal" href="point_pattern.html#structure_factor.point_pattern.PointPattern" title="structure_factor.point_pattern.PointPattern"><code class="xref py py-class docutils literal notranslate"><span class="pre">PointPattern</span></code></a> of the point process.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>window</strong> (<a class="reference internal" href="spatial_windows.html#structure_factor.spatial_windows.AbstractSpatialWindow" title="structure_factor.spatial_windows.AbstractSpatialWindow"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractSpatialWindow</span></code></a>) – Observation window.</p></li>
+<li><p><strong>seed</strong> (<em>int</em><em>, </em><em>optional</em>) – Seed to initialize the points generator. Defaults to None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Object of type <a class="reference internal" href="point_pattern.html#structure_factor.point_pattern.PointPattern" title="structure_factor.point_pattern.PointPattern"><code class="xref py py-class docutils literal notranslate"><span class="pre">PointPattern</span></code></a> containing a realization of the point process, the observation window, and (optionally) the intensity of the point process (see <a class="reference internal" href="point_pattern.html#structure_factor.point_pattern.PointPattern" title="structure_factor.point_pattern.PointPattern"><code class="xref py py-class docutils literal notranslate"><span class="pre">PointPattern</span></code></a>).</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="point_pattern.html#structure_factor.point_pattern.PointPattern" title="structure_factor.point_pattern.PointPattern"><code class="xref py py-class docutils literal notranslate"><span class="pre">PointPattern</span></code></a></p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="kn">from</span> <span class="nn">structure_factor.point_processes</span> <span class="kn">import</span> <span class="n">HomogeneousPoissonPointProcess</span>
+<span class="kn">from</span> <span class="nn">structure_factor.spatial_windows</span> <span class="kn">import</span> <span class="n">BoxWindow</span>
+
+<span class="n">point_process</span> <span class="o">=</span> <span class="n">HomogeneousPoissonPointProcess</span><span class="p">(</span><span class="n">intensity</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+
+<span class="n">window</span> <span class="o">=</span> <span class="n">BoxWindow</span><span class="p">(</span><span class="n">bounds</span><span class="o">=</span><span class="p">[[</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">]])</span>
+<span class="n">point_pattern</span> <span class="o">=</span> <span class="n">point_process</span><span class="o">.</span><span class="n">generate_point_pattern</span><span class="p">(</span><span class="n">window</span><span class="o">=</span><span class="n">window</span><span class="p">)</span>
+
+<span class="n">ax</span> <span class="o">=</span> <span class="n">point_pattern</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s2">&quot;equal&quot;</span><span class="p">,</span> <span class="s2">&quot;box&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">(</span><span class="n">pad</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>(<a class="reference external" href="./code/point_processes/poisson_pp.py">Source code</a>, <a class="reference external" href="./code/point_processes/poisson_pp.png">png</a>, <a class="reference external" href="./code/point_processes/poisson_pp.hires.png">hires.png</a>, <a class="reference external" href="./code/point_processes/poisson_pp.pdf">pdf</a>)</p>
+<figure class="align-center">
+<img alt="code/point_processes/poisson_pp.py" class="plot-directive" src="_images/poisson_pp.png" />
+</figure>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="spatial_windows.html#module-structure_factor.spatial_windows" title="structure_factor.spatial_windows"><code class="xref py py-mod docutils literal notranslate"><span class="pre">spatial_windows</span></code></a></p></li>
+<li><p><a class="reference internal" href="point_pattern.html#structure_factor.point_pattern.PointPattern" title="structure_factor.point_pattern.PointPattern"><code class="xref py py-class docutils literal notranslate"><span class="pre">PointPattern</span></code></a></p></li>
+</ul>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="structure_factor.point_processes.ThomasPointProcess">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">structure_factor.point_processes.</span></span><span class="sig-name descname"><span class="pre">ThomasPointProcess</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kappa</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mu</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/point_processes.html#ThomasPointProcess"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.point_processes.ThomasPointProcess" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Homogeneous Thomas point process with Gaussian clusters.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="structure_factor.point_processes.ThomasPointProcess.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kappa</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mu</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/point_processes.html#ThomasPointProcess.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.point_processes.ThomasPointProcess.__init__" title="Permalink to this definition"></a></dt>
+<dd><p>Create a homogeneous Thomas point process.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>kappa</strong> (<em>float</em>) – Mean number of clusters per unit volume. Intensity of the parent Poisson point process.</p></li>
+<li><p><strong>mu</strong> (<em>float</em>) – Mean number of points per clusters. Mean of the child Gaussian distribution.</p></li>
+<li><p><strong>sigma</strong> (<em>float</em>) – Standard deviation of the child Gaussian distribution.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="structure_factor.point_processes.ThomasPointProcess.intensity">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">intensity</span></span><a class="headerlink" href="#structure_factor.point_processes.ThomasPointProcess.intensity" title="Permalink to this definition"></a></dt>
+<dd><p>Return the intensity <span class="math notranslate nohighlight">\(\rho_1(r) = \kappa \mu\)</span> of the Thomas point process.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Constant intensity.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="structure_factor.point_processes.ThomasPointProcess.pair_correlation_function">
+<span class="sig-name descname"><span class="pre">pair_correlation_function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r_norm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">d</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/point_processes.html#ThomasPointProcess.pair_correlation_function"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.point_processes.ThomasPointProcess.pair_correlation_function" title="Permalink to this definition"></a></dt>
+<dd><p>Evaluate the pair correlation function of the Thomas point process.</p>
+<div class="math notranslate nohighlight">
+\[g(r)
+= 1
++ \kappa (4 \pi \sigma^2)^{d / 2} \exp(-\frac{1}{4\sigma^2} \|r\|^2)\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>r_norm</strong> (<em>numpy.ndarray</em>) – Vector of size <span class="math notranslate nohighlight">\(n\)</span> corresponding to the norm of the <span class="math notranslate nohighlight">\(n\)</span> points where the pair correlation function is evaluated.</p></li>
+<li><p><strong>d</strong> (<em>int</em><em>, </em><em>optional</em>) – Ambient dimension. Defaults to 2.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Vector of size <span class="math notranslate nohighlight">\(n\)</span> containing the evaluation of the pair correlation function.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="structure_factor.point_processes.ThomasPointProcess.structure_factor">
+<span class="sig-name descname"><span class="pre">structure_factor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k_norm</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/point_processes.html#ThomasPointProcess.structure_factor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.point_processes.ThomasPointProcess.structure_factor" title="Permalink to this definition"></a></dt>
+<dd><p>Evaluate the structure factor of the Thomas point process.</p>
+<div class="math notranslate nohighlight">
+\[S(k) = 1 + \mu \exp(- \sigma^2 * \|k\|^2).\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>k_norm</strong> (<em>numpy.ndarray</em>) – Vector of size <span class="math notranslate nohighlight">\(n\)</span> corresponding to the norm of the <span class="math notranslate nohighlight">\(n\)</span> points where the structure factor is evaluated.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Vector of size <span class="math notranslate nohighlight">\(n\)</span> containing the evaluation of the structure factor.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="structure_factor.point_processes.ThomasPointProcess.generate_sample">
+<span class="sig-name descname"><span class="pre">generate_sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">window</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/point_processes.html#ThomasPointProcess.generate_sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.point_processes.ThomasPointProcess.generate_sample" title="Permalink to this definition"></a></dt>
+<dd><p>Generate an exact sample from the corresponding <code class="xref py py-class docutils literal notranslate"><span class="pre">ThomasPointProcess</span></code> restricted to the <span class="math notranslate nohighlight">\(d\)</span> dimensional <cite>window</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>window</strong> (<a class="reference internal" href="spatial_windows.html#structure_factor.spatial_windows.AbstractSpatialWindow" title="structure_factor.spatial_windows.AbstractSpatialWindow"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractSpatialWindow</span></code></a>) – <span class="math notranslate nohighlight">\(d\)</span>-dimensional observation window where the points will be generated.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Array of size <span class="math notranslate nohighlight">\(n \times d\)</span>, where <span class="math notranslate nohighlight">\(n\)</span> is the number of points forming the sample.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">structure_factor.point_processes</span> <span class="kn">import</span> <span class="n">ThomasPointProcess</span>
+<span class="kn">from</span> <span class="nn">structure_factor.spatial_windows</span> <span class="kn">import</span> <span class="n">BallWindow</span>
+
+<span class="n">point_process</span> <span class="o">=</span> <span class="n">ThomasPointProcess</span><span class="p">(</span><span class="n">kappa</span><span class="o">=</span><span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">),</span> <span class="n">mu</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">window</span> <span class="o">=</span> <span class="n">BallWindow</span><span class="p">(</span><span class="n">center</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">radius</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">points</span> <span class="o">=</span> <span class="n">point_process</span><span class="o">.</span><span class="n">generate_sample</span><span class="p">(</span><span class="n">window</span><span class="o">=</span><span class="n">window</span><span class="p">)</span>
+
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">axes</span><span class="p">(</span><span class="n">projection</span><span class="o">=</span><span class="s2">&quot;3d&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">scatter3D</span><span class="p">(</span><span class="n">points</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">points</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">points</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">c</span><span class="o">=</span><span class="n">points</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">])</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">(</span><span class="n">pad</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>(<a class="reference external" href="./code/point_processes/thomas_sample.py">Source code</a>, <a class="reference external" href="./code/point_processes/thomas_sample.png">png</a>, <a class="reference external" href="./code/point_processes/thomas_sample.hires.png">hires.png</a>, <a class="reference external" href="./code/point_processes/thomas_sample.pdf">pdf</a>)</p>
+<figure class="align-center">
+<img alt="code/point_processes/thomas_sample.py" class="plot-directive" src="_images/thomas_sample.png" />
+</figure>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="spatial_windows.html#module-structure_factor.spatial_windows" title="structure_factor.spatial_windows"><code class="xref py py-mod docutils literal notranslate"><span class="pre">spatial_windows</span></code></a></p></li>
+</ul>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="structure_factor.point_processes.ThomasPointProcess.generate_point_pattern">
+<span class="sig-name descname"><span class="pre">generate_point_pattern</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">window</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/point_processes.html#ThomasPointProcess.generate_point_pattern"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.point_processes.ThomasPointProcess.generate_point_pattern" title="Permalink to this definition"></a></dt>
+<dd><p>Generate a <a class="reference internal" href="point_pattern.html#structure_factor.point_pattern.PointPattern" title="structure_factor.point_pattern.PointPattern"><code class="xref py py-class docutils literal notranslate"><span class="pre">PointPattern</span></code></a> of the point process.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>window</strong> (<a class="reference internal" href="spatial_windows.html#structure_factor.spatial_windows.AbstractSpatialWindow" title="structure_factor.spatial_windows.AbstractSpatialWindow"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractSpatialWindow</span></code></a>) – Observation window.</p></li>
+<li><p><strong>seed</strong> (<em>int</em><em>, </em><em>optional</em>) – Seed to initialize the points generator. Defaults to None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Object of type <a class="reference internal" href="point_pattern.html#structure_factor.point_pattern.PointPattern" title="structure_factor.point_pattern.PointPattern"><code class="xref py py-class docutils literal notranslate"><span class="pre">PointPattern</span></code></a> containing a realization of the point process, the observation window, and (optionally) the intensity of the point process (see <a class="reference internal" href="point_pattern.html#structure_factor.point_pattern.PointPattern" title="structure_factor.point_pattern.PointPattern"><code class="xref py py-class docutils literal notranslate"><span class="pre">PointPattern</span></code></a>).</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="point_pattern.html#structure_factor.point_pattern.PointPattern" title="structure_factor.point_pattern.PointPattern"><code class="xref py py-class docutils literal notranslate"><span class="pre">PointPattern</span></code></a></p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">structure_factor.point_processes</span> <span class="kn">import</span> <span class="n">ThomasPointProcess</span>
+<span class="kn">from</span> <span class="nn">structure_factor.spatial_windows</span> <span class="kn">import</span> <span class="n">BallWindow</span>
+
+<span class="n">point_process</span> <span class="o">=</span> <span class="n">ThomasPointProcess</span><span class="p">(</span><span class="n">kappa</span><span class="o">=</span><span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">20</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">),</span> <span class="n">mu</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">window</span> <span class="o">=</span> <span class="n">BallWindow</span><span class="p">(</span><span class="n">center</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">20</span><span class="p">,</span> <span class="o">-</span><span class="mi">10</span><span class="p">],</span> <span class="n">radius</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+<span class="n">point_pattern</span> <span class="o">=</span> <span class="n">point_process</span><span class="o">.</span><span class="n">generate_point_pattern</span><span class="p">(</span><span class="n">window</span><span class="o">=</span><span class="n">window</span><span class="p">)</span>
+
+<span class="n">ax</span> <span class="o">=</span> <span class="n">point_pattern</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s2">&quot;equal&quot;</span><span class="p">,</span> <span class="s2">&quot;box&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">(</span><span class="n">pad</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>(<a class="reference external" href="./code/point_processes/thomas_pp.py">Source code</a>, <a class="reference external" href="./code/point_processes/thomas_pp.png">png</a>, <a class="reference external" href="./code/point_processes/thomas_pp.hires.png">hires.png</a>, <a class="reference external" href="./code/point_processes/thomas_pp.pdf">pdf</a>)</p>
+<figure class="align-center">
+<img alt="code/point_processes/thomas_pp.py" class="plot-directive" src="_images/thomas_pp.png" />
+</figure>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="spatial_windows.html#module-structure_factor.spatial_windows" title="structure_factor.spatial_windows"><code class="xref py py-mod docutils literal notranslate"><span class="pre">spatial_windows</span></code></a></p></li>
+<li><p><a class="reference internal" href="point_pattern.html#structure_factor.point_pattern.PointPattern" title="structure_factor.point_pattern.PointPattern"><code class="xref py py-class docutils literal notranslate"><span class="pre">PointPattern</span></code></a></p></li>
+</ul>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="structure_factor.point_processes.GinibrePointProcess">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">structure_factor.point_processes.</span></span><span class="sig-name descname"><span class="pre">GinibrePointProcess</span></span><a class="reference internal" href="_modules/structure_factor/point_processes.html#GinibrePointProcess"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.point_processes.GinibrePointProcess" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Ginibre point process corresponds to the complex eigenvalues of a standard complex Gaussian matrix.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="structure_factor.point_processes.GinibrePointProcess.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/point_processes.html#GinibrePointProcess.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.point_processes.GinibrePointProcess.__init__" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="structure_factor.point_processes.GinibrePointProcess.intensity">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">intensity</span></span><a class="headerlink" href="#structure_factor.point_processes.GinibrePointProcess.intensity" title="Permalink to this definition"></a></dt>
+<dd><p>Return the intensity <span class="math notranslate nohighlight">\(\rho_1(r) = \frac{1}{\pi}\)</span> of the Ginibre point process.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Constant intensity.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="structure_factor.point_processes.GinibrePointProcess.pair_correlation_function">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pair_correlation_function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r_norm</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/point_processes.html#GinibrePointProcess.pair_correlation_function"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.point_processes.GinibrePointProcess.pair_correlation_function" title="Permalink to this definition"></a></dt>
+<dd><p>Evaluate the pair correlation function of the Ginibre point process.</p>
+<div class="math notranslate nohighlight">
+\[g(r) = 1 - \exp(- \|r\|^2)\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>r_norm</strong> (<em>numpy.ndarray</em>) – Vector of size <span class="math notranslate nohighlight">\(n\)</span> corresponding to the norm of the <span class="math notranslate nohighlight">\(n\)</span> points where the pair correlation function is evaluated.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Vector of size <span class="math notranslate nohighlight">\(n\)</span> containing the evaluation of the pair correlation function.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="structure_factor.point_processes.GinibrePointProcess.structure_factor">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">structure_factor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k_norm</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/point_processes.html#GinibrePointProcess.structure_factor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.point_processes.GinibrePointProcess.structure_factor" title="Permalink to this definition"></a></dt>
+<dd><p>Evaluate the structure factor of the Ginibre point process.</p>
+<div class="math notranslate nohighlight">
+\[S(k) = 1 - \exp(- \frac{1}{4} \|k\|^2).\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>k_norm</strong> (<em>numpy.ndarray</em>) – Vector of size <span class="math notranslate nohighlight">\(n\)</span> corresponding to the norm of the <span class="math notranslate nohighlight">\(n\)</span> points where the structure factor is evaluated.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Vector of size <span class="math notranslate nohighlight">\(n\)</span> containing the evaluation of the structure factor.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="structure_factor.point_processes.GinibrePointProcess.generate_sample">
+<span class="sig-name descname"><span class="pre">generate_sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">window</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/point_processes.html#GinibrePointProcess.generate_sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.point_processes.GinibrePointProcess.generate_sample" title="Permalink to this definition"></a></dt>
+<dd><p>Generate a sample of the Ginibre point process made of <code class="docutils literal notranslate"><span class="pre">n</span></code> points, inside the observation <code class="docutils literal notranslate"><span class="pre">window</span></code>.</p>
+<p>This is done by computing the eigenvalues of a random matrix <span class="math notranslate nohighlight">\(G\)</span> of size <span class="math notranslate nohighlight">\(n \times n\)</span>, filled with i.i.d. standard complex Gaussian variables, i.e.,</p>
+<div class="math notranslate nohighlight">
+\[G_{ij} = \frac{1}{\sqrt{2}} (X_{ij} + \mathbf{i} Y_{ij}).\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>window</strong> (<a class="reference internal" href="spatial_windows.html#structure_factor.spatial_windows.BallWindow" title="structure_factor.spatial_windows.BallWindow"><code class="xref py py-class docutils literal notranslate"><span class="pre">BallWindow</span></code></a>) – <span class="math notranslate nohighlight">\(2\)</span>-dimensional centered ball window where the points will be generated.</p></li>
+<li><p><strong>n</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of points of the output sample. If <code class="docutils literal notranslate"><span class="pre">n</span></code> is None (default), it is set to the integer part of <span class="math notranslate nohighlight">\(\rho |W| = \frac{1}{\pi} |W|\)</span>. Defaults to None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Array of size <span class="math notranslate nohighlight">\(n \times 2\)</span>, representing the <span class="math notranslate nohighlight">\(n\)</span> points forming the sample.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="kn">from</span> <span class="nn">structure_factor.point_processes</span> <span class="kn">import</span> <span class="n">GinibrePointProcess</span>
+<span class="kn">from</span> <span class="nn">structure_factor.spatial_windows</span> <span class="kn">import</span> <span class="n">BallWindow</span>
+
+<span class="n">point_process</span> <span class="o">=</span> <span class="n">GinibrePointProcess</span><span class="p">()</span>
+
+<span class="n">window</span> <span class="o">=</span> <span class="n">BallWindow</span><span class="p">(</span><span class="n">center</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">radius</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+<span class="n">points</span> <span class="o">=</span> <span class="n">point_process</span><span class="o">.</span><span class="n">generate_sample</span><span class="p">(</span><span class="n">window</span><span class="o">=</span><span class="n">window</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">points</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">points</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;b.&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s2">&quot;equal&quot;</span><span class="p">,</span> <span class="s2">&quot;box&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">(</span><span class="n">pad</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>(<a class="reference external" href="./code/point_processes/ginibre_sample.py">Source code</a>, <a class="reference external" href="./code/point_processes/ginibre_sample.png">png</a>, <a class="reference external" href="./code/point_processes/ginibre_sample.hires.png">hires.png</a>, <a class="reference external" href="./code/point_processes/ginibre_sample.pdf">pdf</a>)</p>
+<figure class="align-center">
+<img alt="code/point_processes/ginibre_sample.py" class="plot-directive" src="_images/ginibre_sample.png" />
+</figure>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="spatial_windows.html#structure_factor.spatial_windows.BallWindow" title="structure_factor.spatial_windows.BallWindow"><code class="xref py py-class docutils literal notranslate"><span class="pre">BallWindow</span></code></a></p></li>
+</ul>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="structure_factor.point_processes.GinibrePointProcess.generate_point_pattern">
+<span class="sig-name descname"><span class="pre">generate_point_pattern</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">window</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/point_processes.html#GinibrePointProcess.generate_point_pattern"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.point_processes.GinibrePointProcess.generate_point_pattern" title="Permalink to this definition"></a></dt>
+<dd><p>Generate a <span class="math notranslate nohighlight">\(2\)</span>-dimensional <a class="reference internal" href="point_pattern.html#structure_factor.point_pattern.PointPattern" title="structure_factor.point_pattern.PointPattern"><code class="xref py py-class docutils literal notranslate"><span class="pre">PointPattern</span></code></a> of the point process, with a centered <a class="reference internal" href="spatial_windows.html#structure_factor.spatial_windows.BallWindow" title="structure_factor.spatial_windows.BallWindow"><code class="xref py py-class docutils literal notranslate"><span class="pre">BallWindow</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>window</strong> (<a class="reference internal" href="spatial_windows.html#structure_factor.spatial_windows.AbstractSpatialWindow" title="structure_factor.spatial_windows.AbstractSpatialWindow"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractSpatialWindow</span></code></a>) – <span class="math notranslate nohighlight">\(2\)</span>-dimensional observation centered <a class="reference internal" href="spatial_windows.html#structure_factor.spatial_windows.BallWindow" title="structure_factor.spatial_windows.BallWindow"><code class="xref py py-class docutils literal notranslate"><span class="pre">BallWindow</span></code></a>.</p></li>
+<li><p><strong>n</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of points of the output sample. If <code class="docutils literal notranslate"><span class="pre">n</span></code> is None (default), it is set to the integer part of <span class="math notranslate nohighlight">\(\rho |W| = \frac{1}{\pi} |W|\)</span>. Defaults to None.</p></li>
+<li><p><strong>seed</strong> (<em>int</em><em>, </em><em>optional</em>) – Seed to initialize the points generator. Defaults to None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Object of type <a class="reference internal" href="point_pattern.html#structure_factor.point_pattern.PointPattern" title="structure_factor.point_pattern.PointPattern"><code class="xref py py-class docutils literal notranslate"><span class="pre">PointPattern</span></code></a> containing a realization of the point process, the observation window, and (optionally) the intensity of the point process (see <a class="reference internal" href="point_pattern.html#structure_factor.point_pattern.PointPattern" title="structure_factor.point_pattern.PointPattern"><code class="xref py py-class docutils literal notranslate"><span class="pre">PointPattern</span></code></a>).</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="point_pattern.html#structure_factor.point_pattern.PointPattern" title="structure_factor.point_pattern.PointPattern"><code class="xref py py-class docutils literal notranslate"><span class="pre">PointPattern</span></code></a></p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="kn">from</span> <span class="nn">structure_factor</span> <span class="kn">import</span> <span class="n">point_pattern</span>
+<span class="kn">from</span> <span class="nn">structure_factor.point_processes</span> <span class="kn">import</span> <span class="n">GinibrePointProcess</span>
+<span class="kn">from</span> <span class="nn">structure_factor.spatial_windows</span> <span class="kn">import</span> <span class="n">BallWindow</span>
+
+<span class="n">window</span> <span class="o">=</span> <span class="n">BallWindow</span><span class="p">(</span><span class="n">center</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">radius</span><span class="o">=</span><span class="mi">40</span><span class="p">)</span>
+<span class="n">point_process</span> <span class="o">=</span> <span class="n">GinibrePointProcess</span><span class="p">()</span>
+<span class="n">point_pattern</span> <span class="o">=</span> <span class="n">point_process</span><span class="o">.</span><span class="n">generate_point_pattern</span><span class="p">(</span><span class="n">window</span><span class="o">=</span><span class="n">window</span><span class="p">)</span>
+
+<span class="n">ax</span> <span class="o">=</span> <span class="n">point_pattern</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s2">&quot;equal&quot;</span><span class="p">,</span> <span class="s2">&quot;box&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">(</span><span class="n">pad</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>(<a class="reference external" href="./code/point_processes/ginibre_pp.py">Source code</a>, <a class="reference external" href="./code/point_processes/ginibre_pp.png">png</a>, <a class="reference external" href="./code/point_processes/ginibre_pp.hires.png">hires.png</a>, <a class="reference external" href="./code/point_processes/ginibre_pp.pdf">pdf</a>)</p>
+<figure class="align-center">
+<img alt="code/point_processes/ginibre_pp.py" class="plot-directive" src="_images/ginibre_pp.png" />
+</figure>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="spatial_windows.html#structure_factor.spatial_windows.BallWindow" title="structure_factor.spatial_windows.BallWindow"><code class="xref py py-class docutils literal notranslate"><span class="pre">BallWindow</span></code></a></p></li>
+<li><p><a class="reference internal" href="point_pattern.html#structure_factor.point_pattern.PointPattern" title="structure_factor.point_pattern.PointPattern"><code class="xref py py-class docutils literal notranslate"><span class="pre">PointPattern</span></code></a></p></li>
+</ul>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="structure_factor.point_processes.mutual_nearest_neighbor_matching">
+<span class="sig-prename descclassname"><span class="pre">structure_factor.point_processes.</span></span><span class="sig-name descname"><span class="pre">mutual_nearest_neighbor_matching</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">KDTree_params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/point_processes.html#mutual_nearest_neighbor_matching"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.point_processes.mutual_nearest_neighbor_matching" title="Permalink to this definition"></a></dt>
+<dd><p>Match the set of points <code class="docutils literal notranslate"><span class="pre">X</span></code> with a subset of points from <code class="docutils literal notranslate"><span class="pre">Y</span></code> based on mutual nearest neighbor matching <span id="id6">[<a class="reference internal" href="bibliography/index.html#id6" title="M.A. Klatt, G. Last, and D. Yogeshwaran. Hyperuniform and rigid stable matchings. ArXiv:1810.00265v3, 2020. URL: https://arxiv.org/abs/1810.00265.">KLY20</a>]</span>. It is assumed that <span class="math notranslate nohighlight">\(|X| \leq |Y|\)</span> and that each point in <code class="docutils literal notranslate"><span class="pre">X</span></code>, resp. <code class="docutils literal notranslate"><span class="pre">Y</span></code>, can have only one nearest neighbor in <code class="docutils literal notranslate"><span class="pre">Y</span></code>, resp. <code class="docutils literal notranslate"><span class="pre">X</span></code>.</p>
+<p>The matching routine involves successive 1-nearest neighbor sweeps performed by <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.KDTree.html">scipy.spatial.KDTree</a> with the euclidean distance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<em>numpy.ndarray</em>) – Array of size (m, d) collecting points to be matched with a subset of points from <code class="docutils literal notranslate"><span class="pre">Y</span></code>.</p></li>
+<li><p><strong>Y</strong> (<em>numpy.ndarray</em>) – Array of size (n, d) of points satisfying <span class="math notranslate nohighlight">\(m \leq n\)</span>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><p><strong>see</strong> (<em>documentation</em>) – <p>keyword arguments of <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.KDTree.html">scipy.spatial.KDTree</a>.</p>
+</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">boxsize</span></code> keyword argument can be used <strong>only</strong> when points belong to a box <span class="math notranslate nohighlight">\(\prod_{i=1}^{d} [0, L_i)\)</span> (upper boundary excluded). It allows to consider periodic boundaries, i.e., the toroidal distance is used for searching for nearest neighbors.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>vector of indices <code class="docutils literal notranslate"><span class="pre">matches</span></code> such that <code class="docutils literal notranslate"><span class="pre">X[i]</span></code> is matched to <code class="docutils literal notranslate"><span class="pre">Y[matches[i]]</span></code>.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>numpy.ndarray</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">matplotlib.collections</span> <span class="kn">import</span> <span class="n">LineCollection</span>
+
+<span class="kn">from</span> <span class="nn">structure_factor.point_processes</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">HomogeneousPoissonPointProcess</span><span class="p">,</span>
+    <span class="n">mutual_nearest_neighbor_matching</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">structure_factor.spatial_windows</span> <span class="kn">import</span> <span class="n">BoxWindow</span>
+<span class="kn">from</span> <span class="nn">structure_factor.utils</span> <span class="kn">import</span> <span class="n">meshgrid_to_column_matrix</span>
+
+<span class="n">seed</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+
+<span class="n">bounds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">20</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">20</span><span class="p">]])</span>
+<span class="n">window</span> <span class="o">=</span> <span class="n">BoxWindow</span><span class="p">(</span><span class="n">bounds</span><span class="p">)</span>
+
+<span class="c1"># Perturbed grid</span>
+<span class="n">stepsize</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="n">ranges</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="n">stepsize</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">window</span><span class="o">.</span><span class="n">bounds</span><span class="p">)</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">meshgrid_to_column_matrix</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="o">*</span><span class="n">ranges</span><span class="p">))</span>
+<span class="n">shift</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">stepsize</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">window</span><span class="o">.</span><span class="n">dimension</span><span class="p">)</span>
+<span class="n">X</span> <span class="o">+=</span> <span class="n">shift</span>
+
+<span class="c1"># Poisson</span>
+<span class="n">rho</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">stepsize</span> <span class="o">**</span> <span class="n">window</span><span class="o">.</span><span class="n">dimension</span><span class="p">)</span>
+<span class="n">ppp</span> <span class="o">=</span> <span class="n">HomogeneousPoissonPointProcess</span><span class="p">(</span><span class="n">rho</span><span class="p">)</span>
+<span class="n">Y</span> <span class="o">=</span> <span class="n">ppp</span><span class="o">.</span><span class="n">generate_sample</span><span class="p">(</span><span class="n">window</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">rng</span><span class="p">)</span>
+
+<span class="c1"># Mutual nearest neighbor matching</span>
+<span class="c1"># To trigger periodic boundary conditions use boxsize</span>
+<span class="c1"># make sure points belong to Π_i [0, L_i) (upper bound excluded)</span>
+<span class="n">boxsize</span> <span class="o">=</span> <span class="n">window</span><span class="o">.</span><span class="n">bounds</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>  <span class="c1"># default None</span>
+<span class="n">matching</span> <span class="o">=</span> <span class="n">mutual_nearest_neighbor_matching</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">boxsize</span><span class="o">=</span><span class="n">boxsize</span><span class="p">)</span>
+
+<span class="c1"># Display</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">X</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">s</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;blue&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;grid&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">Y</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">Y</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">s</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;orange&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Poisson&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">Y</span><span class="p">[</span><span class="n">matching</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">Y</span><span class="p">[</span><span class="n">matching</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">s</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Poisson matched&quot;</span><span class="p">)</span>
+<span class="n">lines</span> <span class="o">=</span> <span class="n">LineCollection</span><span class="p">(</span>
+    <span class="p">[[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">[</span><span class="n">matching</span><span class="p">])],</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;matchings&quot;</span>
+<span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">add_collection</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s2">&quot;equal&quot;</span><span class="p">,</span> <span class="s2">&quot;box&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">(</span><span class="n">pad</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>(<a class="reference external" href="./code/point_processes/kly_matching.py">Source code</a>, <a class="reference external" href="./code/point_processes/kly_matching.png">png</a>, <a class="reference external" href="./code/point_processes/kly_matching.hires.png">hires.png</a>, <a class="reference external" href="./code/point_processes/kly_matching.pdf">pdf</a>)</p>
+<figure class="align-center" id="id8">
+<img alt="code/point_processes/kly_matching.py" class="plot-directive" src="_images/kly_matching.png" />
+<figcaption>
+<p><span class="caption-text">KLY  matching</span><a class="headerlink" href="#id8" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="transforms.html" class="btn btn-neutral float-left" title="Transforms" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="pair_correlation_function.html" class="btn btn-neutral float-right" title="Pair correlation function" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021-2022, Diala Hawat.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

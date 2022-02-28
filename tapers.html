@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tapers &mdash; structure-factor  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/proof.css" type="text/css" />
+      <link rel="stylesheet" href="_static/plot_directive.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/proof.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Transforms" href="transforms.html" />
+    <link rel="prev" title="Tapered isotropic estimators" href="tapered_estimators_isotropic.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> structure-factor
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="structure_factor.html">Structure factor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hyperuniformity.html">Hyperuniformity</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tapered_estimators.html">Tapered estimators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tapered_estimators_isotropic.html">Tapered isotropic estimators</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Tapers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transforms.html">Transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="point_processes.html">Point processes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pair_correlation_function.html">Pair correlation function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="point_pattern.html">Point pattern</a></li>
+<li class="toctree-l1"><a class="reference internal" href="spatial_windows.html">Spatial windows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plotting.html">Plotting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bibliography/index.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">structure-factor</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Tapers</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/For-a-few-DPPs-more/structure-factor/blob/main/docs/tapers.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="tapers">
+<span id="id1"></span><h1>Tapers<a class="headerlink" href="#tapers" title="Permalink to this headline"></a></h1>
+<span class="target" id="module-structure_factor.tapers"></span><p>Collection of classes representing tapers (also called tapering functions or window functions). Such tapers must have two methods.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">.taper(x,</span> <span class="pre">window)</span></code> corresponding to the tapering function <span class="math notranslate nohighlight">\(t(x, W)\)</span>,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.ft_taper(k,</span> <span class="pre">window)</span></code> corresponding to the Fourier transform <span class="math notranslate nohighlight">\(\mathcal{F}[t(\cdot, W)](k)\)</span> of the tapering function.</p></li>
+</ul>
+<p>These tapers satisfy some conditions listed in <span id="id2">[<a class="reference internal" href="bibliography/index.html#id4" title="D. Hawat, G. Gautier, R. Bardenet, and R. Lachieze-Rey. Exploring the hyperuniformity of point processes with python. ():, Feb 2022. URL:, doi:.">HGBLR22</a>]</span> (Sections 3.1, 4.3).</p>
+<p class="rubric">Example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyTaper</span><span class="p">:</span>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">taper</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">window</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;A taper is a function supported on a window.&quot;&quot;&quot;</span>
+        <span class="n">taper</span> <span class="o">=</span> <span class="o">...</span>  <span class="c1"># The taper</span>
+        <span class="k">return</span> <span class="n">taper</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">ft_taper</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">window</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The Fourier transform of the taper.&quot;&quot;&quot;</span>
+        <span class="n">ft</span> <span class="o">=</span> <span class="o">...</span>  <span class="c1"># Fourier transform of the taper</span>
+        <span class="k">return</span> <span class="n">ft</span>
+</pre></div>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="structure_factor.tapers.BartlettTaper">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">structure_factor.tapers.</span></span><span class="sig-name descname"><span class="pre">BartlettTaper</span></span><a class="reference internal" href="_modules/structure_factor/tapers.html#BartlettTaper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.tapers.BartlettTaper" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class representing the Bartlett tapering function.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="structure_factor.tapers.BartlettTaper.taper">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">taper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/tapers.html#BartlettTaper.taper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.tapers.BartlettTaper.taper" title="Permalink to this definition"></a></dt>
+<dd><p>Evaluate the Bartlett taper <span class="math notranslate nohighlight">\(t(x, W)\)</span> at <code class="docutils literal notranslate"><span class="pre">x</span></code> given the rectangular <code class="docutils literal notranslate"><span class="pre">window</span></code> <span class="math notranslate nohighlight">\(W\)</span>.</p>
+<div class="math notranslate nohighlight">
+\[t(x, W) = \frac{1}{\sqrt{|W|}} 1_{x \in W}.\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>numpy.ndarray</em>) – Array of size <span class="math notranslate nohighlight">\(n \times d\)</span>, where <span class="math notranslate nohighlight">\(d\)</span> is the ambient dimension and <span class="math notranslate nohighlight">\(n\)</span> the number of points where the tapering function is evaluated.</p></li>
+<li><p><strong>window</strong> (<a class="reference internal" href="spatial_windows.html#structure_factor.spatial_windows.BoxWindow" title="structure_factor.spatial_windows.BoxWindow"><code class="xref py py-class docutils literal notranslate"><span class="pre">BoxWindow</span></code></a>) – <span class="math notranslate nohighlight">\(d\)</span>-dimensional rectangular window <span class="math notranslate nohighlight">\(W\)</span>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>evaluation of the taper <span class="math notranslate nohighlight">\(t(x, W)\)</span>.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="structure_factor.tapers.BartlettTaper.ft_taper">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ft_taper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/tapers.html#BartlettTaper.ft_taper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.tapers.BartlettTaper.ft_taper" title="Permalink to this definition"></a></dt>
+<dd><p>Evaluate the Fourier transform <span class="math notranslate nohighlight">\(F[t(\cdot, W)](k)\)</span> of the taper <span class="math notranslate nohighlight">\(t\)</span> (<a class="reference internal" href="#structure_factor.tapers.BartlettTaper.taper" title="structure_factor.tapers.BartlettTaper.taper"><code class="xref py py-meth docutils literal notranslate"><span class="pre">taper()</span></code></a>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>k</strong> (<em>numpy.ndarray</em>) – Array of size <span class="math notranslate nohighlight">\(n \times d\)</span>, where <span class="math notranslate nohighlight">\(d\)</span> is the ambient dimension and <span class="math notranslate nohighlight">\(n\)</span> the number of points where the Fourier transform is evaluated.</p></li>
+<li><p><strong>window</strong> (<a class="reference internal" href="spatial_windows.html#structure_factor.spatial_windows.BoxWindow" title="structure_factor.spatial_windows.BoxWindow"><code class="xref py py-class docutils literal notranslate"><span class="pre">BoxWindow</span></code></a>) – <span class="math notranslate nohighlight">\(d\)</span>-dimensional rectangular window <span class="math notranslate nohighlight">\(W\)</span>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Evaluation of the Fourier transform at <code class="docutils literal notranslate"><span class="pre">k</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="structure_factor.tapers.SineTaper">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">structure_factor.tapers.</span></span><span class="sig-name descname"><span class="pre">SineTaper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/tapers.html#SineTaper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.tapers.SineTaper" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class representing the sine tapering function.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="structure_factor.tapers.SineTaper.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/tapers.html#SineTaper.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.tapers.SineTaper.__init__" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="structure_factor.tapers.SineTaper.taper">
+<span class="sig-name descname"><span class="pre">taper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/tapers.html#SineTaper.taper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.tapers.SineTaper.taper" title="Permalink to this definition"></a></dt>
+<dd><p>Evalute the sine taper <span class="math notranslate nohighlight">\(t(x, W)\)</span> indexed by <code class="xref py py-attr docutils literal notranslate"><span class="pre">p</span></code> at <code class="docutils literal notranslate"><span class="pre">x</span></code> given the rectangular <code class="docutils literal notranslate"><span class="pre">window</span></code> <span class="math notranslate nohighlight">\(W\)</span>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>numpy.ndarray</em>) – Array of size <span class="math notranslate nohighlight">\(n \times d\)</span>, where <span class="math notranslate nohighlight">\(d\)</span> is the ambient dimension and <span class="math notranslate nohighlight">\(n\)</span> the number of points where the tapering function is evaluated.</p></li>
+<li><p><strong>window</strong> (<a class="reference internal" href="spatial_windows.html#structure_factor.spatial_windows.BoxWindow" title="structure_factor.spatial_windows.BoxWindow"><code class="xref py py-class docutils literal notranslate"><span class="pre">BoxWindow</span></code></a>) – <span class="math notranslate nohighlight">\(d\)</span>-dimensional rectangular window <span class="math notranslate nohighlight">\(W\)</span>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>evaluation of the taper <span class="math notranslate nohighlight">\(t(x, W)\)</span>.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="structure_factor.tapers.SineTaper.ft_taper">
+<span class="sig-name descname"><span class="pre">ft_taper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/tapers.html#SineTaper.ft_taper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.tapers.SineTaper.ft_taper" title="Permalink to this definition"></a></dt>
+<dd><p>Evaluate the Fourier transform <span class="math notranslate nohighlight">\(F[t(\cdot, W)](k)\)</span> of the taper <span class="math notranslate nohighlight">\(t\)</span> (<a class="reference internal" href="#structure_factor.tapers.SineTaper.taper" title="structure_factor.tapers.SineTaper.taper"><code class="xref py py-meth docutils literal notranslate"><span class="pre">taper()</span></code></a>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>k</strong> (<em>numpy.ndarray</em>) – Array of size <span class="math notranslate nohighlight">\(n \times d\)</span>, where <span class="math notranslate nohighlight">\(d\)</span> is the ambient dimension and <span class="math notranslate nohighlight">\(n\)</span> the number of points where the Fourier transform is evaluated.</p></li>
+<li><p><strong>window</strong> (<a class="reference internal" href="spatial_windows.html#structure_factor.spatial_windows.BoxWindow" title="structure_factor.spatial_windows.BoxWindow"><code class="xref py py-class docutils literal notranslate"><span class="pre">BoxWindow</span></code></a>) – <span class="math notranslate nohighlight">\(d\)</span>-dimensional rectangular window <span class="math notranslate nohighlight">\(W\)</span>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Evaluation of the Fourier transform at <code class="docutils literal notranslate"><span class="pre">k</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="structure_factor.tapers.multi_sinetaper_grid">
+<span class="sig-prename descclassname"><span class="pre">structure_factor.tapers.</span></span><span class="sig-name descname"><span class="pre">multi_sinetaper_grid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_component_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/tapers.html#multi_sinetaper_grid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.tapers.multi_sinetaper_grid" title="Permalink to this definition"></a></dt>
+<dd><p>Given a class of taper <cite>taper_p</cite> of parameter <cite>p</cite> of <span class="math notranslate nohighlight">\(\mathbb{R}^d\)</span>, return the list of taper <cite>taper_p(p)</cite> with <span class="math notranslate nohighlight">\(p \in \{1, ..., P\}^d\)</span>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>d</strong> (<em>int</em>) – Space dimension.</p></li>
+<li><p><strong>taper_p</strong> (<em>Class</em>) – Class of taper pf parameter p.</p></li>
+<li><p><strong>p_component_max</strong> (<em>int</em>) – Maximum component of the parameters <span class="math notranslate nohighlight">\(p\)</span> of the family of tapers. Intuitively the number of taper used is <span class="math notranslate nohighlight">\(P=\mathrm{p\_component\_max}^d\)</span>. Used only when <code class="docutils literal notranslate"><span class="pre">tapers=None</span></code>. Defaults to 2.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List of taper <cite>taper_p(p)</cite> with <span class="math notranslate nohighlight">\(p \in \{1, ..., p_component_max\}^d\)</span>.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="tapered_estimators_isotropic.html" class="btn btn-neutral float-left" title="Tapered isotropic estimators" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="transforms.html" class="btn btn-neutral float-right" title="Transforms" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021-2022, Diala Hawat.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

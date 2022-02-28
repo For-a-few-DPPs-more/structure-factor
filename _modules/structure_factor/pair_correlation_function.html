@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>structure_factor.pair_correlation_function &mdash; structure-factor  documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/proof.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/plot_directive.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/proof.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> structure-factor
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../structure_factor.html">Structure factor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../hyperuniformity.html">Hyperuniformity</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tapered_estimators.html">Tapered estimators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tapered_estimators_isotropic.html">Tapered isotropic estimators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tapers.html">Tapers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../transforms.html">Transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../point_processes.html">Point processes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pair_correlation_function.html">Pair correlation function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../point_pattern.html">Point pattern</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../spatial_windows.html">Spatial windows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../utils.html">Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../plotting.html">Plotting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibliography/index.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">structure-factor</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      <li>structure_factor.pair_correlation_function</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for structure_factor.pair_correlation_function</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Collection of functions used to estimate the pair correlation function of an isotropic point process. The underlying routines call the `R` package `spatstat &lt;https://github.com/spatstat/spatstat&gt;`_.</span>
+
+<span class="sd">- :py:meth:`~structure_factor.pair_correlation_function.estimate`: Estimates the pair correlation function.</span>
+
+<span class="sd">- :py:meth:`~structure_factor.pair_correlation_function.interpolate`: Cleans, interpolates, and extrapolates the results of :py:meth:`~structure_factor.pair_correlation_function.estimate`.</span>
+
+<span class="sd">- :py:meth:`~structure_factor.pair_correlation_function.plot`: Plots the results of :py:meth:`~structure_factor.pair_correlation_function.estimate`.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">rpy2.robjects</span> <span class="k">as</span> <span class="nn">robjects</span>
+<span class="kn">from</span> <span class="nn">scipy.interpolate</span> <span class="kn">import</span> <span class="n">interp1d</span>
+<span class="kn">from</span> <span class="nn">spatstat_interface.interface</span> <span class="kn">import</span> <span class="n">SpatstatInterface</span>
+
+<span class="kn">import</span> <span class="nn">structure_factor.plotting</span> <span class="k">as</span> <span class="nn">plots</span>
+<span class="kn">import</span> <span class="nn">structure_factor.utils</span> <span class="k">as</span> <span class="nn">utils</span>
+
+
+<div class="viewcode-block" id="estimate"><a class="viewcode-back" href="../../pair_correlation_function.html#structure_factor.pair_correlation_function.estimate">[docs]</a><span class="k">def</span> <span class="nf">estimate</span><span class="p">(</span><span class="n">point_pattern</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;fv&quot;</span><span class="p">,</span> <span class="n">install_spatstat</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Estimate the pair correlation function (pcf) of a point process encapsulated in ``point_pattern`` (only for stationary isotropic point processes of :math:`\mathbb{R}^2`). The available methods are the methods ``spastat.core.pcf_ppp`` and ``spastat.core.pcf_fv`` of the `R` package `spatstat &lt;https://github.com/spatstat/spatstat&gt;`_.</span>
+
+<span class="sd">    .. warning::</span>
+
+<span class="sd">        This function requires the `R programming language &lt;https://cran.r-project.org/&gt;`_ to be installed on your local machine but, it doesn&#39;t require any knowledge of the programming language R.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        point_pattern (:py:class:`~structure_factor.point_pattern.PointPattern`): Realization of the underlying point process.</span>
+
+<span class="sd">        method (str, optional): Trigger the use of the routine `pcf.ppp &lt;https://www.rdocumentation.org/packages/spatstat/versions/1.64-1/topics/pcf.ppp&gt;`_ or `pcf.fv &lt;https://www.rdocumentation.org/packages/spatstat.core/versions/2.3-1/topics/pcf.fv&gt;`_ according to the value ``&quot;ppp&quot;`` or ``&quot;fv&quot;``. These 2 methods approximate the pair correlation function of a point process from one realization encapsulated in ``point_pattern``. For more details see :cite:`Rbook15`. Defaults to ``&quot;fv&quot;``.</span>
+
+<span class="sd">        install_spatstat (bool, optional): If ``True``, the `R` package `spatstat &lt;https://github.com/spatstat/spatstat&gt;`_  will be automatically updated or installed (if not present) on your local machine, see also `spatstat-interface &lt;https://github.com/For-a-few-DPPs-more/spatstat-interface&gt;`_. Note that this requires the installation of the `R programming language &lt;https://cran.r-project.org/&gt;`_.</span>
+
+<span class="sd">    Keyword Args:</span>
+<span class="sd">        params (dict):</span>
+
+<span class="sd">            - if ``method = &quot;ppp&quot;``</span>
+
+<span class="sd">                - keyword arguments of `spastat.core.pcf.ppp &lt;https://rdrr.io/cran/spatstat.core/man/pcf.ppp.html&gt;`_, ex: r, correction ...</span>
+
+<span class="sd">            - if ``method = &quot;fv&quot;``</span>
+
+<span class="sd">                - **Kest** = dict(keyword arguments of `spastat.core.Kest &lt;https://rdrr.io/github/spatstat/spatstat.core/man/Kest.html&gt;`_), ex: rmax ...</span>
+
+<span class="sd">                - **fv** = dict(keyword arguments of `spastat.core.pcf.fv &lt;https://rdrr.io/cran/spatstat.core/man/pcf.fv.html&gt;`_), ex: method, spar ...</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        pandas.DataFrame: output of `spatstat.core.pcf.ppp &lt;https://www.rdocumentation.org/packages/spatstat.core/versions/2.1-2/topics/pcf.ppp&gt;`_ or `spatsta.core.pcf.fv &lt;https://www.rdocumentation.org/packages/spatstat.core/versions/2.1-2/topics/pcf.fv&gt;`_. The first column of the DataFrame is the set of radii on which the pair correlation function was approximated. The others correspond to the approximated pair correlation function with different edge corrections.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        .. plot:: code/pair_correlation_function/estimate_pcf.py</span>
+<span class="sd">            :include-source: True</span>
+
+<span class="sd">    .. proof:definition::</span>
+
+<span class="sd">        The pair correlation function of a stationary isotropic point process :math:`\mathcal{X}` of intensity :math:`\rho` is the function :math:`g` satisfying (when it exists),</span>
+
+<span class="sd">        .. math::</span>
+
+<span class="sd">            \mathbb{E} \bigg[ \sum_{\mathbf{x}, \mathbf{y} \in \mathcal{X}}^{\neq}</span>
+<span class="sd">            f(\mathbf{x}, \mathbf{y}) \bigg] = \int_{\mathbb{R}^d \times \mathbb{R}^d} f(\mathbf{x}+\mathbf{y}, \mathbf{y})\rho^{2} g(\mathbf{x}) \mathrm{d} \mathbf{x} \mathrm{d}\mathbf{y},</span>
+
+<span class="sd">        for any non-negative smooth function :math:`f` with compact support.</span>
+
+<span class="sd">        For more details, we refer to :cite:`HGBLR:22`, (Section 2).</span>
+
+<span class="sd">    .. seealso::</span>
+
+<span class="sd">        - :py:meth:`~structure_factor.point_pattern.PointPattern`</span>
+<span class="sd">        - :py:meth:`~structure_factor.pair_correlation_function.PairCorrelationFuntcion.interpolate`</span>
+<span class="sd">        - :py:meth:`~structure_factor.pair_correlation_function.PairCorrelationFuntcion.plot`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="n">point_pattern</span><span class="o">.</span><span class="n">dimension</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">method</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;ppp&quot;</span><span class="p">,</span> <span class="s2">&quot;fv&quot;</span><span class="p">)</span>
+
+    <span class="c1"># core, geom and other subpackages are updated if install_spatstat</span>
+    <span class="n">spatstat</span> <span class="o">=</span> <span class="n">SpatstatInterface</span><span class="p">(</span><span class="n">update</span><span class="o">=</span><span class="n">install_spatstat</span><span class="p">)</span>
+    <span class="n">spatstat</span><span class="o">.</span><span class="n">import_package</span><span class="p">(</span><span class="s2">&quot;core&quot;</span><span class="p">,</span> <span class="s2">&quot;geom&quot;</span><span class="p">,</span> <span class="n">update</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="n">point_pattern</span><span class="o">.</span><span class="n">convert_to_spatstat_ppp</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;ppp&quot;</span><span class="p">:</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">r</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+            <span class="n">params</span><span class="p">[</span><span class="s2">&quot;r&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">robjects</span><span class="o">.</span><span class="n">vectors</span><span class="o">.</span><span class="n">FloatVector</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+        <span class="n">pcf</span> <span class="o">=</span> <span class="n">spatstat</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">pcf_ppp</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;fv&quot;</span><span class="p">:</span>
+        <span class="n">params_Kest</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Kest&quot;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">())</span>
+        <span class="n">Kest_r</span> <span class="o">=</span> <span class="n">params_Kest</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">Kest_r</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">Kest_r</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+            <span class="n">params_Kest</span><span class="p">[</span><span class="s2">&quot;r&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">robjects</span><span class="o">.</span><span class="n">vectors</span><span class="o">.</span><span class="n">FloatVector</span><span class="p">(</span><span class="n">Kest_r</span><span class="p">)</span>
+
+        <span class="n">k_ripley</span> <span class="o">=</span> <span class="n">spatstat</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">Kest</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">params_Kest</span><span class="p">)</span>
+        <span class="n">params_fv</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;fv&quot;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">())</span>
+        <span class="n">pcf</span> <span class="o">=</span> <span class="n">spatstat</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">pcf_fv</span><span class="p">(</span><span class="n">k_ripley</span><span class="p">,</span> <span class="o">**</span><span class="n">params_fv</span><span class="p">)</span>
+
+    <span class="n">pcf_pd</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">pcf</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">pcf</span><span class="o">.</span><span class="n">names</span><span class="p">)</span>
+    <span class="n">pcf_pd</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="s2">&quot;theo&quot;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">pcf_pd</span></div>
+
+
+<span class="c1"># todo add test</span>
+<span class="c1"># todo clean up arguments: only drop, nan, posinf, neginf are necessary, clean and replace can be removed</span>
+<div class="viewcode-block" id="interpolate"><a class="viewcode-back" href="../../pair_correlation_function.html#structure_factor.pair_correlation_function.interpolate">[docs]</a><span class="k">def</span> <span class="nf">interpolate</span><span class="p">(</span>
+    <span class="n">r</span><span class="p">,</span>
+    <span class="n">pcf_r</span><span class="p">,</span>
+    <span class="n">clean</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">nan</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+    <span class="n">posinf</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+    <span class="n">neginf</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+    <span class="n">extrapolate_with_one</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">params</span>
+<span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Interpolate and then extrapolate the evaluation ``pcf_r`` of the pair correlation function (pcf) ``r``.</span>
+
+<span class="sd">    The interpolation is performed with `scipy.interpolate.interp1d &lt;https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html&gt;`_.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        r (numpy.ndarray): Vector of radii. Typically, the first column of the output of :py:meth:`~structure_factor.structure_factor.StructureFactor.estimate`.</span>
+
+<span class="sd">        pcf_r (numpy.ndarray): Vector of evaluations of the pair correlation function at ``r``. Typically, a column from the output of :py:meth:`~structure_factor.structure_factor.StructureFactor.estimate`.</span>
+
+<span class="sd">        clean (bool, optional): If ``True``, a method is chosen to deal with possible outliers (nan, posinf, neginf) of ``pcf_r``. The chosen method depends on the parameters ``replace`` and ``drop``. Defaults to True.</span>
+
+<span class="sd">        drop (bool, optional): Cleaning method for ``pcf_r`` active when it&#39;s set to True simultaneously with ``clean=True``. Drops possible nan, posinf, and neginf from ``pcf_r`` with the corresponding values of ``r``.</span>
+
+<span class="sd">        replace (bool, optional): Cleaning method for ``pcf_r`` active when it&#39;s set to True simultaneously with ``clean=True``. Replaces possible nan, posinf, and neginf values of ``pcf_r`` by the values set in the corresponding arguments. Defaults to True.</span>
+
+<span class="sd">        nan (float, optional): When ``replace=True``, replacing value of nan present in ``pcf_r``. Defaults to 0.0.</span>
+
+<span class="sd">        posinf (float, optional): When ``replace=True``, replacing value of +inf values present in ``pcf_r``. Defaults to 0.0.</span>
+
+<span class="sd">        neginf (float, optional): When is ``replace=True``, replacing value of -inf present in ``pcf_r``. Defaults to 0.0.</span>
+
+<span class="sd">        extrapolate_with_one (bool, optional): If True, the discrete approximation vector ``pcf_r`` is first interpolated until the maximal value of ``r``, then the extrapolated values are fixed to 1. If False, the extrapolation method of `scipy.interpolate.interp1d &lt;https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html&gt;`_ is used. Note that, the approximation of the structure factor by Ogata quadrature Hankel transform is usually better when set to True. Defaults to True.</span>
+
+<span class="sd">    Keyword Args:</span>
+<span class="sd">        params (dict): Keyword arguments of the function `scipy.interpolate.interp1d &lt;https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html&gt;`_.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        callable: Interpolated pair correlation function.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        .. plot:: code/pair_correlation_function/interpolate_pcf.py</span>
+<span class="sd">            :include-source: True</span>
+
+<span class="sd">    .. seealso::</span>
+
+<span class="sd">        - :py:meth:`~structure_factor.point_pattern.PointPattern`</span>
+<span class="sd">        - :py:meth:`~structure_factor.pair_correlation_function.PairCorrelationFuntcion.estimate`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;kind&quot;</span><span class="p">,</span> <span class="s2">&quot;cubic&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">clean</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">replace</span><span class="p">:</span>
+            <span class="n">pcf_r</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">set_nan_inf_to_zero</span><span class="p">(</span>
+                <span class="n">pcf_r</span><span class="p">,</span> <span class="n">nan</span><span class="o">=</span><span class="n">nan</span><span class="p">,</span> <span class="n">posinf</span><span class="o">=</span><span class="n">posinf</span><span class="p">,</span> <span class="n">neginf</span><span class="o">=</span><span class="n">neginf</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">drop</span><span class="p">:</span>
+            <span class="n">index_outlier</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">pcf_r</span><span class="p">)</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">isinf</span><span class="p">(</span><span class="n">pcf_r</span><span class="p">)</span>
+            <span class="n">pcf_r</span> <span class="o">=</span> <span class="n">pcf_r</span><span class="p">[</span><span class="o">~</span><span class="n">index_outlier</span><span class="p">]</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="o">~</span><span class="n">index_outlier</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">extrapolate_with_one</span><span class="p">:</span>
+        <span class="n">pcf</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">_extrapolate_pcf</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">pcf_r</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">params</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;fill_value&quot;</span><span class="p">,</span> <span class="s2">&quot;extrapolate&quot;</span><span class="p">)</span>
+        <span class="n">pcf</span> <span class="o">=</span> <span class="n">interp1d</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">pcf_r</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">pcf</span></div>
+
+
+<span class="c1">#! todo add example in the doc</span>
+<div class="viewcode-block" id="plot"><a class="viewcode-back" href="../../pair_correlation_function.html#structure_factor.pair_correlation_function.plot">[docs]</a><span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="n">pcf_dataframe</span><span class="p">,</span> <span class="n">exact_pcf</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">file_name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Plot the columns of ``pcf_dataframe`` with respect to the column ``pcf_dataframe[&quot;r&quot;]``.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        pcf_dataframe (pandas.DataFrame): DataFrame to be visualized. Typically the output of :py:meth:`~structure_factor.structure_factor.StructureFactor.estimate`.</span>
+
+<span class="sd">        exact_pcf (callable): Theoretical pair correlation function of the point process.</span>
+
+<span class="sd">        file_name (str): Name used to save the figure. The available output formats depend on the backend being used.</span>
+
+<span class="sd">    Keyword Args:</span>
+<span class="sd">        kwargs (dict): Keyword arguments of the function `pandas.DataFrame.plot.line &lt;https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.plot.line.html&gt;`_.</span>
+
+<span class="sd">    Return:</span>
+<span class="sd">        plt.Axes: Plot result.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">axis</span> <span class="o">=</span> <span class="n">pcf_dataframe</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">line</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">exact_pcf</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">axis</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+            <span class="n">pcf_dataframe</span><span class="p">[</span><span class="s2">&quot;r&quot;</span><span class="p">],</span>
+            <span class="n">exact_pcf</span><span class="p">(</span><span class="n">pcf_dataframe</span><span class="p">[</span><span class="s2">&quot;r&quot;</span><span class="p">]),</span>
+            <span class="s2">&quot;g&quot;</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;Exact $g(r)$&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="n">plots</span><span class="o">.</span><span class="n">plot_poisson</span><span class="p">(</span><span class="n">pcf_dataframe</span><span class="p">[</span><span class="s2">&quot;r&quot;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">)))</span>
+
+    <span class="n">axis</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+    <span class="n">axis</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;Radius ($r$)&quot;</span><span class="p">)</span>
+    <span class="n">axis</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;Pair correlation function ($g(r)$)&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">file_name</span><span class="p">:</span>
+        <span class="n">fig</span> <span class="o">=</span> <span class="n">axis</span><span class="o">.</span><span class="n">get_figure</span><span class="p">()</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">axis</span></div>
+
+
+<span class="k">def</span> <span class="nf">_extrapolate_pcf</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">pcf_r</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Interpolate pcf_r for x=&lt;r_max and set to 1 for x&gt;r_max.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x (numpy.ndarray): Points on which the pair correlation function is to be evaluated.</span>
+
+<span class="sd">        r (numpy.ndarray): Vector of the radius on with the pair correlation function was evaluated.</span>
+
+<span class="sd">        pcf_r (numpy.ndarray): Vector of evaluations of the pair correlation function corresponding to ``r``.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        numpy.ndarray: evaluation of the extrapolated pair correlation function on ``x``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">r_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>  <span class="c1"># maximum radius</span>
+    <span class="n">pcf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;fill_value&quot;</span><span class="p">,</span> <span class="s2">&quot;extrapolate&quot;</span><span class="p">)</span>
+
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">x</span> <span class="o">&gt;</span> <span class="n">r_max</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">mask</span><span class="p">):</span>
+        <span class="n">pcf</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">logical_not</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">mask</span><span class="p">)</span>
+        <span class="n">pcf</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">interp1d</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">pcf_r</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">)(</span><span class="n">x</span><span class="p">[</span><span class="n">mask</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">pcf</span> <span class="o">=</span> <span class="n">interp1d</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">pcf_r</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">pcf</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021-2022, Diala Hawat.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

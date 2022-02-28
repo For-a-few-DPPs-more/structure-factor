@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>structure_factor.tapered_estimators &mdash; structure-factor  documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/proof.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/plot_directive.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/proof.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> structure-factor
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../structure_factor.html">Structure factor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../hyperuniformity.html">Hyperuniformity</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tapered_estimators.html">Tapered estimators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tapered_estimators_isotropic.html">Tapered isotropic estimators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tapers.html">Tapers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../transforms.html">Transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../point_processes.html">Point processes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pair_correlation_function.html">Pair correlation function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../point_pattern.html">Point pattern</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../spatial_windows.html">Spatial windows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../utils.html">Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../plotting.html">Plotting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibliography/index.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">structure-factor</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      <li>structure_factor.tapered_estimators</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for structure_factor.tapered_estimators</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Collection of functions that compute tapered estimates of the structure factor :math:`S(k)` of a stationary point process given one realization.</span>
+
+<span class="sd">Some tapers (tapering function) are available in :ref:`tapers`.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">warnings</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">structure_factor.tapers</span> <span class="kn">import</span> <span class="n">BartlettTaper</span>
+<span class="kn">from</span> <span class="nn">structure_factor.utils</span> <span class="kn">import</span> <span class="n">meshgrid_to_column_matrix</span>
+
+
+<div class="viewcode-block" id="scattering_intensity"><a class="viewcode-back" href="../../tapered_estimators.html#structure_factor.tapered_estimators.scattering_intensity">[docs]</a><span class="k">def</span> <span class="nf">scattering_intensity</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">point_pattern</span><span class="p">,</span> <span class="n">debiased</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">direct</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the scattering intensity estimator :math:`\widehat{S}_{\mathrm{SI}}` of the structure factor evaluated at at ``k``, from one realization of a stationary point process encapsulated in ``point_pattern``.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        k (numpy.ndarray): Array of size :math:`n \times d`, where :math:`d` is the ambient dimension and :math:`n` the number of points where the estimator is evaluated.</span>
+
+<span class="sd">        point_pattern (:py:class:`~structure_factor.point_pattern.PointPattern`): Realization of the underlying stationary point process.</span>
+
+<span class="sd">        debiased (bool, optional): trigger the use of debiased tapered estimators. Defaults to False.</span>
+
+<span class="sd">        direct (bool, optional): if ``debiased`` is True, trigger the use of the tapered direct/undirect debiased tapered estimators. Defaults to True.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        numpy.ndarray: Vector of size :math:`n` containing the evaluation of scattering intensity estimator :math:`\widehat{S}_{\mathrm{SI}}(k)`.</span>
+
+<span class="sd">    .. proof:definition::</span>
+
+<span class="sd">        The scattering intensity estimator :math:`\widehat{S}_{\mathrm{SI}}, constructed from a realization :math:`\{x_1, \dots, x_N\} \subset \mathbb{R}^d`, is defined by,</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">            \widehat{S}_{\mathrm{SI}}(\mathbf{k}) =</span>
+<span class="sd">                \frac{1}{N}\left\lvert</span>
+<span class="sd">                    \sum_{j=1}^N</span>
+<span class="sd">                        \exp(- i \left\langle \mathbf{k}, \mathbf{x_j} \right\rangle)</span>
+<span class="sd">                \right\rvert^2 .</span>
+
+<span class="sd">        For more details we refer to :cite:`HGBLR:22`, (Section 3.1).</span>
+
+<span class="sd">    .. seealso::</span>
+
+<span class="sd">        - :py:func:`~structure_factor.tapered_estimators.allowed_k_scattering_intensity`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">n</span><span class="p">,</span> <span class="n">d</span> <span class="o">=</span> <span class="n">k</span><span class="o">.</span><span class="n">shape</span>
+    <span class="k">if</span> <span class="n">d</span> <span class="o">!=</span> <span class="n">point_pattern</span><span class="o">.</span><span class="n">dimension</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;k must be of size (n, d) where d=point_pattern.dimension. Given k </span><span class="si">{</span><span class="n">k</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2"> and d d = </span><span class="si">{</span><span class="n">point_pattern</span><span class="o">.</span><span class="n">dimension</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+    <span class="n">estimator</span> <span class="o">=</span> <span class="n">select_tapered_estimator</span><span class="p">(</span><span class="n">debiased</span><span class="p">,</span> <span class="n">direct</span><span class="p">)</span>
+    <span class="n">taper</span> <span class="o">=</span> <span class="n">BartlettTaper</span><span class="p">()</span>
+    <span class="n">estimated_sf_k</span> <span class="o">=</span> <span class="n">estimator</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">point_pattern</span><span class="p">,</span> <span class="n">taper</span><span class="o">=</span><span class="n">taper</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">estimated_sf_k</span></div>
+
+
+<div class="viewcode-block" id="allowed_k_scattering_intensity"><a class="viewcode-back" href="../../tapered_estimators.html#structure_factor.tapered_estimators.allowed_k_scattering_intensity">[docs]</a><span class="k">def</span> <span class="nf">allowed_k_scattering_intensity</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">k_max</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">meshgrid_shape</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return a subset of the d-dimensional allowed wavevectors corresponding to a cubic window of length ``L``.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        d (int): Dimension of the space containing the point process.</span>
+
+<span class="sd">        L (numpy.ndarray): 1d array of size ``d``, where each element correspond to the length of a side of the BoxWindow containing the point process realization.</span>
+
+<span class="sd">        k_max (float, optional): Supremum of the components of the allowed wavevectors on which the scattering intensity to be evaluated; i.e., for any allowed wavevector :math:`\mathbf{k}=(k_1,...,k_d)`, :math:`k_i \leq k\_max` for all i. This implies that the maximum of the output vector ``k_norm`` will be approximately equal to the norm of the vector :math:`(k\_max, ... k\_max)`. Defaults to 5.</span>
+
+<span class="sd">        meshgrid_shape (tuple, optional): Tuple of length `d`, where each element specifies the number of components over an axis. These axes are crossed to form a subset of :math:`\mathbb{Z}^d` used to construct a set of allowed wavevectors. i.g., if d=2, setting meshgid_shape=(2,3) will construct a meshgrid of allowed wavevectors formed by a vector of 2 values over the x-axis and a vector of 3 values over the y-axis. Defaults to None, which will run the calculation over **all** the allowed wavevectors. Defaults to None.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        tuple (numpy.ndarray, list):</span>
+<span class="sd">            - k : np.array with ``d`` columns where each row is an allowed wavevector.</span>
+
+<span class="sd">    .. proof:definition::</span>
+
+<span class="sd">        The set of the allowed wavevectors :math:`\{\mathbf{k}_i\}_i` is defined by</span>
+
+<span class="sd">        .. math::</span>
+
+<span class="sd">            \{\mathbf{k}_i\}_i = \{\frac{2 \pi}{L} \mathbf{n} ~ ; ~ \mathbf{n} \in (\mathbb{Z}^d)^\ast \}.</span>
+
+<span class="sd">        Note that the maximum ``n`` and the number of output allowed wavevectors returned by :py:func:`~structure_factor.tapered_estimators.allowed_k_scattering_intensity`, are specified by the input parameters ``k_max`` and ``meshgrid_shape``.</span>
+
+<span class="sd">    .. seealso::</span>
+
+<span class="sd">        - :py:func:`~structure_factor.tapered_estimators.scattering_intensity`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">k_max</span><span class="p">,</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">))</span>
+
+    <span class="n">n_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">k_max</span> <span class="o">*</span> <span class="n">L</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">))</span>  <span class="c1"># maximum of ``n``</span>
+
+    <span class="c1">#! todo refactoring needed, too complex and duplicated code</span>
+    <span class="c1"># warnings</span>
+    <span class="k">if</span> <span class="n">meshgrid_shape</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="n">message</span><span class="o">=</span><span class="s2">&quot;The computation on all allowed wavevectors may be time-consuming.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">elif</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">meshgrid_shape</span><span class="p">)</span> <span class="o">&gt;</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">n_max</span><span class="p">))</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="n">message</span><span class="o">=</span><span class="s2">&quot;Each component of the argument &#39;meshgrid_shape&#39; should be less than or equal to the cardinality of the (total) set of allowed wavevectors.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="c1"># meshgrid_shape = np.fmin(meshgrid_shape, 2 * n_max)</span>
+    <span class="c1"># case d=1</span>
+    <span class="k">if</span> <span class="n">d</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">meshgrid_shape</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="p">(</span><span class="n">meshgrid_shape</span> <span class="o">&gt;</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">n_max</span><span class="p">)):</span>
+            <span class="n">n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="n">n_max</span><span class="p">,</span> <span class="n">n_max</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">n</span> <span class="o">=</span> <span class="n">n</span><span class="p">[</span><span class="n">n</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="n">n_max</span><span class="p">,</span> <span class="n">n_max</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="n">meshgrid_shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">n</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span>
+                    <span class="o">-</span><span class="n">n_max</span><span class="p">,</span> <span class="n">n_max</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="n">meshgrid_shape</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="kc">True</span>
+                <span class="p">)</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">n</span> <span class="o">/</span> <span class="n">L</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="n">k</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="c1"># case d&gt;1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">meshgrid_shape</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">meshgrid_shape</span><span class="p">)</span> <span class="o">&gt;</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">n_max</span><span class="p">))</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+            <span class="n">ranges</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">n_max</span><span class="p">:</span>
+                <span class="n">n_i</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">n_i</span> <span class="o">=</span> <span class="n">n_i</span><span class="p">[</span><span class="n">n_i</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">]</span>
+                <span class="n">ranges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">n_i</span><span class="p">)</span>
+            <span class="n">n</span> <span class="o">=</span> <span class="n">meshgrid_to_column_matrix</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="o">*</span><span class="n">ranges</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ranges</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">meshgrid_shape</span><span class="p">:</span>
+                <span class="n">n_i</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="n">n_max</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">n_max</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">num</span><span class="o">=</span><span class="n">s</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">n_i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">n_i</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span>
+                        <span class="o">-</span><span class="n">n_max</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">n_max</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">num</span><span class="o">=</span><span class="n">s</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="kc">True</span>
+                    <span class="p">)</span>
+                <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">n_i</span> <span class="o">=</span> <span class="n">n_i</span><span class="p">[</span><span class="n">n_i</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">]</span>
+                <span class="n">ranges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">n_i</span><span class="p">)</span>
+            <span class="n">n</span> <span class="o">=</span> <span class="n">meshgrid_to_column_matrix</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="o">*</span><span class="n">ranges</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+
+        <span class="n">k</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">n</span> <span class="o">/</span> <span class="n">L</span><span class="o">.</span><span class="n">T</span>
+    <span class="k">return</span> <span class="n">k</span></div>
+
+
+<div class="viewcode-block" id="select_tapered_estimator"><a class="viewcode-back" href="../../tapered_estimators.html#structure_factor.tapered_estimators.select_tapered_estimator">[docs]</a><span class="k">def</span> <span class="nf">select_tapered_estimator</span><span class="p">(</span><span class="n">debiased</span><span class="p">,</span> <span class="n">direct</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Select the tapered estimator of the structure factor.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        debiased (bool): Trigger the use of a debiased tapered estimator.</span>
+<span class="sd">        direct (bool): If ``debiased`` is True, trigger the use of the direct/undirect debiased tapered estimator.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        callable: According to ``debiased`` and ``direct`` return</span>
+
+<span class="sd">            - :py:func:`~structure_factor.tapered_estimators.tapered_estimator_debiased_direct`</span>
+<span class="sd">            - :py:func:`~structure_factor.tapered_estimators.tapered_estimator_debiased_undirect`</span>
+<span class="sd">            - :py:func:`~structure_factor.tapered_estimators.tapered_estimator_core`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">debiased</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">direct</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">tapered_estimator_debiased_direct</span>
+        <span class="k">return</span> <span class="n">tapered_estimator_debiased_undirect</span>
+    <span class="k">return</span> <span class="n">tapered_estimator_core</span></div>
+
+
+<div class="viewcode-block" id="tapered_estimator_core"><a class="viewcode-back" href="../../tapered_estimators.html#structure_factor.tapered_estimators.tapered_estimator_core">[docs]</a><span class="k">def</span> <span class="nf">tapered_estimator_core</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">point_pattern</span><span class="p">,</span> <span class="n">taper</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the tapered estimator :math:`S_{TP}(t, k)` of the structure factor :math:`S(k)` evaluated at ``k`` w.r.t. the ``taper`` :math:`t` and the realization ``point_pattern`` of the underlying stationary point process.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        k (numpy.ndarray): Array of size :math:`n \times d`, where :math:`d` is the ambient dimension and :math:`n` the number of points where the estimator is evaluated.</span>
+
+<span class="sd">        point_pattern (:py:class:`~structure_factor.point_pattern.PointPattern`): Realization of the underlying stationary point process.</span>
+
+<span class="sd">        taper (object): Class with static method or instance with method ``.taper(x, window)`` corresponding to :math:`t(x, W)`.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        numpy.ndarray: Evaluation of the tapered estimator :math:`S_{TP}(t, k)` at ``k``.</span>
+
+<span class="sd">    .. proof:definition::</span>
+
+<span class="sd">        The tapered estimator :math:`S_{TP}(t, k)`, constructed from a realization :math:`\{x_1, \dots, x_N\} \subset \mathbb{R}^d`, is defined by,</span>
+
+<span class="sd">        .. math::</span>
+
+<span class="sd">            S_{TP}(t, k) =</span>
+<span class="sd">            \frac{1}{\rho}</span>
+<span class="sd">            \left\lvert</span>
+<span class="sd">                \sum_{j=1}^N</span>
+<span class="sd">                t(x_j, W)</span>
+<span class="sd">                \exp(- i \left\langle k, x_j \right\rangle)</span>
+<span class="sd">            \right\rvert^2,</span>
+
+<span class="sd">        for :math:`k \in \mathbb{R}^d`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">rho</span> <span class="o">=</span> <span class="n">point_pattern</span><span class="o">.</span><span class="n">intensity</span>
+    <span class="n">dft</span> <span class="o">=</span> <span class="n">tapered_dft</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">point_pattern</span><span class="p">,</span> <span class="n">taper</span><span class="p">)</span>
+    <span class="n">estimated_sf_k</span> <span class="o">=</span> <span class="n">periodogram_from_dft</span><span class="p">(</span><span class="n">dft</span><span class="p">)</span>
+    <span class="n">estimated_sf_k</span> <span class="o">/=</span> <span class="n">rho</span>
+    <span class="k">return</span> <span class="n">estimated_sf_k</span></div>
+
+
+<div class="viewcode-block" id="tapered_estimator_debiased_direct"><a class="viewcode-back" href="../../tapered_estimators.html#structure_factor.tapered_estimators.tapered_estimator_debiased_direct">[docs]</a><span class="k">def</span> <span class="nf">tapered_estimator_debiased_direct</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">point_pattern</span><span class="p">,</span> <span class="n">taper</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the direct debiased tapered estimator :math:`S_{DDTP}(t, k)` of the structure factor :math:`S(k)` evaluated at ``k`` w.r.t. the ``taper`` :math:`t` and the realization ``point_pattern`` of the underlying stationary point process.</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        S_{DDTP}(t, k) =</span>
+<span class="sd">            \frac{1}{\rho} \left\lvert</span>
+<span class="sd">            \sum_{j=1}^N</span>
+<span class="sd">                t(x_j, W)</span>
+<span class="sd">                \exp(- i \left\langle k, x_j \right\rangle)</span>
+<span class="sd">                - \rho F[t(\cdot, W)](k)</span>
+<span class="sd">            \right\rvert^2</span>
+
+<span class="sd">    where :math:`x_{1}, \dots, x_{N}` corresponds to ``point_pattern.points``,  :math:`W` corresponds to the window ``point_pattern.window`` and :math:`\rho` is the intensity of the underlying stationary point process.</span>
+
+<span class="sd">    The direct debiased estimator :math:`S_{DDTP}(t, k)` is positive and asymptotically unbiased as the observation window :math:`W` grows to :math:`\mathbb{R}^d`.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        k (numpy.ndarray): Array of size :math:`n \times d`, where :math:`d` is the ambient dimension and :math:`n` the number of points where the estimator is evaluated.</span>
+
+<span class="sd">        point_pattern (:py:class:`~structure_factor.point_pattern.PointPattern`): Realization of the underlying stationary point process.</span>
+
+<span class="sd">        taper (object): class instance with two methods:</span>
+
+<span class="sd">            - ``.taper(x, window)`` corresponding to the taper function :math:`t(x, W)` such that :math:`\|t(\cdot, W)\|_2 = 1`.</span>
+
+<span class="sd">            - ``.ft_taper(k, window)`` corresponding to the Fourier transform :math:`\mathcal{F}[t(\cdot, W)](k)` of the taper function.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        numpy.ndarray: Vector of size :math:`n` containing the evaluation of the direct debiased estimator :math:`S_{DDTP}(t, k)`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">rho</span> <span class="o">=</span> <span class="n">point_pattern</span><span class="o">.</span><span class="n">intensity</span>
+    <span class="n">window</span> <span class="o">=</span> <span class="n">point_pattern</span><span class="o">.</span><span class="n">window</span>
+
+    <span class="c1"># Debiased dft</span>
+    <span class="n">dft</span> <span class="o">=</span> <span class="n">tapered_dft</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">point_pattern</span><span class="p">,</span> <span class="n">taper</span><span class="p">)</span>
+    <span class="n">dft</span> <span class="o">-=</span> <span class="n">rho</span> <span class="o">*</span> <span class="n">taper</span><span class="o">.</span><span class="n">ft_taper</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">window</span><span class="p">)</span>
+
+    <span class="n">estimated_sf_k</span> <span class="o">=</span> <span class="n">periodogram_from_dft</span><span class="p">(</span><span class="n">dft</span><span class="p">)</span>
+    <span class="n">estimated_sf_k</span> <span class="o">/=</span> <span class="n">rho</span>
+    <span class="k">return</span> <span class="n">estimated_sf_k</span></div>
+
+
+<div class="viewcode-block" id="tapered_estimator_debiased_undirect"><a class="viewcode-back" href="../../tapered_estimators.html#structure_factor.tapered_estimators.tapered_estimator_debiased_undirect">[docs]</a><span class="k">def</span> <span class="nf">tapered_estimator_debiased_undirect</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">point_pattern</span><span class="p">,</span> <span class="n">taper</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the undirect debiased tapered estimator :math:`S_{UDTP}(t, k)` of the structure factor :math:`S(k)` evaluated at ``k`` w.r.t. the ``taper`` :math:`t` and the realization ``point_pattern`` of the underlying stationary point process.</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        S_{UDTP}(t, k) =</span>
+<span class="sd">            \frac{1}{\rho}</span>
+<span class="sd">            \left\lvert</span>
+<span class="sd">            \sum_{j=1}^N</span>
+<span class="sd">                t(x_j, W)</span>
+<span class="sd">                \exp(- i \left\langle k, x_j \right\rangle)</span>
+<span class="sd">            \right\rvert^2</span>
+<span class="sd">            - \rho</span>
+<span class="sd">            \left\lvert</span>
+<span class="sd">            F[t(\cdot, W)](k))</span>
+<span class="sd">            \right\rvert^2</span>
+
+<span class="sd">    where :math:`x_{1}, \dots, x_{N}` corresponds to ``point_pattern.points``, :math:`W` corresponds to the window ``point_pattern.window`` and :math:`\rho` is the intensity of the underlying stationary point process.</span>
+
+<span class="sd">    The undirect debiased estimator :math:`S_{UDTP}(t, k)` is not guaranteed to be positive but is asymptotically unbiased as the observation window :math:`W` grows to :math:`\mathbb{R}^d`.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        k (numpy.ndarray): Array of size :math:`n \times d`, where :math:`d` is the ambient dimension and :math:`n` the number of points where the estimator is evaluated.</span>
+
+<span class="sd">        point_pattern (:py:class:`~structure_factor.point_pattern.PointPattern`): Realization of the underlying stationary point process.</span>
+
+<span class="sd">        taper (object): class instance with two methods:</span>
+
+<span class="sd">            - ``.taper(x, window)`` corresponding to the taper function :math:`t(x, W)` such that :math:`\|t(\cdot, W)\|_2 = 1`.</span>
+<span class="sd">            - ``.ft_taper(k, window)`` corresponding to the Fourier transform :math:`\mathcal{F}[t(\cdot, W)](k)` of the taper function.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        numpy.ndarray: Vector of size :math:`n` containing the evaluation of the direct debiased estimator :math:`S_{UDTP}(t, k)`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">window</span> <span class="o">=</span> <span class="n">point_pattern</span><span class="o">.</span><span class="n">window</span>
+    <span class="n">rho</span> <span class="o">=</span> <span class="n">point_pattern</span><span class="o">.</span><span class="n">intensity</span>
+
+    <span class="n">estimated_sf_k</span> <span class="o">=</span> <span class="n">tapered_estimator_core</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">point_pattern</span><span class="p">,</span> <span class="n">taper</span><span class="p">)</span>
+    <span class="n">Hk_2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">taper</span><span class="o">.</span><span class="n">ft_taper</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">window</span><span class="p">))</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">Hk_2</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">Hk_2</span><span class="p">)</span>
+    <span class="n">estimated_sf_k</span> <span class="o">-=</span> <span class="n">rho</span> <span class="o">*</span> <span class="n">Hk_2</span>
+    <span class="k">return</span> <span class="n">estimated_sf_k</span></div>
+
+
+<div class="viewcode-block" id="tapered_dft"><a class="viewcode-back" href="../../tapered_estimators.html#structure_factor.tapered_estimators.tapered_dft">[docs]</a><span class="k">def</span> <span class="nf">tapered_dft</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">point_pattern</span><span class="p">,</span> <span class="n">taper</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the tapered discrete Fourier transform (tapered DFT) associated with ``point_pattern`` evaluated at ``k``, using ``taper`` :math:`t`.</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        \sum_{j=1}^N t(x_j, W) \exp(- i \langle k, x_j \rangle),</span>
+
+<span class="sd">    where :math:`x_{1}, \dots, x_{N}` corresponds to ``point_pattern.points`` and :math:`W` corresponds to the window ``point_pattern.window``.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        k (numpy.ndarray): Array of size :math:`n \times d`, where :math:`d` is the ambient dimension and :math:`n` the number of points where the tapered DFT is evaluated.</span>
+
+<span class="sd">        point_pattern (:py:class:`~structure_factor.point_pattern.PointPattern`): Realization of the underlying stationary point process.</span>
+
+<span class="sd">        taper (object): class with static method or instance with method ``.taper(x, window)`` corresponding to :math:`t(x, W)` such that :math:`\|t(\cdot, W)\|_2 = 1`.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        numpy.ndarray: Evaluation of the DFT of the taper h</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">points</span> <span class="o">=</span> <span class="n">point_pattern</span><span class="o">.</span><span class="n">points</span>
+    <span class="n">window</span> <span class="o">=</span> <span class="n">point_pattern</span><span class="o">.</span><span class="n">window</span>
+    <span class="n">K</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
+    <span class="n">nb_k</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">K</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">nb_x</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span>
+
+    <span class="c1"># dft = sum_x t(x) exp(- i &lt;k, x&gt;)</span>
+    <span class="n">hx_exp_ikx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nb_k</span><span class="p">,</span> <span class="n">nb_x</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">complex</span><span class="p">)</span>
+    <span class="c1"># i &lt;k, x&gt;</span>
+    <span class="n">hx_exp_ikx</span><span class="o">.</span><span class="n">imag</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">X</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+    <span class="c1"># - i &lt;k, x&gt;</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">hx_exp_ikx</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">hx_exp_ikx</span><span class="p">)</span>
+    <span class="c1"># exp(- i &lt;k, x&gt;)</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">hx_exp_ikx</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">hx_exp_ikx</span><span class="p">)</span>
+    <span class="c1"># t(x) exp(- i &lt;k, x&gt;)</span>
+    <span class="n">hx</span> <span class="o">=</span> <span class="n">taper</span><span class="o">.</span><span class="n">taper</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">window</span><span class="p">)</span>
+    <span class="n">hx_exp_ikx</span> <span class="o">*=</span> <span class="n">hx</span>
+    <span class="c1"># sum_x t(x) exp(- i &lt;k, x&gt;)</span>
+    <span class="n">dft</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">hx_exp_ikx</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dft</span></div>
+
+
+<div class="viewcode-block" id="periodogram_from_dft"><a class="viewcode-back" href="../../tapered_estimators.html#structure_factor.tapered_estimators.periodogram_from_dft">[docs]</a><span class="k">def</span> <span class="nf">periodogram_from_dft</span><span class="p">(</span><span class="n">dft</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the square absolute value ``abs(dft)**2`` of the discrete Fourier transform ``dft``.</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        \left\lvert</span>
+<span class="sd">        \sum_{j=1}^N t(x_j) \exp(- i \langle k, x_j \rangle)</span>
+<span class="sd">        \right\rvert ^ 2,</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        dft (numpy.ndarray): Discrete Fourier transform computed via :py:func:`~structure_factor.tapered_estimators.tapered_dft`.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        numpy.ndarray: ``abs(dft)**2``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">periodogram</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">dft</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">dft</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">periodogram</span><span class="p">)</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">periodogram</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">periodogram</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">periodogram</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021-2022, Diala Hawat.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

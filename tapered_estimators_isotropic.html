@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tapered isotropic estimators &mdash; structure-factor  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/proof.css" type="text/css" />
+      <link rel="stylesheet" href="_static/plot_directive.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/proof.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Tapers" href="tapers.html" />
+    <link rel="prev" title="Tapered estimators" href="tapered_estimators.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> structure-factor
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="structure_factor.html">Structure factor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hyperuniformity.html">Hyperuniformity</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tapered_estimators.html">Tapered estimators</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Tapered isotropic estimators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tapers.html">Tapers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transforms.html">Transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="point_processes.html">Point processes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pair_correlation_function.html">Pair correlation function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="point_pattern.html">Point pattern</a></li>
+<li class="toctree-l1"><a class="reference internal" href="spatial_windows.html">Spatial windows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plotting.html">Plotting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bibliography/index.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">structure-factor</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Tapered isotropic estimators</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/For-a-few-DPPs-more/structure-factor/blob/main/docs/tapered_estimators_isotropic.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-structure_factor.tapered_estimators_isotropic">
+<span id="tapered-isotropic-estimators"></span><span id="tapered-estimators-isotropic"></span><h1>Tapered isotropic estimators<a class="headerlink" href="#module-structure_factor.tapered_estimators_isotropic" title="Permalink to this headline"></a></h1>
+<p>Collection of functions used to implement a fast version of Bartlett’s isotropic estimator.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="structure_factor.tapered_estimators_isotropic.bartlett_estimator">
+<span class="sig-prename descclassname"><span class="pre">structure_factor.tapered_estimators_isotropic.</span></span><span class="sig-name descname"><span class="pre">bartlett_estimator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k_norm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">point_pattern</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/tapered_estimators_isotropic.html#bartlett_estimator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.tapered_estimators_isotropic.bartlett_estimator" title="Permalink to this definition"></a></dt>
+<dd><p>Compute an estimation of the structure factor of a stationary isotropic point process from one realization encapsulated in <code class="docutils literal notranslate"><span class="pre">point_pattern</span></code>, evaluated at <code class="docutils literal notranslate"><span class="pre">k_norm</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>point_pattern</strong> (<a class="reference internal" href="point_pattern.html#structure_factor.point_pattern.PointPattern" title="structure_factor.point_pattern.PointPattern"><code class="xref py py-class docutils literal notranslate"><span class="pre">PointPattern</span></code></a>) – Realization of the underlying point process.</p></li>
+<li><p><strong>k_norm</strong> (<em>numpy.ndarray</em><em>, </em><em>optional</em>) – Array of size <span class="math notranslate nohighlight">\(n\)</span> corresponding to the wavenumbers where the estimator is to be evaluated. If None (default) and the observation window <code class="docutils literal notranslate"><span class="pre">point_pattern.window</span></code> is a <a class="reference internal" href="spatial_windows.html#structure_factor.spatial_windows.BallWindow" title="structure_factor.spatial_windows.BallWindow"><code class="xref py py-class docutils literal notranslate"><span class="pre">BallWindow</span></code></a> and the ambient dimension is even, the estimator will be evaluated on the corresponding set of allowed wavenumbers returned by <code class="xref py py-func docutils literal notranslate"><span class="pre">allowed_k_norm()</span></code>. Defaults to None.</p></li>
+<li><p><strong>n_allowed_k_norm</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of allowed wavenumbers to be used when <code class="docutils literal notranslate"><span class="pre">k_norm</span></code> is None. See <code class="xref py py-func docutils literal notranslate"><span class="pre">allowed_k_norm()</span></code>. Defaults to 60.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p>k_norm: Wavenumber(s) at which the estimator has been evaluated.</p></li>
+<li><p>estimation: Evaluation(s) of the estimator at <code class="docutils literal notranslate"><span class="pre">k_norm</span></code>.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>tuple(numpy.ndarray, numpy.ndarray)</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">structure_factor.point_processes</span> <span class="kn">import</span> <span class="n">HomogeneousPoissonPointProcess</span>
+<span class="kn">from</span> <span class="nn">structure_factor.spatial_windows</span> <span class="kn">import</span> <span class="n">BallWindow</span>
+<span class="kn">from</span> <span class="nn">structure_factor.tapered_estimators_isotropic</span> <span class="kn">import</span> <span class="n">bartlett_estimator</span>
+
+<span class="n">point_process</span> <span class="o">=</span> <span class="n">HomogeneousPoissonPointProcess</span><span class="p">(</span><span class="n">intensity</span><span class="o">=</span><span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">))</span>
+<span class="n">window</span> <span class="o">=</span> <span class="n">BallWindow</span><span class="p">(</span><span class="n">radius</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+<span class="n">point_pattern</span> <span class="o">=</span> <span class="n">point_process</span><span class="o">.</span><span class="n">generate_point_pattern</span><span class="p">(</span><span class="n">window</span><span class="o">=</span><span class="n">window</span><span class="p">)</span>
+
+<span class="n">k_norm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="n">k_norm</span><span class="p">,</span> <span class="n">estimation</span> <span class="o">=</span> <span class="n">bartlett_estimator</span><span class="p">(</span><span class="n">k_norm</span><span class="p">,</span> <span class="n">point_pattern</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="proof proof-type-definition" id="id2">
+
+    <div class="proof-title">
+        <span class="proof-type">Definition </span>
+        
+    </div><div class="proof-content">
+<p>The Bartlett’s isotropic estimator <span class="math notranslate nohighlight">\(\widehat{S}_{\mathrm{BI}}\)</span> is constructed from a realization <span class="math notranslate nohighlight">\(\{\mathbf{x}_i\}_{i=1}^N\)</span> of the point process <span class="math notranslate nohighlight">\(\mathcal{X}\)</span> observed in a ball window <span class="math notranslate nohighlight">\(W=B(\mathbf{0}, R)\)</span>.</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\widehat{S}_{\mathrm{BI}}(k)
+= 1
++ \frac{ (2\pi)^{d/2} }{\rho |W| \omega_{d-1}}
+\sum_{ \substack{j, q =1 \\ j\neq q } }^{N}
+    \frac{1}{(k \|\mathbf{x}_j - \mathbf{x}_q\|_2)^{d/2 - 1}}
+    J_{d/2 - 1}(k \|\mathbf{x}_j - \mathbf{x}_q\|_2).\end{split}\]</div>
+<p>For more details, we refer to <span id="id1">[<a class="reference internal" href="bibliography/index.html#id4" title="D. Hawat, G. Gautier, R. Bardenet, and R. Lachieze-Rey. Exploring the hyperuniformity of point processes with python. ():, Feb 2022. URL:, doi:.">HGBLR22</a>]</span>, (Section 3.2).</p>
+</div></div><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="spatial_windows.html#structure_factor.spatial_windows.BallWindow" title="structure_factor.spatial_windows.BallWindow"><code class="xref py py-class docutils literal notranslate"><span class="pre">BallWindow</span></code></a></p></li>
+<li><p><a class="reference internal" href="point_pattern.html#structure_factor.point_pattern.PointPattern.restrict_to_window" title="structure_factor.point_pattern.PointPattern.restrict_to_window"><code class="xref py py-meth docutils literal notranslate"><span class="pre">restrict_to_window()</span></code></a></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">tapered_estimator_isotropic()</span></code></p></li>
+<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">allowed_k_norm()</span></code></p></li>
+</ul>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="structure_factor.tapered_estimators_isotropic.allowed_k_norm_bartlett_isotropic">
+<span class="sig-prename descclassname"><span class="pre">structure_factor.tapered_estimators_isotropic.</span></span><span class="sig-name descname"><span class="pre">allowed_k_norm_bartlett_isotropic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dimension</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nb_values</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">60</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/tapered_estimators_isotropic.html#allowed_k_norm_bartlett_isotropic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.tapered_estimators_isotropic.allowed_k_norm_bartlett_isotropic" title="Permalink to this definition"></a></dt>
+<dd><p>Allowed wavenumbers of the Bartlett isotropic estimator, for a <code class="docutils literal notranslate"><span class="pre">d</span></code>-dimensional point process observed in a ball window with radius <code class="docutils literal notranslate"><span class="pre">radius</span></code>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This method is only available when the ambient dimension is even.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dimension</strong> (<em>int</em>) – Dimension of the underlying space.</p></li>
+<li><p><strong>radius</strong> (<em>float</em>) – Radius of the observation window.</p></li>
+<li><p><strong>nb_values</strong> (<em>int</em>) – Number of required allowed wavenumbers. Defaults to 60.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Vector of size <code class="docutils literal notranslate"><span class="pre">nb_values</span></code> containing the allowed wavenumbers.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">structure_factor.tapered_estimators_isotropic</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">allowed_k_norm_bartlett_isotropic</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">k</span> <span class="o">=</span> <span class="n">allowed_k_norm_bartlett_isotropic</span><span class="p">(</span><span class="n">dimension</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">nb_values</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>[0.1915853  0.35077933 0.50867341 0.6661846  0.8235315  0.98079293]
+</pre></div>
+</div>
+<div class="proof proof-type-definition" id="id3">
+
+    <div class="proof-title">
+        <span class="proof-type">Definition </span>
+        
+    </div><div class="proof-content">
+<p>The allowed wavenumbers of a realization from a point process <span class="math notranslate nohighlight">\(\mathcal{X}\)</span> of <span class="math notranslate nohighlight">\(\mathbb{R}^d\)</span> observed in a ball window <span class="math notranslate nohighlight">\(W=B(\mathbf{0}, R)\)</span> correspond to</p>
+<div class="math notranslate nohighlight">
+\[\left\{
+\frac{x}{R} \in \mathbb{R} \text{ s.t. }  J_{d/2}(x)=0
+\right\}\]</div>
+</div></div><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#structure_factor.tapered_estimators_isotropic.bartlett_estimator" title="structure_factor.tapered_estimators_isotropic.bartlett_estimator"><code class="xref py py-func docutils literal notranslate"><span class="pre">bartlett_estimator()</span></code></a></p></li>
+</ul>
+</div>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="tapered_estimators.html" class="btn btn-neutral float-left" title="Tapered estimators" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="tapers.html" class="btn btn-neutral float-right" title="Tapers" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021-2022, Diala Hawat.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

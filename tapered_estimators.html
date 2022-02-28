@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tapered estimators &mdash; structure-factor  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/proof.css" type="text/css" />
+      <link rel="stylesheet" href="_static/plot_directive.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/proof.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Tapered isotropic estimators" href="tapered_estimators_isotropic.html" />
+    <link rel="prev" title="Hyperuniformity" href="hyperuniformity.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> structure-factor
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="structure_factor.html">Structure factor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hyperuniformity.html">Hyperuniformity</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Tapered estimators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tapered_estimators_isotropic.html">Tapered isotropic estimators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tapers.html">Tapers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transforms.html">Transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="point_processes.html">Point processes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pair_correlation_function.html">Pair correlation function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="point_pattern.html">Point pattern</a></li>
+<li class="toctree-l1"><a class="reference internal" href="spatial_windows.html">Spatial windows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plotting.html">Plotting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bibliography/index.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">structure-factor</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Tapered estimators</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/For-a-few-DPPs-more/structure-factor/blob/main/docs/tapered_estimators.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-structure_factor.tapered_estimators">
+<span id="id1"></span><span id="tapered-estimators"></span><h1>Tapered estimators<a class="headerlink" href="#module-structure_factor.tapered_estimators" title="Permalink to this headline"></a></h1>
+<p>Collection of functions that compute tapered estimates of the structure factor <span class="math notranslate nohighlight">\(S(k)\)</span> of a stationary point process given one realization.</p>
+<p>Some tapers (tapering function) are available in <a class="reference internal" href="tapers.html#tapers"><span class="std std-ref">Tapers</span></a>.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="structure_factor.tapered_estimators.scattering_intensity">
+<span class="sig-prename descclassname"><span class="pre">structure_factor.tapered_estimators.</span></span><span class="sig-name descname"><span class="pre">scattering_intensity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">point_pattern</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debiased</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">direct</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/tapered_estimators.html#scattering_intensity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.tapered_estimators.scattering_intensity" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the scattering intensity estimator <span class="math notranslate nohighlight">\(\widehat{S}_{\mathrm{SI}}\)</span> of the structure factor evaluated at at <code class="docutils literal notranslate"><span class="pre">k</span></code>, from one realization of a stationary point process encapsulated in <code class="docutils literal notranslate"><span class="pre">point_pattern</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>k</strong> (<em>numpy.ndarray</em>) – Array of size <span class="math notranslate nohighlight">\(n \times d\)</span>, where <span class="math notranslate nohighlight">\(d\)</span> is the ambient dimension and <span class="math notranslate nohighlight">\(n\)</span> the number of points where the estimator is evaluated.</p></li>
+<li><p><strong>point_pattern</strong> (<a class="reference internal" href="point_pattern.html#structure_factor.point_pattern.PointPattern" title="structure_factor.point_pattern.PointPattern"><code class="xref py py-class docutils literal notranslate"><span class="pre">PointPattern</span></code></a>) – Realization of the underlying stationary point process.</p></li>
+<li><p><strong>debiased</strong> (<em>bool</em><em>, </em><em>optional</em>) – trigger the use of debiased tapered estimators. Defaults to False.</p></li>
+<li><p><strong>direct</strong> (<em>bool</em><em>, </em><em>optional</em>) – if <code class="docutils literal notranslate"><span class="pre">debiased</span></code> is True, trigger the use of the tapered direct/undirect debiased tapered estimators. Defaults to True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Vector of size <span class="math notranslate nohighlight">\(n\)</span> containing the evaluation of scattering intensity estimator <span class="math notranslate nohighlight">\(\widehat{S}_{\mathrm{SI}}(k)\)</span>.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+<div class="proof proof-type-definition" id="id3">
+
+    <div class="proof-title">
+        <span class="proof-type">Definition </span>
+        
+    </div><div class="proof-content">
+<p>The scattering intensity estimator <span class="math notranslate nohighlight">\(\widehat{S}_{\mathrm{SI}}, constructed from a realization :math:\)</span>{x_1, dots, x_N} subset mathbb{R}^d`, is defined by,</p>
+<div class="math notranslate nohighlight">
+\[\widehat{S}_{\mathrm{SI}}(\mathbf{k}) =
+    \frac{1}{N}\left\lvert
+        \sum_{j=1}^N
+            \exp(- i \left\langle \mathbf{k}, \mathbf{x_j} \right\rangle)
+    \right\rvert^2 .\]</div>
+<p>For more details we refer to <span id="id2">[<a class="reference internal" href="bibliography/index.html#id4" title="D. Hawat, G. Gautier, R. Bardenet, and R. Lachieze-Rey. Exploring the hyperuniformity of point processes with python. ():, Feb 2022. URL:, doi:.">HGBLR22</a>]</span>, (Section 3.1).</p>
+</div></div><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#structure_factor.tapered_estimators.allowed_k_scattering_intensity" title="structure_factor.tapered_estimators.allowed_k_scattering_intensity"><code class="xref py py-func docutils literal notranslate"><span class="pre">allowed_k_scattering_intensity()</span></code></a></p></li>
+</ul>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="structure_factor.tapered_estimators.allowed_k_scattering_intensity">
+<span class="sig-prename descclassname"><span class="pre">structure_factor.tapered_estimators.</span></span><span class="sig-name descname"><span class="pre">allowed_k_scattering_intensity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meshgrid_shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/tapered_estimators.html#allowed_k_scattering_intensity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.tapered_estimators.allowed_k_scattering_intensity" title="Permalink to this definition"></a></dt>
+<dd><p>Return a subset of the d-dimensional allowed wavevectors corresponding to a cubic window of length <code class="docutils literal notranslate"><span class="pre">L</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>d</strong> (<em>int</em>) – Dimension of the space containing the point process.</p></li>
+<li><p><strong>L</strong> (<em>numpy.ndarray</em>) – 1d array of size <code class="docutils literal notranslate"><span class="pre">d</span></code>, where each element correspond to the length of a side of the BoxWindow containing the point process realization.</p></li>
+<li><p><strong>k_max</strong> (<em>float</em><em>, </em><em>optional</em>) – Supremum of the components of the allowed wavevectors on which the scattering intensity to be evaluated; i.e., for any allowed wavevector <span class="math notranslate nohighlight">\(\mathbf{k}=(k_1,...,k_d)\)</span>, <span class="math notranslate nohighlight">\(k_i \leq k\_max\)</span> for all i. This implies that the maximum of the output vector <code class="docutils literal notranslate"><span class="pre">k_norm</span></code> will be approximately equal to the norm of the vector <span class="math notranslate nohighlight">\((k\_max, ... k\_max)\)</span>. Defaults to 5.</p></li>
+<li><p><strong>meshgrid_shape</strong> (<em>tuple</em><em>, </em><em>optional</em>) – Tuple of length <cite>d</cite>, where each element specifies the number of components over an axis. These axes are crossed to form a subset of <span class="math notranslate nohighlight">\(\mathbb{Z}^d\)</span> used to construct a set of allowed wavevectors. i.g., if d=2, setting meshgid_shape=(2,3) will construct a meshgrid of allowed wavevectors formed by a vector of 2 values over the x-axis and a vector of 3 values over the y-axis. Defaults to None, which will run the calculation over <strong>all</strong> the allowed wavevectors. Defaults to None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p>k : np.array with <code class="docutils literal notranslate"><span class="pre">d</span></code> columns where each row is an allowed wavevector.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>tuple (numpy.ndarray, list)</p>
+</dd>
+</dl>
+<div class="proof proof-type-definition" id="id4">
+
+    <div class="proof-title">
+        <span class="proof-type">Definition </span>
+        
+    </div><div class="proof-content">
+<p>The set of the allowed wavevectors <span class="math notranslate nohighlight">\(\{\mathbf{k}_i\}_i\)</span> is defined by</p>
+<div class="math notranslate nohighlight">
+\[\{\mathbf{k}_i\}_i = \{\frac{2 \pi}{L} \mathbf{n} ~ ; ~ \mathbf{n} \in (\mathbb{Z}^d)^\ast \}.\]</div>
+<p>Note that the maximum <code class="docutils literal notranslate"><span class="pre">n</span></code> and the number of output allowed wavevectors returned by <a class="reference internal" href="#structure_factor.tapered_estimators.allowed_k_scattering_intensity" title="structure_factor.tapered_estimators.allowed_k_scattering_intensity"><code class="xref py py-func docutils literal notranslate"><span class="pre">allowed_k_scattering_intensity()</span></code></a>, are specified by the input parameters <code class="docutils literal notranslate"><span class="pre">k_max</span></code> and <code class="docutils literal notranslate"><span class="pre">meshgrid_shape</span></code>.</p>
+</div></div><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#structure_factor.tapered_estimators.scattering_intensity" title="structure_factor.tapered_estimators.scattering_intensity"><code class="xref py py-func docutils literal notranslate"><span class="pre">scattering_intensity()</span></code></a></p></li>
+</ul>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="structure_factor.tapered_estimators.select_tapered_estimator">
+<span class="sig-prename descclassname"><span class="pre">structure_factor.tapered_estimators.</span></span><span class="sig-name descname"><span class="pre">select_tapered_estimator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">debiased</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">direct</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/tapered_estimators.html#select_tapered_estimator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.tapered_estimators.select_tapered_estimator" title="Permalink to this definition"></a></dt>
+<dd><p>Select the tapered estimator of the structure factor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>debiased</strong> (<em>bool</em>) – Trigger the use of a debiased tapered estimator.</p></li>
+<li><p><strong>direct</strong> (<em>bool</em>) – If <code class="docutils literal notranslate"><span class="pre">debiased</span></code> is True, trigger the use of the direct/undirect debiased tapered estimator.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>According to <code class="docutils literal notranslate"><span class="pre">debiased</span></code> and <code class="docutils literal notranslate"><span class="pre">direct</span></code> return</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><a class="reference internal" href="#structure_factor.tapered_estimators.tapered_estimator_debiased_direct" title="structure_factor.tapered_estimators.tapered_estimator_debiased_direct"><code class="xref py py-func docutils literal notranslate"><span class="pre">tapered_estimator_debiased_direct()</span></code></a></p></li>
+<li><p><a class="reference internal" href="#structure_factor.tapered_estimators.tapered_estimator_debiased_undirect" title="structure_factor.tapered_estimators.tapered_estimator_debiased_undirect"><code class="xref py py-func docutils literal notranslate"><span class="pre">tapered_estimator_debiased_undirect()</span></code></a></p></li>
+<li><p><a class="reference internal" href="#structure_factor.tapered_estimators.tapered_estimator_core" title="structure_factor.tapered_estimators.tapered_estimator_core"><code class="xref py py-func docutils literal notranslate"><span class="pre">tapered_estimator_core()</span></code></a></p></li>
+</ul>
+</div></blockquote>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>callable</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="structure_factor.tapered_estimators.tapered_estimator_core">
+<span class="sig-prename descclassname"><span class="pre">structure_factor.tapered_estimators.</span></span><span class="sig-name descname"><span class="pre">tapered_estimator_core</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">point_pattern</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">taper</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/tapered_estimators.html#tapered_estimator_core"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.tapered_estimators.tapered_estimator_core" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the tapered estimator <span class="math notranslate nohighlight">\(S_{TP}(t, k)\)</span> of the structure factor <span class="math notranslate nohighlight">\(S(k)\)</span> evaluated at <code class="docutils literal notranslate"><span class="pre">k</span></code> w.r.t. the <code class="docutils literal notranslate"><span class="pre">taper</span></code> <span class="math notranslate nohighlight">\(t\)</span> and the realization <code class="docutils literal notranslate"><span class="pre">point_pattern</span></code> of the underlying stationary point process.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>k</strong> (<em>numpy.ndarray</em>) – Array of size <span class="math notranslate nohighlight">\(n \times d\)</span>, where <span class="math notranslate nohighlight">\(d\)</span> is the ambient dimension and <span class="math notranslate nohighlight">\(n\)</span> the number of points where the estimator is evaluated.</p></li>
+<li><p><strong>point_pattern</strong> (<a class="reference internal" href="point_pattern.html#structure_factor.point_pattern.PointPattern" title="structure_factor.point_pattern.PointPattern"><code class="xref py py-class docutils literal notranslate"><span class="pre">PointPattern</span></code></a>) – Realization of the underlying stationary point process.</p></li>
+<li><p><strong>taper</strong> (<em>object</em>) – Class with static method or instance with method <code class="docutils literal notranslate"><span class="pre">.taper(x,</span> <span class="pre">window)</span></code> corresponding to <span class="math notranslate nohighlight">\(t(x, W)\)</span>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Evaluation of the tapered estimator <span class="math notranslate nohighlight">\(S_{TP}(t, k)\)</span> at <code class="docutils literal notranslate"><span class="pre">k</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+<div class="proof proof-type-definition" id="id5">
+
+    <div class="proof-title">
+        <span class="proof-type">Definition </span>
+        
+    </div><div class="proof-content">
+<p>The tapered estimator <span class="math notranslate nohighlight">\(S_{TP}(t, k)\)</span>, constructed from a realization <span class="math notranslate nohighlight">\(\{x_1, \dots, x_N\} \subset \mathbb{R}^d\)</span>, is defined by,</p>
+<div class="math notranslate nohighlight">
+\[S_{TP}(t, k) =
+\frac{1}{\rho}
+\left\lvert
+    \sum_{j=1}^N
+    t(x_j, W)
+    \exp(- i \left\langle k, x_j \right\rangle)
+\right\rvert^2,\]</div>
+<p>for <span class="math notranslate nohighlight">\(k \in \mathbb{R}^d\)</span>.</p>
+</div></div></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="structure_factor.tapered_estimators.tapered_estimator_debiased_direct">
+<span class="sig-prename descclassname"><span class="pre">structure_factor.tapered_estimators.</span></span><span class="sig-name descname"><span class="pre">tapered_estimator_debiased_direct</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">point_pattern</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">taper</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/tapered_estimators.html#tapered_estimator_debiased_direct"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.tapered_estimators.tapered_estimator_debiased_direct" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the direct debiased tapered estimator <span class="math notranslate nohighlight">\(S_{DDTP}(t, k)\)</span> of the structure factor <span class="math notranslate nohighlight">\(S(k)\)</span> evaluated at <code class="docutils literal notranslate"><span class="pre">k</span></code> w.r.t. the <code class="docutils literal notranslate"><span class="pre">taper</span></code> <span class="math notranslate nohighlight">\(t\)</span> and the realization <code class="docutils literal notranslate"><span class="pre">point_pattern</span></code> of the underlying stationary point process.</p>
+<div class="math notranslate nohighlight">
+\[S_{DDTP}(t, k) =
+    \frac{1}{\rho} \left\lvert
+    \sum_{j=1}^N
+        t(x_j, W)
+        \exp(- i \left\langle k, x_j \right\rangle)
+        - \rho F[t(\cdot, W)](k)
+    \right\rvert^2\]</div>
+<p>where <span class="math notranslate nohighlight">\(x_{1}, \dots, x_{N}\)</span> corresponds to <code class="docutils literal notranslate"><span class="pre">point_pattern.points</span></code>,  <span class="math notranslate nohighlight">\(W\)</span> corresponds to the window <code class="docutils literal notranslate"><span class="pre">point_pattern.window</span></code> and <span class="math notranslate nohighlight">\(\rho\)</span> is the intensity of the underlying stationary point process.</p>
+<p>The direct debiased estimator <span class="math notranslate nohighlight">\(S_{DDTP}(t, k)\)</span> is positive and asymptotically unbiased as the observation window <span class="math notranslate nohighlight">\(W\)</span> grows to <span class="math notranslate nohighlight">\(\mathbb{R}^d\)</span>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>k</strong> (<em>numpy.ndarray</em>) – Array of size <span class="math notranslate nohighlight">\(n \times d\)</span>, where <span class="math notranslate nohighlight">\(d\)</span> is the ambient dimension and <span class="math notranslate nohighlight">\(n\)</span> the number of points where the estimator is evaluated.</p></li>
+<li><p><strong>point_pattern</strong> (<a class="reference internal" href="point_pattern.html#structure_factor.point_pattern.PointPattern" title="structure_factor.point_pattern.PointPattern"><code class="xref py py-class docutils literal notranslate"><span class="pre">PointPattern</span></code></a>) – Realization of the underlying stationary point process.</p></li>
+<li><p><strong>taper</strong> (<em>object</em>) – <p>class instance with two methods:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">.taper(x,</span> <span class="pre">window)</span></code> corresponding to the taper function <span class="math notranslate nohighlight">\(t(x, W)\)</span> such that <span class="math notranslate nohighlight">\(\|t(\cdot, W)\|_2 = 1\)</span>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.ft_taper(k,</span> <span class="pre">window)</span></code> corresponding to the Fourier transform <span class="math notranslate nohighlight">\(\mathcal{F}[t(\cdot, W)](k)\)</span> of the taper function.</p></li>
+</ul>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Vector of size <span class="math notranslate nohighlight">\(n\)</span> containing the evaluation of the direct debiased estimator <span class="math notranslate nohighlight">\(S_{DDTP}(t, k)\)</span>.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="structure_factor.tapered_estimators.tapered_estimator_debiased_undirect">
+<span class="sig-prename descclassname"><span class="pre">structure_factor.tapered_estimators.</span></span><span class="sig-name descname"><span class="pre">tapered_estimator_debiased_undirect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">point_pattern</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">taper</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/tapered_estimators.html#tapered_estimator_debiased_undirect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.tapered_estimators.tapered_estimator_debiased_undirect" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the undirect debiased tapered estimator <span class="math notranslate nohighlight">\(S_{UDTP}(t, k)\)</span> of the structure factor <span class="math notranslate nohighlight">\(S(k)\)</span> evaluated at <code class="docutils literal notranslate"><span class="pre">k</span></code> w.r.t. the <code class="docutils literal notranslate"><span class="pre">taper</span></code> <span class="math notranslate nohighlight">\(t\)</span> and the realization <code class="docutils literal notranslate"><span class="pre">point_pattern</span></code> of the underlying stationary point process.</p>
+<div class="math notranslate nohighlight">
+\[S_{UDTP}(t, k) =
+    \frac{1}{\rho}
+    \left\lvert
+    \sum_{j=1}^N
+        t(x_j, W)
+        \exp(- i \left\langle k, x_j \right\rangle)
+    \right\rvert^2
+    - \rho
+    \left\lvert
+    F[t(\cdot, W)](k))
+    \right\rvert^2\]</div>
+<p>where <span class="math notranslate nohighlight">\(x_{1}, \dots, x_{N}\)</span> corresponds to <code class="docutils literal notranslate"><span class="pre">point_pattern.points</span></code>, <span class="math notranslate nohighlight">\(W\)</span> corresponds to the window <code class="docutils literal notranslate"><span class="pre">point_pattern.window</span></code> and <span class="math notranslate nohighlight">\(\rho\)</span> is the intensity of the underlying stationary point process.</p>
+<p>The undirect debiased estimator <span class="math notranslate nohighlight">\(S_{UDTP}(t, k)\)</span> is not guaranteed to be positive but is asymptotically unbiased as the observation window <span class="math notranslate nohighlight">\(W\)</span> grows to <span class="math notranslate nohighlight">\(\mathbb{R}^d\)</span>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>k</strong> (<em>numpy.ndarray</em>) – Array of size <span class="math notranslate nohighlight">\(n \times d\)</span>, where <span class="math notranslate nohighlight">\(d\)</span> is the ambient dimension and <span class="math notranslate nohighlight">\(n\)</span> the number of points where the estimator is evaluated.</p></li>
+<li><p><strong>point_pattern</strong> (<a class="reference internal" href="point_pattern.html#structure_factor.point_pattern.PointPattern" title="structure_factor.point_pattern.PointPattern"><code class="xref py py-class docutils literal notranslate"><span class="pre">PointPattern</span></code></a>) – Realization of the underlying stationary point process.</p></li>
+<li><p><strong>taper</strong> (<em>object</em>) – <p>class instance with two methods:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">.taper(x,</span> <span class="pre">window)</span></code> corresponding to the taper function <span class="math notranslate nohighlight">\(t(x, W)\)</span> such that <span class="math notranslate nohighlight">\(\|t(\cdot, W)\|_2 = 1\)</span>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.ft_taper(k,</span> <span class="pre">window)</span></code> corresponding to the Fourier transform <span class="math notranslate nohighlight">\(\mathcal{F}[t(\cdot, W)](k)\)</span> of the taper function.</p></li>
+</ul>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Vector of size <span class="math notranslate nohighlight">\(n\)</span> containing the evaluation of the direct debiased estimator <span class="math notranslate nohighlight">\(S_{UDTP}(t, k)\)</span>.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="structure_factor.tapered_estimators.tapered_dft">
+<span class="sig-prename descclassname"><span class="pre">structure_factor.tapered_estimators.</span></span><span class="sig-name descname"><span class="pre">tapered_dft</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">point_pattern</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">taper</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/tapered_estimators.html#tapered_dft"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.tapered_estimators.tapered_dft" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the tapered discrete Fourier transform (tapered DFT) associated with <code class="docutils literal notranslate"><span class="pre">point_pattern</span></code> evaluated at <code class="docutils literal notranslate"><span class="pre">k</span></code>, using <code class="docutils literal notranslate"><span class="pre">taper</span></code> <span class="math notranslate nohighlight">\(t\)</span>.</p>
+<div class="math notranslate nohighlight">
+\[\sum_{j=1}^N t(x_j, W) \exp(- i \langle k, x_j \rangle),\]</div>
+<p>where <span class="math notranslate nohighlight">\(x_{1}, \dots, x_{N}\)</span> corresponds to <code class="docutils literal notranslate"><span class="pre">point_pattern.points</span></code> and <span class="math notranslate nohighlight">\(W\)</span> corresponds to the window <code class="docutils literal notranslate"><span class="pre">point_pattern.window</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>k</strong> (<em>numpy.ndarray</em>) – Array of size <span class="math notranslate nohighlight">\(n \times d\)</span>, where <span class="math notranslate nohighlight">\(d\)</span> is the ambient dimension and <span class="math notranslate nohighlight">\(n\)</span> the number of points where the tapered DFT is evaluated.</p></li>
+<li><p><strong>point_pattern</strong> (<a class="reference internal" href="point_pattern.html#structure_factor.point_pattern.PointPattern" title="structure_factor.point_pattern.PointPattern"><code class="xref py py-class docutils literal notranslate"><span class="pre">PointPattern</span></code></a>) – Realization of the underlying stationary point process.</p></li>
+<li><p><strong>taper</strong> (<em>object</em>) – class with static method or instance with method <code class="docutils literal notranslate"><span class="pre">.taper(x,</span> <span class="pre">window)</span></code> corresponding to <span class="math notranslate nohighlight">\(t(x, W)\)</span> such that <span class="math notranslate nohighlight">\(\|t(\cdot, W)\|_2 = 1\)</span>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Evaluation of the DFT of the taper h</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="structure_factor.tapered_estimators.periodogram_from_dft">
+<span class="sig-prename descclassname"><span class="pre">structure_factor.tapered_estimators.</span></span><span class="sig-name descname"><span class="pre">periodogram_from_dft</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dft</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/tapered_estimators.html#periodogram_from_dft"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.tapered_estimators.periodogram_from_dft" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the square absolute value <code class="docutils literal notranslate"><span class="pre">abs(dft)**2</span></code> of the discrete Fourier transform <code class="docutils literal notranslate"><span class="pre">dft</span></code>.</p>
+<div class="math notranslate nohighlight">
+\[\left\lvert
+\sum_{j=1}^N t(x_j) \exp(- i \langle k, x_j \rangle)
+\right\rvert ^ 2,\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>dft</strong> (<em>numpy.ndarray</em>) – Discrete Fourier transform computed via <a class="reference internal" href="#structure_factor.tapered_estimators.tapered_dft" title="structure_factor.tapered_estimators.tapered_dft"><code class="xref py py-func docutils literal notranslate"><span class="pre">tapered_dft()</span></code></a>.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">abs(dft)**2</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="hyperuniformity.html" class="btn btn-neutral float-left" title="Hyperuniformity" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="tapered_estimators_isotropic.html" class="btn btn-neutral float-right" title="Tapered isotropic estimators" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021-2022, Diala Hawat.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

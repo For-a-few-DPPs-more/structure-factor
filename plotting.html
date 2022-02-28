@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Plotting &mdash; structure-factor  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/proof.css" type="text/css" />
+      <link rel="stylesheet" href="_static/plot_directive.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/proof.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Bibliography" href="bibliography/index.html" />
+    <link rel="prev" title="Utils" href="utils.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> structure-factor
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="structure_factor.html">Structure factor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hyperuniformity.html">Hyperuniformity</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tapered_estimators.html">Tapered estimators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tapered_estimators_isotropic.html">Tapered isotropic estimators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tapers.html">Tapers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transforms.html">Transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="point_processes.html">Point processes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pair_correlation_function.html">Pair correlation function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="point_pattern.html">Point pattern</a></li>
+<li class="toctree-l1"><a class="reference internal" href="spatial_windows.html">Spatial windows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">Utils</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Plotting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bibliography/index.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">structure-factor</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Plotting</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/For-a-few-DPPs-more/structure-factor/blob/main/docs/plotting.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="plotting">
+<span id="id1"></span><h1>Plotting<a class="headerlink" href="#plotting" title="Permalink to this headline"></a></h1>
+<span class="target" id="module-structure_factor.plotting"></span><dl class="py function">
+<dt class="sig sig-object py" id="structure_factor.plotting.plot_poisson">
+<span class="sig-prename descclassname"><span class="pre">structure_factor.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_poisson</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'k'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linestyle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(0,</span> <span class="pre">(5,</span> <span class="pre">10))</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Poisson'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/plotting.html#plot_poisson"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.plotting.plot_poisson" title="Permalink to this definition"></a></dt>
+<dd><p>Plot the pair correlation function <span class="math notranslate nohighlight">\(g_{poisson}\)</span> and the structure factor <span class="math notranslate nohighlight">\(S_{poisson}\)</span> corresponding to the Poisson point process.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>numpy.ndarray</em>) – x coordinate.</p></li>
+<li><p><strong>axis</strong> (<em>plt.Axes</em>) – Axis on which to add the plot.</p></li>
+<li><p><strong>c</strong> (<em>str</em><em>, </em><em>optional</em>) – Color of the plot. see <a class="reference external" href="https://matplotlib.org/2.1.1/api/_as_gen/matplotlib.pyplot.plot.html">matplotlib</a> . Defaults to “k”.</p></li>
+<li><p><strong>linestyle</strong> (<em>tuple</em><em>, </em><em>optional</em>) – Linstyle of the plot. see <a class="reference external" href="https://matplotlib.org/stable/gallery/lines_bars_and_markers/linestyles.html">linestyle</a>. Defaults to (0, (5, 10)).</p></li>
+<li><p><strong>label</strong> (<em>regexp</em><em>, </em><em>optional</em>) – Label of the plot. Defaults to “Poisson”.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Plot of the pair correlation function and the structure factor of the Poisson point process over <code class="docutils literal notranslate"><span class="pre">x</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>plt.Axes</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="structure_factor.plotting.plot_summary">
+<span class="sig-prename descclassname"><span class="pre">structure_factor.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_summary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'log'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mean</span> <span class="pre">$\\pm$</span> <span class="pre">3</span> <span class="pre">$\\cdot$</span> <span class="pre">std'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fmt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'b'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ecolor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'r'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">binning_params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/plotting.html#plot_summary"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.plotting.plot_summary" title="Permalink to this definition"></a></dt>
+<dd><p>Loglog plot the summary results of <a class="reference internal" href="utils.html#structure_factor.utils._bin_statistics" title="structure_factor.utils._bin_statistics"><code class="xref py py-func docutils literal notranslate"><span class="pre">_bin_statistics()</span></code></a> i.e., means and errors bars (3 standard deviations).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>numpy.ndarray</em>) – x coordinate.</p></li>
+<li><p><strong>y</strong> (<em>numpy.ndarray</em>) – y coordinate.</p></li>
+<li><p><strong>axis</strong> (<em>plt.Axes</em>) – Axis on which to add the plot.</p></li>
+<li><p><strong>label</strong> (<em>regexp</em><em>, </em><em>optional</em>) – Label of the plot. Defaults to r”mean $pm$ 3 $cdot$ std”.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Plot of the results of <a class="reference internal" href="utils.html#structure_factor.utils._bin_statistics" title="structure_factor.utils._bin_statistics"><code class="xref py py-meth docutils literal notranslate"><span class="pre">_bin_statistics()</span></code></a> applied on <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code> .</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>plt.Axes</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="structure_factor.plotting.plot_exact">
+<span class="sig-prename descclassname"><span class="pre">structure_factor.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_exact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/plotting.html#plot_exact"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.plotting.plot_exact" title="Permalink to this definition"></a></dt>
+<dd><p>Loglog plot of a callable function <code class="docutils literal notranslate"><span class="pre">y</span></code> evaluated on the vector <code class="docutils literal notranslate"><span class="pre">x</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>numpy.ndarray</em>) – x coordinate.</p></li>
+<li><p><strong>y</strong> (<em>numpy.ndarray</em>) – y coordinate.</p></li>
+<li><p><strong>axis</strong> (<em>plt.Axes</em>) – Axis on which to add the plot.</p></li>
+<li><p><strong>label</strong> (<em>regexp</em><em>, </em><em>optional</em>) – Label of the plot.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Plot of <code class="docutils literal notranslate"><span class="pre">y</span></code> with respect to <code class="docutils literal notranslate"><span class="pre">x</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>plt.Axes</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="structure_factor.plotting.plot_approximation">
+<span class="sig-prename descclassname"><span class="pre">structure_factor.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_approximation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rasterized</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linestyle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">marker</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">markersize</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'log'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/plotting.html#plot_approximation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.plotting.plot_approximation" title="Permalink to this definition"></a></dt>
+<dd><p>Loglog plot of <code class="docutils literal notranslate"><span class="pre">y</span></code> w.r.t. <code class="docutils literal notranslate"><span class="pre">x</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>numpy.ndarray</em>) – x coordinate.</p></li>
+<li><p><strong>y</strong> (<em>numpy.ndarray</em>) – y coordinate.</p></li>
+<li><p><strong>axis</strong> (<em>plt.Axes</em>) – Axis on which to add the plot.</p></li>
+<li><p><strong>rasterized</strong> (<em>bool</em>) – Rasterized option of <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.plot.html#:~:text=float-,rasterized,-bool">matlplotlib.plot</a>.</p></li>
+<li><p><strong>label</strong> (<em>regexp</em><em>, </em><em>optional</em>) – Label of the plot.</p></li>
+<li><p><strong>color</strong> (<em>matplotlib.color</em>) – Color of the plot. see <a class="reference external" href="https://matplotlib.org/2.1.1/api/_as_gen/matplotlib.pyplot.plot.html">color</a> .</p></li>
+<li><p><strong>linestyle</strong> (<em>tuple</em>) – <p>Style of the plot. see <a class="reference external" href="https://matplotlib.org/stable/gallery/lines_bars_and_markers/linestyles.html">linestyle</a>.</p>
+</p></li>
+<li><p><strong>marker</strong> (<em>matplotlib.marker</em>) – Marker of <a class="reference external" href="https://matplotlib.org/stable/api/markers_api.html">marker</a>.</p></li>
+<li><p><strong>markersize</strong> (<em>float</em>) – Marker size.</p></li>
+<li><p><strong>scale</strong> (<em>str</em><em>, </em><em>optional</em>) – Trigger between plot scales of <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_xscale.html">plt.Axes</a>. Defaults to <cite>log</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Loglog plot of <code class="docutils literal notranslate"><span class="pre">y</span></code> w.r.t. <code class="docutils literal notranslate"><span class="pre">x</span></code></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>plt.Axes</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="structure_factor.plotting.plot_estimation_showcase">
+<span class="sig-prename descclassname"><span class="pre">structure_factor.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_estimation_showcase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k_norm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">estimation</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'log'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exact_sf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error_bar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'$\\widehat{S}$'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rasterized</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">binning_params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/plotting.html#plot_estimation_showcase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.plotting.plot_estimation_showcase" title="Permalink to this definition"></a></dt>
+<dd><p>Loglog plot of the results of the scattering intensity <a class="reference internal" href="structure_factor.html#structure_factor.structure_factor.StructureFactor.scattering_intensity" title="structure_factor.structure_factor.StructureFactor.scattering_intensity"><code class="xref py py-meth docutils literal notranslate"><span class="pre">scattering_intensity()</span></code></a>, with the means and error bars over specific number of bins found via <a class="reference internal" href="utils.html#structure_factor.utils._bin_statistics" title="structure_factor.utils._bin_statistics"><code class="xref py py-func docutils literal notranslate"><span class="pre">_bin_statistics()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>k_norm</strong> (<em>numpy.ndarray</em>) – Wavenumbers.</p></li>
+<li><p><strong>estimation</strong> (<em>numpy.ndarray</em>) – Scattering intensity corresponding to <code class="docutils literal notranslate"><span class="pre">k_norm</span></code>.</p></li>
+<li><p><strong>axis</strong> (<em>plt.Axes</em><em>, </em><em>optional</em>) – Axis on which to add the plot. Defaults to None.</p></li>
+<li><p><strong>scale</strong> (<em>str</em><em>, </em><em>optional</em>) – Trigger between plot scales of <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_xscale.html">matplotlib.plot</a>. Defaults to <cite>log</cite>.</p></li>
+<li><p><strong>exact_sf</strong> (<em>callable</em><em>, </em><em>optional</em>) – Structure factor of the point process. Defaults to None.</p></li>
+<li><p><strong>error_bar</strong> (<em>bool</em><em>, </em><em>optional</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, <code class="docutils literal notranslate"><span class="pre">k_norm</span></code> and correspondingly <code class="docutils literal notranslate"><span class="pre">estimation</span></code> are divided into sub-intervals (bins). Over each bin, the mean and the standard deviation of <code class="docutils literal notranslate"><span class="pre">estimation</span></code> are derived and visualized on the plot. Note that each error bar corresponds to the mean +/- 3 standard deviation. To specify the number of bins, add it to the kwargs argument <code class="docutils literal notranslate"><span class="pre">binning_params</span></code>. For more details see <a class="reference internal" href="utils.html#structure_factor.utils._bin_statistics" title="structure_factor.utils._bin_statistics"><code class="xref py py-meth docutils literal notranslate"><span class="pre">_bin_statistics()</span></code></a>. Defaults to False.</p></li>
+<li><p><strong>rasterized</strong> (<em>bool</em><em>, </em><em>optional</em>) – <p>Rasterized option of <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.plot.html#:~:text=float-,rasterized,-bool">matlplotlib.plot</a>. Defaults to True.</p>
+</p></li>
+<li><p><strong>file_name</strong> (<em>str</em><em>, </em><em>optional</em>) – Name used to save the figure. The available output formats depend on the backend being used. Defaults to “”.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="structure_factor.plotting.plot_estimation_imshow">
+<span class="sig-prename descclassname"><span class="pre">structure_factor.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_estimation_imshow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k_norm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">si</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/plotting.html#plot_estimation_imshow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.plotting.plot_estimation_imshow" title="Permalink to this definition"></a></dt>
+<dd><p>Color level 2D plot, centered on zero.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>k_norm</strong> (<em>numpy.ndarray</em>) – Wavenumbers.</p></li>
+<li><p><strong>si</strong> (<em>numpy.ndarray</em>) – Scattering intensity corresponding to <code class="docutils literal notranslate"><span class="pre">k_norm</span></code>.</p></li>
+<li><p><strong>axis</strong> (<em>plt.Axes</em>) – Axis on which to add the plot.</p></li>
+<li><p><strong>file_name</strong> (<em>str</em><em>, </em><em>optional</em>) – Name used to save the figure. The available output formats depend on the backend being used. Defaults to “”.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="structure_factor.plotting.plot_estimation_all">
+<span class="sig-prename descclassname"><span class="pre">structure_factor.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_estimation_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">point_pattern</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k_norm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">estimation</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exact_sf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error_bar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'$\\widehat{S}$'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rasterized</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_res</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'log'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">binning_params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/plotting.html#plot_estimation_all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.plotting.plot_estimation_all" title="Permalink to this definition"></a></dt>
+<dd><p>Construct 3 subplots: point pattern, associated scattering intensity plot, associated scattering intensity color level (only for 2D point processes).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>point_pattern</strong> (<a class="reference internal" href="point_pattern.html#structure_factor.point_pattern.PointPattern" title="structure_factor.point_pattern.PointPattern"><code class="xref py py-class docutils literal notranslate"><span class="pre">PointPattern</span></code></a>) – Object of type PointPattern containing a realization <code class="docutils literal notranslate"><span class="pre">point_pattern.points</span></code> of a point process, the window where the points were simulated <code class="docutils literal notranslate"><span class="pre">point_pattern.window</span></code> and (optionally) the intensity of the point process <code class="docutils literal notranslate"><span class="pre">point_pattern.intensity</span></code>.</p></li>
+<li><p><strong>k_norm</strong> (<em>numpy.ndarray</em>) – Wavenumbers.</p></li>
+<li><p><strong>estimation</strong> (<em>numpy.ndarray</em>) – Scattering intensity corresponding to <code class="docutils literal notranslate"><span class="pre">k_norm</span></code>.</p></li>
+<li><p><strong>exact_sf</strong> (<em>callable</em><em>, </em><em>optional</em>) – Structure factor of the point process. Defaults to None.</p></li>
+<li><p><strong>error_bar</strong> (<em>bool</em><em>, </em><em>optional</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, <code class="docutils literal notranslate"><span class="pre">k_norm</span></code> and correspondingly <code class="docutils literal notranslate"><span class="pre">estimation</span></code> are divided into sub-intervals (bins). Over each bin, the mean and the standard deviation of <code class="docutils literal notranslate"><span class="pre">estimation</span></code> are derived and visualized on the plot. Note that each error bar corresponds to the mean +/- 3 standard deviation. To specify the number of bins, add it to the kwargs argument <code class="docutils literal notranslate"><span class="pre">binning_params</span></code>. For more details see <a class="reference internal" href="utils.html#structure_factor.utils._bin_statistics" title="structure_factor.utils._bin_statistics"><code class="xref py py-meth docutils literal notranslate"><span class="pre">_bin_statistics()</span></code></a>. Defaults to False.</p></li>
+<li><p><strong>rasterized</strong> (<em>bool</em><em>, </em><em>optional</em>) – <p>Rasterized option of <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.plot.html#:~:text=float-,rasterized,-bool">matlplotlib.plot</a>. Defaults to True.</p>
+</p></li>
+<li><p><strong>file_name</strong> (<em>str</em><em>, </em><em>optional</em>) – Name used to save the figure. The available output formats depend on the backend being used. Defaults to “”.</p></li>
+<li><p><strong>window_res</strong> (<a class="reference internal" href="spatial_windows.html#structure_factor.spatial_windows.AbstractSpatialWindow" title="structure_factor.spatial_windows.AbstractSpatialWindow"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractSpatialWindow</span></code></a>, optional) – New restriction window. It is useful when the sample of points is large, so for time and visualization purposes, it is better to restrict the plot of the point process to a smaller window. Defaults to None.</p></li>
+<li><p><strong>scale</strong> (<em>str</em><em>, </em><em>optional</em>) – <p>Trigger between plot scales of <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_xscale.html">matplotlib.plot</a>. Defaults to <cite>log</cite>.</p>
+</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="structure_factor.plotting.plot_sf_hankel_quadrature">
+<span class="sig-prename descclassname"><span class="pre">structure_factor.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_sf_hankel_quadrature</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k_norm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">estimation</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k_norm_min</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exact_sf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error_bar</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">binning_params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/plotting.html#plot_sf_hankel_quadrature"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.plotting.plot_sf_hankel_quadrature" title="Permalink to this definition"></a></dt>
+<dd><p>Plot the approximations of the structure factor (results of <a class="reference internal" href="structure_factor.html#structure_factor.structure_factor.StructureFactor.quadrature_estimator_isotropic" title="structure_factor.structure_factor.StructureFactor.quadrature_estimator_isotropic"><code class="xref py py-meth docutils literal notranslate"><span class="pre">quadrature_estimator_isotropic()</span></code></a>) with means and error bars over bins, see <a class="reference internal" href="utils.html#structure_factor.utils._bin_statistics" title="structure_factor.utils._bin_statistics"><code class="xref py py-meth docutils literal notranslate"><span class="pre">_bin_statistics()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>k_norm</strong> (<em>numpy.ndarray</em>) – Vector of wavenumbers (i.e., norms of waves) on which the structure factor has been approximated.</p></li>
+<li><p><strong>estimation</strong> (<em>numpy.ndarray</em>) – Approximation of the structure factor corresponding to <code class="docutils literal notranslate"><span class="pre">k_norm</span></code>.</p></li>
+<li><p><strong>axis</strong> (<em>plt.Axes</em>) – Support axis of the plots.</p></li>
+<li><p><strong>scale</strong> (<em>str</em>) – <p>Trigger between plot scales of <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.set_xscale.html">matplotlib.plot</a>.</p>
+</p></li>
+<li><p><strong>k_norm_min</strong> (<em>float</em>) – Estimated lower bound of the wavenumbers (only when <code class="docutils literal notranslate"><span class="pre">estimation</span></code> was approximated using <strong>Ogata quadrature</strong>).</p></li>
+<li><p><strong>exact_sf</strong> (<em>callable</em>) – Theoretical structure factor of the point process.</p></li>
+<li><p><strong>error_bar</strong> (<em>bool</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, <code class="docutils literal notranslate"><span class="pre">k_norm</span></code> and correspondingly <code class="docutils literal notranslate"><span class="pre">si</span></code> are divided into sub-intervals (bins). Over each bin, the mean and the standard deviation of <code class="docutils literal notranslate"><span class="pre">si</span></code> are derived and visualized on the plot. Note that each error bar corresponds to the mean +/- 3 standard deviation. To specify the number of bins, add it to the kwargs argument <code class="docutils literal notranslate"><span class="pre">binning_params</span></code>. For more details see <a class="reference internal" href="utils.html#structure_factor.utils._bin_statistics" title="structure_factor.utils._bin_statistics"><code class="xref py py-meth docutils literal notranslate"><span class="pre">_bin_statistics()</span></code></a>. Defaults to False.</p></li>
+<li><p><strong>file_name</strong> (<em>str</em>) – Name used to save the figure. The available output formats depend on the backend being used.</p></li>
+<li><p><strong>label</strong> (<em>regexp</em>) – Label of the plot.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><p><strong>binning_params</strong> – (dict): Used when <code class="docutils literal notranslate"><span class="pre">error_bar=True</span></code>, by the method <code class="xref py py-meth docutils literal notranslate"><span class="pre">utils_bin_statistics()</span></code> as keyword arguments (except <code class="docutils literal notranslate"><span class="pre">&quot;statistic&quot;</span></code>) of <code class="docutils literal notranslate"><span class="pre">scipy.stats.binned_statistic</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="utils.html" class="btn btn-neutral float-left" title="Utils" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="bibliography/index.html" class="btn btn-neutral float-right" title="Bibliography" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021-2022, Diala Hawat.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

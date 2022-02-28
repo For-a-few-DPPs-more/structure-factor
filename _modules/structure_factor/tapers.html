@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>structure_factor.tapers &mdash; structure-factor  documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/proof.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/plot_directive.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/proof.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> structure-factor
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../structure_factor.html">Structure factor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../hyperuniformity.html">Hyperuniformity</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tapered_estimators.html">Tapered estimators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tapered_estimators_isotropic.html">Tapered isotropic estimators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tapers.html">Tapers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../transforms.html">Transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../point_processes.html">Point processes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pair_correlation_function.html">Pair correlation function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../point_pattern.html">Point pattern</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../spatial_windows.html">Spatial windows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../utils.html">Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../plotting.html">Plotting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibliography/index.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">structure-factor</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      <li>structure_factor.tapers</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for structure_factor.tapers</h1><div class="highlight"><pre>
+<span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Collection of classes representing tapers (also called tapering functions or window functions). Such tapers must have two methods.</span>
+
+<span class="sd">- ``.taper(x, window)`` corresponding to the tapering function :math:`t(x, W)`,</span>
+
+<span class="sd">- ``.ft_taper(k, window)`` corresponding to the Fourier transform :math:`\mathcal{F}[t(\cdot, W)](k)` of the tapering function.</span>
+
+<span class="sd">These tapers satisfy some conditions listed in :cite:`HGBLR:22` (Sections 3.1, 4.3).</span>
+
+<span class="sd">Example:</span>
+<span class="sd">    .. literalinclude:: code/structure_factor/taper.py</span>
+<span class="sd">        :language: python</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">product</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">structure_factor.spatial_windows</span> <span class="kn">import</span> <span class="n">BoxWindow</span>
+
+
+<div class="viewcode-block" id="BartlettTaper"><a class="viewcode-back" href="../../tapers.html#structure_factor.tapers.BartlettTaper">[docs]</a><span class="k">class</span> <span class="nc">BartlettTaper</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Class representing the Bartlett tapering function.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="BartlettTaper.taper"><a class="viewcode-back" href="../../tapers.html#structure_factor.tapers.BartlettTaper.taper">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">taper</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">window</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Evaluate the Bartlett taper :math:`t(x, W)` at ``x`` given the rectangular ``window`` :math:`W`.</span>
+
+<span class="sd">        .. math::</span>
+
+<span class="sd">            t(x, W) = \frac{1}{\sqrt{|W|}} 1_{x \in W}.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            x (numpy.ndarray): Array of size :math:`n \times d`, where :math:`d` is the ambient dimension and :math:`n` the number of points where the tapering function is evaluated.</span>
+
+<span class="sd">            window (:py:class:`~structure_factor.spatial_windows.BoxWindow`): :math:`d`-dimensional rectangular window :math:`W`.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            numpy.ndarray: evaluation of the taper :math:`t(x, W)`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">window</span><span class="p">,</span> <span class="n">BoxWindow</span><span class="p">)</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">window</span><span class="o">.</span><span class="n">indicator_function</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">t</span> <span class="o">/=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">window</span><span class="o">.</span><span class="n">volume</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">t</span></div>
+
+<div class="viewcode-block" id="BartlettTaper.ft_taper"><a class="viewcode-back" href="../../tapers.html#structure_factor.tapers.BartlettTaper.ft_taper">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">ft_taper</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">window</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Evaluate the Fourier transform :math:`F[t(\cdot, W)](k)` of the taper :math:`t` (:py:meth:`~structure_factor.tapers.BartlettTaper.taper`).</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            k (numpy.ndarray): Array of size :math:`n \times d`, where :math:`d` is the ambient dimension and :math:`n` the number of points where the Fourier transform is evaluated.</span>
+
+<span class="sd">            window (:py:class:`~structure_factor.spatial_windows.BoxWindow`): :math:`d`-dimensional rectangular window :math:`W`.</span>
+
+<span class="sd">        Return:</span>
+<span class="sd">            numpy.ndarray: Evaluation of the Fourier transform at ``k``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">window</span><span class="p">,</span> <span class="n">BoxWindow</span><span class="p">)</span>
+        <span class="n">widths</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">window</span><span class="o">.</span><span class="n">bounds</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">k</span> <span class="o">==</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">mask</span><span class="p">):</span>
+            <span class="n">sines</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+            <span class="n">widths_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="o">*</span> <span class="n">widths</span>
+            <span class="n">sines</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">widths_matrix</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">logical_not</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">mask</span><span class="p">)</span>
+            <span class="n">sines</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">k</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">*</span> <span class="n">widths_matrix</span><span class="p">[</span><span class="n">mask</span><span class="p">])</span> <span class="o">/</span> <span class="n">k</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">sines</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">k</span> <span class="o">*</span> <span class="n">widths</span><span class="p">)</span> <span class="o">/</span> <span class="n">k</span>
+
+        <span class="n">ft</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">sines</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ft</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">window</span><span class="o">.</span><span class="n">volume</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="SineTaper"><a class="viewcode-back" href="../../tapers.html#structure_factor.tapers.SineTaper">[docs]</a><span class="k">class</span> <span class="nc">SineTaper</span><span class="p">:</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Class representing the sine tapering function.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="SineTaper.__init__"><a class="viewcode-back" href="../../tapers.html#structure_factor.tapers.SineTaper.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">p</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SineTaper.taper"><a class="viewcode-back" href="../../tapers.html#structure_factor.tapers.SineTaper.taper">[docs]</a>    <span class="k">def</span> <span class="nf">taper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">window</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Evalute the sine taper :math:`t(x, W)` indexed by :py:attr:`~structure_factor.tapers.SineTaper.p` at ``x`` given the rectangular ``window`` :math:`W`.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            x (numpy.ndarray): Array of size :math:`n \times d`, where :math:`d` is the ambient dimension and :math:`n` the number of points where the tapering function is evaluated.</span>
+
+<span class="sd">            window (:py:class:`~structure_factor.spatial_windows.BoxWindow`): :math:`d`-dimensional rectangular window :math:`W`.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            numpy.ndarray: evaluation of the taper :math:`t(x, W)`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">window</span><span class="p">,</span> <span class="n">BoxWindow</span><span class="p">)</span>
+        <span class="n">widths</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">window</span><span class="o">.</span><span class="n">bounds</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="c1"># d = x.shape[1]</span>
+        <span class="n">sines</span> <span class="o">=</span> <span class="n">x</span> <span class="o">/</span> <span class="n">widths</span> <span class="o">+</span> <span class="mf">0.5</span>
+        <span class="n">sines</span> <span class="o">*=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">sines</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">sines</span><span class="p">)</span>
+
+        <span class="n">t</span> <span class="o">=</span> <span class="n">window</span><span class="o">.</span><span class="n">indicator_function</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">t</span> <span class="o">*=</span> <span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">sines</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">t</span> <span class="o">*=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">window</span><span class="o">.</span><span class="n">volume</span><span class="p">)</span>  <span class="c1"># normalization</span>
+        <span class="k">return</span> <span class="n">t</span></div>
+
+<div class="viewcode-block" id="SineTaper.ft_taper"><a class="viewcode-back" href="../../tapers.html#structure_factor.tapers.SineTaper.ft_taper">[docs]</a>    <span class="k">def</span> <span class="nf">ft_taper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">window</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Evaluate the Fourier transform :math:`F[t(\cdot, W)](k)` of the taper :math:`t` (:py:meth:`~structure_factor.tapers.SineTaper.taper`).</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            k (numpy.ndarray): Array of size :math:`n \times d`, where :math:`d` is the ambient dimension and :math:`n` the number of points where the Fourier transform is evaluated.</span>
+
+<span class="sd">            window (:py:class:`~structure_factor.spatial_windows.BoxWindow`): :math:`d`-dimensional rectangular window :math:`W`.</span>
+
+<span class="sd">        Return:</span>
+<span class="sd">            numpy.ndarray: Evaluation of the Fourier transform at ``k``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">window</span><span class="p">,</span> <span class="n">BoxWindow</span><span class="p">)</span>
+        <span class="n">widths</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">window</span><span class="o">.</span><span class="n">bounds</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">k</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">p</span> <span class="o">/</span> <span class="n">widths</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">k</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">p</span> <span class="o">/</span> <span class="n">widths</span>
+
+        <span class="k">def</span> <span class="nf">compute_factor</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">widths</span><span class="p">):</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="n">x</span> <span class="o">==</span> <span class="mi">0</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">mask</span><span class="p">):</span>
+                <span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+                <span class="n">widths_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="o">*</span> <span class="n">widths</span>
+                <span class="n">out</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">widths_matrix</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">logical_not</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">mask</span><span class="p">)</span>
+                <span class="n">out</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">*</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">widths_matrix</span><span class="p">[</span><span class="n">mask</span><span class="p">])</span> <span class="o">/</span> <span class="n">x</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">x</span> <span class="o">*</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">widths</span><span class="p">)</span> <span class="o">/</span> <span class="n">x</span>
+            <span class="k">return</span> <span class="n">out</span>
+
+        <span class="n">res_a</span> <span class="o">=</span> <span class="n">compute_factor</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">widths</span><span class="p">)</span>
+        <span class="n">res_b</span> <span class="o">=</span> <span class="n">compute_factor</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">widths</span><span class="p">)</span>
+
+        <span class="n">res</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="n">j</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="n">p</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">res_a</span> <span class="o">-</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">**</span> <span class="n">p</span> <span class="o">*</span> <span class="n">res_b</span><span class="p">)</span>
+        <span class="n">ft</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">ft</span> <span class="o">/=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">window</span><span class="o">.</span><span class="n">volume</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">ft</span></div></div>
+
+
+<div class="viewcode-block" id="multi_sinetaper_grid"><a class="viewcode-back" href="../../tapers.html#structure_factor.tapers.multi_sinetaper_grid">[docs]</a><span class="k">def</span> <span class="nf">multi_sinetaper_grid</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">p_component_max</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Given a class of taper `taper_p` of parameter `p` of :math:`\mathbb{R}^d`, return the list of taper `taper_p(p)` with :math:`p \in \{1, ..., P\}^d`.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        d (int): Space dimension.</span>
+
+<span class="sd">        taper_p (Class): Class of taper pf parameter p.</span>
+
+<span class="sd">        p_component_max (int): Maximum component of the parameters :math:`p` of the family of tapers. Intuitively the number of taper used is :math:`P=\mathrm{p\_component\_max}^d`. Used only when ``tapers=None``. Defaults to 2.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        list: List of taper `taper_p(p)` with :math:`p \in \{1, ..., p_component_max\}^d`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">params</span> <span class="o">=</span> <span class="n">product</span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">p_component_max</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">d</span><span class="p">)))</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">SineTaper</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">params</span><span class="p">]</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021-2022, Diala Hawat.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
