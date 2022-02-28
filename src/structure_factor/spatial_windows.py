@@ -1,10 +1,21 @@
-#!/usr/bin/env python3
-# coding=utf-8
+"""Collection of classes representing observation windows (box, ball, etc).
+
+- :py:class:`~structure_factor.spatial_windows.BallWindow`: Ball window object.
+- :py:class:`~structure_factor.spatial_windows.BoxWindow`: Box window object.
+
+.. note::
+
+    **Typical usage**
+
+    - :py:class:`~structure_factor.point_pattern.PointPattern` has a :py:attr:`~structure_factor.point_pattern.PointPattern.window` argument/attribute.
+"""
 
 from abc import ABCMeta, abstractmethod
 
 import numpy as np
 import scipy as sp
+from matplotlib import pyplot as plt
+from matplotlib.patches import Circle, Rectangle
 from rpy2 import robjects
 from spatstat_interface.interface import SpatstatInterface
 
@@ -12,24 +23,7 @@ from structure_factor.utils import get_random_number_generator
 
 
 class AbstractSpatialWindow(metaclass=ABCMeta):
-    r"""Encapsulate the notion of spatial window in :math:`\mathbb{R}^d`.
-
-    .. note::
-
-
-        **This class is a sub-class of**:
-            - :py:class:`~structure_factor.spatial_windows.BallWindow`
-            - :py:class:`~structure_factor.spatial_windows.BoxWindow`
-
-        **Typical usage**:
-
-        :py:class:`~structure_factor.point_pattern.PointPattern` has a :py:attr:`~structure_factor.point_pattern.PointPattern.window` argument/attribute.
-
-    .. seealso::
-
-        - :py:class:`~structure_factor.spatial_windows.BallWindow`, :py:class:`~structure_factor.spatial_windows.UnitBallWindow`
-        - :py:class:`~structure_factor.spatial_windows.BoxWindow`, :py:class:`~structure_factor.spatial_windows.UnitBoxWindow`
-    """
+    r"""Encapsulate the notion of spatial window in :math:`\mathbb{R}^d`."""
 
     @property
     @abstractmethod
@@ -54,6 +48,7 @@ class AbstractSpatialWindow(metaclass=ABCMeta):
 
         Args:
             points (numpy.ndarray): Vector of size :math:`d` or array of size :math:`n \times d` containing the point(s) to be tested.
+
         Returns:
             bool or numpy.ndarray:
             - If :math:`n=1`, bool.
@@ -81,18 +76,19 @@ class AbstractSpatialWindow(metaclass=ABCMeta):
 class BallWindow(AbstractSpatialWindow):
     r"""Create a :math:`d` dimensional ball window :math:`B(c, r)`, where :math:`c \in \mathbb{R}^d` and :math:`r>0`.
 
-    Args:
-        center (numpy.ndarray): Center :math:`c` of the ball.
-        radius (float, optional): Radius :math:`r > 0` of the ball. Defaults to 1.0.
+    .. todo::
+
+        list attributes
 
     Example:
-        .. literalinclude:: code/spatial_window_example.py
-            :language: python
-            :lines: 1-4
+        .. plot:: code/spatial_window/ball_window.py
+            :include-source: True
+            :align: center
 
-        .. testoutput::
+    .. seealso::
 
-            The volume of the window is equal to 50.26548245743669
+        - :py:mod:`~structure_factor.point_pattern`
+        - :py:class:`~structure_factor.spatial_windows.BoxWindow`
     """
 
     def __init__(self, center, radius=1.0):
@@ -102,17 +98,28 @@ class BallWindow(AbstractSpatialWindow):
             center (numpy.ndarray): Center :math:`c` of the ball.
             radius (float, optional): Radius :math:`r > 0` of the ball. Defaults to 1.0.
         """
-        _center = np.array(center)
-        if not _center.ndim == 1:
+        center = np.asarray(center)
+        if not center.ndim == 1:
             raise ValueError("center must be 1D numpy.ndarray")
         if not radius > 0:
             raise ValueError("radius must be positive")
-        self.center = _center
-        self.radius = radius
+        self.center = center
+        self.radius = float(radius)
 
     @property
     def dimension(self):
         return len(self.center)
+
+    @property
+    def surface(self):
+        d, r = self.dimension, self.radius
+        if d == 1:
+            return 0.0
+        if d == 2:
+            return 2 * np.pi * r
+        if d == 3:
+            return 4 * np.pi * r ** 2
+        return 2 * np.pi ** (d / 2) * r ** (d - 1) / sp.special.gamma(d / 2)
 
     @property
     def volume(self):
@@ -121,12 +128,14 @@ class BallWindow(AbstractSpatialWindow):
             return 2 * r
         if d == 2:
             return np.pi * r ** 2
+        if d == 3:
+            return 4 / 3 * np.pi * r ** 3
         return np.pi ** (d / 2) * r ** d / sp.special.gamma(d / 2 + 1)
 
     def __contains__(self, point):
-        _point = np.array(point)
-        assert _point.ndim == 1 and _point.size == self.dimension
-        return self.indicator_function(_point)
+        point = np.asarray(point)
+        assert point.ndim == 1 and point.size == self.dimension
+        return self.indicator_function(point)
 
     def indicator_function(self, points):
         return np.linalg.norm(points - self.center, axis=-1) <= self.radius
@@ -154,7 +163,7 @@ class BallWindow(AbstractSpatialWindow):
 
         .. seealso::
 
-            `https://rdocumentation.org/packages/spatstat.geom/versions/2.2-0/topics/disc <https://rdocumentation.org/packages/spatstat.geom/versions/2.2-0/topics/disc>`_
+            - `https://rdocumentation.org/packages/spatstat.geom/versions/2.2-0/topics/disc <https://rdocumentation.org/packages/spatstat.geom/versions/2.2-0/topics/disc>`_
         """
         spatstat = SpatstatInterface(update=False)
         spatstat.import_package("geom", update=False)
@@ -162,12 +171,33 @@ class BallWindow(AbstractSpatialWindow):
         c = robjects.vectors.FloatVector(self.center)
         return spatstat.geom.disc(radius=r, centre=c, **params)
 
+    def plot(self, axis=None, **kwargs):
+        """Display the window on matplotlib `axis`.
+
+        Args:
+            axis (plt.Axes, optional): Support axis of the plot. Defaults to None.
+
+        Keyword Args:
+            kwargs (dict): Keyword arguments of ``matplotlib.patches.Circle`` with default ``fill=False``.
+
+        Returns:
+            plt.Axes: Plot axis.
+        """
+        if self.dimension != 2:
+            raise NotImplementedError("Method implemented only for 2D window")
+
+        if axis is None:
+            fig, axis = plt.subplots(figsize=(5, 5))
+
+        kwargs.setdefault("fill", False)
+        circle = Circle(self.center, self.radius, **kwargs)
+
+        axis.add_patch(circle)
+        return axis
+
 
 class UnitBallWindow(BallWindow):
     r"""Create a d-dimensional unit ball window :math:`B(c, r=1)`, where :math:`c \in \mathbb{R}^d`.
-
-    Args:
-        center (numpy.ndarray, optional): Center :math:`c` of the ball.
 
     .. note::
 
@@ -186,17 +216,19 @@ class UnitBallWindow(BallWindow):
 class BoxWindow(AbstractSpatialWindow):
     r"""Create a :math:`d` dimensional box window :math:`\prod_{i=1}^{d} [a_i, b_i]`.
 
-    Args:
-        bounds (numpy.ndarray): :math:`d \times 2` array describing the bounds of the box.
+    .. todo::
+
+        list attributes
 
     Example:
-        .. literalinclude:: code/spatial_window_example.py
-            :language: python
-            :lines: 6-10
+        .. plot:: code/spatial_window/box_window.py
+            :include-source: True
+            :align: center
 
-        .. testoutput::
+    .. seealso::
 
-            The volume of the window is equal to 64
+        - :py:mod:`~structure_factor.point_pattern`
+        - :py:class:`~structure_factor.spatial_windows.BoxWindow`
     """
 
     def __init__(self, bounds):
@@ -205,13 +237,13 @@ class BoxWindow(AbstractSpatialWindow):
         Args:
             bounds (numpy.ndarray): :math:`d \times 2` array describing the bounds of the box.
         """
-        _bounds = np.atleast_2d(bounds)
-        if _bounds.ndim != 2 or _bounds.shape[1] != 2:
+        bounds = np.atleast_2d(bounds)
+        if bounds.ndim != 2 or bounds.shape[1] != 2:
             raise ValueError("bounds must be d x 2 numpy.ndarray")
-        if np.any(np.diff(_bounds, axis=-1) <= 0):
+        if np.any(np.diff(bounds, axis=-1) <= 0):
             raise ValueError("all bounds [a_i, b_i] must satisfy a_i < b_i")
         # use transpose to facilitate operations (unpacking, diff, rand, etc)
-        self._bounds = np.transpose(_bounds)
+        self._bounds = np.transpose(bounds)
 
     @property
     def bounds(self):
@@ -230,9 +262,9 @@ class BoxWindow(AbstractSpatialWindow):
         return np.prod(np.diff(self._bounds, axis=0))
 
     def __contains__(self, point):
-        _point = np.array(point)
-        assert _point.ndim == 1 and _point.size == self.dimension
-        return self.indicator_function(_point)
+        point = np.asarray(point)
+        assert point.ndim == 1 and point.size == self.dimension
+        return self.indicator_function(point)
 
     def indicator_function(self, points):
         a, b = self._bounds
@@ -257,7 +289,7 @@ class BoxWindow(AbstractSpatialWindow):
 
         .. seealso::
 
-            `https://rdocumentation.org/packages/spatstat.geom/versions/2.2-0/topics/owin <https://rdocumentation.org/packages/spatstat.geom/versions/2.2-0/topics/owin>`_
+            - `https://rdocumentation.org/packages/spatstat.geom/versions/2.2-0/topics/owin <https://rdocumentation.org/packages/spatstat.geom/versions/2.2-0/topics/owin>`_
         """
         if self.dimension != 2:
             raise NotImplementedError("spatstat only handles 2D windows")
@@ -268,13 +300,36 @@ class BoxWindow(AbstractSpatialWindow):
         y = robjects.vectors.FloatVector(b)
         return spatstat.geom.owin(xrange=x, yrange=y, **params)
 
+    def plot(self, axis=None, **kwargs):
+        """Display the window on matplotlib `axis`.
+
+        Args:
+            axis (plt.Axes, optional): Support axis of the plot. Defaults to None.
+
+        Keyword Args:
+            kwargs (dict): Keyword arguments of ``matplotlib.patches.Rectangle`` with default ``fill=False``.
+
+        Returns:
+            plt.Axes: Plot axis.
+        """
+        if self.dimension != 2:
+            raise NotImplementedError("Method implemented only for 2D window")
+
+        if axis is None:
+            fig, axis = plt.subplots(figsize=(5, 5))
+
+        kwargs.setdefault("fill", False)
+
+        xy = self._bounds[0]
+        width, height = np.diff(self._bounds, axis=0).ravel()
+        rectangle = Rectangle(xy, width, height, **kwargs)
+
+        axis.add_patch(rectangle)
+        return axis
+
 
 class UnitBoxWindow(BoxWindow):
-    r"""Create a :math:`d` dimensional unit box window :math:`\prod_{i=1}^{d} [c_i - \frac{1}{2}, c_i + \frac{1}{2}]` where :math:`c \in \mathbb{R}^d`.
-
-    Args:
-        center (numpy.ndarray): Center :math:`c` of the box.
-    """
+    r"""Create a :math:`d` dimensional unit box window :math:`\prod_{i=1}^{d} [c_i - \frac{1}{2}, c_i + \frac{1}{2}]` where :math:`c \in \mathbb{R}^d`."""
 
     def __init__(self, center):
         r"""Initialize a :math:`d` dimensional unit box window :math:`\prod_{i=1}^{d} [c_i - \frac{1}{2}, c_i + \frac{1}{2}]`, i.e., a box window with length equal to 1 and prescribed ``center``, such that :math:`c_i=` ``center[i]``.
@@ -290,17 +345,19 @@ class UnitBoxWindow(BoxWindow):
 
 
 def check_cubic_window(window):
-    """Check if a window is a cubic window.
+    """Check whether ``window`` is represents a cubic window.
 
     Args:
-        window (AbstractSpatialWindow): Window.
+        window (:py:class:`~structure_factor.spatial_windows.BoxWindow`):
+
+    Raises:
+        TypeError: ``window`` must be a :py:class:`~structure_factor.spatial_windows.BoxWindow`.
+        ValueError: ``window.bounds`` must have the same length.
     """
     if not isinstance(window, BoxWindow):
         raise TypeError("window must be an instance of BoxWindow.")
     lengths = np.diff(window.bounds, axis=1)
     L = lengths[0]
     if np.any(lengths != L):
-        raise ValueError(
-            "The The window should be a 'cubic' BoxWindow for that the scattering intensity consists an approximation of the structure factor. Hint: use PointPattern.restrict_to_window."
-        )
+        raise ValueError("window should be a 'cubic' BoxWindow.")
     return None

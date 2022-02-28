@@ -24,41 +24,20 @@
 
 ## Introduction
 
-Hyperuniformity is the study of stationary point processes with a sub-Poisson variance of the number of points in a large window.
-To study the hyperuniformity of a given point process, a common practice in statistical physics is to estimate a spectral measure called the **structure factor**, the behavior of which around zero is a sign of hyperuniformity. The structure factor of a point process is defined via the Fourier transform of its total correlation function, and a point process is hyperuniform if its structure factor vanishes at zero.
-This Python toolbox gathers many estimators of the structure factor, along with a numerical test of effective hyperuniformity and a test for identifying the possible hyperuniformity class.
-
----
-
 `structure-factor` is an open-source Python project which currently collects
 
-- Three estimators of the structure factor:
-    1. the scattering intensity,
-    2. an estimator using [Ogata quadrature](https://www.kurims.kyoto-u.ac.jp/~prims/pdf/41-4/41-4-40.pdf) for approximating the Hankel transform,
-    3. an estimator using [Baddour and Chouinard Discrete Hankel transform](https://www.osapublishing.org/josaa/abstract.cfm?uri=josaa-32-4-611).
+- various estimators of the structure factor,
+- and several diagnostics of hyperuniformity,
 
-- Two ways to qualify hyperuniformity:
+for stationary and isotropic point processes.
 
-  1. effective hyperuniformity,
-  2. classes of hyperuniformity.
+Please checkout the [documentation](https://for-a-few-dpps-more.github.io/structure-factor/) for more details.
 
 ## Dependencies
 
 - [R programming language](https://www.r-project.org/), since we call the [`spatstat`](https://github.com/spatstat/spatstat) R package to estimate the pair correlation function of point processes using [`spatstat-interface`](https://github.com/For-a-few-DPPs-more/spatstat-interface).
 
-- Python dependencies are listed in the [`pyproject.toml`](./pyproject.toml) file. Note that they mostly correspond to the latest version.
-
-  ```toml
-  [tool.poetry.dependencies]
-  python = ">=3.7.1,<3.10"
-
-  numpy = "^1.20.3"
-  scipy = "^1.6.3"
-  matplotlib = "^3.4.2"
-  pandas = "^1.2.4"
-  spatstat-interface = "^0.1.0"
-  # spatstat-interface https://github.com/For-a-few-DPPs-more/spatstat-interface requires rpy2 https://rpy2.github.io/
-  ```
+- Python dependencies are listed in the [`pyproject.toml`](./pyproject.toml) file.
 
 ## Installation
 
@@ -76,7 +55,8 @@ Once installed it can be called from
   ```bash
   # activate your virtual environment an run
   poetry add structure-factor
-  # pip install structure-factor
+  # poetry add structure-factor@latest to update if already present
+  # pip install --upgrade structure-factor
   ```
 
 - Install from source (this may be broken)
