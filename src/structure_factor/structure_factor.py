@@ -158,7 +158,9 @@ class StructureFactor:
             direct (bool, optional): If ``debiased`` is True, trigger the use of the direct/undirect debiased tapered estimator. Parameter related to ``debiased``. Defaults to True.
 
         Returns:
-            numpy.ndarray: Evaluation of the tapered estimator at ``k``.
+            tuple(numpy.ndarray, numpy.ndarray):
+                - k: Wavevector(s) on which the tapered estimator has been evaluated.
+                - estimation: Evaluation of the tapered estimator at ``k``..
 
         .. note::
 
