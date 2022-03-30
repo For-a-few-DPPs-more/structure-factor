@@ -21,6 +21,8 @@
   - [Getting started](#getting-started)
     - [Documentation](#documentation-1)
     - [Notebooks](#notebooks)
+  - [How to cite this work](#how-to-cite-this-work)
+    - [How to cite this work?](#how-to-cite-this-work-1)
 
 ## Introduction
 
@@ -147,17 +149,24 @@ See the documentation [![docs-page](https://img.shields.io/badge/docs-latest-blu
 
 [Jupyter](https://jupyter.org/) that showcase `structure-factor` are available in the [./notebooks](./notebooks) folder.
 
-<!--
 ## How to cite this work
 
-### Companion paper
+### How to cite this work?
 
-A companion paper is being written
+We wrote a companion paper `structure-factor`,
 
-> Exploring the hyperuniformity of a point process using structure-factor
+  [On estimating the structure factor of a point process, with applications to hyperuniformity](https://arxiv.org/abs/2203.08749)
 
-where we provide rigorous mathematical derivations of the different estimators of the structure factor and showcase `structure-factor` on three different point processes.
+where we provide rigorous mathematical derivations of the different estimators of the structure factor and showcase `structure-factor` on different point processes. We also compare numerically the accuracy of the estimators.
 
 If you use `structure-factor`, please consider citing it with this piece of BibTeX:
 
-  ``` -->
+  ```bash
+  @article{HGBLR:22,
+    arxivid = {2203.08749},
+    author  = {Hawat, Diala and Gautier, Guillaume and Bardenet, Rémi and Lachièze-Rey, Raphaël},
+    note    = {arXiv: 2203.08749},
+    title   = {On estimating the structure factor of a point process, with applications to hyperuniformity},
+    year    = {2022},
+  }
+  ```
