@@ -5,6 +5,9 @@
 - :py:class:`~structure_factor.point_processes.ThomasPointProcess`: The Thomas point process.
 
 - :py:class:`~structure_factor.point_processes.GinibrePointProcess`: The Ginibre point process.
+
+- :py:func:`~structure_factor.point_processes.mutual_nearest_neighbor_matching`: The matching process of :cite:`KlaLasYog20`.
+
 """
 import numpy as np
 import scipy.linalg as la
