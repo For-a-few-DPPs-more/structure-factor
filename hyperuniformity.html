@@ -111,7 +111,7 @@
         
     </div><div class="proof-content">
 <p>A stationary point process <span class="math notranslate nohighlight">\(\mathcal{X}\)</span> is said to be hyperuniform if its structure factor <span class="math notranslate nohighlight">\(S\)</span> vanishes at 0.
-For more details, we refer to <span id="id3">[<a class="reference internal" href="bibliography/index.html#id4" title="D. Hawat, G. Gautier, R. Bardenet, and R. Lachieze-Rey. Exploring the hyperuniformity of point processes with python. ():, Feb 2022. URL:, doi:.">HGBLR22</a>]</span>, (Section 2).</p>
+For more details, we refer to <span id="id3">[<a class="reference internal" href="bibliography/index.html#id4" title="Diala Hawat, Guillaume Gautier, Rémi Bardenet, and Raphaël Lachièze-Rey. On estimating the structure factor of a point process, with applications to hyperuniformity. arXiv preprint, 2022. arXiv: 2203.08749.">HGBLachiezeR22</a>]</span>, (Section 2).</p>
 </div></div><dl class="py method">
 <dt class="sig sig-object py" id="structure_factor.hyperuniformity.Hyperuniformity.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k_norm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">std_sf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/hyperuniformity.html#Hyperuniformity.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.hyperuniformity.Hyperuniformity.__init__" title="Permalink to this definition"></a></dt>
@@ -282,7 +282,7 @@ For more details, we refer to <span id="id3">[<a class="reference internal" href
         <span class="proof-type">Definition </span>
         
     </div><div class="proof-content">
-<p>A stationary isotropic point process <span class="math notranslate nohighlight">\(\mathcal{X} \subset \mathbb{R}^d\)</span>, is said to be effectively hyperuniform if <span class="math notranslate nohighlight">\(H \leq 10^{-3}\)</span> where <span class="math notranslate nohighlight">\(H\)</span> is defined following <span id="id4">[<a class="reference internal" href="bibliography/index.html#id10" title="S. Torquato. Hyperuniform states of matter. Physics Reports, 2018. URL: https://doi.org/10.1016/j.physrep.2018.03.001, doi:10.1016/j.physrep.2018.03.001.">Tor18</a>]</span> (Section 11.1.6) and <span id="id5">[<a class="reference internal" href="bibliography/index.html#id5" title="M. Klatt, J. LovriÄ, D. Chen, C. Kapfer Sebastian, M. Schaller Fabian, W. A. SchÃ¶nhÃ¶fer Philipp, S. Gardiner Bruce, A. Smith, E. Gerd, and S. Torquato. Universal hidden order in amorphous cellular geometries. ature Communications, 2019.">KLovriAC+19</a>]</span> (supplementary Section 8) by,</p>
+<p>A stationary isotropic point process <span class="math notranslate nohighlight">\(\mathcal{X} \subset \mathbb{R}^d\)</span>, is said to be effectively hyperuniform if <span class="math notranslate nohighlight">\(H \leq 10^{-3}\)</span> where <span class="math notranslate nohighlight">\(H\)</span> is defined following <span id="id4">[<a class="reference internal" href="bibliography/index.html#id10" title="S. Torquato. Hyperuniform states of matter. Physics Reports, 2018. doi:10.1016/j.physrep.2018.03.001.">Tor18</a>]</span> (Section 11.1.6) and <span id="id5">[<a class="reference internal" href="bibliography/index.html#id5" title="M. Klatt, J. Lovrić, D. Chen, C. Kapfer Sebastian, M. Schaller Fabian, W. A. Schönhöfer Philipp, S. Gardiner Bruce, A. Smith, E. Gerd, and S. Torquato. Universal hidden order in amorphous cellular geometries. Nature Communications, 2019.">KLovricC+19</a>]</span> (supplementary Section 8) by,</p>
 <div class="math notranslate nohighlight">
 \[H = \frac{\hat{S}(\mathbf{0})}{S(\mathbf{k}_{peak})}\cdot\]</div>
 <ul class="simple">
@@ -290,7 +290,7 @@ For more details, we refer to <span id="id3">[<a class="reference internal" href
 <li><p><span class="math notranslate nohighlight">\(\hat{S}(\mathbf{0})\)</span> is a linear extrapolation of the structure factor at <span class="math notranslate nohighlight">\(\mathbf{k}=\mathbf{0}\)</span>,</p></li>
 <li><p><span class="math notranslate nohighlight">\(\mathbf{k}_{peak}\)</span> is the location of the first dominant peak value of <span class="math notranslate nohighlight">\(S\)</span>.</p></li>
 </ul>
-<p>For more details, we refer to <span id="id6">[<a class="reference internal" href="bibliography/index.html#id4" title="D. Hawat, G. Gautier, R. Bardenet, and R. Lachieze-Rey. Exploring the hyperuniformity of point processes with python. ():, Feb 2022. URL:, doi:.">HGBLR22</a>]</span> (Section 2.5).</p>
+<p>For more details, we refer to <span id="id6">[<a class="reference internal" href="bibliography/index.html#id4" title="Diala Hawat, Guillaume Gautier, Rémi Bardenet, and Raphaël Lachièze-Rey. On estimating the structure factor of a point process, with applications to hyperuniformity. arXiv preprint, 2022. arXiv: 2203.08749.">HGBLachiezeR22</a>]</span> (Section 2.5).</p>
 </div></div><div class="admonition important">
 <p class="admonition-title">Important</p>
 <p>To compute the numerator <span class="math notranslate nohighlight">\(\hat{S}(\mathbf{0})\)</span> of <span class="math notranslate nohighlight">\(H\)</span>, a line is fitted using a linear extrapolation with a least-square fit on the values of <code class="xref py py-attr docutils literal notranslate"><span class="pre">sf</span></code> associated to the sub-vector of <code class="xref py py-attr docutils literal notranslate"><span class="pre">k_norm</span></code> truncated around the threshold <code class="docutils literal notranslate"><span class="pre">k_norm_stop</span></code>. <code class="docutils literal notranslate"><span class="pre">k_norm_stop</span></code> must satisfy a good compromise of being close to zero and allowing to fit the line on a sufficient number of points.</p>
@@ -383,7 +383,7 @@ For more details, we refer to <span id="id3">[<a class="reference internal" href
         <span class="proof-type">Definition </span>
         
     </div><div class="proof-content">
-<p>For a stationary  hyperuniform point process <span class="math notranslate nohighlight">\(\mathcal{X} \subset \mathbb{R}^d\)</span>, if <span class="math notranslate nohighlight">\(\vert S(\mathbf{k})\vert\sim c \Vert \mathbf{k} \Vert_2^\alpha\)</span> in the neighborhood of 0, then by <span id="id8">[<a class="reference internal" href="bibliography/index.html#id3" title="S. Coste. Order, fluctuations, rigidities. arXiv preprint, 2021. URL: https://scoste.fr/assets/survey_hyperuniformity.pdf.">Cos21</a>]</span> (Section 4.1.) the value of <span class="math notranslate nohighlight">\(\alpha\)</span> determines the hyperuniformity class of <span class="math notranslate nohighlight">\(\mathcal{X}\)</span> as follows,</p>
+<p>For a stationary  hyperuniform point process <span class="math notranslate nohighlight">\(\mathcal{X} \subset \mathbb{R}^d\)</span>, if <span class="math notranslate nohighlight">\(\vert S(\mathbf{k})\vert\sim c \Vert \mathbf{k} \Vert_2^\alpha\)</span> in the neighborhood of 0, then by <span id="id8">[<a class="reference internal" href="bibliography/index.html#id3" title="S. Coste. Order, fluctuations, rigidities. preprint, 2021. URL: https://scoste.fr/assets/survey_hyperuniformity.pdf.">Cos21</a>]</span> (Section 4.1.) the value of <span class="math notranslate nohighlight">\(\alpha\)</span> determines the hyperuniformity class of <span class="math notranslate nohighlight">\(\mathcal{X}\)</span> as follows,</p>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 8%" />
@@ -411,7 +411,7 @@ For more details, we refer to <span id="id3">[<a class="reference internal" href
 </tr>
 </tbody>
 </table>
-<p>For more details, we refer to <span id="id9">[<a class="reference internal" href="bibliography/index.html#id4" title="D. Hawat, G. Gautier, R. Bardenet, and R. Lachieze-Rey. Exploring the hyperuniformity of point processes with python. ():, Feb 2022. URL:, doi:.">HGBLR22</a>]</span>, (Section 2.5).</p>
+<p>For more details, we refer to <span id="id9">[<a class="reference internal" href="bibliography/index.html#id4" title="Diala Hawat, Guillaume Gautier, Rémi Bardenet, and Raphaël Lachièze-Rey. On estimating the structure factor of a point process, with applications to hyperuniformity. arXiv preprint, 2022. arXiv: 2203.08749.">HGBLachiezeR22</a>]</span>, (Section 2.5).</p>
 </div></div><div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <ul class="simple">

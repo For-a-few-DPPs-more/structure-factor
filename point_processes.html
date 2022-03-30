@@ -88,6 +88,7 @@
 <li><p><a class="reference internal" href="#structure_factor.point_processes.HomogeneousPoissonPointProcess" title="structure_factor.point_processes.HomogeneousPoissonPointProcess"><code class="xref py py-class docutils literal notranslate"><span class="pre">HomogeneousPoissonPointProcess</span></code></a>: The homogeneous Poisson point process.</p></li>
 <li><p><a class="reference internal" href="#structure_factor.point_processes.ThomasPointProcess" title="structure_factor.point_processes.ThomasPointProcess"><code class="xref py py-class docutils literal notranslate"><span class="pre">ThomasPointProcess</span></code></a>: The Thomas point process.</p></li>
 <li><p><a class="reference internal" href="#structure_factor.point_processes.GinibrePointProcess" title="structure_factor.point_processes.GinibrePointProcess"><code class="xref py py-class docutils literal notranslate"><span class="pre">GinibrePointProcess</span></code></a>: The Ginibre point process.</p></li>
+<li><p><a class="reference internal" href="#structure_factor.point_processes.mutual_nearest_neighbor_matching" title="structure_factor.point_processes.mutual_nearest_neighbor_matching"><code class="xref py py-func docutils literal notranslate"><span class="pre">mutual_nearest_neighbor_matching()</span></code></a>: The matching process of <span id="id2">[<a class="reference internal" href="bibliography/index.html#id6" title="Michael Andreas Klatt, Günter Last, and D. Yogeshwaran. Hyperuniform and rigid stable matchings. Random Structures &amp; Algorithms, 2020.">KLY20</a>]</span>.</p></li>
 </ul>
 <dl class="py class">
 <dt class="sig sig-object py" id="structure_factor.point_processes.HomogeneousPoissonPointProcess">
@@ -584,7 +585,7 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="structure_factor.point_processes.mutual_nearest_neighbor_matching">
 <span class="sig-prename descclassname"><span class="pre">structure_factor.point_processes.</span></span><span class="sig-name descname"><span class="pre">mutual_nearest_neighbor_matching</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">KDTree_params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/point_processes.html#mutual_nearest_neighbor_matching"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.point_processes.mutual_nearest_neighbor_matching" title="Permalink to this definition"></a></dt>
-<dd><p>Match the set of points <code class="docutils literal notranslate"><span class="pre">X</span></code> with a subset of points from <code class="docutils literal notranslate"><span class="pre">Y</span></code> based on mutual nearest neighbor matching <span id="id6">[<a class="reference internal" href="bibliography/index.html#id6" title="M.A. Klatt, G. Last, and D. Yogeshwaran. Hyperuniform and rigid stable matchings. ArXiv:1810.00265v3, 2020. URL: https://arxiv.org/abs/1810.00265.">KLY20</a>]</span>. It is assumed that <span class="math notranslate nohighlight">\(|X| \leq |Y|\)</span> and that each point in <code class="docutils literal notranslate"><span class="pre">X</span></code>, resp. <code class="docutils literal notranslate"><span class="pre">Y</span></code>, can have only one nearest neighbor in <code class="docutils literal notranslate"><span class="pre">Y</span></code>, resp. <code class="docutils literal notranslate"><span class="pre">X</span></code>.</p>
+<dd><p>Match the set of points <code class="docutils literal notranslate"><span class="pre">X</span></code> with a subset of points from <code class="docutils literal notranslate"><span class="pre">Y</span></code> based on mutual nearest neighbor matching <span id="id7">[<a class="reference internal" href="bibliography/index.html#id6" title="Michael Andreas Klatt, Günter Last, and D. Yogeshwaran. Hyperuniform and rigid stable matchings. Random Structures &amp; Algorithms, 2020.">KLY20</a>]</span>. It is assumed that <span class="math notranslate nohighlight">\(|X| \leq |Y|\)</span> and that each point in <code class="docutils literal notranslate"><span class="pre">X</span></code>, resp. <code class="docutils literal notranslate"><span class="pre">Y</span></code>, can have only one nearest neighbor in <code class="docutils literal notranslate"><span class="pre">Y</span></code>, resp. <code class="docutils literal notranslate"><span class="pre">X</span></code>.</p>
 <p>The matching routine involves successive 1-nearest neighbor sweeps performed by <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.KDTree.html">scipy.spatial.KDTree</a> with the euclidean distance.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -662,10 +663,10 @@
 </pre></div>
 </div>
 <p>(<a class="reference external" href="./code/point_processes/kly_matching.py">Source code</a>, <a class="reference external" href="./code/point_processes/kly_matching.png">png</a>, <a class="reference external" href="./code/point_processes/kly_matching.hires.png">hires.png</a>, <a class="reference external" href="./code/point_processes/kly_matching.pdf">pdf</a>)</p>
-<figure class="align-center" id="id8">
+<figure class="align-center" id="id9">
 <img alt="code/point_processes/kly_matching.py" class="plot-directive" src="_images/kly_matching.png" />
 <figcaption>
-<p><span class="caption-text">KLY  matching</span><a class="headerlink" href="#id8" title="Permalink to this image"></a></p>
+<p><span class="caption-text">KLY  matching</span><a class="headerlink" href="#id9" title="Permalink to this image"></a></p>
 </figcaption>
 </figure>
 </dd></dl>
