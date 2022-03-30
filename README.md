@@ -167,6 +167,7 @@ If you use `structure-factor`, please consider citing it with this piece of BibT
   ```bash
   @article{HGBLR:22,
     arxivid = {2203.08749},
+    journal = {arXiv preprint},
     author  = {Hawat, Diala and Gautier, Guillaume and Bardenet, Rémi and Lachièze-Rey, Raphaël},
     note    = {arXiv: 2203.08749},
     title   = {On estimating the structure factor of a point process, with applications to hyperuniformity},
