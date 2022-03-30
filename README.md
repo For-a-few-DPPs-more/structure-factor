@@ -22,7 +22,8 @@
     - [Documentation](#documentation-1)
     - [Notebooks](#notebooks)
   - [How to cite this work](#how-to-cite-this-work)
-    - [How to cite this work?](#how-to-cite-this-work-1)
+    - [Companion paper](#companion-paper)
+    - [Citation](#citation)
 
 ## Introduction
 
@@ -151,13 +152,15 @@ See the documentation [![docs-page](https://img.shields.io/badge/docs-latest-blu
 
 ## How to cite this work
 
-### How to cite this work?
+### Companion paper
 
-We wrote a companion paper `structure-factor`,
+We wrote a companion paper to `structure-factor`,
 
   [On estimating the structure factor of a point process, with applications to hyperuniformity](https://arxiv.org/abs/2203.08749)
 
-where we provide rigorous mathematical derivations of the different estimators of the structure factor and showcase `structure-factor` on different point processes. We also compare numerically the accuracy of the estimators.
+where we provided rigorous mathematical derivations of the different estimators of the structure factor of a stationary point process and showcased `structure-factor` on different point processes. We also compared numerically the accuracy of the estimators.
+
+### Citation
 
 If you use `structure-factor`, please consider citing it with this piece of BibTeX:
 
