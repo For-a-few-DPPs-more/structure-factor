@@ -36,23 +36,27 @@ class Hyperuniformity:
         For more details, we refer to :cite:`HGBLR:22`, (Section 2).
     """
 
-    def __init__(self, k_norm, sf, std_sf=None):
+    def __init__(self, k_norm=None, sf=None, std_sf=None, sf_k_min_list=None):
         """Initialize the object from the pair ``k_norm, sf`` which corresponds to the norm of the wavevector (denoted wavenumber) and the evaluation of the structure factor.
 
         Args:
-            k_norm (numpy.ndarray): Vector of wavenumbers (i.e. norms of the wavevectors).
+            k_norm (numpy.ndarray, optional): Vector of wavenumbers (i.e. norms of the wavevectors). Default to None.
 
-            sf (numpy.ndarray): Vector of evaluations of the structure factor, of the given point process, at :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.k_norm`.
+            sf (numpy.ndarray, optional): Vector of evaluations of the structure factor, of the given point process, at :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.k_norm`. Default to None.
 
             std (numpy.ndarray, optional): Vector of standard deviations associated to :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.sf`. Defaults to None.
+
+            sf_k_min_list (list, optional): List of estimations of the structure factor of the given point process using one realization restricted to an increasing set of observation windows. Each element of the list depends on the approximation of the structure factor at the minimum wavevector associated with the corresponding observation window. Typically we consider the minimums between the estimations and one. Default to None.
+
         """
-        assert isinstance(k_norm, np.ndarray)
-        assert isinstance(sf, np.ndarray)
-        assert k_norm.shape == sf.shape
+        if k_norm is not None and sf is not None:
+            assert isinstance(k_norm, np.ndarray)
+            assert isinstance(sf, np.ndarray)
+            assert k_norm.shape == sf.shape
+            # k_norm sorted
+            self.k_norm, self.sf, self.std_sf = _sort_vectors(k_norm, sf, std_sf)
 
-        # k_norm sorted
-        self.k_norm, self.sf, self.std_sf = _sort_vectors(k_norm, sf, std_sf)
-
+        self.sf_k_min_list = sf_k_min_list
         self.fitted_line = None  # fitted line to sf near zero
         self.i_first_peak = None  # index of first peak of sf
         self.fitted_poly = None  # fitted polynomial to sf near zero
@@ -77,6 +81,11 @@ class Hyperuniformity:
 
             - :py:class:`~structure_factor.structure_factor.StructureFactor`
         """
+
+        if self.sf is None or self.k_norm is None:
+            raise ValueError(
+                "The attribute `sf` and `k_norm` of the class `Hyperuniformity` are mandatory for this method. Hint: re-initialize the class Hyperuniformity and update `k_norm` and `sf`."
+            )
         self.k_norm, self.sf, self.std_sf = _bin_statistics(
             self.k_norm, self.sf, **params
         )
@@ -126,6 +135,10 @@ class Hyperuniformity:
             - :py:meth:`~structure_factor.hyperuniformity.Hyperuniformity.bin_data`
             - :py:meth:`~structure_factor.hyperuniformity.Hyperuniformity.hyperuniformity_class`
         """
+        if self.sf is None or self.k_norm is None:
+            raise ValueError(
+                "The attribute `sf` and `k_norm` of the class `Hyperuniformity` are mandatory for this method. Hint: re-initialize the class Hyperuniformity and update `k_norm` and `sf`."
+            )
         line = lambda x, a, b: a + b * x
         (intercept, slope), cov = self._fit(line, k_norm_stop, **kwargs)
 
@@ -144,7 +157,21 @@ class Hyperuniformity:
 
         return H, s0_std
 
-    #! todo example depending on utils.sf_ginibre
+    #! add docs
+    def multiscale_test(self, proba_list):
+        sf_k_min_list = self.sf_k_min_list
+        if sf_k_min_list is None:
+            raise ValueError(
+                "The attribute `sf_k_min_list` of the class `Hyperuniformity` is mandatory for this test. Hint: re-initialize the class Hyperuniformity and update `sf_k_min_list`."
+            )
+        sf_k_min_with_0 = np.append(0, sf_k_min_list)  # 0 first element of the list
+        estimation_pairwise_diff = np.array(
+            [t - s for s, t in zip(sf_k_min_with_0[:-1], sf_k_min_with_0[1:])]
+        )
+        estimation_pairwise_diff = estimation_pairwise_diff / np.array(proba_list)
+        z = np.sum(estimation_pairwise_diff)
+        return z
+
     def hyperuniformity_class(self, k_norm_stop=1, **kwargs):
         r"""Fit a polynomial :math:`y = c \cdot x^{\alpha}` to the attribute :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.sf` around zero. :math:`\alpha` is used to specify the possible class of hyperuniformity of the associated point process (as described below).
 
@@ -185,6 +212,10 @@ class Hyperuniformity:
             - :py:meth:`~structure_factor.hyperuniformity.Hyperuniformity.bin_data`
             - :py:meth:`~structure_factor.hyperuniformity.Hyperuniformity.effective_hyperuniformity`
         """
+        if self.sf is None or self.k_norm is None:
+            raise ValueError(
+                "The attribute `sf` and `k_norm` of the class `Hyperuniformity` are mandatory for this method. Hint: re-initialize the class Hyperuniformity and update `k_norm` and `sf`."
+            )
         poly = lambda x, alpha, c: c * x ** alpha
         (alpha, c), _ = self._fit(poly, k_norm_stop, **kwargs)
         self.fitted_poly = lambda x: c * x ** alpha
