@@ -554,3 +554,37 @@ class StructureFactor:
             raise ValueError(
                 "plot_type must be chosen among ('all', 'radial', 'imshow')."
             )
+
+
+# def select_estimator(estimator):
+# class MultiScaleStructureFactor(StructureFactor):
+#     def __init__(self, point_pattern, windows):
+#         self.windows = windows
+#         self.point_patterns = [point_pattern.restrict_to_window(w) for w in windows]
+#         super().__init__(point_pattern)
+
+
+def multiscale_estimator(point_pattern, window_list, k_list, estimator, **kwargs):
+    point_pattern_list = [point_pattern.restrict_to_window(w) for w in window_list]
+    sf_k_list = [
+        _apply_estimator(point_pattern=p, estimator=estimator, k=k, **kwargs)
+        for p, k in zip(point_pattern_list, k_list)
+    ]
+    return sf_k_list
+
+
+def _apply_estimator(point_pattern, estimator, k, **kwargs):
+    sf = StructureFactor(point_pattern)
+    if estimator == "scattering_intensity":
+        _, sf = sf.scattering_intensity(k=k, **kwargs)
+    elif estimator == "tapered_estimator":
+        _, sf = sf.tapered_estimator(k=k, **kwargs)
+    elif estimator == "bartlett_isotropic_estimator":
+        _, sf = sf.bartlett_isotropic_estimator(k_norm=k, **kwargs)
+    elif estimator == "quadrature_estimator_isotropic":
+        _, sf = sf.quadrature_estimator_isotropic(k_norm=k, **kwargs)
+    else:
+        raise ValueError(
+            "Available estimators: 'scattering_intensity', 'tapered_estimator', 'bartlett_isotropic_estimator', 'quadrature_estimator_isotropic'. "
+        )
+    return sf
