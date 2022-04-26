@@ -19,6 +19,8 @@
 import numpy as np
 from scipy.optimize import curve_fit
 from scipy.signal import find_peaks
+from scipy.stats import poisson
+import warnings
 
 from structure_factor.utils import _bin_statistics, _sort_vectors
 
@@ -36,7 +38,7 @@ class Hyperuniformity:
         For more details, we refer to :cite:`HGBLR:22`, (Section 2).
     """
 
-    def __init__(self, k_norm=None, sf=None, std_sf=None, sf_k_min_list=None):
+    def __init__(self, k_norm=None, sf=None, std_sf=None):
         """Initialize the object from the pair ``k_norm, sf`` which corresponds to the norm of the wavevector (denoted wavenumber) and the evaluation of the structure factor.
 
         Args:
@@ -56,7 +58,6 @@ class Hyperuniformity:
             # k_norm sorted
             self.k_norm, self.sf, self.std_sf = _sort_vectors(k_norm, sf, std_sf)
 
-        self.sf_k_min_list = sf_k_min_list
         self.fitted_line = None  # fitted line to sf near zero
         self.i_first_peak = None  # index of first peak of sf
         self.fitted_poly = None  # fitted polynomial to sf near zero
@@ -158,19 +159,11 @@ class Hyperuniformity:
         return H, s0_std
 
     #! add docs
-    def multiscale_test(self, proba_list):
-        sf_k_min_list = self.sf_k_min_list
-        if sf_k_min_list is None:
-            raise ValueError(
-                "The attribute `sf_k_min_list` of the class `Hyperuniformity` is mandatory for this test. Hint: re-initialize the class Hyperuniformity and update `sf_k_min_list`."
-            )
-        sf_k_min_with_0 = np.append(0, sf_k_min_list)  # 0 first element of the list
-        estimation_pairwise_diff = np.array(
-            [t - s for s, t in zip(sf_k_min_with_0[:-1], sf_k_min_with_0[1:])]
-        )
-        estimation_pairwise_diff = estimation_pairwise_diff / np.array(proba_list)
-        z = np.sum(estimation_pairwise_diff)
-        return z
+    def multiscale_test(
+        self, proba_list=None, mean_m=None, nb_m=50, m_threshold=None, verbose=True
+    ):
+
+        pass
 
     def hyperuniformity_class(self, k_norm_stop=1, **kwargs):
         r"""Fit a polynomial :math:`y = c \cdot x^{\alpha}` to the attribute :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.sf` around zero. :math:`\alpha` is used to specify the possible class of hyperuniformity of the associated point process (as described below).
