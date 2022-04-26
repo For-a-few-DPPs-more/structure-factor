@@ -59,14 +59,3 @@ def test_hyperuniformity_class_ginibre(sf, expected_alpha):
     alpha, _ = hyperuniformity_test.hyperuniformity_class(k_norm_stop=0.001)
     diff_alpha = alpha - expected_alpha
     np.testing.assert_almost_equal(diff_alpha, 0, decimal=3)
-
-
-@pytest.mark.parametrize(
-    "proba_list, estimation_list, expected_result",
-    [(1, 2, 2), ([1, 2, 3], [2, 4, 1], 2)],
-)
-def test_multiscale_test_on_simple_values(proba_list, estimation_list, expected_result):
-    hyperuniformity_test = Hyperuniformity(sf_k_min_list=estimation_list)
-    result = hyperuniformity_test.multiscale_test(proba_list)
-    print(result, expected_result)
-    np.testing.assert_almost_equal(result, expected_result)

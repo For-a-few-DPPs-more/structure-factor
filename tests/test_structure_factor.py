@@ -1,14 +1,13 @@
 import numpy as np
 import pytest
 import scipy.special as sc
-from structure_factor.tapered_estimators import scattering_intensity
 
 import structure_factor.utils as utils
 from structure_factor.data import load_data
 from structure_factor.point_pattern import PointPattern
 from structure_factor.point_processes import GinibrePointProcess
 from structure_factor.spatial_windows import BallWindow, BoxWindow
-from structure_factor.structure_factor import StructureFactor, multiscale_estimator
+from structure_factor.structure_factor import StructureFactor
 from structure_factor.tapers import BartlettTaper
 
 
@@ -188,37 +187,3 @@ def test_compute_structure_factor_ginibre_with_baddour_chouinard(ginibre_pp):
     )
     sf_expected = GinibrePointProcess.structure_factor(k_norm)
     np.testing.assert_almost_equal(sf_computed, sf_expected)
-
-
-@pytest.mark.parametrize(
-    "window, points, k",
-    [
-        (
-            BoxWindow([[-8, 8]] * 3),
-            np.array([[np.pi, 1, 3], [2 * np.pi, 4, 2]]),
-            np.array([[1, 2, 3]]),
-        ),
-        (
-            BoxWindow([[-10, 8]] * 2),
-            np.array([[1, 3], [2 * np.pi, 2]]),
-            np.array([[5, 0]]),
-        ),
-    ],
-)
-def test_multiscale_estimator_on_one_scale(window, points, k):
-    # test with the scattering intensity on one window will give the scattering intensity for one wavevector 3D.
-
-    # PointPattern
-    point_pattern = PointPattern(points, window)
-    # result
-    result = multiscale_estimator(
-        point_pattern,
-        window_list=[window],
-        k_list=[k],
-        estimator="scattering_intensity",
-    )
-    # expected
-    sf = StructureFactor(point_pattern)
-    _, expected = sf.scattering_intensity(k=k)
-    expected = [expected] * len(result)
-    np.testing.assert_equal(result, expected)
