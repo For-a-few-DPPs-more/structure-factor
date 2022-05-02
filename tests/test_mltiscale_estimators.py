@@ -1,14 +1,16 @@
-from tkinter.tix import Balloon
+from unittest import result
 import numpy as np
 import pytest
 from structure_factor.data import load_data
 
 from structure_factor.multiscale_estimators import (
-    multiscale_estimator,
+    multiscale_estimator_core,
     coupled_sum_estimator,
+    _subwindow_param_max,
     _subwindows,
     _k_list,
-    _m_list,
+    _poisson_rv,
+    _subwindows_type,
 )
 from structure_factor.spatial_windows import BallWindow, BoxWindow
 from structure_factor.point_pattern import PointPattern
@@ -41,7 +43,7 @@ def test_multiscale_estimator_on_one_scale(window, points, k):
     # PointPattern
     point_pattern = PointPattern(points, window)
     # result
-    result = multiscale_estimator(
+    result = multiscale_estimator_core(
         point_pattern,
         subwindows_list=[window],
         k_list=[k],
@@ -97,7 +99,7 @@ def test_coupled_sum_estimator_on_simple_values(proba_list, y_list, expected_res
             4,
             None,
             "subwindows",
-            [4 ** 2, 5 ** 2, 6 ** 2, 7 ** 2],
+            [4 ** 2, 5 ** 2, 6 ** 2, 7 ** 2, 8 ** 2],
         ),
         (
             BallWindow(center=[0, 0], radius=6),
@@ -110,7 +112,9 @@ def test_coupled_sum_estimator_on_simple_values(proba_list, y_list, expected_res
     ],
 )
 def test_subwindows(window, type, param_0, params, to_test, expected):
-    subwindows, params = _subwindows(window, type, param_0, params)
+    subwindows, params = _subwindows(
+        window=window, type=type, param_0=param_0, params=params
+    )
     if to_test == "params":
         result = params
     else:
@@ -127,17 +131,30 @@ def test_k_list_with_scattering_intensity():
     np.testing.assert_equal(result, expected)
 
 
+def test_m_under_threshold():
+    mean_poisson, threshold = 30, 32
+    m_list = [_poisson_rv(mean_poisson, threshold) for _ in range(20)]
+    result = sum(m > threshold for m in m_list)
+    expected = 0
+    np.testing.assert_equal(result, expected)
+
+
 @pytest.mark.parametrize(
-    "to_test",
-    [("length"), ("threshold")],
+    "window, type, expected",
+    [
+        (BoxWindow(bounds=[[-2, 6.2]] * 4), "Box", 8.2),
+        (BoxWindow(bounds=[[-2, 6]] * 4), "Ball", 4),
+        (BallWindow(center=[0, 0], radius=18), "Ball", 18),
+        (BallWindow(center=[0, 0], radius=18), "Box", 36 / np.sqrt(2)),
+    ],
 )
-def test_m_list_result(to_test):
-    mean_poisson, nb_m, threshold = 30, 20, 32
-    m_list = _m_list(mean_poisson, nb_m, threshold)
-    if to_test == "length":
-        result = len(m_list)
-        expected = nb_m
-    elif to_test == "threshold":
-        result = sum(m > threshold for m in m_list)
-        expected = 0
+def test_subwindow_param_max(window, type, expected):
+    result = _subwindow_param_max(window, type)
+    np.testing.assert_equal(result, expected)
+
+
+def test_subwindows_type():
+    estimators = ["bartlett_isotropic_estimator", "tapered_estimator"]
+    expected = ["Ball", "Box"]
+    result = [_subwindows_type(e) for e in estimators]
     np.testing.assert_equal(result, expected)
