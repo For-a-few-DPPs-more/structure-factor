@@ -64,35 +64,6 @@ def _subwindow_param_max(window, type="Box"):
     return param_max
 
 
-def _subwindows(window, type="Box", param_0=None, param_max=None, params=None):
-    d = window.dimension
-    window_param_max = _subwindow_param_max(window, type)
-    if type not in ["Box", "Ball"]:
-        raise ValueError(
-            "The available subwindow types are Ball or Box. Hint: the parameter corresponding to the type must be 'Ball' or 'Box'. "
-        )
-    # subwindows list of parameters
-    if params is None:
-        if param_0 is None:
-            raise ValueError(
-                "The minimum window parameter is mandatory. Hint: specify the minimum window parameter."
-            )
-        # from params0 till param_max with space 1
-        if param_max is None:
-            params = np.arange(param_0, window_param_max)
-    else:
-        if max(params) > window_param_max:
-            raise ValueError(
-                f"The maximum sub-window (parameter={max(params)}) is bigger than the initial window (parameter={param_max}). Hint: Reduce the maximum subwindow parameter. "
-            )
-    # subwindows list
-    if type == "Ball":
-        subwindows = [BallWindow(center=[0] * d, radius=r) for r in params]
-    else:
-        subwindows = [BoxWindow(bounds=[[-l / 2, l / 2]] * d) for l in params]
-    return subwindows, params
-
-
 def _k_list(estimator, d, subwindows_params):
     # non-isotropic case
     if estimator in ["scattering_intensity", "tapered_estimator"]:
@@ -129,6 +100,35 @@ def _subwindows_type(estimator):
             "Available estimators: 'scattering_intensity', 'tapered_estimator', 'bartlett_isotropic_estimator', 'quadrature_estimator_isotropic'. "
         )
     return subwindows_type
+
+
+def subwindows(window, type="Box", param_0=None, param_max=None, params=None):
+    d = window.dimension
+    window_param_max = _subwindow_param_max(window, type)
+    if type not in ["Box", "Ball"]:
+        raise ValueError(
+            "The available subwindow types are Ball or Box. Hint: the parameter corresponding to the type must be 'Ball' or 'Box'. "
+        )
+    # subwindows list of parameters
+    if params is None:
+        if param_0 is None:
+            raise ValueError(
+                "The minimum window parameter is mandatory. Hint: specify the minimum window parameter."
+            )
+        # from params0 till param_max with space 1
+        if param_max is None:
+            params = np.arange(param_0, window_param_max)
+    else:
+        if max(params) > window_param_max:
+            raise ValueError(
+                f"The maximum sub-window (parameter={max(params)}) is bigger than the initial window (parameter={param_max}). Hint: Reduce the maximum subwindow parameter. "
+            )
+    # subwindows list
+    if type == "Ball":
+        subwindows = [BallWindow(center=[0] * d, radius=r) for r in params]
+    else:
+        subwindows = [BoxWindow(bounds=[[-l / 2, l / 2]] * d) for l in params]
+    return subwindows, params
 
 
 # todo add test
@@ -181,8 +181,13 @@ def multiscale_estimator(
         if len(proba_list) < m:
             raise ValueError(f"The proba list should contains {max(m)} elements.")
     # subwindow
+    if subwindows_params is not None and len(subwindows_params) != m:
+        raise ValueError(
+            f"The number of subwindows {len(subwindows_params)} should be equal to the random variable M= {m}."
+        )
+
     subwindows_type = _subwindows_type(estimator)
-    subwindows, subwindows_params = _subwindows(
+    subwindows, subwindows_params = subwindows(
         window=window,
         type=subwindows_type,
         param_0=subwindows_param_0,
