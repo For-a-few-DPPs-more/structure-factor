@@ -19,10 +19,15 @@
 import numpy as np
 from scipy.optimize import curve_fit
 from scipy.signal import find_peaks
-from scipy.stats import poisson
 import warnings
+import statistics as stat
 
 from structure_factor.utils import _bin_statistics, _sort_vectors
+from structure_factor.multiscale_estimators import (
+    multiscale_estimator,
+    _poisson_rv,
+    m_threshold,
+)
 
 
 class Hyperuniformity:
@@ -160,10 +165,43 @@ class Hyperuniformity:
 
     #! add docs
     def multiscale_test(
-        self, proba_list=None, mean_m=None, nb_m=50, m_threshold=None, verbose=True
+        self,
+        point_pattern_list,
+        estimator,
+        k_list,
+        subwindows_list,
+        mean_poisson,
+        m_list=None,
+        proba_list=None,
+        verbose=False,
+        **kwargs,
     ):
-
-        pass
+        nb_sample = len(point_pattern_list)
+        if m_list is None:
+            m_thresh = m_threshold(
+                window_min=subwindows_list[0], window_max=subwindows_list[-1]
+            )
+            m_list = [
+                _poisson_rv(mean_poisson, threshold=m_thresh, verbose=verbose)
+                for _ in range(nb_sample)
+            ]
+        z_list = [
+            multiscale_estimator(
+                p,
+                estimator,
+                k_list,
+                subwindows_list,
+                mean_poisson=mean_poisson,
+                m=m,
+                proba_list=proba_list,
+                verbose=verbose,
+                **kwargs,
+            )
+            for (p, m) in zip(point_pattern_list, m_list)
+        ]
+        mean_z = stat.mean(z_list)
+        std_mean_z = stat.stdev(z_list) / np.sqrt(nb_sample)
+        return z_list, mean_z, std_mean_z, m_list
 
     def hyperuniformity_class(self, k_norm_stop=1, **kwargs):
         r"""Fit a polynomial :math:`y = c \cdot x^{\alpha}` to the attribute :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.sf` around zero. :math:`\alpha` is used to specify the possible class of hyperuniformity of the associated point process (as described below).
