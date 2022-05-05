@@ -7,10 +7,9 @@ from structure_factor.multiscale_estimators import (
     multiscale_estimator_core,
     coupled_sum_estimator,
     _subwindow_param_max,
-    _subwindows,
-    _k_list,
+    subwindows_list,
     _poisson_rv,
-    _subwindows_type,
+    m_threshold,
 )
 from structure_factor.spatial_windows import BallWindow, BoxWindow
 from structure_factor.point_pattern import PointPattern
@@ -67,68 +66,53 @@ def test_coupled_sum_estimator_on_simple_values(proba_list, y_list, expected_res
 
 
 @pytest.mark.parametrize(
-    "window, type, param_0, params, to_test, expected",
+    "window, type, param_0, params, expected",
     [
         (
             BoxWindow([[-3, 4], [-2, 2]]),
-            "Ball",
+            "BallWindow",
             None,
             [1],
-            "subwindows",
             [np.pi],
         ),
         (
             BoxWindow([[-3, 4]]),
-            "Ball",
+            "BallWindow",
             None,
             [2],
-            "subwindows",
             [4],
         ),
         (
             BoxWindow([[-6, 4]]),
-            "Box",
+            "BoxWindow",
             None,
             [2],
-            "subwindows",
             [2],
         ),
         (
             BallWindow(center=[0, 0], radius=6),
-            "Box",
+            "BoxWindow",
             4,
             None,
-            "subwindows",
             [4 ** 2, 5 ** 2, 6 ** 2, 7 ** 2, 8 ** 2],
-        ),
-        (
-            BallWindow(center=[0, 0], radius=6),
-            "Ball",
-            4,
-            None,
-            "params",
-            [4, 5],
         ),
     ],
 )
-def test_subwindows(window, type, param_0, params, to_test, expected):
-    subwindows, params = _subwindows(
+def test_subwindows_volume(window, type, param_0, params, expected):
+    subwindows, _ = subwindows_list(
         window=window, type=type, param_0=param_0, params=params
     )
-    if to_test == "params":
-        result = params
-    else:
-        result = [w.volume for w in subwindows]
+    result = [w.volume for w in subwindows]
     np.testing.assert_equal(result, expected)
 
 
-def test_k_list_with_scattering_intensity():
-    estimator = "scattering_intensity"
-    d = 3
-    subwindows_params = [4]
-    expected = [np.full((1, 3), fill_value=2 * np.pi / 4)]
-    result = _k_list(estimator, d, subwindows_params)
-    np.testing.assert_equal(result, expected)
+# def test_k_list_with_scattering_intensity():
+#     estimator = "scattering_intensity"
+#     d = 3
+#     subwindows_params = [4]
+#     expected = [np.full((1, 3), fill_value=2 * np.pi / 4)]
+#     result = k_list(estimator, d, subwindows_params)
+#     np.testing.assert_equal(result, expected)
 
 
 def test_m_under_threshold():
@@ -142,10 +126,10 @@ def test_m_under_threshold():
 @pytest.mark.parametrize(
     "window, type, expected",
     [
-        (BoxWindow(bounds=[[-2, 6.2]] * 4), "Box", 8.2),
-        (BoxWindow(bounds=[[-2, 6]] * 4), "Ball", 4),
-        (BallWindow(center=[0, 0], radius=18), "Ball", 18),
-        (BallWindow(center=[0, 0], radius=18), "Box", 36 / np.sqrt(2)),
+        (BoxWindow(bounds=[[-2, 6.2]] * 4), "BoxWindow", 8.2),
+        (BoxWindow(bounds=[[-2, 6]] * 4), "BallWindow", 4),
+        (BallWindow(center=[0, 0], radius=18), "BallWindow", 18),
+        (BallWindow(center=[0, 0], radius=18), "BoxWindow", 36 / np.sqrt(2)),
     ],
 )
 def test_subwindow_param_max(window, type, expected):
@@ -153,8 +137,36 @@ def test_subwindow_param_max(window, type, expected):
     np.testing.assert_equal(result, expected)
 
 
-def test_subwindows_type():
-    estimators = ["bartlett_isotropic_estimator", "tapered_estimator"]
-    expected = ["Ball", "Box"]
-    result = [_subwindows_type(e) for e in estimators]
+@pytest.mark.parametrize(
+    "window_min, window_max, expected",
+    [
+        (
+            BallWindow(center=[0, 0, 0], radius=10),
+            BallWindow(center=[0, 0, 0], radius=10),
+            0,
+        ),
+        (
+            BallWindow(center=[0, 0], radius=10.234),
+            BallWindow(center=[0, 0], radius=20.5),
+            10,
+        ),
+        (
+            BallWindow(center=[0, 0, 0], radius=4.234),
+            BoxWindow(bounds=[[-10, 10]] * 3),
+            5,
+        ),
+        (
+            BoxWindow(bounds=[[-10, 10]] * 3),
+            BoxWindow(bounds=[[-20, 20]] * 3),
+            20,
+        ),
+        (
+            BoxWindow(bounds=[[-2, 4], [-3, 2]]),
+            BallWindow(center=[0, 0], radius=8.34),
+            6,
+        ),
+    ],
+)
+def test_m_threshold(window_min, window_max, expected):
+    result = m_threshold(window_min, window_max)
     np.testing.assert_equal(result, expected)
