@@ -1,4 +1,4 @@
-from unittest import result
+from unicodedata import decimal
 import numpy as np
 import pytest
 from structure_factor.data import load_data
@@ -6,14 +6,15 @@ from structure_factor.data import load_data
 from structure_factor.multiscale_estimators import (
     multiscale_estimator_core,
     coupled_sum_estimator,
-    _subwindow_param_max,
     subwindows_list,
     _poisson_rv,
     m_threshold,
+    multiscale_estimator,
 )
 from structure_factor.spatial_windows import BallWindow, BoxWindow
 from structure_factor.point_pattern import PointPattern
 from structure_factor.structure_factor import StructureFactor
+from structure_factor.tapers import multi_sinetaper_grid
 
 
 @pytest.fixture
@@ -69,21 +70,21 @@ def test_coupled_sum_estimator_on_simple_values(proba_list, y_list, expected_res
     "window, type, param_0, params, expected",
     [
         (
-            BoxWindow([[-3, 4], [-2, 2]]),
+            BoxWindow([[-3, 3], [-2, 2]]),
             "BallWindow",
             None,
             [1],
             [np.pi],
         ),
         (
-            BoxWindow([[-3, 4]]),
+            BoxWindow([[-4, 4]]),
             "BallWindow",
             None,
             [2],
             [4],
         ),
         (
-            BoxWindow([[-6, 4]]),
+            BoxWindow([[-6, 6]]),
             "BoxWindow",
             None,
             [2],
@@ -100,19 +101,10 @@ def test_coupled_sum_estimator_on_simple_values(proba_list, y_list, expected_res
 )
 def test_subwindows_volume(window, type, param_0, params, expected):
     subwindows, _ = subwindows_list(
-        window=window, type=type, param_0=param_0, params=params
+        window=window, subwindows_type=type, param_0=param_0, params=params
     )
     result = [w.volume for w in subwindows]
     np.testing.assert_equal(result, expected)
-
-
-# def test_k_list_with_scattering_intensity():
-#     estimator = "scattering_intensity"
-#     d = 3
-#     subwindows_params = [4]
-#     expected = [np.full((1, 3), fill_value=2 * np.pi / 4)]
-#     result = k_list(estimator, d, subwindows_params)
-#     np.testing.assert_equal(result, expected)
 
 
 def test_m_under_threshold():
@@ -120,20 +112,6 @@ def test_m_under_threshold():
     m_list = [_poisson_rv(mean_poisson, threshold) for _ in range(20)]
     result = sum(m > threshold for m in m_list)
     expected = 0
-    np.testing.assert_equal(result, expected)
-
-
-@pytest.mark.parametrize(
-    "window, type, expected",
-    [
-        (BoxWindow(bounds=[[-2, 6.2]] * 4), "BoxWindow", 8.2),
-        (BoxWindow(bounds=[[-2, 6]] * 4), "BallWindow", 4),
-        (BallWindow(center=[0, 0], radius=18), "BallWindow", 18),
-        (BallWindow(center=[0, 0], radius=18), "BoxWindow", 36 / np.sqrt(2)),
-    ],
-)
-def test_subwindow_param_max(window, type, expected):
-    result = _subwindow_param_max(window, type)
     np.testing.assert_equal(result, expected)
 
 
@@ -161,7 +139,7 @@ def test_subwindow_param_max(window, type, expected):
             20,
         ),
         (
-            BoxWindow(bounds=[[-2, 4], [-3, 2]]),
+            BoxWindow(bounds=[[-2.5, 2.5], [-5, 5]]),
             BallWindow(center=[0, 0], radius=8.34),
             6,
         ),
@@ -170,3 +148,35 @@ def test_subwindow_param_max(window, type, expected):
 def test_m_threshold(window_min, window_max, expected):
     result = m_threshold(window_min, window_max)
     np.testing.assert_equal(result, expected)
+
+
+@pytest.mark.parametrize(
+    "estimator, subwindows_type, tapers, expected",
+    [
+        ("scattering_intensity", "BoxWindow", None, -5.9259),
+        (
+            "tapered_estimator",
+            "BoxWindow",
+            multi_sinetaper_grid(d=2, p_component_max=2),
+            -6.6391,
+        ),
+        ("bartlett_isotropic_estimator", "BallWindow", None, 2.1905),
+    ],
+)
+def test_multiscale_estimator_on_real_data(
+    ginibre_pp, estimator, subwindows_type, tapers, expected
+):
+    point_pattern = ginibre_pp
+    window = BallWindow(center=[0, 0], radius=20)
+    subwindows, k = subwindows_list(window, subwindows_type=subwindows_type, param_0=3)
+    result = multiscale_estimator(
+        point_pattern,
+        estimator=estimator,
+        k_list=k,
+        subwindows_list=subwindows,
+        mean_poisson=None,
+        m=7,
+        proba_list=[0.11, 0.02, 0.143, 0.4, 0.2, 0.06, 0.07],
+        tapers=tapers,
+    )
+    np.testing.assert_almost_equal(result, expected, decimal=4)
