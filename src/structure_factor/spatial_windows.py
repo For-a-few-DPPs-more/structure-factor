@@ -357,7 +357,62 @@ def check_cubic_window(window):
     if not isinstance(window, BoxWindow):
         raise TypeError("window must be an instance of BoxWindow.")
     lengths = np.diff(window.bounds, axis=1)
-    L = lengths[0]
-    if np.any(lengths != L):
+    if np.any(lengths != lengths[0]):
         raise ValueError("window should be a 'cubic' BoxWindow.")
     return None
+
+
+# todo doc
+def check_centered_window(window):
+    """Check whether ``window`` is centered at the origin.
+
+    Args:
+        window (:py:class:`~structure_factor.spatial_windows.AbstractSpatialWindow`):
+
+    Raises:
+        ValueError: window is not centered at the origin.
+    """
+    if isinstance(window, BoxWindow):
+        if np.sum(window.bounds) != 0:
+            raise ValueError(
+                "window is not centered at the origin. Hint: use a centered window."
+            )
+    if isinstance(window, BallWindow):
+        if any(window.center != 0):
+            raise ValueError(
+                "window is not centered at the origin. Hint: use a centered window."
+            )
+    return None
+
+
+# todo doc
+def subwindow_parameter_max(window, subwindow_type="BoxWindow"):
+    """
+    Return the lengthside (resp. radius) of the largest cubic (resp. ball)  subwindow contained in `window`.
+
+    Args:
+        window (:py:class:`~structure_factor.spatial_windows.AbstractSpatialWindow`): Box or ball window centered at the origin.
+        subwindow_type (str, optional): Type of the requested subwindow "BoxWindow" or "BallWindow". Defaults to "BoxWindow".
+
+
+    Returns:
+        _type_: lengthside (resp. radius) of the largest cubic (resp. ball)  subwindow contained in `window`
+    """
+    if subwindow_type not in ["BoxWindow", "BallWindow"]:
+        raise ValueError(
+            "The available subwindow types are BallWindow or BoxWindow. Hint: the parameter corresponding to the window type must be 'BallWindow' or 'BoxWindow'. "
+        )
+    check_centered_window(window)
+    # window parameter
+    if isinstance(window, BallWindow):
+        if subwindow_type == "BallWindow":
+            param_max = window.radius
+        else:
+            param_max = window.radius * 2 / np.sqrt(2)
+            # length side of the BoxWindow
+    elif isinstance(window, BoxWindow):
+        if subwindow_type == "BallWindow":
+            param_max = np.min(np.diff(window.bounds)) / 2
+        else:
+            param_max = np.min(np.diff(window.bounds))
+    return param_max
