@@ -1,7 +1,11 @@
 import warnings
 import numpy as np
 from structure_factor.structure_factor import StructureFactor
-from structure_factor.spatial_windows import BoxWindow, BallWindow
+from structure_factor.spatial_windows import (
+    BoxWindow,
+    BallWindow,
+    subwindow_parameter_max,
+)
 from structure_factor.tapered_estimators_isotropic import (
     allowed_k_norm_bartlett_isotropic,
 )
@@ -9,56 +13,46 @@ from scipy.stats import poisson
 
 
 def subwindows_list(
-    window, type="BoxWindow", param_0=None, param_max=None, params=None
+    window, subwindows_type="BoxWindow", param_0=None, param_max=None, params=None
 ):
     d = window.dimension
-    window_param_max = _subwindow_param_max(window, type)
-    if type not in ["BoxWindow", "BallWindow"]:
-        raise ValueError(
-            "The available subwindow types are BallWindow or BoxWindow. Hint: the parameter corresponding to the type must be 'BallWindow' or 'BoxWindow'. "
-        )
+    # parameter of the biggest possible subwindow contained in `window``
+    window_param_max = subwindow_parameter_max(window, subwindows_type)
     # subwindows list of parameters
     if params is None:
         if param_0 is None:
             raise ValueError(
                 "The minimum window parameter is mandatory. Hint: specify the minimum window parameter."
             )
-        # from params0 till param_max with space 1
+        # from param_0 till param_max with unit space
         if param_max is None:
             params = np.arange(param_0, window_param_max)
     else:
         if max(params) > window_param_max:
             raise ValueError(
-                f"The maximum sub-window (parameter={max(params)}) is bigger than the initial window (parameter={param_max}). Hint: Reduce the maximum subwindow parameter. "
+                f"The maximum sub-window (parameter={max(params)}) is bigger than the father window (parameter={window_param_max}). Hint: Reduce the maximum subwindow parameter. "
             )
-    # subwindows list
-    if type == "BallWindow":
+    # subwindows and the associated k
+    if subwindows_type == "BallWindow":
         subwindows = [BallWindow(center=[0] * d, radius=r) for r in params]
-        if d > 1:
+        # check if d is even
+        _, mod_ = divmod(d, 2)
+        is_even_dimension = mod_ == 0
+        if is_even_dimension:
             k_list = [
                 allowed_k_norm_bartlett_isotropic(dimension=d, radius=r, nb_values=1)
                 for r in params
             ]
         else:
             k_list = None
+            warnings.warn(
+                message=f"Isotropic allowed wavenumber are available only when the dimension of the space is an even number (i.e., d/2 is an integer)."
+            )
 
     else:
         subwindows = [BoxWindow(bounds=[[-l / 2, l / 2]] * d) for l in params]
         k_list = [np.full((1, d), fill_value=2 * np.pi / l) for l in params]
     return subwindows, k_list
-
-
-def k_list(d, subwindows_params, estimator_type):
-    # non-isotropic case
-    if estimator_type in ["scattering_intensity", "tapered_estimator"]:
-        k_list = [np.full((1, d), fill_value=2 * np.pi / l) for l in subwindows_params]
-    # isotropic case
-    else:
-        k_list = [
-            allowed_k_norm_bartlett_isotropic(dimension=d, radius=r, nb_values=1)
-            for r in subwindows_params
-        ]
-    return k_list
 
 
 # todo add test
@@ -131,8 +125,8 @@ def m_threshold(window_min, window_max):
         subwindow_type = "BoxWindow"
     else:
         subwindow_type = "BallWindow"
-    param_max = _subwindow_param_max(window_max, type=subwindow_type)
-    param_min = _subwindow_param_max(window_min, type=subwindow_type)
+    param_max = subwindow_parameter_max(window_max, subwindow_type=subwindow_type)
+    param_min = subwindow_parameter_max(window_min, subwindow_type=subwindow_type)
     if param_max < param_min:
         raise ValueError("window_min should be bigger than window_max.")
     m_threshold = int(param_max - param_min)
@@ -177,22 +171,6 @@ def _select_structure_factor_estimator(point_pattern, estimator, k, **kwargs):
             "Available estimators: 'scattering_intensity', 'tapered_estimator', 'bartlett_isotropic_estimator', 'quadrature_estimator_isotropic'. "
         )
     return estimated_sf_k
-
-
-def _subwindow_param_max(window, type="BoxWindow"):
-    # window parameter
-    if isinstance(window, BallWindow):
-        if type == "BallWindow":
-            param_max = window.radius
-        else:
-            param_max = window.radius * 2 / np.sqrt(2)
-            # length side of the BoxWindow
-    elif isinstance(window, BoxWindow):
-        if type == "BallWindow":
-            param_max = np.min(np.diff(window.bounds)) / 2
-        else:
-            param_max = np.min(np.diff(window.bounds))
-    return param_max
 
 
 def _poisson_rv(mean_poisson, threshold, verbose=True):
