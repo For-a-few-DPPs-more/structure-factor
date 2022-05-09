@@ -55,7 +55,6 @@ def subwindows_list(
     return subwindows, k_list
 
 
-# todo add test
 def multiscale_estimator(
     point_pattern,
     estimator,
@@ -90,13 +89,13 @@ def multiscale_estimator(
         )
     else:
         if len(proba_list) < m:
-            raise ValueError(f"The proba list should contains {max(m)} elements.")
+            raise ValueError(f"The proba list should contains at least{m} elements.")
         proba_list = proba_list[:m]
 
     # k and subwindows list
     if len(subwindows_list) != len(k_list):
         raise ValueError(
-            "The number of wavevectors (or wavenumber) k should be equal to the number of subwindows, since each k is associated to a subwindow."
+            "The number of wavevectors/wavenumber (k) should be equal to the number of subwindows. Each k is associated to a subwindow."
         )
     if len(subwindows_list) < m:
         raise ValueError(
@@ -113,7 +112,7 @@ def multiscale_estimator(
         estimator=estimator,
         **kwargs,
     )
-
+    # the r.v. (y_n)_n
     y_list = [min(np.array([1]), s) for s in s_k_min_list]
     z = coupled_sum_estimator(y_list, proba_list)
 
@@ -139,9 +138,9 @@ def multiscale_estimator_core(
     point_pattern_list = [point_pattern.restrict_to_window(w) for w in subwindows_list]
     estimated_sf_k_list = [
         _select_structure_factor_estimator(
-            point_pattern=p, estimator=estimator, k=k, **kwargs
+            point_pattern=p, estimator=estimator, k=q, **kwargs
         )
-        for p, k in zip(point_pattern_list, k_list)
+        for p, q in zip(point_pattern_list, k_list)
     ]
     return estimated_sf_k_list
 
