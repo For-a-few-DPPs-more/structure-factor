@@ -8,7 +8,7 @@ Hyperuniformity diagnostics functions:
 
 Additional functions:
     - :py:func:`~structure_factor.hyperuniformity.bin_data`: Method for regularizing structure factor's estimation.
-    - :py:func:`~structure_factor.hyperuniformity.subwindows`: Method for generating a list of subwindows from a father window with the corresponding minimal allowed wavevectors (or wavenumbers).
+    - :py:func:`~structure_factor.hyperuniformity.subwindows`: Method for generating a list of subwindows from a father window with the corresponding minimum allowed wavevectors (or wavenumbers).
 
 
 .. note::
@@ -297,23 +297,42 @@ def bin_data(k_norm, sf, **params):
     return _bin_statistics(k_norm, sf, **params)
 
 
-# todo update doc
+# todo spelling
 def subwindows(
     window, subwindows_type="BoxWindow", param_0=None, param_max=None, params=None
 ):
-    """_summary_
-
-    _extended_summary_
+    """Create a list of cubic (or ball)-shaped subwindows of a father window, with the associated minimum allowed wavevectors (or wavenumbers).
 
     Args:
-        window (_type_): _description_
-        subwindows_type (str, optional): _description_. Defaults to "BoxWindow".
-        param_0 (_type_, optional): _description_. Defaults to None.
-        param_max (_type_, optional): _description_. Defaults to None.
-        params (_type_, optional): _description_. Defaults to None.
+        window (:py:class:`~structure_factor.spatial_windows.AbstractSpatialWindow`): Father window.
+
+        subwindows_type (str, optional): Type of the subwindows to be created. The available types are "BoxWindow" and "BallWindow". The former for cubic and the latter for ball-shaped subwindows. Defaults to "BoxWindow".
+
+        param_0 (float, optional): Parameter (lengthside/radius) of the first subwindow to be created. If not None, an increasing sequence of subwindows with parameters of unit increments is created. The biggest subwindow has parameter ``param_max`` if it's not None, else, the maximum possible parameter. Defaults to None.
+
+        param_max (float, optional): Maximum subwindow parameter (lengthside/radius). Used when ``param_0`` is not None. Defaults to None.
+
+        params (list, optional): List of parameters (lengthside/radius) of the output subwindows. For a list of parameters of unit increments, ``param_0`` and ``param_max`` can be used instead. Defaults to None.
 
     Returns:
-        _type_: _description_
+        (list, list):
+            - subwindows: List of subwindows.
+            - k: List of the minimum allowed wavevectors of :py:func:`~structure_factor.tapered_estimators.allowed_k_scattering_intensity` or wavenumbers of :py:func:`~structure_factor.tapered_estimators_isotropic.allowed_k_norm` associated with the subwindow list. The former is for cubic and the latter for ball-shaped subwindows.
+
+    Example:
+        .. plot:: code/hyperuniformity/subwindows.py
+            :include-source: True
+
+    .. note::
+
+            **Typical usage**
+
+            - Create the list of subwindows with the associated k to be used in :py:func:`~structure_factor.hyperuniformity.multiscale_test`.
+
+    .. seealso::
+        - :py:func:`~structure_factor.tapered_estimators.allowed_k_scattering_intensity`
+        - :py:func:`~structure_factor.tapered_estimators_isotropic.allowed_k_norm`
+
     """
     return subwindows_list(window, subwindows_type, param_0, param_max, params)
 
