@@ -1,7 +1,11 @@
 import numpy as np
 import pytest
 
-from structure_factor.hyperuniformity import Hyperuniformity
+from structure_factor.hyperuniformity import (
+    effective_hyperuniformity,
+    hyperuniformity_class,
+    multiscale_test,
+)
 from structure_factor.point_processes import (
     GinibrePointProcess,
     HomogeneousPoissonPointProcess,
@@ -19,9 +23,8 @@ def test_effective_hyperuniformity(sf, expected):
     # verify that the hyperuniformity index for the ginibre ensemble is less than 1e-3
     k = np.linspace(0, 10, 100)
     sf_k = sf(k)
-    hyperuniformity_test = Hyperuniformity(k, sf_k)
-    index_H, _ = hyperuniformity_test.effective_hyperuniformity(k_norm_stop=4)
-    result = index_H < 1e-3
+    summary = effective_hyperuniformity(k, sf_k, k_norm_stop=4)
+    result = summary["H"] < 1e-3
     assert result == expected
 
 
@@ -41,8 +44,9 @@ x_2 = np.linspace(0.5, 2, 50)
     ],
 )
 def test_hyperuniformity_class_on_polynomial(x, fx, c, alpha):
-    test = Hyperuniformity(x, fx)
-    assert alpha, c == test.hyperuniformity_class()
+    result = hyperuniformity_class(x, fx)
+    assert alpha == result["alpha"]
+    assert c == result["c"]
 
 
 @pytest.mark.parametrize(
@@ -55,7 +59,6 @@ def test_hyperuniformity_class_ginibre(sf, expected_alpha):
     # verify that the hyperuniformity index for the ginibre ensemble is less than 1e-3
     k = np.linspace(0, 1, 3000)
     sf_k = sf(k)
-    hyperuniformity_test = Hyperuniformity(k, sf_k)
-    alpha, _ = hyperuniformity_test.hyperuniformity_class(k_norm_stop=0.001)
-    diff_alpha = alpha - expected_alpha
+    result = hyperuniformity_class(k, sf_k, k_norm_stop=0.001)
+    diff_alpha = result["alpha"] - expected_alpha
     np.testing.assert_almost_equal(diff_alpha, 0, decimal=3)
