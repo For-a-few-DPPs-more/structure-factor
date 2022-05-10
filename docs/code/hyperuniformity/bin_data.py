@@ -3,7 +3,7 @@ import numpy as np
 
 import structure_factor.utils as utils
 from structure_factor.data import load_data
-from structure_factor.hyperuniformity import Hyperuniformity
+from structure_factor.hyperuniformity import bin_data
 from structure_factor.point_processes import GinibrePointProcess
 from structure_factor.spatial_windows import BoxWindow
 from structure_factor.structure_factor import StructureFactor
@@ -23,8 +23,7 @@ k = utils.meshgrid_to_column_matrix(np.meshgrid(x, x))
 k, sf_estimated = sf.scattering_intensity(k)
 
 k_norm = utils.norm(k)
-hyperuniformity = Hyperuniformity(k_norm, sf_estimated)
-k_norm_binned, sf_estimated_binned, _ = hyperuniformity.bin_data(bins=40)
+k_norm_binned, sf_estimated_binned, _ = bin_data(k_norm, sf_estimated,bins=40)
 
 fig, ax = plt.subplots(figsize=(7, 5))
 

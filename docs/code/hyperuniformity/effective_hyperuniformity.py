@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from structure_factor.data import load_data
-from structure_factor.hyperuniformity import Hyperuniformity
+from structure_factor.hyperuniformity import effective_hyperuniformity
 from structure_factor.point_processes import GinibrePointProcess
 from structure_factor.structure_factor import StructureFactor
 from structure_factor.tapered_estimators_isotropic import (
@@ -19,10 +19,9 @@ k_norm, sf_estimated = sf.bartlett_isotropic_estimator(k_norm)
 
 sf_theoretical = point_process.structure_factor(k_norm)
 
-hyperuniformity = Hyperuniformity(k_norm, sf_estimated)
-H_ginibre, _ = hyperuniformity.effective_hyperuniformity(k_norm_stop=0.2)
+summary = effective_hyperuniformity(k_norm, sf_estimated, k_norm_stop=0.2)
 x = np.linspace(0, 1, 300)
-sf_fitted_line = hyperuniformity.fitted_line(x)
+sf_fitted_line = summary["fitted_line"](x)
 
 fig, ax = plt.subplots(figsize=(7, 5))
 
@@ -31,7 +30,7 @@ ax.plot(k_norm, sf_estimated, "b", marker=".", label="Approximated structure fac
 ax.plot(x, sf_fitted_line, "r--", label="Fitted line")
 
 ax.annotate(
-    "H={}".format(H_ginibre),
+    "H={}".format(summary["H"]),
     xy=(0, 0),
     xytext=(0.01, 0.1),
     arrowprops=dict(facecolor="black", shrink=0.0001),
