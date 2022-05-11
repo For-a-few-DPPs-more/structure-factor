@@ -1,6 +1,6 @@
 """Functions designed to study the hyperuniformity of a stationary point process using estimation(s) of its structure factor :py:class:`~structure_factor.structure_factor.StructureFactor`.
 
-Hyperuniformity diagnostics functions:
+Hyperuniformity diagnostics:
 
     - :py:func:`~structure_factor.hyperuniformity.multiscale_test`: Statistical test of hyperuniformity asymptomatically valid.
     - :py:func:`~structure_factor.hyperuniformity.effective_hyperuniformity`: Test of effective hyperuniformity.
@@ -15,13 +15,9 @@ Additional functions:
 
     **Typical usage**
 
-    1. Estimate the structure factor of the point process by one of the methods of :py:class:`~structure_factor.structure_factor.StructureFactor`.
+    1. Test the hyperuniformity using the statistical test :py:func:`~structure_factor.hyperuniformity.multiscale_test` or the test of effective hyperuniformity :py:func:`~structure_factor.hyperuniformity.effective_hyperuniformity`.
 
-    2. Regularize the results using :py:func:`~structure_factor.hyperuniformity.bin_data`, if needed.
-
-    3. Test the hyperuniformity using the statistical test :py:func:`~structure_factor.hyperuniformity.multiscale_test` or the test of effective hyperuniformity :py:func:`~structure_factor.hyperuniformity.effective_hyperuniformity`.
-
-    4. If the hyperuniformity was approved, find the possible hyperuniformity class using :py:func:`~structure_factor.hyperuniformity.hyperuniformity_class`.
+    2. If the hyperuniformity was approved, find the possible hyperuniformity class using :py:func:`~structure_factor.hyperuniformity.hyperuniformity_class`.
 """
 import numpy as np
 from scipy.optimize import curve_fit
@@ -48,15 +44,15 @@ def multiscale_test(
     verbose=False,
     **kwargs,
 ):
-    r"""Computes the sample mean and its standard deviation of the coupled sum estimator :math:`Z` of a point process using a list of PointPatterns and realizations from the random variable :math:`M`.
+    r"""Compute the sample mean :math:`\bar{Z}` and the corresponding standard deviation :math:`\bar{\sigma}/\sqrt{N}` of the coupled sum estimator :math:`Z` of a point process using a list of :math:`N` PointPatterns and :math:`N` realizations from the random variable :math:`M`.
 
-    The test rejects the hyperuniformity hypothesis if the confidence interval of :math:`\mathbb{E}[Z]` doesn't contain zero, and vice-versa.
+    The test rejects the hyperuniformity hypothesis if the confidence interval :math:`CI[\mathbb{E}[Z]]= [\bar{Z} - z \bar{\sigma}/\sqrt{N}, \bar{Z} + z \bar{\sigma}/\sqrt{N}]`, doesn't contain zero, and vice-versa.
     (See the multiscale hyperuniformity test in :cite:`HGBLR:22`).
 
     Args:
         point_pattern_list (list): List of :py:class:`~structure_factor.point_pattern.PointPattern` (s). Each element of the list is an encapsulation of a realization of a point process, the observation window, and (optionally) the intensity of the point process. All :py:class:`~structure_factor.point_pattern.PointPattern` (s) should have the same window and intensity.
 
-        estimator (str): Choice of structure factor's estimator. The parameters of the chosen estimator must be specified as keyword arguments. The available estimators are "scattering_intensity", "tapered_estimator", "bartlett_isotropic_estimator", and "quadrature_estimator_isotropic". See :py:class:`~structure_factor.structure_factor.StructureFactor`.
+        estimator (str): Choice of structure factor's estimator. The parameters of the chosen estimator must be added as keyword arguments. The available estimators are "scattering_intensity", "tapered_estimator", "bartlett_isotropic_estimator", and "quadrature_estimator_isotropic". See :py:class:`~structure_factor.structure_factor.StructureFactor`.
 
         subwindows_list (list): List of :py:class:`~structure_factor.spatial_windows.AbstractSpatialWindow`. An increasing list of windows corresponding to the ``estimator``. Each element of ``point_pattern_list`` will be restricted to these windows to compute :math:`Z`. Typically, obtained using :py:func:`~structure_factor.hyperuniformity.subwindows`.
 
@@ -65,9 +61,9 @@ def multiscale_test(
 
         mean_poisson (int): Parameter of the Poisson r.v. :math:`M` used to compute :math:`Z`. To use a different distribution of the r.v. :math:`M`, set ``mean_poisson=None`` and specify ``m_list`` and ``proba_list`` corresponding to :math:`M`.
 
-        m_list (list, optional): List of positive integers realizations of the r.v. :math:`M`, used when ``mean_poisson=None``. Each element of ``m_list`` is associated with an element of ``point_pattern_list`` to compute a realization of :math:`Z`. Defaults to None.
+        m_list (list, optional): List of positive integer realizations of the r.v. :math:`M`, used when ``mean_poisson=None``. Each element of ``m_list`` is associated with an element of ``point_pattern_list`` to compute a realization of :math:`Z`. Defaults to None.
 
-        proba_list (list, optional): List of :math:`\mathbb{P}(M>j)` used  with ``m_list`` when ``mean_poisson=None``. Should contains at least ``max(m_list)`` elements. Defaults to None.
+        proba_list (list, optional): List of :math:`\mathbb{P}(M \geq j)` used  with ``m_list`` when ``mean_poisson=None``. Should contains at least ``max(m_list)`` elements. Defaults to None.
 
         verbose (bool, optional): If "True", print the re-sampled values of :math:`M` when ``mean_poisson`` is not None. Defaults to False.
 
@@ -75,10 +71,9 @@ def multiscale_test(
         kwargs (dict): Parameters of the chosen ``estimator`` of the structure factor.  See :py:class:`~structure_factor.structure_factor.StructureFactor`.
 
     Returns:
-        dict:
-        Dictionary containing:
+        dict(float, float, list, list):
             - "mean_Z": The sample mean of :math:`Z`.
-            - "std_mean_Z": The sample standard deviation of :math:`\mathbb{E}[Z]` i.e. sample standard deviation of :math:`Z` divided by the square root of the number of samples.
+            - "std_mean_Z": The sample standard deviation of :math:`\mathbb{E}[Z]` i.e., the sample standard deviation of :math:`Z` divided by the square root of the number of samples.
             - "Z": The obtained values of :math:`Z`.
             - "M": The used values of :math:`M`.
 
@@ -92,13 +87,21 @@ def multiscale_test(
         We define the sequence of r.v. :math:`Y_m = 1\wedge \widehat{S}_m(\mathbf{k}_m^{\text{min}})`, where :math:`\widehat{S}_m` is one of the positive, asymptotically unbiased estimators of the structure factor of :math:`\mathcal{X}` applied on the observation :math:`\mathcal{X} \cap W_m`, and :math:`\mathbf{k}_m^{\text{min}}` is the minimum allowed wavevector associated with :math:`W_m`.
 
         Under some assumptions (:cite:`HGBLR:22`, Section 4) :math:`\mathcal{X}` is hyperuniform iff :math:`\mathbb{E}[Z]=0`.
-        Where :math:`Z` is the coupled sum estimator defined by,
+        Where :math:`Z` is the coupled sum estimator of :cite:`RhGl15` defined by,
 
         .. math::
 
-            \sum_{j=0}^{M} \frac{Y_j - Y_{j-1}}{\mathbb{P}(M\geq j)}
+            Z = \sum_{j=0}^{M} \frac{Y_j - Y_{j-1}}{\mathbb{P}(M\geq j)}
 
-        with :math:`M` an :math:`\mathbb{N}` -valued random variable such that :math:`\mathbb{P}(M \geq j)>0` for all :math:`j`, and :math:`Y_{0}=0`.
+        with :math:`M` an :math:`\mathbb{N}`-valued random variable such that :math:`\mathbb{P}(M \geq j)>0` for all :math:`j`, and :math:`Y_{0}=0`.
+
+    .. important::
+
+        - If ``mean_poisson`` is not None, there is a step of accepting/rejecting while sampling from the r.v. :math:`M`. If the biggest subwindow associated with :math:`M'` (obtained value of :math:`M`) is larger than the father window, then :math:`M'` is rejected, and we resample from  :math:`M`. Typically, ``mean_poisson`` should be chosen s.t. the probability that the biggest subwindow is larger than the father window is small enough.
+
+        - The test is asymptotically valid, so it might fail in diagnosing hyperuniformity if the number of samples used to compute :math:`\bar{Z}` or :math:`\lambda` is too small.
+
+
 
     .. note::
 
@@ -111,6 +114,7 @@ def multiscale_test(
         - :py:meth:`~structure_factor.point_pattern.PointPattern`
         - :py:class:`~structure_factor.structure_factor.StructureFactor`
         - :py:func:`~structure_factor.hyperuniformity.subwindows`
+        - :py:func:`~structure_factor.hyperuniformity.hyperuniformity_class`
     """
     nb_sample = len(point_pattern_list)
     if m_list is None:
@@ -142,21 +146,23 @@ def multiscale_test(
 
 
 def effective_hyperuniformity(k_norm, sf, k_norm_stop, std_sf=None, **kwargs):
-    r"""Evaluate the index :math:`H` of hyperuniformity of a point process using its structure factor :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.sf`. If :math:`H<10^{-3}` the corresponding point process is deemed effectively hyperuniform.
+    r"""Evaluate the index :math:`H` of hyperuniformity of a point process using its structure factor ``sf``. If :math:`H<10^{-3}` the corresponding point process is deemed effectively hyperuniform.
 
     Args:
-        k_norm (numpy.ndarray, optional): Vector of wavenumbers (i.e. norms of the wavevectors). Default to None.
-        sf (numpy.ndarray, optional): Vector of evaluations of the structure factor, of the given point process, at :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.k_norm`. Default to None.
-        std_sf (numpy.ndarray, optional): Vector of standard deviations associated to :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.sf`. Defaults to None.
-        k_norm_stop (float): Threshold on :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.k_norm`. Used to find the numerator of :math:`H` by linear regression of :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.sf` up to the value associated with ``k_norm_stop``.
+        k_norm (numpy.ndarray): Vector of wavenumbers (i.e. norms of wavevectors).
+        sf (numpy.ndarray): Evaluations of the structure factor, of the given point process, at ``k_norm``.
+        std_sf (numpy.ndarray, optional): Standard deviations associated with ``sf``. Defaults to None.
+        k_norm_stop (float): Threshold on ``k_norm``. Used to find the numerator of :math:`H` by linear regression of ``sf`` up to the value associated with ``k_norm_stop``.
 
     Keyword Args:
-        kwargs (dict): Keyword arguments (except ``"sigma"``) of `scipy.scipy.optimize.curve_fit <https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.curve_fit.html>`_ parameters.
+        kwargs (dict): Keyword arguments (except "sigma") of `scipy.scipy.optimize.curve_fit <https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.curve_fit.html>`_ parameters.
 
     Returns:
-        tuple(float, float):
-            - H: Value of the index :math:`H`.
-            - s0_std: Standard deviation of the numerator of :math:`H`.
+        dict(float, float, function, int):
+            - "H": Value of the index :math:`H`.
+            - "s0_std": Standard deviation of the numerator of :math:`H`.
+            - "fitted_line": Line used to find the numerator of :math:`H`.
+            - "idx_first_peak": Index of :math:`k_{peak}` if it exists.
 
     Example:
         .. plot:: code/hyperuniformity/effective_hyperuniformity.py
@@ -178,15 +184,15 @@ def effective_hyperuniformity(k_norm, sf, k_norm_stop, std_sf=None, **kwargs):
 
     .. important::
 
-        To compute the numerator :math:`\hat{S}(\mathbf{0})` of :math:`H`, a line is fitted using a linear extrapolation with a least-square fit on the values of :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.sf` associated to the sub-vector of :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.k_norm` truncated around the threshold ``k_norm_stop``. ``k_norm_stop`` must satisfy a good compromise of being close to zero and allowing to fit the line on a sufficient number of points.
-
-        If the standard deviations of :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.sf` are provided in the attribute :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.std_sf` then, these values will be considered while fitting the line.
+        To compute :math:`\hat{S}(\mathbf{0})`, a linear extrapolation with a least-square fit is used to fit a line on the values of ``sf`` associated with a subvector of ``k_norm``.
+        This subvector is obtained by truncating ``k_norm`` around ``k_norm_stop``. For the choice of ``k_norm_stop``, the trade-off is to remain close to zero while including enough data points to fit a line.
+        In addition, ``std_sf`` will be considered while fitting the line if it's not None.
 
     .. seealso::
 
         - :py:class:`~structure_factor.structure_factor.StructureFactor`
-        - :py:meth:`~structure_factor.hyperuniformity.Hyperuniformity.bin_data`
-        - :py:meth:`~structure_factor.hyperuniformity.Hyperuniformity.hyperuniformity_class`
+        - :py:func:`~structure_factor.hyperuniformity.bin_data`
+        - :py:func:`~structure_factor.hyperuniformity.hyperuniformity_class`
     """
     # sort vectors
     k_norm, sf, std_sf = _sort_vectors(k_norm, sf, std_sf)
@@ -216,31 +222,30 @@ def effective_hyperuniformity(k_norm, sf, k_norm_stop, std_sf=None, **kwargs):
     return summary
 
 
-# todo update doc and test
 def hyperuniformity_class(k_norm, sf, k_norm_stop=1, std_sf=None, **kwargs):
-    r"""Fit a polynomial :math:`y = c \cdot x^{\alpha}` to the attribute :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.sf` around zero. :math:`\alpha` is used to specify the possible class of hyperuniformity of the associated point process (as described below).
+    r"""Fit a polynomial :math:`y = c \cdot x^{\alpha}` to ``sf`` around zero. :math:`\alpha` is used to specify the possible class of hyperuniformity of the associated point process (as described below).
 
     Args:
-        k_norm (numpy.ndarray, optional): Vector of wavenumbers (i.e. norms of the wavevectors). Default to None.
-        sf (numpy.ndarray, optional): Vector of evaluations of the structure factor, of the given point process, at :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.k_norm`. Default to None.
-        std (numpy.ndarray, optional): Vector of standard deviations associated to :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.sf`. Defaults to None.
-        k_norm_stop (float, optional): Threshold on :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.k_norm`. A polynomial will be fitted on :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.sf` starting from zero until the value associated with ``k_norm_stop``. ``k_norm_stop`` should be sufficiently close to zero to get a good result. Defaults to 1.
+        k_norm (numpy.ndarray): Vector of wavenumbers (i.e. norms of the wavevectors).
+        sf (numpy.ndarray): Evaluations of the structure factor, of the given point process, at ``k_norm``.
+        std (numpy.ndarray, optional): Standard deviations associated to ``sf``. Defaults to None.
+        k_norm_stop (float, optional): Threshold on ``k_norm``. The subvector obtained from ``sf`` starting from zero up to the value associated with ``k_norm_stop`` is used to fit a polynomial and find :math:`\alpha`. Defaults to 1.
 
     Keyword Args:
-        kwargs (dict): Keyword arguments (except ``"sigma"``) of `scipy.scipy.optimize.curve_fit <https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.curve_fit.html>`_ parameters.
+        kwargs (dict): Keyword arguments (except "sigma") of `scipy.scipy.optimize.curve_fit <https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.curve_fit.html>`_ parameters.
 
     Returns:
-        tuple(float, float):
-            - alpha: The estimated power decay of the structure factor.
-            - c: The approximated value of the structure factor on the origin.
-
+        dict(float, float, function):
+            - "alpha": Estimated value of :math:`\alpha`.
+            - "c": Estimated value of :math:`c`.
+            - "fitted_poly": Polynomial used to find :math:`\alpha`.
     Example:
         .. plot:: code/hyperuniformity/hyperuniformity_class.py
             :include-source: True
 
     .. proof:definition::
 
-        For a stationary  hyperuniform point process :math:`\mathcal{X} \subset \mathbb{R}^d`, if :math:`\vert S(\mathbf{k})\vert\sim c \Vert \mathbf{k} \Vert_2^\alpha` in the neighborhood of 0, then by :cite:`Cos21` (Section 4.1.) the value of :math:`\alpha` determines the hyperuniformity class of :math:`\mathcal{X}` as follows,
+        For a stationary  hyperuniform point process :math:`\mathcal{X} \subset \mathbb{R}^d`, if :math:`\vert S(\mathbf{k})\vert\sim c \Vert \mathbf{k} \Vert_2^\alpha` in the neighborhood of zero, then by :cite:`Cos21` (Section 4.1.) the value of :math:`\alpha` determines the hyperuniformity class of :math:`\mathcal{X}` as follows,
 
         +-------+----------------+---------------------------------------------------------------+
         | Class | :math:`\alpha` | :math:`\mathbb{V}\text{ar}\left[\mathcal{X}(B(0, R)) \right]` |
@@ -252,13 +257,20 @@ def hyperuniformity_class(k_norm, sf, k_norm_stop=1, std_sf=None, **kwargs):
         | III   | :math:`]0, 1[` | :math:`\mathcal{O}(R^{d-\alpha})`                             |
         +-------+----------------+---------------------------------------------------------------+
 
-        For more details, we refer to :cite:`HGBLR:22`, (Section 2.5).
+        For more details, we refer to :cite:`HGBLR:22`, (Section 2.4).
+
+    .. important::
+
+        To compute :math:`\alpha`, a polynomial is fitted on the values of ``sf`` associated with a subvector of ``k_norm``.
+        This subvector is obtained by truncating ``k_norm`` around ``k_norm_stop``. For the choice of ``k_norm_stop``, the trade-off is to remain close to zero while including enough data points to fit a polynomial.
+        In addition, ``std_sf`` will be considered while fitting the polynomial if it's not None.
 
     .. seealso::
 
         - :py:class:`~structure_factor.structure_factor.StructureFactor`
-        - :py:meth:`~structure_factor.hyperuniformity.Hyperuniformity.bin_data`
-        - :py:meth:`~structure_factor.hyperuniformity.Hyperuniformity.effective_hyperuniformity`
+        - :py:func:`~structure_factor.hyperuniformity.bin_data`
+        - :py:func:`~structure_factor.hyperuniformity.multiscale_test`
+        - :py:func:`~structure_factor.hyperuniformity.effective_hyperuniformity`
     """
     k_norm, sf, std_sf = _sort_vectors(k_norm, sf, std_sf)
     poly = lambda x, alpha, c: c * x ** alpha
@@ -268,26 +280,32 @@ def hyperuniformity_class(k_norm, sf, k_norm_stop=1, std_sf=None, **kwargs):
     return summary
 
 
-# todo update doc and test
 def bin_data(k_norm, sf, **params):
-    """Split the vector attribute :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.k_norm` into sub-intervals (or bins) and evaluate, over each sub-interval, the mean and the standard deviation of the corresponding values in the vector attribute :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.sf`.
+    """Split ``k_norm`` into sub-intervals (or bins) and evaluate, over each sub-interval, the mean and the standard deviation of the corresponding values in ``sf``.
 
     Args:
-        k_norm (numpy.ndarray, optional): Vector of wavenumbers (i.e. norms of the wavevectors). Default to None.
+        k_norm (numpy.ndarray): Vector of wavenumbers (i.e. norms of wavevectors).
 
-        sf (numpy.ndarray, optional): Vector of evaluations of the structure factor, of the given point process, at :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.k_norm`. Default to None.
+        sf (numpy.ndarray): Evaluations of the structure factor, of the given point process, at ``k_norm``.
+
     Keyword Args:
-        params (dict): Keyword arguments (except ``"x"``, ``"values"`` and ``"statistic"``) of `scipy.stats.binned_statistic <https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.binned_statistic.html>`_.
+        params (dict): Keyword arguments (except "x", "values" and "statistic") of `scipy.stats.binned_statistic <https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.binned_statistic.html>`_.
 
     Returns:
         tuple(numpy.ndarray, numpy.ndarray, numpy.ndarray):
-            - ``k_norm``: Centers of the bins (update the attribute :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.k_norm`).
-            - ``sf``: Means of the structure factor over the bins (update the attribute :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.sf`).
-            - ``std_sf``: Standard deviations of the structure factor over the bins (update the attribute :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.std_sf`).
+            - ``k_norm``: Centers of the bins.
+            - ``sf``: Means of the structure factor over the bins.
+            - ``std_sf``: Standard deviations of the structure factor over the bins.
 
     Example:
         .. plot:: code/hyperuniformity/bin_data.py
             :include-source: True
+
+    .. note::
+
+            **Typical usage**
+
+            - Regularize the results of :py:class:`~structure_factor.structure_factor.StructureFactor` to be used in :py:func:`~structure_factor.hyperuniformity.effective_hyperuniformity` and :py:func:`~structure_factor.hyperuniformity.hyperuniformity_class`.
 
     .. seealso::
 
@@ -297,7 +315,6 @@ def bin_data(k_norm, sf, **params):
     return _bin_statistics(k_norm, sf, **params)
 
 
-# todo spelling
 def subwindows(
     window, subwindows_type="BoxWindow", param_0=None, param_max=None, params=None
 ):
@@ -316,8 +333,8 @@ def subwindows(
 
     Returns:
         (list, list):
-            - subwindows: List of subwindows.
-            - k: List of the minimum allowed wavevectors of :py:func:`~structure_factor.tapered_estimators.allowed_k_scattering_intensity` or wavenumbers of :py:func:`~structure_factor.tapered_estimators_isotropic.allowed_k_norm` associated with the subwindow list. The former is for cubic and the latter for ball-shaped subwindows.
+            - subwindows: The list of subwindows.
+            - k: List of the minimum allowed wavevectors of :py:func:`~structure_factor.tapered_estimators.allowed_k_scattering_intensity` or wavenumbers of :py:func:`~structure_factor.tapered_estimators_isotropic.allowed_k_norm_bartlett_isotropic` associated with the subwindow list. The former is for cubic and the latter for ball-shaped subwindows.
 
     Example:
         .. plot:: code/hyperuniformity/subwindows.py
@@ -331,7 +348,7 @@ def subwindows(
 
     .. seealso::
         - :py:func:`~structure_factor.tapered_estimators.allowed_k_scattering_intensity`
-        - :py:func:`~structure_factor.tapered_estimators_isotropic.allowed_k_norm`
+        - :py:func:`~structure_factor.tapered_estimators_isotropic.allowed_k_norm_bartlett_isotropic`
 
     """
     return subwindows_list(window, subwindows_type, param_0, param_max, params)
