@@ -91,7 +91,7 @@ def multiscale_test(
 
         .. math::
 
-            Z = \sum_{j=0}^{M} \frac{Y_j - Y_{j-1}}{\mathbb{P}(M\geq j)}
+            Z = \sum_{j=0}^{M} \frac{Y_j - Y_{j-1}}{\mathbb{P}(M\geq j)},
 
         with :math:`M` an :math:`\mathbb{N}`-valued random variable such that :math:`\mathbb{P}(M \geq j)>0` for all :math:`j`, and :math:`Y_{0}=0`.
 
@@ -129,8 +129,8 @@ def multiscale_test(
         multiscale_estimator(
             p,
             estimator,
-            k_list,
             subwindows_list,
+            k_list,
             mean_poisson=mean_poisson,
             m=m,
             proba_list=proba_list,
