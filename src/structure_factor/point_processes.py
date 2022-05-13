@@ -64,7 +64,7 @@ class HomogeneousPoissonPointProcess(object):
             return val
 
         assert r.ndim <= 2
-        return np.full(r.shape[0], val)
+        return np.full((r.shape[0], 1), val)
 
     @staticmethod
     def structure_factor(k=None):
