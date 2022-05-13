@@ -54,8 +54,7 @@ def multiscale_test(
 
         estimator (str): Choice of structure factor's estimator. The parameters of the chosen estimator must be added as keyword arguments. The available estimators are "scattering_intensity", "tapered_estimator", "bartlett_isotropic_estimator", and "quadrature_estimator_isotropic". See :py:class:`~structure_factor.structure_factor.StructureFactor`.
 
-        subwindows_list (list): List of :py:class:`~structure_factor.spatial_windows.AbstractSpatialWindow`. An increasing list of windows corresponding to the ``estimator``. Each element of ``point_pattern_list`` will be restricted to these windows to compute :math:`Z`. Typically, obtained using :py:func:`~structure_factor.hyperuniformity.subwindows`.
-
+        subwindows_list (list): List of increasing cubic or ball-shaped :py:class:`~structure_factor.spatial_windows.AbstractSpatialWindow`, typically, obtained using :py:func:`~structure_factor.hyperuniformity.subwindows`. The shape of the windows depends on the choice of the ``estimator``. Each element of ``point_pattern_list`` will be restricted to these windows to compute :math:`Z`.
 
         k_list (list): List of wavevectors (or wavenumbers) where the ``estimator`` is to be evaluated. Each element is associated with an element of ``subwindows_list``. Typically, obtained using :py:func:`~structure_factor.hyperuniformity.subwindows`.
 
@@ -65,7 +64,7 @@ def multiscale_test(
 
         proba_list (list, optional): List of :math:`\mathbb{P}(M \geq j)` used  with ``m_list`` when ``mean_poisson=None``. Should contains at least ``max(m_list)`` elements. Defaults to None.
 
-        verbose (bool, optional): If "True", print the re-sampled values of :math:`M` when ``mean_poisson`` is not None. Defaults to False.
+        verbose (bool, optional): If "True" and ``mean_poisson`` is not None, print the re-sampled values of :math:`M`. Defaults to False.
 
     Keyword Args:
         kwargs (dict): Parameters of the chosen ``estimator`` of the structure factor.  See :py:class:`~structure_factor.structure_factor.StructureFactor`.
@@ -73,7 +72,7 @@ def multiscale_test(
     Returns:
         dict(float, float, list, list):
             - "mean_Z": The sample mean of :math:`Z`.
-            - "std_mean_Z": The sample standard deviation of :math:`\mathbb{E}[Z]` i.e., the sample standard deviation of :math:`Z` divided by the square root of the number of samples.
+            - "std_mean_Z": The sample standard deviation of :math:`Z` divided by the square root of the number of samples.
             - "Z": The obtained values of :math:`Z`.
             - "M": The used values of :math:`M`.
 
@@ -91,7 +90,7 @@ def multiscale_test(
 
         .. math::
 
-            Z = \sum_{j=0}^{M} \frac{Y_j - Y_{j-1}}{\mathbb{P}(M\geq j)},
+            Z = \sum_{j=1}^{M} \frac{Y_j - Y_{j-1}}{\mathbb{P}(M\geq j)},
 
         with :math:`M` an :math:`\mathbb{N}`-valued random variable such that :math:`\mathbb{P}(M \geq j)>0` for all :math:`j`, and :math:`Y_{0}=0`.
 
@@ -333,8 +332,8 @@ def subwindows(
 
     Returns:
         (list, list):
-            - subwindows: The list of subwindows.
-            - k: List of the minimum allowed wavevectors of :py:func:`~structure_factor.tapered_estimators.allowed_k_scattering_intensity` or wavenumbers of :py:func:`~structure_factor.tapered_estimators_isotropic.allowed_k_norm_bartlett_isotropic` associated with the subwindow list. The former is for cubic and the latter for ball-shaped subwindows.
+            - subwindows: Obtained subwindows.
+            - k: Minimum allowed wavevectors of :py:func:`~structure_factor.tapered_estimators.allowed_k_scattering_intensity` or wavenumbers of :py:func:`~structure_factor.tapered_estimators_isotropic.allowed_k_norm_bartlett_isotropic` associated with the subwindow list. The former is for cubic and the latter for ball-shaped subwindows.
 
     Example:
         .. plot:: code/hyperuniformity/subwindows.py

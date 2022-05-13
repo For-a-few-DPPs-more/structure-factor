@@ -23,15 +23,14 @@ def multiscale_estimator(
     verbose=True,
     **kwargs,
 ):
-    r"""Compute a realization of the coupled sum estimator :math:`Z`  :cite:`HGBLR:22` of a point process using a corresponding PointPattern and a realization from the random variable :math:`M`.
+    r"""Sample from :math:`Z`  :cite:`HGBLR:22` using a PointPattern and a realization from the r.v. :math:`M`. See the definition of :math:`Z` below.
 
     Args:
         point_pattern (:py:class:`~structure_factor.point_pattern.PointPattern`): An encapsulation of a realization of a point process, the observation window, and (optionally) the intensity of the point process.
 
         estimator (str): Choice of structure factor's estimator. The parameters of the chosen estimator must be added as keyword arguments. The available estimators are "scattering_intensity", "tapered_estimator", "bartlett_isotropic_estimator", and "quadrature_estimator_isotropic". See :py:class:`~structure_factor.structure_factor.StructureFactor`.
 
-        subwindows_list (list): List of :py:class:`~structure_factor.spatial_windows.AbstractSpatialWindow`. An increasing list of windows corresponding to the ``estimator``. Each element of ``point_pattern_list`` will be restricted to these windows to compute :math:`Z`. Typically, obtained using :py:func:`~structure_factor.multiscale_estimators.subwindows_list`.
-
+        subwindows_list (list): List of increasing cubic or ball-shaped :py:class:`~structure_factor.spatial_windows.AbstractSpatialWindow`, typically, obtained using :py:func:`~structure_factor.multiscale_estimators.subwindows_list`. The shape of the windows depends on the choice of the ``estimator``. Each element of ``point_pattern_list`` will be restricted to these windows to compute :math:`Z`.
 
         k_list (list): List of wavevectors (or wavenumbers) where the ``estimator`` is to be evaluated. Each element is associated with an element of ``subwindows_list``. Typically, obtained using :py:func:`~structure_factor.multiscale_estimators.subwindows_list`.
 
@@ -41,7 +40,7 @@ def multiscale_estimator(
 
         proba_list (list, optional): List of :math:`\mathbb{P}(M \geq j)` used  with ``m`` when ``mean_poisson=None``. Should contains at least ``m`` elements. Defaults to None.
 
-        verbose (bool, optional): If "True", print the re-sampled values of :math:`M` when ``mean_poisson`` is not None. Defaults to False.
+        verbose (bool, optional): If "True" and ``mean_poisson`` is not None, print the re-sampled values of :math:`M`. Defaults to False.
 
     Keyword Args:
         kwargs (dict): Parameters of the chosen ``estimator`` of the structure factor.  See :py:class:`~structure_factor.structure_factor.StructureFactor`.
@@ -61,7 +60,7 @@ def multiscale_estimator(
 
         .. math::
 
-            Z = \sum_{j=0}^{M} \frac{Y_j - Y_{j-1}}{\mathbb{P}(M\geq j)}
+            Z = \sum_{j=1}^{M} \frac{Y_j - Y_{j-1}}{\mathbb{P}(M\geq j)}
 
         with :math:`M` an :math:`\mathbb{N}`-valued random variable such that :math:`\mathbb{P}(M \geq j)>0` for all :math:`j`, and :math:`Y_{0}=0` :cite:`HGBLR:22`.
 
@@ -86,8 +85,8 @@ def multiscale_estimator(
     # proba list
     if proba_list is None:
         proba_list = 1 - (
-            poisson.cdf(k=range(m), mu=mean_poisson)
-            - poisson.pmf(k=range(m), mu=mean_poisson)
+            poisson.cdf(k=range(1, m + 1), mu=mean_poisson)
+            - poisson.pmf(k=range(1, m + 1), mu=mean_poisson)
         )
     else:
         if len(proba_list) < m:
@@ -138,8 +137,8 @@ def coupled_sum_estimator(y_list, proba_list):
     r"""The coupled sum estimator of :cite:`RhGl15`.
 
     Args:
-        y_list (list): List of realizations of the r.v. :math:`Y`.
-        proba_list (list): List of :math:`\mathbb{P}(M \geq j)`.
+        y_list (list): List of :math:`M` realizations of the r.v. :math:`Y`.
+        proba_list (list): List of :math:`\mathbb{P}(M \geq j)` with :math:`1 \leq j \leq M`.
 
     Returns:
         float: Obtained value of the coupled sum estimator.
@@ -150,12 +149,12 @@ def coupled_sum_estimator(y_list, proba_list):
 
     .. proof:definition::
 
-        Let :math:`(Y_m)_m` be a sequence of :math:`L^2` approximations of a r.v. :math:`Y` each of which can be generated in finite time, for which :math:`\mathbb{E}^{1/2}[(Y_m - Y)^2]` converges to zero as :math:`m` goes to infinity.
+        Let :math:`(Y_m)_{m\geq 1}` be a sequence of :math:`L^2` approximations of a r.v. :math:`Y` each of which can be generated in finite time, for which :math:`\mathbb{E}^{1/2}[(Y_m - Y)^2]` converges to zero as :math:`m` goes to infinity.
         The coupled sum estimator of :cite:`RhGl15` is defined by,
 
         .. math::
 
-            Z = \sum_{j=0}^{M} \frac{Y_j - Y_{j-1}}{\mathbb{P}(M\geq j)},
+            Z = \sum_{j=1}^{M} \frac{Y_j - Y_{j-1}}{\mathbb{P}(M\geq j)},
 
         with :math:`M` an :math:`\mathbb{N}`-valued random variable such that :math:`\mathbb{P}(M \geq j)>0` for all :math:`j`, and :math:`Y_{0}=0`.
 
@@ -187,8 +186,8 @@ def subwindows_list(
 
     Returns:
         (list, list):
-            - subwindows: The list of subwindows.
-            - k: List of the minimum allowed wavevectors of :py:func:`~structure_factor.tapered_estimators.allowed_k_scattering_intensity` or wavenumbers of :py:func:`~structure_factor.tapered_estimators_isotropic.allowed_k_norm_bartlett_isotropic` associated with the subwindow list. The former is for cubic and the latter for ball-shaped subwindows.
+            - subwindows: Obtained subwindows.
+            - k: Minimum allowed wavevectors of :py:func:`~structure_factor.tapered_estimators.allowed_k_scattering_intensity` or wavenumbers of :py:func:`~structure_factor.tapered_estimators_isotropic.allowed_k_norm_bartlett_isotropic` associated with the subwindow list. The former is for cubic and the latter for ball-shaped subwindows.
 
     Example:
         .. plot:: code/hyperuniformity/subwindows.py
@@ -242,15 +241,15 @@ def subwindows_list(
 
 
 def m_threshold(window_min, window_max):
-    r"""Find maximum number of integer between the parameter (lengthside/radius) or ``window_min`` and the parameter of the largest subwindow of ``window_max`` having the same shape as ``window_min``.
-    In particular, it gives the maximum possible value of the r.v. :math:`M`, that can be used to compute the :py:func:`~structure_factor.multiscale_estimators.multiscale_estimator` for a given samllest (resp. biggest) subwindow ``window_min`` (resp. ``window_max``).
+    r"""Find the maximum number of integers ranging between the parameters (lengthside/radius) of ``window_min`` and the largest subwindow of ``window_max`` having the shape of ``window_min``.
+    In particular, it gives the maximum value of the r.v. :math:`M` that can be used to compute the :py:func:`~structure_factor.multiscale_estimators.multiscale_estimator` given the smallest and biggest subwindow.
 
     Args:
         window_min (:py:class:`~structure_factor.spatial_windows.AbstractSpatialWindow`): Smallest cubic or ball-shaped window centered at the origin.
         window_max (:py:class:`~structure_factor.spatial_windows.AbstractSpatialWindow`): Biggest box or ball-shaped window centered at the origin.
 
     Returns:
-        int : Maximum number of integer between the parameter (lengthside/radius) or ``window_min`` and the parameter of the largest subwindow of ``window_max`` having the same shape as ``window_min``.
+        int : Maximum number of integers ranging between the parameters (lengthside/radius) of ``window_min`` and the largest subwindow of ``window_max`` having the shape of ``window_min``.
 
     Example:
         .. plot:: code/multiscale_estimators/m_threshold.py

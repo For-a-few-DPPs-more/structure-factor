@@ -26,7 +26,7 @@ The concept of hyperuniformity sheds light on a variety of seemingly unrelated f
 
 There are many candidate HU processes in the physics literature, but rigorously proving that a point process is HU is usually difficult. It is thus desirable to have standardized numerical tests of hyperuniformity. A common practice in statistical physics is to estimate a spectral measure called the structure factor, the behavior of which around zero is a sign of hyperuniformity :cite:`Cos21`.
 
-This Python toolbox gathers many estimators of the structure factor, along with a numerical test of effective hyperuniformity and the corresponding possible class of hyperuniformity.
+This Python toolbox gathers the estimators of the structure factor surveyed in :cite:`HGBLR:22`, along with a new statistical test of hyperuniformity asymptotically valid :cite:`HGBLR:22`, the test of effective hyperuniformity :cite:`Tor18` and the corresponding possible class of hyperuniformity :cite:`Cos21`.
 
 Installation
 ------------
@@ -47,16 +47,17 @@ Contents
 .. toctree::
    :maxdepth: 3
 
-   structure_factor
    hyperuniformity
-   tapered_estimators
-   tapered_estimators_isotropic
-   tapers
-   transforms
-   point_processes
+   multiscale_estimators
    pair_correlation_function
    point_pattern
+   point_processes
    spatial_windows
+   structure_factor
+   tapers
+   tapered_estimators
+   tapered_estimators_isotropic
+   transforms
    utils
    plotting
    bibliography/index
