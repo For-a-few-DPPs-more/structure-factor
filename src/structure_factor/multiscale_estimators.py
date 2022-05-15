@@ -190,7 +190,7 @@ def subwindows_list(
             - k: Minimum allowed wavevectors of :py:func:`~structure_factor.tapered_estimators.allowed_k_scattering_intensity` or wavenumbers of :py:func:`~structure_factor.tapered_estimators_isotropic.allowed_k_norm_bartlett_isotropic` associated with the subwindow list. The former is for cubic and the latter for ball-shaped subwindows.
 
     Example:
-        .. plot:: code/hyperuniformity/subwindows.py
+        .. plot:: code/multiscale_estimators/subwindows.py
             :include-source: True
 
     .. seealso::
