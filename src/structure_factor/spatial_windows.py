@@ -389,7 +389,7 @@ def check_centered_window(window):
 
 def subwindow_parameter_max(window, subwindow_type="BoxWindow"):
     """
-    Return the parameter i.e., lengthside (resp. radius) of the largest cubic (resp. ball)  subwindow contained in ``window``.
+    Return the parameter i.e., lengthside (resp. radius) of the largest cubic (resp. ball)  subwindow of ``window``.
 
     Args:
         window (:py:class:`~structure_factor.spatial_windows.AbstractSpatialWindow`): BoxWindow or BallWindow centered at the origin.

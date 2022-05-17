@@ -106,7 +106,7 @@ def multiscale_test(
 
             **Typical usage**
 
-            - The function :py:func:`~structure_factor.hyperuniformity.subwindows` can be used to generate from a father window a list of subwindows with the associated allowed wavevectors/wavenumbers.
+            - The function :py:func:`~structure_factor.hyperuniformity.subwindows` can be used to generate from a father window a list of subwindows and the associated allowed wavevectors/wavenumbers.
 
     .. seealso::
 

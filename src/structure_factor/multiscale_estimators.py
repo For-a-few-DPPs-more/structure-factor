@@ -36,7 +36,7 @@ def multiscale_estimator(
 
         mean_poisson (int): Parameter of the Poisson r.v. :math:`M` used to compute :math:`Z`. To use a different distribution of the r.v. :math:`M`, set ``mean_poisson=None`` and specify ``m_list`` and ``proba_list`` corresponding to :math:`M`.
 
-        m (int, optional): Realization of the positive integer-valued r.v. :math:`M`, used when ``mean_poisson=None``. Defaults to None.
+        m (int, optional): Realization of the positive integer-valued r.v. :math:`M` used when ``mean_poisson=None``. Defaults to None.
 
         proba_list (list, optional): List of :math:`\mathbb{P}(M \geq j)` used  with ``m`` when ``mean_poisson=None``. Should contains at least ``m`` elements. Defaults to None.
 
@@ -62,7 +62,7 @@ def multiscale_estimator(
 
             Z = \sum_{j=1}^{M} \frac{Y_j - Y_{j-1}}{\mathbb{P}(M\geq j)}
 
-        with :math:`M` an :math:`\mathbb{N}`-valued random variable such that :math:`\mathbb{P}(M \geq j)>0` for all :math:`j`, and :math:`Y_{0}=0` :cite:`HGBLR:22`.
+        with :math:`M` an :math:`\mathbb{N}`-valued random variable such that :math:`\mathbb{P}(M \geq j)>0` for all :math:`j`, and :math:`Y_{0}=0` :cite:`HGBLR:22`, :cite:`RhGl15`.
 
 
 
