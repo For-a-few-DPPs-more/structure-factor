@@ -158,7 +158,9 @@ We wrote a companion paper to `structure-factor`,
 
   [On estimating the structure factor of a point process, with applications to hyperuniformity](https://arxiv.org/abs/2203.08749)
 
-where we provided rigorous mathematical derivations of the different estimators of the structure factor of a stationary point process and showcased `structure-factor` on different point processes. We also compared numerically the accuracy of the estimators.
+where we provided rigorous mathematical derivations of the structure factor's estimators of a stationary point process and showcased `structure-factor` on different point processes.
+We also contribute a new asymptotically valid statistical test of hyperuniformity.
+Finally, we compared numerically the accuracy of the estimators.
 
 ### Citation
 
