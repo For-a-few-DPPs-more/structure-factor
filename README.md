@@ -8,7 +8,7 @@
 [![Python >=3.7.1,<3.10](https://img.shields.io/badge/python->=3.7.1,<3.10-blue.svg)](https://www.python.org/downloads/release/python-371/)
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](./notebooks)
 
-> Approximate the structure factor of a stationary point process, test its effective hyperuniformity, and identify its class of hyperuniformity.
+> Approximate the structure factor of a stationary point process, test its hyperuniformity, and identify its class of hyperuniformity.
 
 - [structure-factor](#structure-factor)
   - [Introduction](#introduction)
@@ -29,8 +29,8 @@
 
 `structure-factor` is an open-source Python project which currently collects
 
-- various estimators of the structure factor,
-- and several diagnostics of hyperuniformity,
+- various estimators of the structure factor
+- several diagnostics of hyperuniformity
 
 for stationary and isotropic point processes.
 
