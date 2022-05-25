@@ -61,4 +61,6 @@
         "-p",
         "*test.py"
     ],
+    "esbonio.sphinx.buildDir": "${workspaceFolder}/docs/_build",
+    "esbonio.sphinx.confDir": "${workspaceFolder}/docs",
 }
