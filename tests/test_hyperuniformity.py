@@ -68,7 +68,7 @@ def test_hyperuniformity_class_ginibre(sf, expected_alpha):
 
 def test_multiscale_test_poisson_pp():
     poisson = HomogeneousPoissonPointProcess(intensity=1 / np.pi)
-    nb_sample = 500
+    nb_sample = 700
     L = 160
     l_0 = 40
     mean_poisson = 90
