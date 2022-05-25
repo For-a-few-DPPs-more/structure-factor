@@ -22,8 +22,8 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Utils" href="utils.html" />
-    <link rel="prev" title="Point pattern" href="point_pattern.html" /> 
+    <link rel="next" title="Structure factor" href="structure_factor.html" />
+    <link rel="prev" title="Point processes" href="point_processes.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -42,16 +42,17 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="structure_factor.html">Structure factor</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hyperuniformity.html">Hyperuniformity</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tapered_estimators.html">Tapered estimators</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tapered_estimators_isotropic.html">Tapered isotropic estimators</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tapers.html">Tapers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="transforms.html">Transforms</a></li>
-<li class="toctree-l1"><a class="reference internal" href="point_processes.html">Point processes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multiscale_estimators.html">Multiscale estimators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pair_correlation_function.html">Pair correlation function</a></li>
 <li class="toctree-l1"><a class="reference internal" href="point_pattern.html">Point pattern</a></li>
+<li class="toctree-l1"><a class="reference internal" href="point_processes.html">Point processes</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Spatial windows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="structure_factor.html">Structure factor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tapers.html">Tapers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tapered_estimators.html">Tapered estimators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tapered_estimators_isotropic.html">Tapered isotropic estimators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transforms.html">Transforms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utils.html">Utils</a></li>
 <li class="toctree-l1"><a class="reference internal" href="plotting.html">Plotting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="bibliography/index.html">Bibliography</a></li>
@@ -705,18 +706,108 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="structure_factor.spatial_windows.check_cubic_window">
 <span class="sig-prename descclassname"><span class="pre">structure_factor.spatial_windows.</span></span><span class="sig-name descname"><span class="pre">check_cubic_window</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">window</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/spatial_windows.html#check_cubic_window"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.spatial_windows.check_cubic_window" title="Permalink to this definition"></a></dt>
-<dd><p>Check whether <code class="docutils literal notranslate"><span class="pre">window</span></code> is represents a cubic window.</p>
+<dd><p>Check whether <code class="docutils literal notranslate"><span class="pre">window</span></code> is cubic.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>window</strong> (<a class="reference internal" href="#structure_factor.spatial_windows.BoxWindow" title="structure_factor.spatial_windows.BoxWindow"><code class="xref py py-class docutils literal notranslate"><span class="pre">BoxWindow</span></code></a>) – </p>
-</dd>
-<dt class="field-even">Raises</dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>TypeError</strong> – <code class="docutils literal notranslate"><span class="pre">window</span></code> must be a <a class="reference internal" href="#structure_factor.spatial_windows.BoxWindow" title="structure_factor.spatial_windows.BoxWindow"><code class="xref py py-class docutils literal notranslate"><span class="pre">BoxWindow</span></code></a>.</p></li>
-<li><p><strong>ValueError</strong> – <code class="docutils literal notranslate"><span class="pre">window.bounds</span></code> must have the same length.</p></li>
-</ul>
+<dd class="field-odd"><p><strong>window</strong> (<a class="reference internal" href="#structure_factor.spatial_windows.BoxWindow" title="structure_factor.spatial_windows.BoxWindow"><code class="xref py py-class docutils literal notranslate"><span class="pre">BoxWindow</span></code></a>) – Window to be checked.</p>
 </dd>
 </dl>
+<p class="rubric">Example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">structure_factor.spatial_windows</span> <span class="kn">import</span> <span class="n">BoxWindow</span><span class="p">,</span> <span class="n">check_cubic_window</span>
+
+<span class="c1"># Example 1:</span>
+<span class="n">window</span> <span class="o">=</span> <span class="n">BoxWindow</span><span class="p">(</span><span class="n">bounds</span><span class="o">=</span><span class="p">[[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]])</span>
+<span class="n">check_cubic_window</span><span class="p">(</span><span class="n">window</span><span class="p">)</span>
+
+<span class="c1"># Example 2:</span>
+<span class="n">window</span> <span class="o">=</span> <span class="n">BoxWindow</span><span class="p">(</span><span class="n">bounds</span><span class="o">=</span><span class="p">[[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]])</span>
+<span class="n">check_cubic_window</span><span class="p">(</span><span class="n">window</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="structure_factor.spatial_windows.check_centered_window">
+<span class="sig-prename descclassname"><span class="pre">structure_factor.spatial_windows.</span></span><span class="sig-name descname"><span class="pre">check_centered_window</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">window</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/spatial_windows.html#check_centered_window"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.spatial_windows.check_centered_window" title="Permalink to this definition"></a></dt>
+<dd><p>Check whether <code class="docutils literal notranslate"><span class="pre">window</span></code> is centered at the origin.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>window</strong> (<a class="reference internal" href="#structure_factor.spatial_windows.AbstractSpatialWindow" title="structure_factor.spatial_windows.AbstractSpatialWindow"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractSpatialWindow</span></code></a>) – Window to be checked.</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">structure_factor.spatial_windows</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">BoxWindow</span><span class="p">,</span>
+    <span class="n">BallWindow</span><span class="p">,</span>
+    <span class="n">check_centered_window</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># Example 1:</span>
+<span class="n">window</span> <span class="o">=</span> <span class="n">BoxWindow</span><span class="p">(</span><span class="n">bounds</span><span class="o">=</span><span class="p">[[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]])</span>
+<span class="n">check_centered_window</span><span class="p">(</span><span class="n">window</span><span class="p">)</span>
+
+<span class="c1"># Example 2:</span>
+<span class="n">window</span> <span class="o">=</span> <span class="n">BallWindow</span><span class="p">(</span><span class="n">center</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">radius</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">check_centered_window</span><span class="p">(</span><span class="n">window</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="structure_factor.spatial_windows.subwindow_parameter_max">
+<span class="sig-prename descclassname"><span class="pre">structure_factor.spatial_windows.</span></span><span class="sig-name descname"><span class="pre">subwindow_parameter_max</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">window</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subwindow_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'BoxWindow'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/spatial_windows.html#subwindow_parameter_max"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.spatial_windows.subwindow_parameter_max" title="Permalink to this definition"></a></dt>
+<dd><p>Return the parameter i.e., lengthside (resp. radius) of the largest cubic (resp. ball)  subwindow of <code class="docutils literal notranslate"><span class="pre">window</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>window</strong> (<a class="reference internal" href="#structure_factor.spatial_windows.AbstractSpatialWindow" title="structure_factor.spatial_windows.AbstractSpatialWindow"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractSpatialWindow</span></code></a>) – BoxWindow or BallWindow centered at the origin.</p></li>
+<li><p><strong>subwindow_type</strong> (<em>str</em><em>, </em><em>optional</em>) – Type of the subwindow (“BoxWindow” or “BallWindow”). Defaults to “BoxWindow”.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Parameter of the largest subwindow of <code class="docutils literal notranslate"><span class="pre">window</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">structure_factor.spatial_windows</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">BoxWindow</span><span class="p">,</span>
+    <span class="n">BallWindow</span><span class="p">,</span>
+    <span class="n">subwindow_parameter_max</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># Example 1:</span>
+<span class="n">window1</span> <span class="o">=</span> <span class="n">BoxWindow</span><span class="p">([[</span><span class="o">-</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mi">7</span><span class="p">,</span> <span class="mi">7</span><span class="p">]])</span>
+<span class="n">r</span> <span class="o">=</span> <span class="n">subwindow_parameter_max</span><span class="p">(</span><span class="n">window</span><span class="o">=</span><span class="n">window1</span><span class="p">,</span> <span class="n">subwindow_type</span><span class="o">=</span><span class="s2">&quot;BallWindow&quot;</span><span class="p">)</span>
+<span class="n">subwindow1</span> <span class="o">=</span> <span class="n">BallWindow</span><span class="p">(</span><span class="n">center</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="n">radius</span><span class="o">=</span><span class="n">r</span><span class="p">)</span>
+<span class="c1"># Example 2:</span>
+<span class="n">window2</span> <span class="o">=</span> <span class="n">BallWindow</span><span class="p">(</span><span class="n">center</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">radius</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">l</span> <span class="o">=</span> <span class="n">subwindow_parameter_max</span><span class="p">(</span><span class="n">window</span><span class="o">=</span><span class="n">window2</span><span class="p">)</span>
+<span class="n">subwindow2</span> <span class="o">=</span> <span class="n">BoxWindow</span><span class="p">([[</span><span class="o">-</span><span class="n">l</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span><span class="n">l</span><span class="o">/</span><span class="mi">2</span><span class="p">]]</span><span class="o">*</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">axis</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
+<span class="n">axis</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">window1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Window&quot;</span><span class="p">)</span>
+<span class="n">subwindow1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;k&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Subwindow&quot;</span><span class="p">)</span>
+<span class="n">axis</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">axis</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">set_text</span><span class="p">(</span><span class="s2">&quot;Example 1&quot;</span><span class="p">)</span>
+
+<span class="n">axis</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">window2</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Window&quot;</span><span class="p">)</span>
+<span class="n">subwindow2</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;k&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Subwindow&quot;</span><span class="p">)</span>
+<span class="n">axis</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">axis</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">set_text</span><span class="p">(</span><span class="s2">&quot;Example 2&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>(<a class="reference external" href="./code/spatial_window/subwindow_param_max.py">Source code</a>, <a class="reference external" href="./code/spatial_window/subwindow_param_max.png">png</a>, <a class="reference external" href="./code/spatial_window/subwindow_param_max.hires.png">hires.png</a>, <a class="reference external" href="./code/spatial_window/subwindow_param_max.pdf">pdf</a>)</p>
+<figure class="align-center">
+<img alt="_images/subwindow_param_max.png" class="plot-directive" src="_images/subwindow_param_max.png" />
+</figure>
 </dd></dl>
 
 </section>
@@ -725,8 +816,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="point_pattern.html" class="btn btn-neutral float-left" title="Point pattern" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="utils.html" class="btn btn-neutral float-right" title="Utils" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="point_processes.html" class="btn btn-neutral float-left" title="Point processes" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="structure_factor.html" class="btn btn-neutral float-right" title="Structure factor" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

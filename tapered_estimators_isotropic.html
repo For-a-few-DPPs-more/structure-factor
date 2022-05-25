@@ -22,7 +22,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Tapers" href="tapers.html" />
+    <link rel="next" title="Transforms" href="transforms.html" />
     <link rel="prev" title="Tapered estimators" href="tapered_estimators.html" /> 
 </head>
 
@@ -42,16 +42,17 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="structure_factor.html">Structure factor</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hyperuniformity.html">Hyperuniformity</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tapered_estimators.html">Tapered estimators</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Tapered isotropic estimators</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tapers.html">Tapers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="transforms.html">Transforms</a></li>
-<li class="toctree-l1"><a class="reference internal" href="point_processes.html">Point processes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multiscale_estimators.html">Multiscale estimators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pair_correlation_function.html">Pair correlation function</a></li>
 <li class="toctree-l1"><a class="reference internal" href="point_pattern.html">Point pattern</a></li>
+<li class="toctree-l1"><a class="reference internal" href="point_processes.html">Point processes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="spatial_windows.html">Spatial windows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="structure_factor.html">Structure factor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tapers.html">Tapers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tapered_estimators.html">Tapered estimators</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Tapered isotropic estimators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transforms.html">Transforms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utils.html">Utils</a></li>
 <li class="toctree-l1"><a class="reference internal" href="plotting.html">Plotting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="bibliography/index.html">Bibliography</a></li>
@@ -151,7 +152,7 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="structure_factor.tapered_estimators_isotropic.allowed_k_norm_bartlett_isotropic">
 <span class="sig-prename descclassname"><span class="pre">structure_factor.tapered_estimators_isotropic.</span></span><span class="sig-name descname"><span class="pre">allowed_k_norm_bartlett_isotropic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dimension</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nb_values</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">60</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/tapered_estimators_isotropic.html#allowed_k_norm_bartlett_isotropic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.tapered_estimators_isotropic.allowed_k_norm_bartlett_isotropic" title="Permalink to this definition"></a></dt>
-<dd><p>Allowed wavenumbers of the Bartlett isotropic estimator, for a <code class="docutils literal notranslate"><span class="pre">d</span></code>-dimensional point process observed in a ball window with radius <code class="docutils literal notranslate"><span class="pre">radius</span></code>.</p>
+<dd><p>Allowed wavenumbers of the Bartlett isotropic estimator, for a <code class="docutils literal notranslate"><span class="pre">d</span></code>-dimensional point process observed in a ball window with radius <code class="docutils literal notranslate"><span class="pre">radius</span></code>. Only for even values of <code class="docutils literal notranslate"><span class="pre">d</span></code>.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>This method is only available when the ambient dimension is even.</p>
@@ -159,7 +160,7 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>dimension</strong> (<em>int</em>) – Dimension of the underlying space.</p></li>
+<li><p><strong>dimension</strong> (<em>int</em>) – Dimension (even number) of the underlying space.</p></li>
 <li><p><strong>radius</strong> (<em>float</em>) – Radius of the observation window.</p></li>
 <li><p><strong>nb_values</strong> (<em>int</em>) – Number of required allowed wavenumbers. Defaults to 60.</p></li>
 </ul>
@@ -209,7 +210,7 @@
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="tapered_estimators.html" class="btn btn-neutral float-left" title="Tapered estimators" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="tapers.html" class="btn btn-neutral float-right" title="Tapers" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="transforms.html" class="btn btn-neutral float-right" title="Transforms" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

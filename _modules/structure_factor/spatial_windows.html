@@ -38,16 +38,17 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../structure_factor.html">Structure factor</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../hyperuniformity.html">Hyperuniformity</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tapered_estimators.html">Tapered estimators</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tapered_estimators_isotropic.html">Tapered isotropic estimators</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tapers.html">Tapers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../transforms.html">Transforms</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../point_processes.html">Point processes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../multiscale_estimators.html">Multiscale estimators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pair_correlation_function.html">Pair correlation function</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../point_pattern.html">Point pattern</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../point_processes.html">Point processes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../spatial_windows.html">Spatial windows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../structure_factor.html">Structure factor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tapers.html">Tapers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tapered_estimators.html">Tapered estimators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tapered_estimators_isotropic.html">Tapered isotropic estimators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../transforms.html">Transforms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../utils.html">Utils</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../plotting.html">Plotting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../bibliography/index.html">Bibliography</a></li>
@@ -425,22 +426,83 @@
 
 
 <div class="viewcode-block" id="check_cubic_window"><a class="viewcode-back" href="../../spatial_windows.html#structure_factor.spatial_windows.check_cubic_window">[docs]</a><span class="k">def</span> <span class="nf">check_cubic_window</span><span class="p">(</span><span class="n">window</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Check whether ``window`` is represents a cubic window.</span>
+    <span class="sd">&quot;&quot;&quot;Check whether ``window`` is cubic.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        window (:py:class:`~structure_factor.spatial_windows.BoxWindow`):</span>
+<span class="sd">        window (:py:class:`~structure_factor.spatial_windows.BoxWindow`): Window to be checked.</span>
 
-<span class="sd">    Raises:</span>
-<span class="sd">        TypeError: ``window`` must be a :py:class:`~structure_factor.spatial_windows.BoxWindow`.</span>
-<span class="sd">        ValueError: ``window.bounds`` must have the same length.</span>
+<span class="sd">    Example:</span>
+<span class="sd">        .. literalinclude:: code/spatial_window/check_cubic_window.py</span>
+<span class="sd">            :language: python</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">window</span><span class="p">,</span> <span class="n">BoxWindow</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;window must be an instance of BoxWindow.&quot;</span><span class="p">)</span>
     <span class="n">lengths</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">window</span><span class="o">.</span><span class="n">bounds</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">L</span> <span class="o">=</span> <span class="n">lengths</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">lengths</span> <span class="o">!=</span> <span class="n">L</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">lengths</span> <span class="o">!=</span> <span class="n">lengths</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;window should be a &#39;cubic&#39; BoxWindow.&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="check_centered_window"><a class="viewcode-back" href="../../spatial_windows.html#structure_factor.spatial_windows.check_centered_window">[docs]</a><span class="k">def</span> <span class="nf">check_centered_window</span><span class="p">(</span><span class="n">window</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Check whether ``window`` is centered at the origin.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        window (:py:class:`~structure_factor.spatial_windows.AbstractSpatialWindow`): Window to be checked.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        .. literalinclude:: code/spatial_window/check_centered_window.py</span>
+<span class="sd">            :language: python</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">window</span><span class="p">,</span> <span class="n">BoxWindow</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">window</span><span class="o">.</span><span class="n">bounds</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;window is not centered at the origin. Hint: use a centered window.&quot;</span>
+            <span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">window</span><span class="p">,</span> <span class="n">BallWindow</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">window</span><span class="o">.</span><span class="n">center</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;window is not centered at the origin. Hint: use a centered window.&quot;</span>
+            <span class="p">)</span>
+    <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="subwindow_parameter_max"><a class="viewcode-back" href="../../spatial_windows.html#structure_factor.spatial_windows.subwindow_parameter_max">[docs]</a><span class="k">def</span> <span class="nf">subwindow_parameter_max</span><span class="p">(</span><span class="n">window</span><span class="p">,</span> <span class="n">subwindow_type</span><span class="o">=</span><span class="s2">&quot;BoxWindow&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the parameter i.e., lengthside (resp. radius) of the largest cubic (resp. ball)  subwindow of ``window``.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        window (:py:class:`~structure_factor.spatial_windows.AbstractSpatialWindow`): BoxWindow or BallWindow centered at the origin.</span>
+<span class="sd">        subwindow_type (str, optional): Type of the subwindow (&quot;BoxWindow&quot; or &quot;BallWindow&quot;). Defaults to &quot;BoxWindow&quot;.</span>
+
+
+<span class="sd">    Returns:</span>
+<span class="sd">        float : Parameter of the largest subwindow of ``window``.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        .. plot:: code/spatial_window/subwindow_param_max.py</span>
+<span class="sd">            :include-source: True</span>
+<span class="sd">            :align: center</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">subwindow_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;BoxWindow&quot;</span><span class="p">,</span> <span class="s2">&quot;BallWindow&quot;</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;The available subwindow types are BallWindow or BoxWindow. Hint: the parameter corresponding to the window type must be &#39;BallWindow&#39; or &#39;BoxWindow&#39;. &quot;</span>
+        <span class="p">)</span>
+    <span class="n">check_centered_window</span><span class="p">(</span><span class="n">window</span><span class="p">)</span>
+    <span class="c1"># window parameter</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">window</span><span class="p">,</span> <span class="n">BallWindow</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">subwindow_type</span> <span class="o">==</span> <span class="s2">&quot;BallWindow&quot;</span><span class="p">:</span>
+            <span class="n">param_max</span> <span class="o">=</span> <span class="n">window</span><span class="o">.</span><span class="n">radius</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">param_max</span> <span class="o">=</span> <span class="n">window</span><span class="o">.</span><span class="n">radius</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+            <span class="c1"># length side of the BoxWindow</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">window</span><span class="p">,</span> <span class="n">BoxWindow</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">subwindow_type</span> <span class="o">==</span> <span class="s2">&quot;BallWindow&quot;</span><span class="p">:</span>
+            <span class="n">param_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">window</span><span class="o">.</span><span class="n">bounds</span><span class="p">))</span> <span class="o">/</span> <span class="mi">2</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">param_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">window</span><span class="o">.</span><span class="n">bounds</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">param_max</span></div>
 </pre></div>
 
            </div>

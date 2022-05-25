@@ -38,16 +38,17 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../structure_factor.html">Structure factor</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../hyperuniformity.html">Hyperuniformity</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tapered_estimators.html">Tapered estimators</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tapered_estimators_isotropic.html">Tapered isotropic estimators</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tapers.html">Tapers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../transforms.html">Transforms</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../point_processes.html">Point processes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../multiscale_estimators.html">Multiscale estimators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pair_correlation_function.html">Pair correlation function</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../point_pattern.html">Point pattern</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../point_processes.html">Point processes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../spatial_windows.html">Spatial windows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../structure_factor.html">Structure factor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tapers.html">Tapers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tapered_estimators.html">Tapered estimators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tapered_estimators_isotropic.html">Tapered isotropic estimators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../transforms.html">Transforms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../utils.html">Utils</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../plotting.html">Plotting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../bibliography/index.html">Bibliography</a></li>
@@ -78,229 +79,390 @@
            <div itemprop="articleBody">
              
   <h1>Source code for structure_factor.hyperuniformity</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Class :py:class:`~structure_factor.hyperuniformity.HyperUniformity`  designed to study the hyperuniformity of a stationary point process given an estimation of its structure factor :py:class:`~structure_factor.structure_factor.StructureFactor`.</span>
+<span></span><span class="sd">&quot;&quot;&quot;Functions designed to study the hyperuniformity of a stationary point process using estimation(s) of its structure factor :py:class:`~structure_factor.structure_factor.StructureFactor`.</span>
 
-<span class="sd">- :py:meth:`~structure_factor.hyperuniformity.Hyperuniformity.bin_data`: Method for regularizing the structure factor estimation.</span>
-<span class="sd">- :py:meth:`~structure_factor.hyperuniformity.Hyperuniformity.effective_hyperuniformity`: Test of effective hyperuniformity.</span>
-<span class="sd">- :py:meth:`~structure_factor.hyperuniformity.Hyperuniformity.hyperuniformity_class`: Test of the possible class of hyperuniformity.</span>
+<span class="sd">Hyperuniformity diagnostics:</span>
+
+<span class="sd">    - :py:func:`~structure_factor.hyperuniformity.multiscale_test`: Statistical test of hyperuniformity asymptomatically valid.</span>
+<span class="sd">    - :py:func:`~structure_factor.hyperuniformity.effective_hyperuniformity`: Test of effective hyperuniformity.</span>
+<span class="sd">    - :py:func:`~structure_factor.hyperuniformity.hyperuniformity_class`: Estimation of the possible class of hyperuniformity.</span>
+
+<span class="sd">Additional functions:</span>
+<span class="sd">    - :py:func:`~structure_factor.hyperuniformity.bin_data`: Method for regularizing structure factor&#39;s estimation.</span>
+<span class="sd">    - :py:func:`~structure_factor.hyperuniformity.subwindows`: Method for generating a list of subwindows from a father window with the corresponding minimum allowed wavevectors (or wavenumbers).</span>
+
 
 <span class="sd">.. note::</span>
 
 <span class="sd">    **Typical usage**</span>
 
-<span class="sd">    1. Estimate the structure factor of the point process by one of the methods of :py:class:`~structure_factor.structure_factor.StructureFactor`.</span>
+<span class="sd">    1. Test the hyperuniformity using the statistical test :py:func:`~structure_factor.hyperuniformity.multiscale_test` or the test of effective hyperuniformity :py:func:`~structure_factor.hyperuniformity.effective_hyperuniformity`.</span>
 
-<span class="sd">    2. Regularize the results using :py:meth:`~structure_factor.hyperuniformity.Hyperuniformity.bin_data`, if needed.</span>
-
-<span class="sd">    3. Test the effective hyperuniformity using :py:meth:`~structure_factor.hyperuniformity.Hyperuniformity.effective_hyperuniformity`.</span>
-
-<span class="sd">    4. If the results of :py:meth:`~structure_factor.hyperuniformity.Hyperuniformity.effective_hyperuniformity` approve the effective hyperuniformity hypothesis, find the possible class of hyperuniformity using :py:meth:`~structure_factor.hyperuniformity.Hyperuniformity.hyperuniformity_class`.</span>
+<span class="sd">    2. If the hyperuniformity was approved, find the possible hyperuniformity class using :py:func:`~structure_factor.hyperuniformity.hyperuniformity_class`.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">curve_fit</span>
 <span class="kn">from</span> <span class="nn">scipy.signal</span> <span class="kn">import</span> <span class="n">find_peaks</span>
+<span class="kn">import</span> <span class="nn">statistics</span> <span class="k">as</span> <span class="nn">stat</span>
 
 <span class="kn">from</span> <span class="nn">structure_factor.utils</span> <span class="kn">import</span> <span class="n">_bin_statistics</span><span class="p">,</span> <span class="n">_sort_vectors</span>
+<span class="kn">from</span> <span class="nn">structure_factor.multiscale_estimators</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">multiscale_estimator</span><span class="p">,</span>
+    <span class="n">_poisson_rv</span><span class="p">,</span>
+    <span class="n">m_threshold</span><span class="p">,</span>
+    <span class="n">subwindows_list</span><span class="p">,</span>
+<span class="p">)</span>
 
 
-<div class="viewcode-block" id="Hyperuniformity"><a class="viewcode-back" href="../../hyperuniformity.html#structure_factor.hyperuniformity.Hyperuniformity">[docs]</a><span class="k">class</span> <span class="nc">Hyperuniformity</span><span class="p">:</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Class collecting some diagonistics of hyperuniformity for stationary isotropic (or effectively isotropic) point processes :math:`\mathcal{X} \subset \mathbb{R}^d`, given an estimation of the structure factor.</span>
+<div class="viewcode-block" id="multiscale_test"><a class="viewcode-back" href="../../hyperuniformity.html#structure_factor.hyperuniformity.multiscale_test">[docs]</a><span class="k">def</span> <span class="nf">multiscale_test</span><span class="p">(</span>
+    <span class="n">point_pattern_list</span><span class="p">,</span>
+    <span class="n">estimator</span><span class="p">,</span>
+    <span class="n">subwindows_list</span><span class="p">,</span>
+    <span class="n">k_list</span><span class="p">,</span>
+    <span class="n">mean_poisson</span><span class="p">,</span>
+    <span class="n">m_list</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">proba_list</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the sample mean :math:`\bar{Z}` and the corresponding standard deviation :math:`\bar{\sigma}/\sqrt{N}` of the coupled sum estimator :math:`Z` of a point process using a list of :math:`N` PointPatterns and :math:`N` realizations from the random variable :math:`M`.</span>
 
-<span class="sd">    .. todo::</span>
+<span class="sd">    The test rejects the hyperuniformity hypothesis if the confidence interval :math:`CI[\mathbb{E}[Z]]= [\bar{Z} - z \bar{\sigma}/\sqrt{N}, \bar{Z} + z \bar{\sigma}/\sqrt{N}]`, doesn&#39;t contain zero, and vice-versa.</span>
+<span class="sd">    (See the multiscale hyperuniformity test in :cite:`HGBLR:22`).</span>
 
-<span class="sd">        list attributes</span>
+<span class="sd">    Args:</span>
+<span class="sd">        point_pattern_list (list): List of :py:class:`~structure_factor.point_pattern.PointPattern` (s). Each element of the list is an encapsulation of a realization of a point process, the observation window, and (optionally) the intensity of the point process. All :py:class:`~structure_factor.point_pattern.PointPattern` (s) should have the same window and intensity.</span>
+
+<span class="sd">        estimator (str): Choice of structure factor&#39;s estimator. The parameters of the chosen estimator must be added as keyword arguments. The available estimators are &quot;scattering_intensity&quot;, &quot;tapered_estimator&quot;, &quot;bartlett_isotropic_estimator&quot;, and &quot;quadrature_estimator_isotropic&quot;. See :py:class:`~structure_factor.structure_factor.StructureFactor`.</span>
+
+<span class="sd">        subwindows_list (list): List of increasing cubic or ball-shaped :py:class:`~structure_factor.spatial_windows.AbstractSpatialWindow`, typically, obtained using :py:func:`~structure_factor.hyperuniformity.subwindows`. The shape of the windows depends on the choice of the ``estimator``. Each element of ``point_pattern_list`` will be restricted to these windows to compute :math:`Z`.</span>
+
+<span class="sd">        k_list (list): List of wavevectors (or wavenumbers) where the ``estimator`` is to be evaluated. Each element is associated with an element of ``subwindows_list``. Typically, obtained using :py:func:`~structure_factor.hyperuniformity.subwindows`.</span>
+
+<span class="sd">        mean_poisson (int): Parameter of the Poisson r.v. :math:`M` used to compute :math:`Z`. To use a different distribution of the r.v. :math:`M`, set ``mean_poisson=None`` and specify ``m_list`` and ``proba_list`` corresponding to :math:`M`.</span>
+
+<span class="sd">        m_list (list, optional): List of positive integer realizations of the r.v. :math:`M`, used when ``mean_poisson=None``. Each element of ``m_list`` is associated with an element of ``point_pattern_list`` to compute a realization of :math:`Z`. Defaults to None.</span>
+
+<span class="sd">        proba_list (list, optional): List of :math:`\mathbb{P}(M \geq j)` used  with ``m_list`` when ``mean_poisson=None``. Should contains at least ``max(m_list)`` elements. Defaults to None.</span>
+
+<span class="sd">        verbose (bool, optional): If &quot;True&quot; and ``mean_poisson`` is not None, print the re-sampled values of :math:`M`. Defaults to False.</span>
+
+<span class="sd">    Keyword Args:</span>
+<span class="sd">        kwargs (dict): Parameters of the chosen ``estimator`` of the structure factor.  See :py:class:`~structure_factor.structure_factor.StructureFactor`.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict(float, float, list, list):</span>
+<span class="sd">            - &quot;mean_Z&quot;: The sample mean of :math:`Z`.</span>
+<span class="sd">            - &quot;std_mean_Z&quot;: The sample standard deviation of :math:`Z` divided by the square root of the number of samples.</span>
+<span class="sd">            - &quot;Z&quot;: The obtained values of :math:`Z`.</span>
+<span class="sd">            - &quot;M&quot;: The used values of :math:`M`.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        .. plot:: code/hyperuniformity/multiscale_test.py</span>
+<span class="sd">            :include-source: True</span>
 
 <span class="sd">    .. proof:definition::</span>
 
-<span class="sd">        A stationary point process :math:`\mathcal{X}` is said to be hyperuniform if its structure factor :math:`S` vanishes at 0.</span>
-<span class="sd">        For more details, we refer to :cite:`HGBLR:22`, (Section 2).</span>
+<span class="sd">        Let :math:`\mathcal{X} \in \mathbb{R}^d` be a stationary point process of which we consider an increasing sequence of sets :math:`(\mathcal{X} \cap W_m)_{m \geq 1}`, with :math:`(W_m)_m` centered box (or ball)-shaped windows s.t. :math:`W_s \subset W_r` for all :math:`0&lt; s&lt;r`, and :math:`W_{\infty} = \mathbb{R}^d`.</span>
+<span class="sd">        We define the sequence of r.v. :math:`Y_m = 1\wedge \widehat{S}_m(\mathbf{k}_m^{\text{min}})`, where :math:`\widehat{S}_m` is one of the positive, asymptotically unbiased estimators of the structure factor of :math:`\mathcal{X}` applied on the observation :math:`\mathcal{X} \cap W_m`, and :math:`\mathbf{k}_m^{\text{min}}` is the minimum allowed wavevector associated with :math:`W_m`.</span>
+
+<span class="sd">        Under some assumptions (:cite:`HGBLR:22`, Section 4) :math:`\mathcal{X}` is hyperuniform iff :math:`\mathbb{E}[Z]=0`.</span>
+<span class="sd">        Where :math:`Z` is the coupled sum estimator of :cite:`RhGl15` defined by,</span>
+
+<span class="sd">        .. math::</span>
+
+<span class="sd">            Z = \sum_{j=1}^{M} \frac{Y_j - Y_{j-1}}{\mathbb{P}(M\geq j)},</span>
+
+<span class="sd">        with :math:`M` an :math:`\mathbb{N}`-valued random variable such that :math:`\mathbb{P}(M \geq j)&gt;0` for all :math:`j`, and :math:`Y_{0}=0`.</span>
+
+<span class="sd">    .. important::</span>
+
+<span class="sd">        - If ``mean_poisson`` is not None, there is a step of accepting/rejecting while sampling from the r.v. :math:`M`. If the biggest subwindow associated with :math:`M&#39;` (obtained value of :math:`M`) is larger than the father window, then :math:`M&#39;` is rejected, and we resample from  :math:`M`. Typically, ``mean_poisson`` should be chosen s.t. the probability that the biggest subwindow is larger than the father window is small enough.</span>
+
+<span class="sd">        - The test is asymptotically valid, so it might fail in diagnosing hyperuniformity if the number of samples used to compute :math:`\bar{Z}` or :math:`\lambda` is too small.</span>
+
+
+
+<span class="sd">    .. note::</span>
+
+<span class="sd">            **Typical usage**</span>
+
+<span class="sd">            - The function :py:func:`~structure_factor.hyperuniformity.subwindows` can be used to generate from a father window a list of subwindows and the associated allowed wavevectors/wavenumbers.</span>
+
+<span class="sd">    .. seealso::</span>
+
+<span class="sd">        - :py:meth:`~structure_factor.point_pattern.PointPattern`</span>
+<span class="sd">        - :py:class:`~structure_factor.structure_factor.StructureFactor`</span>
+<span class="sd">        - :py:func:`~structure_factor.hyperuniformity.subwindows`</span>
+<span class="sd">        - :py:func:`~structure_factor.hyperuniformity.hyperuniformity_class`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">nb_sample</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">point_pattern_list</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">m_list</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">m_thresh</span> <span class="o">=</span> <span class="n">m_threshold</span><span class="p">(</span>
+            <span class="n">window_min</span><span class="o">=</span><span class="n">subwindows_list</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">window_max</span><span class="o">=</span><span class="n">subwindows_list</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="n">m_list</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">_poisson_rv</span><span class="p">(</span><span class="n">mean_poisson</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="n">m_thresh</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nb_sample</span><span class="p">)</span>
+        <span class="p">]</span>
+    <span class="n">z_list</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">multiscale_estimator</span><span class="p">(</span>
+            <span class="n">p</span><span class="p">,</span>
+            <span class="n">estimator</span><span class="p">,</span>
+            <span class="n">subwindows_list</span><span class="p">,</span>
+            <span class="n">k_list</span><span class="p">,</span>
+            <span class="n">mean_poisson</span><span class="o">=</span><span class="n">mean_poisson</span><span class="p">,</span>
+            <span class="n">m</span><span class="o">=</span><span class="n">m</span><span class="p">,</span>
+            <span class="n">proba_list</span><span class="o">=</span><span class="n">proba_list</span><span class="p">,</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">point_pattern_list</span><span class="p">,</span> <span class="n">m_list</span><span class="p">)</span>
+    <span class="p">]</span>
+    <span class="n">mean_z</span> <span class="o">=</span> <span class="n">stat</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">z_list</span><span class="p">)</span>
+    <span class="n">std_mean_z</span> <span class="o">=</span> <span class="n">stat</span><span class="o">.</span><span class="n">stdev</span><span class="p">(</span><span class="n">z_list</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">nb_sample</span><span class="p">)</span>
+    <span class="n">summary</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;mean_Z&quot;</span><span class="p">:</span> <span class="n">mean_z</span><span class="p">,</span> <span class="s2">&quot;std_mean_Z&quot;</span><span class="p">:</span> <span class="n">std_mean_z</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">:</span> <span class="n">z_list</span><span class="p">,</span> <span class="s2">&quot;M&quot;</span><span class="p">:</span> <span class="n">m_list</span><span class="p">}</span>
+    <span class="k">return</span> <span class="n">summary</span></div>
+
+
+<div class="viewcode-block" id="effective_hyperuniformity"><a class="viewcode-back" href="../../hyperuniformity.html#structure_factor.hyperuniformity.effective_hyperuniformity">[docs]</a><span class="k">def</span> <span class="nf">effective_hyperuniformity</span><span class="p">(</span><span class="n">k_norm</span><span class="p">,</span> <span class="n">sf</span><span class="p">,</span> <span class="n">k_norm_stop</span><span class="p">,</span> <span class="n">std_sf</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Evaluate the index :math:`H` of hyperuniformity of a point process using its structure factor ``sf``. If :math:`H&lt;10^{-3}` the corresponding point process is deemed effectively hyperuniform.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        k_norm (numpy.ndarray): Vector of wavenumbers (i.e. norms of wavevectors).</span>
+<span class="sd">        sf (numpy.ndarray): Evaluations of the structure factor, of the given point process, at ``k_norm``.</span>
+<span class="sd">        std_sf (numpy.ndarray, optional): Standard deviations associated with ``sf``. Defaults to None.</span>
+<span class="sd">        k_norm_stop (float): Threshold on ``k_norm``. Used to find the numerator of :math:`H` by linear regression of ``sf`` up to the value associated with ``k_norm_stop``.</span>
+
+<span class="sd">    Keyword Args:</span>
+<span class="sd">        kwargs (dict): Keyword arguments (except &quot;sigma&quot;) of `scipy.scipy.optimize.curve_fit &lt;https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.curve_fit.html&gt;`_ parameters.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict(float, float, function, int):</span>
+<span class="sd">            - &quot;H&quot;: Value of the index :math:`H`.</span>
+<span class="sd">            - &quot;s0_std&quot;: Standard deviation of the numerator of :math:`H`.</span>
+<span class="sd">            - &quot;fitted_line&quot;: Line used to find the numerator of :math:`H`.</span>
+<span class="sd">            - &quot;idx_first_peak&quot;: Index of :math:`k_{peak}` if it exists.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        .. plot:: code/hyperuniformity/effective_hyperuniformity.py</span>
+<span class="sd">            :include-source: True</span>
+
+<span class="sd">    .. proof:definition::</span>
+
+<span class="sd">        A stationary isotropic point process :math:`\mathcal{X} \subset \mathbb{R}^d`, is said to be effectively hyperuniform if :math:`H \leq 10^{-3}` where :math:`H` is defined following :cite:`Tor18` (Section 11.1.6) and :cite:`KlaAl19` (supplementary Section 8) by,</span>
+
+<span class="sd">        .. math::</span>
+
+<span class="sd">            H = \frac{\hat{S}(\mathbf{0})}{S(\mathbf{k}_{peak})}\cdot</span>
+
+<span class="sd">        - :math:`S` is the structure factor of :math:`\mathcal{X}`,</span>
+<span class="sd">        - :math:`\hat{S}(\mathbf{0})` is a linear extrapolation of the structure factor at :math:`\mathbf{k}=\mathbf{0}`,</span>
+<span class="sd">        - :math:`\mathbf{k}_{peak}` is the location of the first dominant peak value of :math:`S`.</span>
+
+<span class="sd">        For more details, we refer to :cite:`HGBLR:22` (Section 2.5).</span>
+
+<span class="sd">    .. important::</span>
+
+<span class="sd">        To compute :math:`\hat{S}(\mathbf{0})`, a linear extrapolation with a least-square fit is used to fit a line on the values of ``sf`` associated with a subvector of ``k_norm``.</span>
+<span class="sd">        This subvector is obtained by truncating ``k_norm`` around ``k_norm_stop``. For the choice of ``k_norm_stop``, the trade-off is to remain close to zero while including enough data points to fit a line.</span>
+<span class="sd">        In addition, ``std_sf`` will be considered while fitting the line if it&#39;s not None.</span>
+
+<span class="sd">    .. seealso::</span>
+
+<span class="sd">        - :py:class:`~structure_factor.structure_factor.StructureFactor`</span>
+<span class="sd">        - :py:func:`~structure_factor.hyperuniformity.bin_data`</span>
+<span class="sd">        - :py:func:`~structure_factor.hyperuniformity.hyperuniformity_class`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># sort vectors</span>
+    <span class="n">k_norm</span><span class="p">,</span> <span class="n">sf</span><span class="p">,</span> <span class="n">std_sf</span> <span class="o">=</span> <span class="n">_sort_vectors</span><span class="p">(</span><span class="n">k_norm</span><span class="p">,</span> <span class="n">sf</span><span class="p">,</span> <span class="n">std_sf</span><span class="p">)</span>
+    <span class="n">line</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span> <span class="o">*</span> <span class="n">x</span>
+    <span class="p">(</span><span class="n">intercept</span><span class="p">,</span> <span class="n">slope</span><span class="p">),</span> <span class="n">cov</span> <span class="o">=</span> <span class="n">_fit</span><span class="p">(</span><span class="n">k_norm</span><span class="p">,</span> <span class="n">sf</span><span class="p">,</span> <span class="n">std_sf</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="n">k_norm_stop</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="n">fitted_line</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">intercept</span> <span class="o">+</span> <span class="n">slope</span> <span class="o">*</span> <span class="n">x</span>
+
+    <span class="c1"># Find first peak in structure factor (sf)</span>
+    <span class="n">s0</span> <span class="o">=</span> <span class="n">intercept</span>
+    <span class="n">s0_std</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">cov</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+
+    <span class="n">s_first_peak</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">idx_peaks</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">find_peaks</span><span class="p">(</span><span class="n">sf</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="n">s_first_peak</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">idx_peaks</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+        <span class="n">idx_first_peak</span> <span class="o">=</span> <span class="n">idx_peaks</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">s_first_peak</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">sf</span><span class="p">[</span><span class="n">idx_first_peak</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">idx_first_peak</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">H</span> <span class="o">=</span> <span class="n">s0</span> <span class="o">/</span> <span class="n">s_first_peak</span>
+    <span class="n">summary</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;H&quot;</span><span class="p">:</span> <span class="n">H</span><span class="p">,</span>
+        <span class="s2">&quot;s0_std&quot;</span><span class="p">:</span> <span class="n">s0_std</span><span class="p">,</span>
+        <span class="s2">&quot;fitted_line&quot;</span><span class="p">:</span> <span class="n">fitted_line</span><span class="p">,</span>
+        <span class="s2">&quot;idx_first_peak&quot;</span><span class="p">:</span> <span class="n">idx_first_peak</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">summary</span></div>
+
+
+<div class="viewcode-block" id="hyperuniformity_class"><a class="viewcode-back" href="../../hyperuniformity.html#structure_factor.hyperuniformity.hyperuniformity_class">[docs]</a><span class="k">def</span> <span class="nf">hyperuniformity_class</span><span class="p">(</span><span class="n">k_norm</span><span class="p">,</span> <span class="n">sf</span><span class="p">,</span> <span class="n">k_norm_stop</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">std_sf</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Fit a polynomial :math:`y = c \cdot x^{\alpha}` to ``sf`` around zero. :math:`\alpha` is used to specify the possible class of hyperuniformity of the associated point process (as described below).</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        k_norm (numpy.ndarray): Vector of wavenumbers (i.e. norms of the wavevectors).</span>
+<span class="sd">        sf (numpy.ndarray): Evaluations of the structure factor, of the given point process, at ``k_norm``.</span>
+<span class="sd">        std (numpy.ndarray, optional): Standard deviations associated to ``sf``. Defaults to None.</span>
+<span class="sd">        k_norm_stop (float, optional): Threshold on ``k_norm``. The subvector obtained from ``sf`` starting from zero up to the value associated with ``k_norm_stop`` is used to fit a polynomial and find :math:`\alpha`. Defaults to 1.</span>
+
+<span class="sd">    Keyword Args:</span>
+<span class="sd">        kwargs (dict): Keyword arguments (except &quot;sigma&quot;) of `scipy.scipy.optimize.curve_fit &lt;https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.curve_fit.html&gt;`_ parameters.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict(float, float, function):</span>
+<span class="sd">            - &quot;alpha&quot;: Estimated value of :math:`\alpha`.</span>
+<span class="sd">            - &quot;c&quot;: Estimated value of :math:`c`.</span>
+<span class="sd">            - &quot;fitted_poly&quot;: Polynomial used to find :math:`\alpha`.</span>
+<span class="sd">    Example:</span>
+<span class="sd">        .. plot:: code/hyperuniformity/hyperuniformity_class.py</span>
+<span class="sd">            :include-source: True</span>
+
+<span class="sd">    .. proof:definition::</span>
+
+<span class="sd">        For a stationary  hyperuniform point process :math:`\mathcal{X} \subset \mathbb{R}^d`, if :math:`\vert S(\mathbf{k})\vert\sim c \Vert \mathbf{k} \Vert_2^\alpha` in the neighborhood of zero, then by :cite:`Cos21` (Section 4.1.) the value of :math:`\alpha` determines the hyperuniformity class of :math:`\mathcal{X}` as follows,</span>
+
+<span class="sd">        +-------+----------------+---------------------------------------------------------------+</span>
+<span class="sd">        | Class | :math:`\alpha` | :math:`\mathbb{V}\text{ar}\left[\mathcal{X}(B(0, R)) \right]` |</span>
+<span class="sd">        +=======+================+===============================================================+</span>
+<span class="sd">        | I     | :math:`&gt; 1`    | :math:`\mathcal{O}(R^{d-1})`                                  |</span>
+<span class="sd">        +-------+----------------+---------------------------------------------------------------+</span>
+<span class="sd">        | II    | :math:`= 1`    | :math:`\mathcal{O}(R^{d-1}\log(R))`                           |</span>
+<span class="sd">        +-------+----------------+---------------------------------------------------------------+</span>
+<span class="sd">        | III   | :math:`]0, 1[` | :math:`\mathcal{O}(R^{d-\alpha})`                             |</span>
+<span class="sd">        +-------+----------------+---------------------------------------------------------------+</span>
+
+<span class="sd">        For more details, we refer to :cite:`HGBLR:22`, (Section 2.4).</span>
+
+<span class="sd">    .. important::</span>
+
+<span class="sd">        To compute :math:`\alpha`, a polynomial is fitted on the values of ``sf`` associated with a subvector of ``k_norm``.</span>
+<span class="sd">        This subvector is obtained by truncating ``k_norm`` around ``k_norm_stop``. For the choice of ``k_norm_stop``, the trade-off is to remain close to zero while including enough data points to fit a polynomial.</span>
+<span class="sd">        In addition, ``std_sf`` will be considered while fitting the polynomial if it&#39;s not None.</span>
+
+<span class="sd">    .. seealso::</span>
+
+<span class="sd">        - :py:class:`~structure_factor.structure_factor.StructureFactor`</span>
+<span class="sd">        - :py:func:`~structure_factor.hyperuniformity.bin_data`</span>
+<span class="sd">        - :py:func:`~structure_factor.hyperuniformity.multiscale_test`</span>
+<span class="sd">        - :py:func:`~structure_factor.hyperuniformity.effective_hyperuniformity`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">k_norm</span><span class="p">,</span> <span class="n">sf</span><span class="p">,</span> <span class="n">std_sf</span> <span class="o">=</span> <span class="n">_sort_vectors</span><span class="p">(</span><span class="n">k_norm</span><span class="p">,</span> <span class="n">sf</span><span class="p">,</span> <span class="n">std_sf</span><span class="p">)</span>
+    <span class="n">poly</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">c</span><span class="p">:</span> <span class="n">c</span> <span class="o">*</span> <span class="n">x</span> <span class="o">**</span> <span class="n">alpha</span>
+    <span class="p">(</span><span class="n">alpha</span><span class="p">,</span> <span class="n">c</span><span class="p">),</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_fit</span><span class="p">(</span><span class="n">k_norm</span><span class="p">,</span> <span class="n">sf</span><span class="p">,</span> <span class="n">std_sf</span><span class="p">,</span> <span class="n">poly</span><span class="p">,</span> <span class="n">k_norm_stop</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="n">fitted_poly</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">c</span> <span class="o">*</span> <span class="n">x</span> <span class="o">**</span> <span class="n">alpha</span>
+    <span class="n">summary</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;alpha&quot;</span><span class="p">:</span> <span class="n">alpha</span><span class="p">,</span> <span class="s2">&quot;c&quot;</span><span class="p">:</span> <span class="n">c</span><span class="p">,</span> <span class="s2">&quot;fitted_poly&quot;</span><span class="p">:</span> <span class="n">fitted_poly</span><span class="p">}</span>
+    <span class="k">return</span> <span class="n">summary</span></div>
+
+
+<div class="viewcode-block" id="bin_data"><a class="viewcode-back" href="../../hyperuniformity.html#structure_factor.hyperuniformity.bin_data">[docs]</a><span class="k">def</span> <span class="nf">bin_data</span><span class="p">(</span><span class="n">k_norm</span><span class="p">,</span> <span class="n">sf</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Split ``k_norm`` into sub-intervals (or bins) and evaluate, over each sub-interval, the mean and the standard deviation of the corresponding values in ``sf``.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        k_norm (numpy.ndarray): Vector of wavenumbers (i.e. norms of wavevectors).</span>
+
+<span class="sd">        sf (numpy.ndarray): Evaluations of the structure factor, of the given point process, at ``k_norm``.</span>
+
+<span class="sd">    Keyword Args:</span>
+<span class="sd">        params (dict): Keyword arguments (except &quot;x&quot;, &quot;values&quot; and &quot;statistic&quot;) of `scipy.stats.binned_statistic &lt;https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.binned_statistic.html&gt;`_.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        tuple(numpy.ndarray, numpy.ndarray, numpy.ndarray):</span>
+<span class="sd">            - ``k_norm``: Centers of the bins.</span>
+<span class="sd">            - ``sf``: Means of the structure factor over the bins.</span>
+<span class="sd">            - ``std_sf``: Standard deviations of the structure factor over the bins.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        .. plot:: code/hyperuniformity/bin_data.py</span>
+<span class="sd">            :include-source: True</span>
+
+<span class="sd">    .. note::</span>
+
+<span class="sd">            **Typical usage**</span>
+
+<span class="sd">            - Regularize the results of :py:class:`~structure_factor.structure_factor.StructureFactor` to be used in :py:func:`~structure_factor.hyperuniformity.effective_hyperuniformity` and :py:func:`~structure_factor.hyperuniformity.hyperuniformity_class`.</span>
+
+<span class="sd">    .. seealso::</span>
+
+<span class="sd">        - :py:class:`~structure_factor.structure_factor.StructureFactor`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">k_norm</span><span class="p">,</span> <span class="n">sf</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_sort_vectors</span><span class="p">(</span><span class="n">k_norm</span><span class="p">,</span> <span class="n">sf</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_bin_statistics</span><span class="p">(</span><span class="n">k_norm</span><span class="p">,</span> <span class="n">sf</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="subwindows"><a class="viewcode-back" href="../../hyperuniformity.html#structure_factor.hyperuniformity.subwindows">[docs]</a><span class="k">def</span> <span class="nf">subwindows</span><span class="p">(</span>
+    <span class="n">window</span><span class="p">,</span> <span class="n">subwindows_type</span><span class="o">=</span><span class="s2">&quot;BoxWindow&quot;</span><span class="p">,</span> <span class="n">param_0</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">param_max</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create a list of cubic (or ball)-shaped subwindows of a father window, with the associated minimum allowed wavevectors (or wavenumbers).</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        window (:py:class:`~structure_factor.spatial_windows.AbstractSpatialWindow`): Father window.</span>
+
+<span class="sd">        subwindows_type (str, optional): Type of the subwindows to be created. The available types are &quot;BoxWindow&quot; and &quot;BallWindow&quot;. The former for cubic and the latter for ball-shaped subwindows. Defaults to &quot;BoxWindow&quot;.</span>
+
+<span class="sd">        param_0 (float, optional): Parameter (lengthside/radius) of the first subwindow to be created. If not None, an increasing sequence of subwindows with parameters of unit increments is created. The biggest subwindow has parameter ``param_max`` if it&#39;s not None, else, the maximum possible parameter. Defaults to None.</span>
+
+<span class="sd">        param_max (float, optional): Maximum subwindow parameter (lengthside/radius). Used when ``param_0`` is not None. Defaults to None.</span>
+
+<span class="sd">        params (list, optional): List of parameters (lengthside/radius) of the output subwindows. For a list of parameters of unit increments, ``param_0`` and ``param_max`` can be used instead. Defaults to None.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (list, list):</span>
+<span class="sd">            - subwindows: Obtained subwindows.</span>
+<span class="sd">            - k: Minimum allowed wavevectors of :py:func:`~structure_factor.tapered_estimators.allowed_k_scattering_intensity` or wavenumbers of :py:func:`~structure_factor.tapered_estimators_isotropic.allowed_k_norm_bartlett_isotropic` associated with the subwindow list. The former is for cubic and the latter for ball-shaped subwindows.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        .. plot:: code/hyperuniformity/subwindows.py</span>
+<span class="sd">            :include-source: True</span>
+
+<span class="sd">    .. note::</span>
+
+<span class="sd">            **Typical usage**</span>
+
+<span class="sd">            - Create the list of subwindows with the associated k to be used in :py:func:`~structure_factor.hyperuniformity.multiscale_test`.</span>
+
+<span class="sd">    .. seealso::</span>
+<span class="sd">        - :py:func:`~structure_factor.tapered_estimators.allowed_k_scattering_intensity`</span>
+<span class="sd">        - :py:func:`~structure_factor.tapered_estimators_isotropic.allowed_k_norm_bartlett_isotropic`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">subwindows_list</span><span class="p">(</span><span class="n">window</span><span class="p">,</span> <span class="n">subwindows_type</span><span class="p">,</span> <span class="n">param_0</span><span class="p">,</span> <span class="n">param_max</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span></div>
+
+
+<span class="c1"># todo doc</span>
+<span class="c1"># todo clarify x_max</span>
+<span class="k">def</span> <span class="nf">_fit</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">std</span><span class="p">,</span> <span class="n">function</span><span class="p">,</span> <span class="n">x_max</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Fit ``function`` using `scipy.scipy.optimize.curve_fit &lt;https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.curve_fit.html&gt;`_.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        function (callable): Function to fit.</span>
+
+<span class="sd">        x_max (float): Maximum value above.</span>
+
+<span class="sd">    Keyword Args:</span>
+<span class="sd">        kwargs (dict): Keyword arguments (except ``&quot;sigma&quot;``) of `scipy.scipy.optimize.curve_fit &lt;https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.curve_fit.html&gt;`_ parameters.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        tuple: See output of `scipy.scipy.optimize.curve_fit &lt;https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.curve_fit.html&gt;`_.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="Hyperuniformity.__init__"><a class="viewcode-back" href="../../hyperuniformity.html#structure_factor.hyperuniformity.Hyperuniformity.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k_norm</span><span class="p">,</span> <span class="n">sf</span><span class="p">,</span> <span class="n">std_sf</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Initialize the object from the pair ``k_norm, sf`` which corresponds to the norm of the wavevector (denoted wavenumber) and the evaluation of the structure factor.</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x_max</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># index of the closest value to x_max in k_norm</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">x_max</span><span class="p">))</span>
 
-<span class="sd">        Args:</span>
-<span class="sd">            k_norm (numpy.ndarray): Vector of wavenumbers (i.e. norms of the wavevectors).</span>
+    <span class="n">xdata</span> <span class="o">=</span> <span class="n">x</span><span class="p">[:</span><span class="n">i</span><span class="p">]</span>
+    <span class="n">ydata</span> <span class="o">=</span> <span class="n">y</span><span class="p">[:</span><span class="n">i</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">std</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="p">(</span><span class="n">std</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+        <span class="n">sigma</span> <span class="o">=</span> <span class="n">std</span><span class="p">[:</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;sigma&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sigma</span>
 
-<span class="sd">            sf (numpy.ndarray): Vector of evaluations of the structure factor, of the given point process, at :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.k_norm`.</span>
-
-<span class="sd">            std (numpy.ndarray, optional): Vector of standard deviations associated to :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.sf`. Defaults to None.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">k_norm</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span>
-        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sf</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span>
-        <span class="k">assert</span> <span class="n">k_norm</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">sf</span><span class="o">.</span><span class="n">shape</span>
-
-        <span class="c1"># k_norm sorted</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">k_norm</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sf</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">std_sf</span> <span class="o">=</span> <span class="n">_sort_vectors</span><span class="p">(</span><span class="n">k_norm</span><span class="p">,</span> <span class="n">sf</span><span class="p">,</span> <span class="n">std_sf</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">fitted_line</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># fitted line to sf near zero</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">i_first_peak</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># index of first peak of sf</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">fitted_poly</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># fitted polynomial to sf near zero</span></div>
-
-<div class="viewcode-block" id="Hyperuniformity.bin_data"><a class="viewcode-back" href="../../hyperuniformity.html#structure_factor.hyperuniformity.Hyperuniformity.bin_data">[docs]</a>    <span class="k">def</span> <span class="nf">bin_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Split the vector attribute :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.k_norm` into sub-intervals (or bins) and evaluate, over each sub-interval, the mean and the standard deviation of the corresponding values in the vector attribute :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.sf`.</span>
-
-<span class="sd">        Keyword Args:</span>
-<span class="sd">            params (dict): Keyword arguments (except ``&quot;x&quot;``, ``&quot;values&quot;`` and ``&quot;statistic&quot;``) of `scipy.stats.binned_statistic &lt;https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.binned_statistic.html&gt;`_.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            tuple(numpy.ndarray, numpy.ndarray, numpy.ndarray):</span>
-<span class="sd">                - ``k_norm``: Centers of the bins (update the attribute :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.k_norm`).</span>
-<span class="sd">                - ``sf``: Means of the structure factor over the bins (update the attribute :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.sf`).</span>
-<span class="sd">                - ``std_sf``: Standard deviations of the structure factor over the bins (update the attribute :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.std_sf`).</span>
-
-<span class="sd">        Example:</span>
-<span class="sd">            .. plot:: code/hyperuniformity/bin_data.py</span>
-<span class="sd">                :include-source: True</span>
-
-<span class="sd">        .. seealso::</span>
-
-<span class="sd">            - :py:class:`~structure_factor.structure_factor.StructureFactor`</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">k_norm</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sf</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">std_sf</span> <span class="o">=</span> <span class="n">_bin_statistics</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">k_norm</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sf</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span>
-        <span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">k_norm</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sf</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">std_sf</span></div>
-
-<div class="viewcode-block" id="Hyperuniformity.effective_hyperuniformity"><a class="viewcode-back" href="../../hyperuniformity.html#structure_factor.hyperuniformity.Hyperuniformity.effective_hyperuniformity">[docs]</a>    <span class="k">def</span> <span class="nf">effective_hyperuniformity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k_norm_stop</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Evaluate the index :math:`H` of hyperuniformity of a point process using its structure factor :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.sf`. If :math:`H&lt;10^{-3}` the corresponding point process is deemed effectively hyperuniform.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            k_norm_stop (float): Threshold on :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.k_norm`. Used to find the numerator of :math:`H` by linear regression of :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.sf` up to the value associated with ``k_norm_stop``.</span>
-
-<span class="sd">        Keyword Args:</span>
-<span class="sd">            kwargs (dict): Keyword arguments (except ``&quot;sigma&quot;``) of `scipy.scipy.optimize.curve_fit &lt;https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.curve_fit.html&gt;`_ parameters.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            tuple(float, float):</span>
-<span class="sd">                - H: Value of the index :math:`H`.</span>
-<span class="sd">                - s0_std: Standard deviation of the numerator of :math:`H`.</span>
-
-<span class="sd">        Example:</span>
-<span class="sd">            .. plot:: code/hyperuniformity/effective_hyperuniformity.py</span>
-<span class="sd">                :include-source: True</span>
-
-<span class="sd">        .. proof:definition::</span>
-
-<span class="sd">            A stationary isotropic point process :math:`\mathcal{X} \subset \mathbb{R}^d`, is said to be effectively hyperuniform if :math:`H \leq 10^{-3}` where :math:`H` is defined following :cite:`Tor18` (Section 11.1.6) and :cite:`KlaAl19` (supplementary Section 8) by,</span>
-
-<span class="sd">            .. math::</span>
-
-<span class="sd">                H = \frac{\hat{S}(\mathbf{0})}{S(\mathbf{k}_{peak})}\cdot</span>
-
-<span class="sd">            - :math:`S` is the structure factor of :math:`\mathcal{X}`,</span>
-<span class="sd">            - :math:`\hat{S}(\mathbf{0})` is a linear extrapolation of the structure factor at :math:`\mathbf{k}=\mathbf{0}`,</span>
-<span class="sd">            - :math:`\mathbf{k}_{peak}` is the location of the first dominant peak value of :math:`S`.</span>
-
-<span class="sd">            For more details, we refer to :cite:`HGBLR:22` (Section 2.5).</span>
-
-<span class="sd">        .. important::</span>
-
-<span class="sd">            To compute the numerator :math:`\hat{S}(\mathbf{0})` of :math:`H`, a line is fitted using a linear extrapolation with a least-square fit on the values of :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.sf` associated to the sub-vector of :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.k_norm` truncated around the threshold ``k_norm_stop``. ``k_norm_stop`` must satisfy a good compromise of being close to zero and allowing to fit the line on a sufficient number of points.</span>
-
-<span class="sd">            If the standard deviations of :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.sf` are provided in the attribute :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.std_sf` then, these values will be considered while fitting the line.</span>
-
-<span class="sd">        .. seealso::</span>
-
-<span class="sd">            - :py:class:`~structure_factor.structure_factor.StructureFactor`</span>
-<span class="sd">            - :py:meth:`~structure_factor.hyperuniformity.Hyperuniformity.bin_data`</span>
-<span class="sd">            - :py:meth:`~structure_factor.hyperuniformity.Hyperuniformity.hyperuniformity_class`</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">line</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span> <span class="o">*</span> <span class="n">x</span>
-        <span class="p">(</span><span class="n">intercept</span><span class="p">,</span> <span class="n">slope</span><span class="p">),</span> <span class="n">cov</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fit</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">k_norm_stop</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">fitted_line</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">intercept</span> <span class="o">+</span> <span class="n">slope</span> <span class="o">*</span> <span class="n">x</span>
-
-        <span class="c1"># Find first peak in structure factor (sf)</span>
-        <span class="n">s0</span> <span class="o">=</span> <span class="n">intercept</span>
-        <span class="n">s0_std</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">cov</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
-
-        <span class="n">s_first_peak</span> <span class="o">=</span> <span class="mi">1</span>
-        <span class="n">idx_peaks</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">find_peaks</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sf</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="n">s_first_peak</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">idx_peaks</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">i_first_peak</span> <span class="o">=</span> <span class="n">idx_peaks</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">s_first_peak</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sf</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">i_first_peak</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="n">H</span> <span class="o">=</span> <span class="n">s0</span> <span class="o">/</span> <span class="n">s_first_peak</span>
-
-        <span class="k">return</span> <span class="n">H</span><span class="p">,</span> <span class="n">s0_std</span></div>
-
-    <span class="c1">#! todo example depending on utils.sf_ginibre</span>
-<div class="viewcode-block" id="Hyperuniformity.hyperuniformity_class"><a class="viewcode-back" href="../../hyperuniformity.html#structure_factor.hyperuniformity.Hyperuniformity.hyperuniformity_class">[docs]</a>    <span class="k">def</span> <span class="nf">hyperuniformity_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k_norm_stop</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Fit a polynomial :math:`y = c \cdot x^{\alpha}` to the attribute :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.sf` around zero. :math:`\alpha` is used to specify the possible class of hyperuniformity of the associated point process (as described below).</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            k_norm_stop (float, optional): Threshold on :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.k_norm`. A polynomial will be fitted on :py:attr:`~structure_factor.hyperuniformity.Hyperuniformity.sf` starting from zero until the value associated with ``k_norm_stop``. ``k_norm_stop`` should be sufficiently close to zero to get a good result. Defaults to 1.</span>
-
-<span class="sd">        Keyword Args:</span>
-<span class="sd">            kwargs (dict): Keyword arguments (except ``&quot;sigma&quot;``) of `scipy.scipy.optimize.curve_fit &lt;https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.curve_fit.html&gt;`_ parameters.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            tuple(float, float):</span>
-<span class="sd">                - alpha: The estimated power decay of the structure factor.</span>
-<span class="sd">                - c: The approximated value of the structure factor on the origin.</span>
-
-<span class="sd">        Example:</span>
-<span class="sd">            .. plot:: code/hyperuniformity/hyperuniformity_class.py</span>
-<span class="sd">                :include-source: True</span>
-
-<span class="sd">        .. proof:definition::</span>
-
-<span class="sd">            For a stationary  hyperuniform point process :math:`\mathcal{X} \subset \mathbb{R}^d`, if :math:`\vert S(\mathbf{k})\vert\sim c \Vert \mathbf{k} \Vert_2^\alpha` in the neighborhood of 0, then by :cite:`Cos21` (Section 4.1.) the value of :math:`\alpha` determines the hyperuniformity class of :math:`\mathcal{X}` as follows,</span>
-
-<span class="sd">            +-------+----------------+---------------------------------------------------------------+</span>
-<span class="sd">            | Class | :math:`\alpha` | :math:`\mathbb{V}\text{ar}\left[\mathcal{X}(B(0, R)) \right]` |</span>
-<span class="sd">            +=======+================+===============================================================+</span>
-<span class="sd">            | I     | :math:`&gt; 1`    | :math:`\mathcal{O}(R^{d-1})`                                  |</span>
-<span class="sd">            +-------+----------------+---------------------------------------------------------------+</span>
-<span class="sd">            | II    | :math:`= 1`    | :math:`\mathcal{O}(R^{d-1}\log(R))`                           |</span>
-<span class="sd">            +-------+----------------+---------------------------------------------------------------+</span>
-<span class="sd">            | III   | :math:`]0, 1[` | :math:`\mathcal{O}(R^{d-\alpha})`                             |</span>
-<span class="sd">            +-------+----------------+---------------------------------------------------------------+</span>
-
-<span class="sd">            For more details, we refer to :cite:`HGBLR:22`, (Section 2.5).</span>
-
-<span class="sd">        .. seealso::</span>
-
-<span class="sd">            - :py:class:`~structure_factor.structure_factor.StructureFactor`</span>
-<span class="sd">            - :py:meth:`~structure_factor.hyperuniformity.Hyperuniformity.bin_data`</span>
-<span class="sd">            - :py:meth:`~structure_factor.hyperuniformity.Hyperuniformity.effective_hyperuniformity`</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">poly</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">c</span><span class="p">:</span> <span class="n">c</span> <span class="o">*</span> <span class="n">x</span> <span class="o">**</span> <span class="n">alpha</span>
-        <span class="p">(</span><span class="n">alpha</span><span class="p">,</span> <span class="n">c</span><span class="p">),</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fit</span><span class="p">(</span><span class="n">poly</span><span class="p">,</span> <span class="n">k_norm_stop</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">fitted_poly</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">c</span> <span class="o">*</span> <span class="n">x</span> <span class="o">**</span> <span class="n">alpha</span>
-        <span class="k">return</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">c</span></div>
-
-    <span class="c1"># todo clarify x_max</span>
-    <span class="k">def</span> <span class="nf">_fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function</span><span class="p">,</span> <span class="n">x_max</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Fit ``function`` using `scipy.scipy.optimize.curve_fit &lt;https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.curve_fit.html&gt;`_.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            function (callable): Function to fit.</span>
-
-<span class="sd">            x_max (float): Maximum value above.</span>
-
-<span class="sd">        Keyword Args:</span>
-<span class="sd">            kwargs (dict): Keyword arguments (except ``&quot;sigma&quot;``) of `scipy.scipy.optimize.curve_fit &lt;https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.curve_fit.html&gt;`_ parameters.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            tuple: See output of `scipy.scipy.optimize.curve_fit &lt;https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.curve_fit.html&gt;`_.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">k_norm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">k_norm</span>
-        <span class="n">sf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sf</span>
-        <span class="n">std</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">std_sf</span>
-
-        <span class="n">i</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">k_norm</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">x_max</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="c1"># index of the closest value to x_max in k_norm</span>
-            <span class="n">i</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">k_norm</span> <span class="o">-</span> <span class="n">x_max</span><span class="p">))</span>
-
-        <span class="n">xdata</span> <span class="o">=</span> <span class="n">k_norm</span><span class="p">[:</span><span class="n">i</span><span class="p">]</span>
-        <span class="n">ydata</span> <span class="o">=</span> <span class="n">sf</span><span class="p">[:</span><span class="n">i</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">std</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="p">(</span><span class="n">std</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
-            <span class="n">sigma</span> <span class="o">=</span> <span class="n">std</span><span class="p">[:</span><span class="n">i</span><span class="p">]</span>
-            <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;sigma&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sigma</span>
-
-        <span class="k">return</span> <span class="n">curve_fit</span><span class="p">(</span><span class="n">f</span><span class="o">=</span><span class="n">function</span><span class="p">,</span> <span class="n">xdata</span><span class="o">=</span><span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span><span class="o">=</span><span class="n">ydata</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">curve_fit</span><span class="p">(</span><span class="n">f</span><span class="o">=</span><span class="n">function</span><span class="p">,</span> <span class="n">xdata</span><span class="o">=</span><span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span><span class="o">=</span><span class="n">ydata</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </pre></div>
 
            </div>

@@ -38,16 +38,17 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="structure_factor.html">Structure factor</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hyperuniformity.html">Hyperuniformity</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tapered_estimators.html">Tapered estimators</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tapered_estimators_isotropic.html">Tapered isotropic estimators</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tapers.html">Tapers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="transforms.html">Transforms</a></li>
-<li class="toctree-l1"><a class="reference internal" href="point_processes.html">Point processes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multiscale_estimators.html">Multiscale estimators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pair_correlation_function.html">Pair correlation function</a></li>
 <li class="toctree-l1"><a class="reference internal" href="point_pattern.html">Point pattern</a></li>
+<li class="toctree-l1"><a class="reference internal" href="point_processes.html">Point processes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="spatial_windows.html">Spatial windows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="structure_factor.html">Structure factor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tapers.html">Tapers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tapered_estimators.html">Tapered estimators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tapered_estimators_isotropic.html">Tapered isotropic estimators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transforms.html">Transforms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utils.html">Utils</a></li>
 <li class="toctree-l1"><a class="reference internal" href="plotting.html">Plotting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="bibliography/index.html">Bibliography</a></li>
@@ -104,11 +105,9 @@
 <h2 id="_">_</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="hyperuniformity.html#structure_factor.hyperuniformity.Hyperuniformity.__init__">__init__() (structure_factor.hyperuniformity.Hyperuniformity method)</a>
+      <li><a href="point_pattern.html#structure_factor.point_pattern.PointPattern.__init__">__init__() (structure_factor.point_pattern.PointPattern method)</a>
 
       <ul>
-        <li><a href="point_pattern.html#structure_factor.point_pattern.PointPattern.__init__">(structure_factor.point_pattern.PointPattern method)</a>
-</li>
         <li><a href="point_processes.html#structure_factor.point_processes.GinibrePointProcess.__init__">(structure_factor.point_processes.GinibrePointProcess method)</a>
 </li>
         <li><a href="point_processes.html#structure_factor.point_processes.HomogeneousPoissonPointProcess.__init__">(structure_factor.point_processes.HomogeneousPoissonPointProcess method)</a>
@@ -178,7 +177,7 @@
 </li>
       <li><a href="utils.html#structure_factor.utils.bessel2">bessel2() (in module structure_factor.utils)</a>
 </li>
-      <li><a href="hyperuniformity.html#structure_factor.hyperuniformity.Hyperuniformity.bin_data">bin_data() (structure_factor.hyperuniformity.Hyperuniformity method)</a>
+      <li><a href="hyperuniformity.html#structure_factor.hyperuniformity.bin_data">bin_data() (in module structure_factor.hyperuniformity)</a>
 </li>
       <li><a href="spatial_windows.html#structure_factor.spatial_windows.BoxWindow.bounds">bounds (structure_factor.spatial_windows.BoxWindow property)</a>
 
@@ -194,6 +193,8 @@
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="spatial_windows.html#structure_factor.spatial_windows.check_centered_window">check_centered_window() (in module structure_factor.spatial_windows)</a>
+</li>
       <li><a href="spatial_windows.html#structure_factor.spatial_windows.check_cubic_window">check_cubic_window() (in module structure_factor.spatial_windows)</a>
 </li>
       <li><a href="transforms.html#structure_factor.transforms.HankelTransformBaddourChouinard.compute_transformation_parameters">compute_transformation_parameters() (structure_factor.transforms.HankelTransformBaddourChouinard method)</a>
@@ -205,6 +206,8 @@
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="point_pattern.html#structure_factor.point_pattern.PointPattern.convert_to_spatstat_ppp">convert_to_spatstat_ppp() (structure_factor.point_pattern.PointPattern method)</a>
+</li>
+      <li><a href="multiscale_estimators.html#structure_factor.multiscale_estimators.coupled_sum_estimator">coupled_sum_estimator() (in module structure_factor.multiscale_estimators)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -234,7 +237,7 @@
 <h2 id="E">E</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="hyperuniformity.html#structure_factor.hyperuniformity.Hyperuniformity.effective_hyperuniformity">effective_hyperuniformity() (structure_factor.hyperuniformity.Hyperuniformity method)</a>
+      <li><a href="hyperuniformity.html#structure_factor.hyperuniformity.effective_hyperuniformity">effective_hyperuniformity() (in module structure_factor.hyperuniformity)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -290,15 +293,13 @@
 </li>
       <li><a href="transforms.html#structure_factor.transforms.HankelTransformBaddourChouinard">HankelTransformBaddourChouinard (class in structure_factor.transforms)</a>
 </li>
-      <li><a href="transforms.html#structure_factor.transforms.HankelTransformOgata">HankelTransformOgata (class in structure_factor.transforms)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="transforms.html#structure_factor.transforms.HankelTransformOgata">HankelTransformOgata (class in structure_factor.transforms)</a>
+</li>
       <li><a href="point_processes.html#structure_factor.point_processes.HomogeneousPoissonPointProcess">HomogeneousPoissonPointProcess (class in structure_factor.point_processes)</a>
 </li>
-      <li><a href="hyperuniformity.html#structure_factor.hyperuniformity.Hyperuniformity">Hyperuniformity (class in structure_factor.hyperuniformity)</a>
-</li>
-      <li><a href="hyperuniformity.html#structure_factor.hyperuniformity.Hyperuniformity.hyperuniformity_class">hyperuniformity_class() (structure_factor.hyperuniformity.Hyperuniformity method)</a>
+      <li><a href="hyperuniformity.html#structure_factor.hyperuniformity.hyperuniformity_class">hyperuniformity_class() (in module structure_factor.hyperuniformity)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -336,6 +337,8 @@
 <h2 id="M">M</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="multiscale_estimators.html#structure_factor.multiscale_estimators.m_threshold">m_threshold() (in module structure_factor.multiscale_estimators)</a>
+</li>
       <li><a href="utils.html#structure_factor.utils.meshgrid_to_column_matrix">meshgrid_to_column_matrix() (in module structure_factor.utils)</a>
 </li>
       <li>
@@ -343,6 +346,8 @@
 
       <ul>
         <li><a href="hyperuniformity.html#module-structure_factor.hyperuniformity">structure_factor.hyperuniformity</a>
+</li>
+        <li><a href="multiscale_estimators.html#module-structure_factor.multiscale_estimators">structure_factor.multiscale_estimators</a>
 </li>
         <li><a href="pair_correlation_function.html#module-structure_factor.pair_correlation_function">structure_factor.pair_correlation_function</a>
 </li>
@@ -370,6 +375,10 @@
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="tapers.html#structure_factor.tapers.multi_sinetaper_grid">multi_sinetaper_grid() (in module structure_factor.tapers)</a>
+</li>
+      <li><a href="multiscale_estimators.html#structure_factor.multiscale_estimators.multiscale_estimator">multiscale_estimator() (in module structure_factor.multiscale_estimators)</a>
+</li>
+      <li><a href="hyperuniformity.html#structure_factor.hyperuniformity.multiscale_test">multiscale_test() (in module structure_factor.hyperuniformity)</a>
 </li>
       <li><a href="point_processes.html#structure_factor.point_processes.mutual_nearest_neighbor_matching">mutual_nearest_neighbor_matching() (in module structure_factor.point_processes)</a>
 </li>
@@ -495,6 +504,13 @@
 </li>
       </ul></li>
       <li>
+    structure_factor.multiscale_estimators
+
+      <ul>
+        <li><a href="multiscale_estimators.html#module-structure_factor.multiscale_estimators">module</a>
+</li>
+      </ul></li>
+      <li>
     structure_factor.pair_correlation_function
 
       <ul>
@@ -574,6 +590,12 @@
 </li>
       </ul></li>
       <li><a href="structure_factor.html#structure_factor.structure_factor.StructureFactor">StructureFactor (class in structure_factor.structure_factor)</a>
+</li>
+      <li><a href="spatial_windows.html#structure_factor.spatial_windows.subwindow_parameter_max">subwindow_parameter_max() (in module structure_factor.spatial_windows)</a>
+</li>
+      <li><a href="hyperuniformity.html#structure_factor.hyperuniformity.subwindows">subwindows() (in module structure_factor.hyperuniformity)</a>
+</li>
+      <li><a href="multiscale_estimators.html#structure_factor.multiscale_estimators.subwindows_list">subwindows_list() (in module structure_factor.multiscale_estimators)</a>
 </li>
   </ul></td>
 </tr></table>

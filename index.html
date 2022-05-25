@@ -21,7 +21,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Structure factor" href="structure_factor.html" /> 
+    <link rel="next" title="Hyperuniformity" href="hyperuniformity.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -40,16 +40,17 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="structure_factor.html">Structure factor</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hyperuniformity.html">Hyperuniformity</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tapered_estimators.html">Tapered estimators</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tapered_estimators_isotropic.html">Tapered isotropic estimators</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tapers.html">Tapers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="transforms.html">Transforms</a></li>
-<li class="toctree-l1"><a class="reference internal" href="point_processes.html">Point processes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multiscale_estimators.html">Multiscale estimators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pair_correlation_function.html">Pair correlation function</a></li>
 <li class="toctree-l1"><a class="reference internal" href="point_pattern.html">Point pattern</a></li>
+<li class="toctree-l1"><a class="reference internal" href="point_processes.html">Point processes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="spatial_windows.html">Spatial windows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="structure_factor.html">Structure factor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tapers.html">Tapers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tapered_estimators.html">Tapered estimators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tapered_estimators_isotropic.html">Tapered isotropic estimators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transforms.html">Transforms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utils.html">Utils</a></li>
 <li class="toctree-l1"><a class="reference internal" href="plotting.html">Plotting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="bibliography/index.html">Bibliography</a></li>
@@ -93,11 +94,23 @@
 </ul>
 <section id="introduction">
 <h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline"></a></h2>
-<p>Hyperuniformity is the study of stationary point processes with a sub-Poisson variance of the number of points in a large window. For the homogeneous Poisson point process, the variance of the number of points that fall in a large window is of the order of the window volume. In contrast, for hyperuniform (HU) point processes, the corresponding variance is much lower than the volume of that window, with a ratio going to zero <span id="id1">[<a class="reference internal" href="bibliography/index.html#id10" title="S. Torquato. Hyperuniform states of matter. Physics Reports, 2018. doi:10.1016/j.physrep.2018.03.001.">Tor18</a>]</span>.</p>
-<p>In the context of amorphous structures, hyperuniformity implies a hidden form of order, in which the system remains macroscopically uniform, despite not being crystalline.
-The concept of hyperuniformity sheds light on a variety of seemingly unrelated fields, including density fluctuations in the early universe, biological tissue, statistical physics, colloidal or granular packings, micro fluids, driven nonequilibrium systems… <span id="id2">[<a class="reference internal" href="bibliography/index.html#id5" title="M. Klatt, J. Lovrić, D. Chen, C. Kapfer Sebastian, M. Schaller Fabian, W. A. Schönhöfer Philipp, S. Gardiner Bruce, A. Smith, E. Gerd, and S. Torquato. Universal hidden order in amorphous cellular geometries. Nature Communications, 2019.">KLovricC+19</a>]</span>.</p>
-<p>There are many candidate HU processes in the physics literature, but rigorously proving that a point process is HU is usually difficult. It is thus desirable to have standardized numerical tests of hyperuniformity. A common practice in statistical physics is to estimate a spectral measure called the structure factor, the behavior of which around zero is a sign of hyperuniformity <span id="id3">[<a class="reference internal" href="bibliography/index.html#id3" title="S. Coste. Order, fluctuations, rigidities. preprint, 2021. URL: https://scoste.fr/assets/survey_hyperuniformity.pdf.">Cos21</a>]</span>.</p>
-<p>This Python toolbox gathers many estimators of the structure factor, along with a numerical test of effective hyperuniformity and the corresponding possible class of hyperuniformity.</p>
+<p>Hyperuniformity is the study of stationary point processes with a sub-Poisson variance of the number of points in a large window. For the homogeneous Poisson point process, the variance of the number of points that fall in a large window is of the order of the window volume. In contrast, for hyperuniform (HU) point processes, the corresponding variance is much lower than the volume of that window, with a ratio going to zero.</p>
+<p>Hyperuniform point processes have received a lot of attention in statistical physics, both for the investigation of natural organized structures and the synthesis of materials.
+There are many candidate HU processes in the physics literature, but rigorously proving that a point process is HU is usually difficult. It is thus desirable to have standardized numerical tests of hyperuniformity. A common practice in statistical physics and chemistry is to use a few samples to estimate a spectral measure called the structure factor, and evaluating its decay around zero provides a diagnostic of hyperuniformity.
+Different applied fields use however different estimators, and important algorithmic choices proceed from each field’s lore.</p>
+<p>In an effort to make investigations of the structure factor and hyperuniformity systematic and reproducible, we further provide
+this Python toolbox gathering the estimators of the structure factor surveyed in <span id="id1">[<a class="reference internal" href="bibliography/index.html#id4" title="Diala Hawat, Guillaume Gautier, Rémi Bardenet, and Raphaël Lachièze-Rey. On estimating the structure factor of a point process, with applications to hyperuniformity. arXiv preprint, 2022. arXiv: 2203.08749.">HGBLachiezeR22</a>]</span>, along with a new statistical test of hyperuniformity asymptotically valid <span id="id2">[<a class="reference internal" href="bibliography/index.html#id4" title="Diala Hawat, Guillaume Gautier, Rémi Bardenet, and Raphaël Lachièze-Rey. On estimating the structure factor of a point process, with applications to hyperuniformity. arXiv preprint, 2022. arXiv: 2203.08749.">HGBLachiezeR22</a>]</span>, the test of effective hyperuniformity <span id="id3">[<a class="reference internal" href="bibliography/index.html#id11" title="S. Torquato. Hyperuniform states of matter. Physics Reports, 2018. doi:10.1016/j.physrep.2018.03.001.">Tor18</a>]</span> and the corresponding possible class of hyperuniformity <span id="id4">[<a class="reference internal" href="bibliography/index.html#id3" title="S. Coste. Order, fluctuations, rigidities. preprint, 2021. URL: https://scoste.fr/assets/survey_hyperuniformity.pdf.">Cos21</a>]</span>.</p>
+</section>
+<section id="companion-paper">
+<h2>Companion paper<a class="headerlink" href="#companion-paper" title="Permalink to this headline"></a></h2>
+<p>We wrote a companion paper to <code class="docutils literal notranslate"><span class="pre">structure-factor</span></code>,</p>
+<blockquote>
+<div><p>“<a class="reference external" href="https://arxiv.org/abs/2203.08749">On estimating the structure factor of a point process, with applications to hyperuniformity</a> “.</p>
+</div></blockquote>
+<p>where we provided rigorous mathematical derivations of the structure factor’s estimators of a stationary point process and showcased <code class="docutils literal notranslate"><span class="pre">structure-factor</span></code> on different point processes.
+We also contribute a new asymptotically valid statistical test of hyperuniformity.
+Finally, we compared numerically the accuracy of the estimators.</p>
+<p>If you use <code class="docutils literal notranslate"><span class="pre">structure-factor</span></code>, please consider citing the companion paper.</p>
 </section>
 <section id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline"></a></h2>
@@ -115,16 +128,17 @@ The concept of hyperuniformity sheds light on a variety of seemingly unrelated f
 <h2>Contents<a class="headerlink" href="#contents" title="Permalink to this headline"></a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="structure_factor.html">Structure factor</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hyperuniformity.html">Hyperuniformity</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tapered_estimators.html">Tapered estimators</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tapered_estimators_isotropic.html">Tapered isotropic estimators</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tapers.html">Tapers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="transforms.html">Transforms</a></li>
-<li class="toctree-l1"><a class="reference internal" href="point_processes.html">Point processes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multiscale_estimators.html">Multiscale estimators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pair_correlation_function.html">Pair correlation function</a></li>
 <li class="toctree-l1"><a class="reference internal" href="point_pattern.html">Point pattern</a></li>
+<li class="toctree-l1"><a class="reference internal" href="point_processes.html">Point processes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="spatial_windows.html">Spatial windows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="structure_factor.html">Structure factor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tapers.html">Tapers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tapered_estimators.html">Tapered estimators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tapered_estimators_isotropic.html">Tapered isotropic estimators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transforms.html">Transforms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utils.html">Utils</a></li>
 <li class="toctree-l1"><a class="reference internal" href="plotting.html">Plotting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="bibliography/index.html">Bibliography</a></li>
@@ -145,7 +159,7 @@ The concept of hyperuniformity sheds light on a variety of seemingly unrelated f
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="structure_factor.html" class="btn btn-neutral float-right" title="Structure factor" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="hyperuniformity.html" class="btn btn-neutral float-right" title="Hyperuniformity" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

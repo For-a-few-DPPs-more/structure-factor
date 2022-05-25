@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>structure_factor.multiscale_estimators &mdash; structure-factor  documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/proof.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/plot_directive.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/proof.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> structure-factor
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../hyperuniformity.html">Hyperuniformity</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../multiscale_estimators.html">Multiscale estimators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pair_correlation_function.html">Pair correlation function</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../point_pattern.html">Point pattern</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../point_processes.html">Point processes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../spatial_windows.html">Spatial windows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../structure_factor.html">Structure factor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tapers.html">Tapers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tapered_estimators.html">Tapered estimators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tapered_estimators_isotropic.html">Tapered isotropic estimators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../transforms.html">Transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../utils.html">Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../plotting.html">Plotting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bibliography/index.html">Bibliography</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">structure-factor</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      <li>structure_factor.multiscale_estimators</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for structure_factor.multiscale_estimators</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">structure_factor.structure_factor</span> <span class="kn">import</span> <span class="n">StructureFactor</span>
+<span class="kn">from</span> <span class="nn">structure_factor.spatial_windows</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">BoxWindow</span><span class="p">,</span>
+    <span class="n">BallWindow</span><span class="p">,</span>
+    <span class="n">subwindow_parameter_max</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">structure_factor.tapered_estimators_isotropic</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">allowed_k_norm_bartlett_isotropic</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">poisson</span>
+
+
+<div class="viewcode-block" id="multiscale_estimator"><a class="viewcode-back" href="../../multiscale_estimators.html#structure_factor.multiscale_estimators.multiscale_estimator">[docs]</a><span class="k">def</span> <span class="nf">multiscale_estimator</span><span class="p">(</span>
+    <span class="n">point_pattern</span><span class="p">,</span>
+    <span class="n">estimator</span><span class="p">,</span>
+    <span class="n">subwindows_list</span><span class="p">,</span>
+    <span class="n">k_list</span><span class="p">,</span>
+    <span class="n">mean_poisson</span><span class="p">,</span>
+    <span class="n">m</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">proba_list</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Sample from :math:`Z`  :cite:`HGBLR:22` using a PointPattern and a realization from the r.v. :math:`M`. See the definition of :math:`Z` below.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        point_pattern (:py:class:`~structure_factor.point_pattern.PointPattern`): An encapsulation of a realization of a point process, the observation window, and (optionally) the intensity of the point process.</span>
+
+<span class="sd">        estimator (str): Choice of structure factor&#39;s estimator. The parameters of the chosen estimator must be added as keyword arguments. The available estimators are &quot;scattering_intensity&quot;, &quot;tapered_estimator&quot;, &quot;bartlett_isotropic_estimator&quot;, and &quot;quadrature_estimator_isotropic&quot;. See :py:class:`~structure_factor.structure_factor.StructureFactor`.</span>
+
+<span class="sd">        subwindows_list (list): List of increasing cubic or ball-shaped :py:class:`~structure_factor.spatial_windows.AbstractSpatialWindow`, typically, obtained using :py:func:`~structure_factor.multiscale_estimators.subwindows_list`. The shape of the windows depends on the choice of the ``estimator``. Each element of ``point_pattern_list`` will be restricted to these windows to compute :math:`Z`.</span>
+
+<span class="sd">        k_list (list): List of wavevectors (or wavenumbers) where the ``estimator`` is to be evaluated. Each element is associated with an element of ``subwindows_list``. Typically, obtained using :py:func:`~structure_factor.multiscale_estimators.subwindows_list`.</span>
+
+<span class="sd">        mean_poisson (int): Parameter of the Poisson r.v. :math:`M` used to compute :math:`Z`. To use a different distribution of the r.v. :math:`M`, set ``mean_poisson=None`` and specify ``m_list`` and ``proba_list`` corresponding to :math:`M`.</span>
+
+<span class="sd">        m (int, optional): Realization of the positive integer-valued r.v. :math:`M` used when ``mean_poisson=None``. Defaults to None.</span>
+
+<span class="sd">        proba_list (list, optional): List of :math:`\mathbb{P}(M \geq j)` used  with ``m`` when ``mean_poisson=None``. Should contains at least ``m`` elements. Defaults to None.</span>
+
+<span class="sd">        verbose (bool, optional): If &quot;True&quot; and ``mean_poisson`` is not None, print the re-sampled values of :math:`M`. Defaults to False.</span>
+
+<span class="sd">    Keyword Args:</span>
+<span class="sd">        kwargs (dict): Parameters of the chosen ``estimator`` of the structure factor.  See :py:class:`~structure_factor.structure_factor.StructureFactor`.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        float: The obtained value of :math:`Z`.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        .. literalinclude:: code/multiscale_estimators/multiscale_estimator.py</span>
+<span class="sd">            :language: python</span>
+
+<span class="sd">    .. proof:definition::</span>
+
+<span class="sd">        Let :math:`\mathcal{X} \in \mathbb{R}^d` be a stationary point process of which we consider an increasing sequence of sets :math:`(\mathcal{X} \cap W_m)_{m \geq 1}`, with :math:`(W_m)_m` centered box (or ball)-shaped windows s.t. :math:`W_s \subset W_r` for all :math:`0&lt; s&lt;r`, and :math:`W_{\infty} = \mathbb{R}^d`.</span>
+<span class="sd">        We define the sequence of r.v. :math:`Y_m = 1\wedge \widehat{S}_m(\mathbf{k}_m^{\text{min}})`, where :math:`\widehat{S}_m` is one of the positive, asymptotically unbiased estimators of the structure factor of :math:`\mathcal{X}` applied on the observation :math:`\mathcal{X} \cap W_m`, and :math:`\mathbf{k}_m^{\text{min}}` is the minimum allowed wavevector associated with :math:`W_m`.</span>
+<span class="sd">        Then, :math:`Z` is defined by,</span>
+
+<span class="sd">        .. math::</span>
+
+<span class="sd">            Z = \sum_{j=1}^{M} \frac{Y_j - Y_{j-1}}{\mathbb{P}(M\geq j)}</span>
+
+<span class="sd">        with :math:`M` an :math:`\mathbb{N}`-valued random variable such that :math:`\mathbb{P}(M \geq j)&gt;0` for all :math:`j`, and :math:`Y_{0}=0` :cite:`HGBLR:22`, :cite:`RhGl15`.</span>
+
+
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># r.v. threshold</span>
+    <span class="n">m_thresh</span> <span class="o">=</span> <span class="n">m_threshold</span><span class="p">(</span>
+        <span class="n">window_min</span><span class="o">=</span><span class="n">subwindows_list</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+        <span class="n">window_max</span><span class="o">=</span><span class="n">subwindows_list</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+    <span class="p">)</span>
+    <span class="c1"># r.v. M</span>
+    <span class="k">if</span> <span class="n">m</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">_poisson_rv</span><span class="p">(</span><span class="n">mean_poisson</span><span class="p">,</span> <span class="n">m_thresh</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">m</span> <span class="o">&gt;</span> <span class="n">m_thresh</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="n">message</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;The random variable M exceed the allowed threshold </span><span class="si">{</span><span class="n">m_thresh</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="p">)</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+    <span class="c1"># proba list</span>
+    <span class="k">if</span> <span class="n">proba_list</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">proba_list</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="p">(</span>
+            <span class="n">poisson</span><span class="o">.</span><span class="n">cdf</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">m</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="n">mu</span><span class="o">=</span><span class="n">mean_poisson</span><span class="p">)</span>
+            <span class="o">-</span> <span class="n">poisson</span><span class="o">.</span><span class="n">pmf</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">m</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="n">mu</span><span class="o">=</span><span class="n">mean_poisson</span><span class="p">)</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">proba_list</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">m</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The proba list should contains at least</span><span class="si">{</span><span class="n">m</span><span class="si">}</span><span class="s2"> elements.&quot;</span><span class="p">)</span>
+        <span class="n">proba_list</span> <span class="o">=</span> <span class="n">proba_list</span><span class="p">[:</span><span class="n">m</span><span class="p">]</span>
+
+    <span class="c1"># k and subwindows list</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">subwindows_list</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">k_list</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;The number of wavevectors/wavenumber (k) should be equal to the number of subwindows. Each k is associated to a subwindow.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">subwindows_list</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">m</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;The number of subwindows </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">subwindows_list</span><span class="p">)</span><span class="si">}</span><span class="s2"> should be at least equal to the random variable M= </span><span class="si">{</span><span class="n">m</span><span class="si">}</span><span class="s2">.&quot;</span>
+        <span class="p">)</span>
+    <span class="n">subwindows_list</span> <span class="o">=</span> <span class="n">subwindows_list</span><span class="p">[:</span><span class="n">m</span><span class="p">]</span>
+    <span class="n">k_list</span> <span class="o">=</span> <span class="n">k_list</span><span class="p">[:</span><span class="n">m</span><span class="p">]</span>
+
+    <span class="c1"># approximated s_k_min list</span>
+    <span class="n">s_k_min_list</span> <span class="o">=</span> <span class="n">multiscale_estimator_core</span><span class="p">(</span>
+        <span class="n">point_pattern</span><span class="o">=</span><span class="n">point_pattern</span><span class="p">,</span>
+        <span class="n">subwindows_list</span><span class="o">=</span><span class="n">subwindows_list</span><span class="p">,</span>
+        <span class="n">k_list</span><span class="o">=</span><span class="n">k_list</span><span class="p">,</span>
+        <span class="n">estimator</span><span class="o">=</span><span class="n">estimator</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="c1"># the r.v. (y_n)_n</span>
+    <span class="n">y_list</span> <span class="o">=</span> <span class="p">[</span><span class="nb">min</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">]),</span> <span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">s_k_min_list</span><span class="p">]</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">coupled_sum_estimator</span><span class="p">(</span><span class="n">y_list</span><span class="p">,</span> <span class="n">proba_list</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">z</span></div>
+
+
+<span class="k">def</span> <span class="nf">multiscale_estimator_core</span><span class="p">(</span>
+    <span class="n">point_pattern</span><span class="p">,</span> <span class="n">subwindows_list</span><span class="p">,</span> <span class="n">k_list</span><span class="p">,</span> <span class="n">estimator</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">):</span>
+    <span class="n">point_pattern_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">point_pattern</span><span class="o">.</span><span class="n">restrict_to_window</span><span class="p">(</span><span class="n">w</span><span class="p">)</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">subwindows_list</span><span class="p">]</span>
+    <span class="n">estimated_sf_k_list</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">_select_structure_factor_estimator</span><span class="p">(</span>
+            <span class="n">point_pattern</span><span class="o">=</span><span class="n">p</span><span class="p">,</span> <span class="n">estimator</span><span class="o">=</span><span class="n">estimator</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">q</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">p</span><span class="p">,</span> <span class="n">q</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">point_pattern_list</span><span class="p">,</span> <span class="n">k_list</span><span class="p">)</span>
+    <span class="p">]</span>
+    <span class="k">return</span> <span class="n">estimated_sf_k_list</span>
+
+
+<div class="viewcode-block" id="coupled_sum_estimator"><a class="viewcode-back" href="../../multiscale_estimators.html#structure_factor.multiscale_estimators.coupled_sum_estimator">[docs]</a><span class="k">def</span> <span class="nf">coupled_sum_estimator</span><span class="p">(</span><span class="n">y_list</span><span class="p">,</span> <span class="n">proba_list</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;The coupled sum estimator of :cite:`RhGl15`.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        y_list (list): List of :math:`M` realizations of the r.v. :math:`Y`.</span>
+<span class="sd">        proba_list (list): List of :math:`\mathbb{P}(M \geq j)` with :math:`1 \leq j \leq M`.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        float: Obtained value of the coupled sum estimator.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        .. literalinclude:: code/multiscale_estimators/coupled_sum_estimator.py</span>
+<span class="sd">            :language: python</span>
+
+<span class="sd">    .. proof:definition::</span>
+
+<span class="sd">        Let :math:`(Y_m)_{m\geq 1}` be a sequence of :math:`L^2` approximations of a r.v. :math:`Y` each of which can be generated in finite time, for which :math:`\mathbb{E}^{1/2}[(Y_m - Y)^2]` converges to zero as :math:`m` goes to infinity.</span>
+<span class="sd">        The coupled sum estimator of :cite:`RhGl15` is defined by,</span>
+
+<span class="sd">        .. math::</span>
+
+<span class="sd">            Z = \sum_{j=1}^{M} \frac{Y_j - Y_{j-1}}{\mathbb{P}(M\geq j)},</span>
+
+<span class="sd">        with :math:`M` an :math:`\mathbb{N}`-valued random variable such that :math:`\mathbb{P}(M \geq j)&gt;0` for all :math:`j`, and :math:`Y_{0}=0`.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">y_list_with_0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">y_list</span><span class="p">)</span>  <span class="c1"># 0 first element of the list</span>
+    <span class="n">y_pairwise_diff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="n">s</span> <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">y_list_with_0</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">y_list_with_0</span><span class="p">[</span><span class="mi">1</span><span class="p">:])]</span>
+    <span class="p">)</span>
+    <span class="n">y_pairwise_diff</span> <span class="o">=</span> <span class="n">y_pairwise_diff</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">proba_list</span><span class="p">)</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">y_pairwise_diff</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">z</span></div>
+
+
+<div class="viewcode-block" id="subwindows_list"><a class="viewcode-back" href="../../multiscale_estimators.html#structure_factor.multiscale_estimators.subwindows_list">[docs]</a><span class="k">def</span> <span class="nf">subwindows_list</span><span class="p">(</span>
+    <span class="n">window</span><span class="p">,</span> <span class="n">subwindows_type</span><span class="o">=</span><span class="s2">&quot;BoxWindow&quot;</span><span class="p">,</span> <span class="n">param_0</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">param_max</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create a list of cubic (or ball)-shaped subwindows of a father window, with the associated minimum allowed wavevectors (or wavenumbers).</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        window (:py:class:`~structure_factor.spatial_windows.AbstractSpatialWindow`): Father window.</span>
+
+<span class="sd">        subwindows_type (str, optional): Type of the subwindows to be created. The available types are &quot;BoxWindow&quot; and &quot;BallWindow&quot;. The former for cubic and the latter for ball-shaped subwindows. Defaults to &quot;BoxWindow&quot;.</span>
+
+<span class="sd">        param_0 (float, optional): Parameter (lengthside/radius) of the first subwindow to be created. If not None, an increasing sequence of subwindows with parameters of unit increments is created. The biggest subwindow has parameter ``param_max`` if it&#39;s not None, else, the maximum possible parameter. Defaults to None.</span>
+
+<span class="sd">        param_max (float, optional): Maximum subwindow parameter (lengthside/radius). Used when ``param_0`` is not None. Defaults to None.</span>
+
+<span class="sd">        params (list, optional): List of parameters (lengthside/radius) of the output subwindows. For a list of parameters of unit increments, ``param_0`` and ``param_max`` can be used instead. Defaults to None.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (list, list):</span>
+<span class="sd">            - subwindows: Obtained subwindows.</span>
+<span class="sd">            - k: Minimum allowed wavevectors of :py:func:`~structure_factor.tapered_estimators.allowed_k_scattering_intensity` or wavenumbers of :py:func:`~structure_factor.tapered_estimators_isotropic.allowed_k_norm_bartlett_isotropic` associated with the subwindow list. The former is for cubic and the latter for ball-shaped subwindows.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        .. plot:: code/multiscale_estimators/subwindows.py</span>
+<span class="sd">            :include-source: True</span>
+
+<span class="sd">    .. seealso::</span>
+
+<span class="sd">        - :py:mod:`~structure_factor.spatial_windows`</span>
+<span class="sd">        - :py:func:`~structure_factor.tapered_estimators.allowed_k_scattering_intensity`</span>
+<span class="sd">        - :py:func:`~structure_factor.tapered_estimators_isotropic.allowed_k_norm_bartlett_isotropic`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">window</span><span class="o">.</span><span class="n">dimension</span>
+    <span class="c1"># parameter of the biggest possible subwindow contained in `window``</span>
+    <span class="n">window_param_max</span> <span class="o">=</span> <span class="n">subwindow_parameter_max</span><span class="p">(</span><span class="n">window</span><span class="p">,</span> <span class="n">subwindows_type</span><span class="p">)</span>
+    <span class="c1"># subwindows list of parameters</span>
+    <span class="k">if</span> <span class="n">params</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">param_0</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;The minimum window parameter is mandatory. Hint: specify the minimum window parameter.&quot;</span>
+            <span class="p">)</span>
+        <span class="c1"># from param_0 till param_max with unit space</span>
+        <span class="k">if</span> <span class="n">param_max</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">params</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">param_0</span><span class="p">,</span> <span class="n">window_param_max</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">max</span><span class="p">(</span><span class="n">params</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">window_param_max</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;The maximum sub-window (parameter=</span><span class="si">{</span><span class="nb">max</span><span class="p">(</span><span class="n">params</span><span class="p">)</span><span class="si">}</span><span class="s2">) is bigger than the father window (parameter=</span><span class="si">{</span><span class="n">window_param_max</span><span class="si">}</span><span class="s2">). Hint: Reduce the maximum subwindow parameter. &quot;</span>
+            <span class="p">)</span>
+    <span class="c1"># subwindows and the associated k</span>
+    <span class="k">if</span> <span class="n">subwindows_type</span> <span class="o">==</span> <span class="s2">&quot;BallWindow&quot;</span><span class="p">:</span>
+        <span class="n">subwindows</span> <span class="o">=</span> <span class="p">[</span><span class="n">BallWindow</span><span class="p">(</span><span class="n">center</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">d</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="n">r</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">params</span><span class="p">]</span>
+        <span class="c1"># check if d is even</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">mod_</span> <span class="o">=</span> <span class="nb">divmod</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">is_even_dimension</span> <span class="o">=</span> <span class="n">mod_</span> <span class="o">==</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">is_even_dimension</span><span class="p">:</span>
+            <span class="n">k_list</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">allowed_k_norm_bartlett_isotropic</span><span class="p">(</span><span class="n">dimension</span><span class="o">=</span><span class="n">d</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="n">r</span><span class="p">,</span> <span class="n">nb_values</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">params</span>
+            <span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">k_list</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="n">message</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Isotropic allowed wavenumber are available only when the dimension of the space is an even number (i.e., d/2 is an integer).&quot;</span>
+            <span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">subwindows</span> <span class="o">=</span> <span class="p">[</span><span class="n">BoxWindow</span><span class="p">(</span><span class="n">bounds</span><span class="o">=</span><span class="p">[[</span><span class="o">-</span><span class="n">l</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">l</span> <span class="o">/</span> <span class="mi">2</span><span class="p">]]</span> <span class="o">*</span> <span class="n">d</span><span class="p">)</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">params</span><span class="p">]</span>
+        <span class="n">k_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="n">d</span><span class="p">),</span> <span class="n">fill_value</span><span class="o">=</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="n">l</span><span class="p">)</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">params</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">subwindows</span><span class="p">,</span> <span class="n">k_list</span></div>
+
+
+<div class="viewcode-block" id="m_threshold"><a class="viewcode-back" href="../../multiscale_estimators.html#structure_factor.multiscale_estimators.m_threshold">[docs]</a><span class="k">def</span> <span class="nf">m_threshold</span><span class="p">(</span><span class="n">window_min</span><span class="p">,</span> <span class="n">window_max</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Find the maximum number of integers ranging between the parameters (lengthside/radius) of ``window_min`` and the largest subwindow of ``window_max`` having the shape of ``window_min``.</span>
+<span class="sd">    In particular, it gives the maximum value of the r.v. :math:`M` that can be used to compute the :py:func:`~structure_factor.multiscale_estimators.multiscale_estimator` given the smallest and biggest subwindow.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        window_min (:py:class:`~structure_factor.spatial_windows.AbstractSpatialWindow`): Smallest cubic or ball-shaped window centered at the origin.</span>
+<span class="sd">        window_max (:py:class:`~structure_factor.spatial_windows.AbstractSpatialWindow`): Biggest box or ball-shaped window centered at the origin.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        int : Maximum number of integers ranging between the parameters (lengthside/radius) of ``window_min`` and the largest subwindow of ``window_max`` having the shape of ``window_min``.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        .. plot:: code/multiscale_estimators/m_threshold.py</span>
+<span class="sd">            :include-source: True</span>
+
+<span class="sd">    .. seealso::</span>
+
+<span class="sd">        - :py:mod:`~structure_factor.spatial_windows`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">window_min</span><span class="p">,</span> <span class="n">BoxWindow</span><span class="p">):</span>
+        <span class="n">subwindow_type</span> <span class="o">=</span> <span class="s2">&quot;BoxWindow&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">subwindow_type</span> <span class="o">=</span> <span class="s2">&quot;BallWindow&quot;</span>
+    <span class="n">param_max</span> <span class="o">=</span> <span class="n">subwindow_parameter_max</span><span class="p">(</span><span class="n">window_max</span><span class="p">,</span> <span class="n">subwindow_type</span><span class="o">=</span><span class="n">subwindow_type</span><span class="p">)</span>
+    <span class="n">param_min</span> <span class="o">=</span> <span class="n">subwindow_parameter_max</span><span class="p">(</span><span class="n">window_min</span><span class="p">,</span> <span class="n">subwindow_type</span><span class="o">=</span><span class="n">subwindow_type</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">param_max</span> <span class="o">&lt;</span> <span class="n">param_min</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;window_min should be bigger than window_max.&quot;</span><span class="p">)</span>
+    <span class="n">m_threshold</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">param_max</span> <span class="o">-</span> <span class="n">param_min</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">m_threshold</span></div>
+
+
+<span class="k">def</span> <span class="nf">_select_structure_factor_estimator</span><span class="p">(</span><span class="n">point_pattern</span><span class="p">,</span> <span class="n">estimator</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="n">sf</span> <span class="o">=</span> <span class="n">StructureFactor</span><span class="p">(</span><span class="n">point_pattern</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">estimator</span> <span class="o">==</span> <span class="s2">&quot;scattering_intensity&quot;</span><span class="p">:</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">estimated_sf_k</span> <span class="o">=</span> <span class="n">sf</span><span class="o">.</span><span class="n">scattering_intensity</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">estimator</span> <span class="o">==</span> <span class="s2">&quot;tapered_estimator&quot;</span><span class="p">:</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">estimated_sf_k</span> <span class="o">=</span> <span class="n">sf</span><span class="o">.</span><span class="n">tapered_estimator</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">estimator</span> <span class="o">==</span> <span class="s2">&quot;bartlett_isotropic_estimator&quot;</span><span class="p">:</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">estimated_sf_k</span> <span class="o">=</span> <span class="n">sf</span><span class="o">.</span><span class="n">bartlett_isotropic_estimator</span><span class="p">(</span><span class="n">k_norm</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">estimator</span> <span class="o">==</span> <span class="s2">&quot;quadrature_estimator_isotropic&quot;</span><span class="p">:</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">estimated_sf_k</span> <span class="o">=</span> <span class="n">sf</span><span class="o">.</span><span class="n">quadrature_estimator_isotropic</span><span class="p">(</span><span class="n">k_norm</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;Available estimators: &#39;scattering_intensity&#39;, &#39;tapered_estimator&#39;, &#39;bartlett_isotropic_estimator&#39;, &#39;quadrature_estimator_isotropic&#39;. &quot;</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">estimated_sf_k</span>
+
+
+<span class="k">def</span> <span class="nf">_poisson_rv</span><span class="p">(</span><span class="n">mean_poisson</span><span class="p">,</span> <span class="n">threshold</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+
+    <span class="n">m</span> <span class="o">=</span> <span class="n">poisson</span><span class="o">.</span><span class="n">rvs</span><span class="p">(</span><span class="n">mu</span><span class="o">=</span><span class="n">mean_poisson</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">while</span> <span class="n">m</span> <span class="o">&gt;</span> <span class="n">threshold</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Re-sample M; current M= &quot;</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="s2">&quot;, threshold=&quot;</span><span class="p">,</span> <span class="n">threshold</span><span class="p">)</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">poisson</span><span class="o">.</span><span class="n">rvs</span><span class="p">(</span><span class="n">mu</span><span class="o">=</span><span class="n">mean_poisson</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">m</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021-2022, Diala Hawat.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

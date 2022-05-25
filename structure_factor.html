@@ -22,8 +22,8 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Hyperuniformity" href="hyperuniformity.html" />
-    <link rel="prev" title="Welcome to structure-factor’s documentation:" href="index.html" /> 
+    <link rel="next" title="Tapers" href="tapers.html" />
+    <link rel="prev" title="Spatial windows" href="spatial_windows.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -42,16 +42,17 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Structure factor</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hyperuniformity.html">Hyperuniformity</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tapered_estimators.html">Tapered estimators</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tapered_estimators_isotropic.html">Tapered isotropic estimators</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tapers.html">Tapers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="transforms.html">Transforms</a></li>
-<li class="toctree-l1"><a class="reference internal" href="point_processes.html">Point processes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multiscale_estimators.html">Multiscale estimators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pair_correlation_function.html">Pair correlation function</a></li>
 <li class="toctree-l1"><a class="reference internal" href="point_pattern.html">Point pattern</a></li>
+<li class="toctree-l1"><a class="reference internal" href="point_processes.html">Point processes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="spatial_windows.html">Spatial windows</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Structure factor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tapers.html">Tapers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tapered_estimators.html">Tapered estimators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tapered_estimators_isotropic.html">Tapered isotropic estimators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transforms.html">Transforms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utils.html">Utils</a></li>
 <li class="toctree-l1"><a class="reference internal" href="plotting.html">Plotting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="bibliography/index.html">Bibliography</a></li>
@@ -112,7 +113,7 @@
 <div class="math notranslate nohighlight">
 \[S(\mathbf{k}) = 1 + \rho \mathcal{F}(g-1)(\mathbf{k}),\]</div>
 <p>where <span class="math notranslate nohighlight">\(\mathcal{F}\)</span> denotes the Fourier transform, <span class="math notranslate nohighlight">\(g\)</span> the pair correlation function of <span class="math notranslate nohighlight">\(\mathcal{X}\)</span>, <span class="math notranslate nohighlight">\(\mathbf{k}\)</span> a wavevector of <span class="math notranslate nohighlight">\(\mathbb{R}^d\)</span>.
-For more details we refer to <span id="id4">[<a class="reference internal" href="bibliography/index.html#id4" title="Diala Hawat, Guillaume Gautier, Rémi Bardenet, and Raphaël Lachièze-Rey. On estimating the structure factor of a point process, with applications to hyperuniformity. arXiv preprint, 2022. arXiv: 2203.08749.">HGBLachiezeR22</a>]</span>, (Section 2) or <span id="id5">[<a class="reference internal" href="bibliography/index.html#id10" title="S. Torquato. Hyperuniform states of matter. Physics Reports, 2018. doi:10.1016/j.physrep.2018.03.001.">Tor18</a>]</span>, (Section 2.1, equation (13)).</p>
+For more details we refer to <span id="id4">[<a class="reference internal" href="bibliography/index.html#id4" title="Diala Hawat, Guillaume Gautier, Rémi Bardenet, and Raphaël Lachièze-Rey. On estimating the structure factor of a point process, with applications to hyperuniformity. arXiv preprint, 2022. arXiv: 2203.08749.">HGBLachiezeR22</a>]</span>, (Section 2) or <span id="id5">[<a class="reference internal" href="bibliography/index.html#id11" title="S. Torquato. Hyperuniform states of matter. Physics Reports, 2018. doi:10.1016/j.physrep.2018.03.001.">Tor18</a>]</span>, (Section 2.1, equation (13)).</p>
 </div></div><dl class="py method">
 <dt class="sig sig-object py" id="structure_factor.structure_factor.StructureFactor.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">point_pattern</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/structure_factor/structure_factor.html#StructureFactor.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#structure_factor.structure_factor.StructureFactor.__init__" title="Permalink to this definition"></a></dt>
@@ -515,10 +516,7 @@ J_{d/2 - 1}(k \|\mathbf{x}_j - \mathbf{x}_q\|_2).\end{split}\]</div>
 <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">(</span><span class="n">pad</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>(<a class="reference external" href="./code/structure_factor/hankel_quadrature.py">Source code</a>, <a class="reference external" href="./code/structure_factor/hankel_quadrature.png">png</a>, <a class="reference external" href="./code/structure_factor/hankel_quadrature.hires.png">hires.png</a>, <a class="reference external" href="./code/structure_factor/hankel_quadrature.pdf">pdf</a>)</p>
-<figure class="align-default">
-<img alt="_images/hankel_quadrature.png" class="plot-directive" src="_images/hankel_quadrature.png" />
-</figure>
+<p>(<a class="reference external" href="./code/structure_factor/hankel_quadrature.py">Source code</a>)</p>
 <div class="proof proof-type-definition" id="id18">
 
     <div class="proof-title">
@@ -635,8 +633,8 @@ For more details, we refer to <span id="id11">[<a class="reference internal" hre
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to structure-factor’s documentation:" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="hyperuniformity.html" class="btn btn-neutral float-right" title="Hyperuniformity" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="spatial_windows.html" class="btn btn-neutral float-left" title="Spatial windows" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="tapers.html" class="btn btn-neutral float-right" title="Tapers" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
