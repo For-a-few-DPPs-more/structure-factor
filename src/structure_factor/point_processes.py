@@ -81,7 +81,7 @@ class HomogeneousPoissonPointProcess(object):
             return val
 
         assert k.ndim <= 2
-        return np.full(k.shape[0], val)
+        return np.full(k.shape[0], 1.0)
 
     def generate_sample(self, window, seed=None):
         r"""Generate an exact sample of the point process restricted to the :math:`d` dimensional `window`.
