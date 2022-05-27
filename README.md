@@ -34,7 +34,7 @@
 
 for stationary and isotropic point processes.
 
-Please checkout the [documentation](https://for-a-few-dpps-more.github.io/structure-factor/) for more details.
+PPPlease checkout the [documentation](https://for-a-few-dpps-more.github.io/structure-factor/) for more details.
 
 ## Dependencies
 
