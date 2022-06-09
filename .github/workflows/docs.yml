@@ -24,28 +24,34 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout project
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Install Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v3
         with:
           python-version: "3.9"
 
       - name: Install R
-        uses: r-lib/actions/setup-r@v1
+        uses: r-lib/actions/setup-r@v2
         with:
-          r-version: "4.1.0"
+          r-version: "release"
+
+      - name: Install spatstat subpackages and extensions
+        run:
+          Rscript -e 'install.packages(c("spatstat.core", "spatstat.geom"))'
+          # ! spatstat.core is to be replaced by
+          # ! spatstat.model + spatstat.explore
+          # https://github.com/spatstat/spatstat
 
       - name: Install Poetry
         uses: snok/install-poetry@v1
-
         # with:
         #   virtualenvs-create: true
         #   virtualenvs-in-project: true
 
       - name: Load cached venv
         id: cached-poetry-dependencies
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: .venv
           key: venv-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}

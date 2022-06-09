@@ -25,6 +25,7 @@ jobs:
       matrix:
         os: ["ubuntu-latest", "macos-latest"]
         python-version: ["3.7", "3.8", "3.9"]
+        r-version: ["release"]
     runs-on: ${{ matrix.os }}
 
     # Steps represent a sequence of tasks that will be executed as part of the job
@@ -52,7 +53,6 @@ jobs:
 
       - name: Install Poetry
         uses: snok/install-poetry@v1
-
         # with:
         #   virtualenvs-create: true
         #   virtualenvs-in-project: true
