@@ -27,19 +27,28 @@ jobs:
         python-version: ["3.7", "3.8", "3.9"]
     runs-on: ${{ matrix.os }}
 
+    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: Checkout project
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Install Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v3
         with:
           python-version: ${{ matrix.python-version }}
 
       - name: Install R
-        uses: r-lib/actions/setup-r@v1
+        uses: r-lib/actions/setup-r@v2
         with:
-          r-version: "4.1.0"
+          r-version: ${{ matrix.r-version }}
+
+      - name: Install spatstat subpackages and extensions
+        run:
+          Rscript -e 'install.packages(c("spatstat.core", "spatstat.geom"))'
+          # ! spatstat.core is to be replaced by
+          # ! spatstat.model + spatstat.explore
+          # https://github.com/spatstat/spatstat
 
       - name: Install Poetry
         uses: snok/install-poetry@v1
@@ -50,7 +59,7 @@ jobs:
 
       - name: Load cached venv
         id: cached-poetry-dependencies
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: .venv
           key: venv-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
