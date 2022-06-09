@@ -22,6 +22,7 @@ on:
 jobs:
   test:
     strategy:
+      fail-fast: false # run all configs, avoid breaking when one fails
       matrix:
         os: ["ubuntu-latest", "macos-latest"]
         python-version: ["3.7", "3.8", "3.9"]
