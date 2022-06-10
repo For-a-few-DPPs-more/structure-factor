@@ -7,7 +7,7 @@ from structure_factor.hyperuniformity import (
     multiscale_test,
     subwindows,
 )
-from structure_factor.spatial_windows import BoxWindow
+from structure_factor.spatial_windows import BallWindow
 from structure_factor.point_processes import (
     GinibrePointProcess,
     HomogeneousPoissonPointProcess,
@@ -67,24 +67,23 @@ def test_hyperuniformity_class_ginibre(sf, expected_alpha):
 
 
 def test_multiscale_test_poisson_pp():
-    poisson = HomogeneousPoissonPointProcess(intensity=1 / np.pi)
-    nb_sample = 700
-    L = 160
-    l_0 = 40
-    mean_poisson = 90
-    window = BoxWindow([[-L / 2, L / 2]] * 2)
+    poisson = HomogeneousPoissonPointProcess(intensity=1 / (2*np.pi))
+    nb_sample = 100
+    R = 80
+    r_0 = 5
+    mean_poisson = 60
+    window = BallWindow(center=[0,0], radius=R)
     point_patterns = [
         poisson.generate_point_pattern(window=window) for _ in range(nb_sample)
     ]
-    subwindows_list, k = subwindows(window, subwindows_type="BoxWindow", param_0=l_0)
+    subwindows_list, k = subwindows(window, subwindows_type="BallWindow", param_0=r_0)
 
     summary2_si = multiscale_test(
         point_patterns,
-        estimator="scattering_intensity",
+        estimator="bartlett_isotropic_estimator",
         k_list=k,
         subwindows_list=subwindows_list,
         mean_poisson=mean_poisson,
         verbose=True,
     )
-    assert summary2_si["mean_Z"] - 3 * summary2_si["std_mean_Z"] > 0
-    assert summary2_si["mean_Z"] + 3 * summary2_si["std_mean_Z"] > 0
+    assert summary2_si["mean_Z"] - 2 * summary2_si["std_mean_Z"] > 0
