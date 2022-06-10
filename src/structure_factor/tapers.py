@@ -150,7 +150,7 @@ def multi_sinetaper_grid(d, p_component_max=2):
         p_component_max (int): Maximum component of the parameters :math:`p` of the family of tapers. Intuitively the number of taper used is :math:`P=\mathrm{p\_component\_max}^d`. Used only when ``tapers=None``. Defaults to 2.
 
     Returns:
-        list: List of taper `taper_p(p)` with :math:`p \in \{1, ..., p_component_max\}^d`.
+        list: List of taper `taper_p(p)` with :math:`p \in \{1, ..., p\_component\_max\}^d`.
     """
     params = product(*(range(1, p_component_max + 1) for _ in range(d)))
     return [SineTaper(p) for p in params]

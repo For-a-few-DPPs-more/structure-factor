@@ -345,19 +345,80 @@ class UnitBoxWindow(BoxWindow):
 
 
 def check_cubic_window(window):
-    """Check whether ``window`` is represents a cubic window.
+    """Check whether ``window`` is cubic.
 
     Args:
-        window (:py:class:`~structure_factor.spatial_windows.BoxWindow`):
+        window (:py:class:`~structure_factor.spatial_windows.BoxWindow`): Window to be checked.
 
-    Raises:
-        TypeError: ``window`` must be a :py:class:`~structure_factor.spatial_windows.BoxWindow`.
-        ValueError: ``window.bounds`` must have the same length.
+    Example:
+        .. literalinclude:: code/spatial_window/check_cubic_window.py
+            :language: python
+
     """
     if not isinstance(window, BoxWindow):
         raise TypeError("window must be an instance of BoxWindow.")
     lengths = np.diff(window.bounds, axis=1)
-    L = lengths[0]
-    if np.any(lengths != L):
+    if np.any(lengths != lengths[0]):
         raise ValueError("window should be a 'cubic' BoxWindow.")
     return None
+
+
+def check_centered_window(window):
+    """Check whether ``window`` is centered at the origin.
+
+    Args:
+        window (:py:class:`~structure_factor.spatial_windows.AbstractSpatialWindow`): Window to be checked.
+
+    Example:
+        .. literalinclude:: code/spatial_window/check_centered_window.py
+            :language: python
+
+    """
+    if isinstance(window, BoxWindow):
+        if np.sum(window.bounds) != 0:
+            raise ValueError(
+                "window is not centered at the origin. Hint: use a centered window."
+            )
+    if isinstance(window, BallWindow):
+        if any(window.center != 0):
+            raise ValueError(
+                "window is not centered at the origin. Hint: use a centered window."
+            )
+    return None
+
+
+def subwindow_parameter_max(window, subwindow_type="BoxWindow"):
+    """
+    Return the parameter i.e., lengthside (resp. radius) of the largest cubic (resp. ball)  subwindow of ``window``.
+
+    Args:
+        window (:py:class:`~structure_factor.spatial_windows.AbstractSpatialWindow`): BoxWindow or BallWindow centered at the origin.
+        subwindow_type (str, optional): Type of the subwindow ("BoxWindow" or "BallWindow"). Defaults to "BoxWindow".
+
+
+    Returns:
+        float : Parameter of the largest subwindow of ``window``.
+
+    Example:
+        .. plot:: code/spatial_window/subwindow_param_max.py
+            :include-source: True
+            :align: center
+    """
+    if subwindow_type not in ["BoxWindow", "BallWindow"]:
+        raise ValueError(
+            "The available subwindow types are BallWindow or BoxWindow. Hint: the parameter corresponding to the window type must be 'BallWindow' or 'BoxWindow'. "
+        )
+    check_centered_window(window)
+    # window parameter
+    if isinstance(window, BallWindow):
+        if subwindow_type == "BallWindow":
+            param_max = window.radius
+        else:
+            param_max = window.radius * 2 / np.sqrt(2)
+            # length side of the BoxWindow
+    elif isinstance(window, BoxWindow):
+        if subwindow_type == "BallWindow":
+            param_max = np.min(np.diff(window.bounds)) / 2
+        else:
+            param_max = np.min(np.diff(window.bounds))
+    return param_max

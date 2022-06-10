@@ -8,7 +8,7 @@
 [![Python >=3.7.1,<3.10](https://img.shields.io/badge/python->=3.7.1,<3.10-blue.svg)](https://www.python.org/downloads/release/python-371/)
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](./notebooks)
 
-> Approximate the structure factor of a stationary point process, test its effective hyperuniformity, and identify its class of hyperuniformity.
+> Approximate the structure factor of a stationary point process, test its hyperuniformity, and identify its class of hyperuniformity.
 
 - [structure-factor](#structure-factor)
   - [Introduction](#introduction)
@@ -29,8 +29,8 @@
 
 `structure-factor` is an open-source Python project which currently collects
 
-- various estimators of the structure factor,
-- and several diagnostics of hyperuniformity,
+- various estimators of the structure factor
+- several diagnostics of hyperuniformity
 
 for stationary and isotropic point processes.
 
@@ -158,7 +158,9 @@ We wrote a companion paper to `structure-factor`,
 
   [On estimating the structure factor of a point process, with applications to hyperuniformity](https://arxiv.org/abs/2203.08749)
 
-where we provided rigorous mathematical derivations of the different estimators of the structure factor of a stationary point process and showcased `structure-factor` on different point processes. We also compared numerically the accuracy of the estimators.
+where we provided rigorous mathematical derivations of the structure factor's estimators of a stationary point process and showcased `structure-factor` on different point processes.
+We also contribute a new asymptotically valid statistical test of hyperuniformity.
+Finally, we compared numerically the accuracy of the estimators.
 
 ### Citation
 
@@ -168,7 +170,7 @@ If you use `structure-factor`, please consider citing it with this piece of BibT
   @article{HGBLR:22,
     arxivid = {2203.08749},
     journal = {arXiv preprint},
-    author  = {Hawat, Diala and Gautier, Guillaume and Bardenet, Rémi and Lachièze-Rey, Raphaël},
+    author  = {Hawat, Diala and Gautier, Guillaume and Bardenet, R{\'{e}}mi and Lachi{\`{e}}ze-Rey, Rapha{\"{e}}l},
     note    = {arXiv: 2203.08749},
     title   = {On estimating the structure factor of a point process, with applications to hyperuniformity},
     year    = {2022},

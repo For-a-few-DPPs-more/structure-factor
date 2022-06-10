@@ -76,14 +76,14 @@ def bartlett_estimator(k_norm, point_pattern):
 
 
 def allowed_k_norm_bartlett_isotropic(dimension, radius, nb_values=60):
-    r"""Allowed wavenumbers of the Bartlett isotropic estimator, for a ``d``-dimensional point process observed in a ball window with radius ``radius``.
+    r"""Allowed wavenumbers of the Bartlett isotropic estimator, for a ``d``-dimensional point process observed in a ball window with radius ``radius``. Only for even values of ``d``.
 
     .. warning::
 
         This method is only available when the ambient dimension is even.
 
     Args:
-        dimension (int): Dimension of the underlying space.
+        dimension (int): Dimension (even number) of the underlying space.
         radius (float): Radius of the observation window.
         nb_values (int): Number of required allowed wavenumbers. Defaults to 60.
 

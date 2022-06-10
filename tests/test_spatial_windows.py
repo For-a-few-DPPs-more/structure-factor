@@ -1,3 +1,4 @@
+from inspect import Parameter
 import numpy as np
 import pytest
 
@@ -7,6 +8,8 @@ from structure_factor.spatial_windows import (
     UnitBallWindow,
     UnitBoxWindow,
     check_cubic_window,
+    check_centered_window,
+    subwindow_parameter_max,
 )
 from structure_factor.utils import get_random_number_generator
 
@@ -220,3 +223,44 @@ def test_convert_to_spatstat_owin__2D_box_window(bounds):
     window_r = window.to_spatstat_owin()
     window_r_bounds = np.array([window_r[1], window_r[2]])
     np.testing.assert_array_equal(window_r_bounds, window.bounds)
+
+
+@pytest.mark.parametrize(
+    "window",
+    (
+        [BoxWindow([[-2, 2]] * 4)],
+        [BoxWindow([-2, 2])],
+        [BallWindow(center=[0, 0], radius=10)],
+        [BallWindow(center=[0], radius=10)],
+    ),
+)
+def test_check_centered_window(window):
+    return check_centered_window(window)
+
+
+@pytest.mark.parametrize(
+    "window",
+    [
+        (BoxWindow([[-1, 2], [-2.5, 3]])),
+        (BoxWindow([[-2.5, 3]])),
+        (BallWindow(center=[-1, 1], radius=5)),
+        (BallWindow(center=[0, 0, 1], radius=4)),
+    ],
+)
+def test_check_centered_window_raises_error(window):
+    with pytest.raises(ValueError):
+        check_centered_window(window)
+
+
+@pytest.mark.parametrize(
+    "window, type, expected",
+    [
+        (BoxWindow(bounds=[[-2, 2]] * 4), "BoxWindow", 4),
+        (BoxWindow(bounds=[[-6, 6]] * 4), "BallWindow", 6),
+        (BallWindow(center=[0, 0], radius=18), "BallWindow", 18),
+        (BallWindow(center=[0, 0], radius=18), "BoxWindow", 36 / np.sqrt(2)),
+    ],
+)
+def test_subwindow_parameter_max(window, type, expected):
+    result = subwindow_parameter_max(window, type)
+    np.testing.assert_equal(result, expected)
