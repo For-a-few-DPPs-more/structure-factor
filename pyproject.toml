@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "structure-factor"
-version = "2.0.1"
-description = "Approximate the structure factor of a stationary point process, test its effective hyperuniformity, and identify its class of hyperuniformity."
+version = "2.1.1"
+description = "Approximate the structure factor of a stationary point process, test its hyperuniformity, and identify its class of hyperuniformity."
 license = "MIT"
 authors = [
     "Diala Hawat <dialahawat7@gmail.com>",
