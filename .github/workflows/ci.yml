@@ -47,9 +47,7 @@ jobs:
 
       - name: Install spatstat subpackages and extensions
         run:
-          Rscript -e 'install.packages(c("spatstat.core", "spatstat.geom"))'
-          # ! spatstat.core is to be replaced by
-          # ! spatstat.model + spatstat.explore
+          Rscript -e 'install.packages(c("spatstat.explore", "spatstat.geom"))'
           # https://github.com/spatstat/spatstat
 
       - name: Install Poetry
