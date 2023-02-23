@@ -28,7 +28,7 @@ def estimate(point_pattern, method="fv", install_spatstat=False, **params):
     Args:
         point_pattern (:py:class:`~structure_factor.point_pattern.PointPattern`): Realization of the underlying point process.
 
-        method (str, optional): Trigger the use of the routine `pcf.ppp <https://www.rdocumentation.org/packages/spatstat/versions/1.64-1/topics/pcf.ppp>`_ or `pcf.fv <https://www.rdocumentation.org/packages/spatstat.core/versions/2.3-1/topics/pcf.fv>`_ according to the value ``"ppp"`` or ``"fv"``. These 2 methods approximate the pair correlation function of a point process from one realization encapsulated in ``point_pattern``. For more details see :cite:`Rbook15`. Defaults to ``"fv"``.
+        method (str, optional): Trigger the use of the routine `pcf.ppp <https://www.rdocumentation.org/packages/spatstat.explore/versions/3.0-6/topics/pcf.ppp>`_ or `pcf.fv <https://www.rdocumentation.org/packages/spatstat.explore/versions/3.0-6/topics/pcf.fv>`_ according to the value ``"ppp"`` or ``"fv"``. These 2 methods approximate the pair correlation function of a point process from one realization encapsulated in ``point_pattern``. For more details see :cite:`Rbook15`. Defaults to ``"fv"``.
 
         install_spatstat (bool, optional): If ``True``, the `R` package `spatstat <https://github.com/spatstat/spatstat>`_  will be automatically updated or installed (if not present) on your local machine, see also `spatstat-interface <https://github.com/For-a-few-DPPs-more/spatstat-interface>`_. Note that this requires the installation of the `R programming language <https://cran.r-project.org/>`_.
 
@@ -37,16 +37,16 @@ def estimate(point_pattern, method="fv", install_spatstat=False, **params):
 
             - if ``method = "ppp"``
 
-                - keyword arguments of `spastat.core.pcf.ppp <https://rdrr.io/cran/spatstat.core/man/pcf.ppp.html>`_, ex: r, correction ...
+                - keyword arguments of `spastat.explore.pcf.ppp <https://www.rdocumentation.org/packages/spatstat.explore/versions/3.0-6/topics/pcf.ppp>`_, ex: r, correction ...
 
             - if ``method = "fv"``
 
-                - **Kest** = dict(keyword arguments of `spastat.core.Kest <https://rdrr.io/github/spatstat/spatstat.core/man/Kest.html>`_), ex: rmax ...
+                - **Kest** = dict(keyword arguments of `spastat.explore.Kest <https://www.rdocumentation.org/packages/spatstat.explore/versions/3.0-6/topics/Kest>`_), ex: rmax ...
 
-                - **fv** = dict(keyword arguments of `spastat.core.pcf.fv <https://rdrr.io/cran/spatstat.core/man/pcf.fv.html>`_), ex: method, spar ...
+                - **fv** = dict(keyword arguments of `spastat.explore.pcf.fv <https://www.rdocumentation.org/packages/spatstat.explore/versions/3.0-6/topics/pcf.fv>`_), ex: method, spar ...
 
     Returns:
-        pandas.DataFrame: output of `spatstat.core.pcf.ppp <https://www.rdocumentation.org/packages/spatstat.core/versions/2.1-2/topics/pcf.ppp>`_ or `spatsta.core.pcf.fv <https://www.rdocumentation.org/packages/spatstat.core/versions/2.1-2/topics/pcf.fv>`_. The first column of the DataFrame is the set of radii on which the pair correlation function was approximated. The others correspond to the approximated pair correlation function with different edge corrections.
+        pandas.DataFrame: output of `spastat.explore.pcf.ppp <https://www.rdocumentation.org/packages/spatstat.explore/versions/3.0-6/topics/pcf.ppp>`_ or `spastat.explore.pcf.fv <https://www.rdocumentation.org/packages/spatstat.explore/versions/3.0-6/topics/pcf.fv>`_. The first column of the DataFrame is the set of radii on which the pair correlation function was approximated. The others correspond to the approximated pair correlation function with different edge corrections.
 
     Example:
         .. plot:: code/pair_correlation_function/estimate_pcf.py
@@ -74,9 +74,9 @@ def estimate(point_pattern, method="fv", install_spatstat=False, **params):
     assert point_pattern.dimension in (2, 3)
     assert method in ("ppp", "fv")
 
-    # core, geom and other subpackages are updated if install_spatstat
+    # explore, geom and other subpackages are updated if install_spatstat
     spatstat = SpatstatInterface(update=install_spatstat)
-    spatstat.import_package("core", "geom", update=False)
+    spatstat.import_package("explore", "geom", update=False)
 
     data = point_pattern.convert_to_spatstat_ppp()
 
@@ -84,7 +84,7 @@ def estimate(point_pattern, method="fv", install_spatstat=False, **params):
         r = params.get("r", None)
         if r is not None and isinstance(r, np.ndarray):
             params["r"] = robjects.vectors.FloatVector(r)
-        pcf = spatstat.core.pcf_ppp(data, **params)
+        pcf = spatstat.explore.pcf_ppp(data, **params)
 
     elif method == "fv":
         params_Kest = params.get("Kest", dict())
@@ -92,9 +92,9 @@ def estimate(point_pattern, method="fv", install_spatstat=False, **params):
         if Kest_r is not None and isinstance(Kest_r, np.ndarray):
             params_Kest["r"] = robjects.vectors.FloatVector(Kest_r)
 
-        k_ripley = spatstat.core.Kest(data, **params_Kest)
+        k_ripley = spatstat.explore.Kest(data, **params_Kest)
         params_fv = params.get("fv", dict())
-        pcf = spatstat.core.pcf_fv(k_ripley, **params_fv)
+        pcf = spatstat.explore.pcf_fv(k_ripley, **params_fv)
 
     pcf_pd = pd.DataFrame(np.array(pcf).T, columns=pcf.names)
     pcf_pd.drop(columns="theo", inplace=True)
