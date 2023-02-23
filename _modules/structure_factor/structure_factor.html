@@ -27,11 +27,15 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../index.html" class="icon icon-home"> structure-factor
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            structure-factor
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -67,9 +71,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../index.html">Module code</a> &raquo;</li>
-      <li>structure_factor.structure_factor</li>
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">structure_factor.structure_factor</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -121,7 +125,7 @@
 
 
 <div class="viewcode-block" id="StructureFactor"><a class="viewcode-back" href="../../structure_factor.html#structure_factor.structure_factor.StructureFactor">[docs]</a><span class="k">class</span> <span class="nc">StructureFactor</span><span class="p">:</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Implementation of various estimators of the structure factor :math:`S(\mathbf{k})` of a stationary point process given one realization encapsulated in the :py:attr:`~structure_factor.structure_factor.StructureFactor.point_pattern` attribute.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Implementation of various estimators of the structure factor :math:`S(\mathbf{k})` of a stationary point process given one realization encapsulated in the :py:attr:`~structure_factor.structure_factor.StructureFactor.point_pattern` attribute.</span>
 
 <span class="sd">    .. todo::</span>
 
@@ -140,7 +144,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="StructureFactor.__init__"><a class="viewcode-back" href="../../structure_factor.html#structure_factor.structure_factor.StructureFactor.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">point_pattern</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Initialize StructureFactor from ``point_pattern``.</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Initialize StructureFactor from ``point_pattern``.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            point_pattern (:py:class:`~structure_factor.point_pattern.PointPattern`): Object of type point pattern which contains a realization ``point_pattern.points`` of a point process, the window where the points were simulated ``point_pattern.window`` and (optionally) the intensity of the point process ``point_pattern.intensity``.</span>
@@ -150,11 +154,11 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">dimension</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Ambient dimension of the underlying point process.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Ambient dimension of the underlying point process.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">point_pattern</span><span class="o">.</span><span class="n">dimension</span>
 
 <div class="viewcode-block" id="StructureFactor.scattering_intensity"><a class="viewcode-back" href="../../structure_factor.html#structure_factor.structure_factor.StructureFactor.scattering_intensity">[docs]</a>    <span class="k">def</span> <span class="nf">scattering_intensity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">debiased</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">direct</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the scattering intensity :math:`\widehat{S}_{\mathrm{SI}}` estimate of the structure factor from one realization of a stationary point process encapsulated in the :py:attr:`~structure_factor.structure_factor.StructureFactor.point_pattern` attribute.</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the scattering intensity :math:`\widehat{S}_{\mathrm{SI}}` estimate of the structure factor from one realization of a stationary point process encapsulated in the :py:attr:`~structure_factor.structure_factor.StructureFactor.point_pattern` attribute.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            k (numpy.ndarray, optional): Array of size :math:`n \times d`  where :math:`d` is the dimension of the space, and :math:`n` is the number of wavevectors where the scattering intensity is evaluated. If ``k=None`` and ``debiased=True``, the scattering intensity will be evaluated on the corresponding set of allowed wavevectors; In this case, the keyword arguments ``k_max``, and ``meshgrid_shape`` can be used. Defaults to None.</span>
@@ -227,7 +231,7 @@
 
     <span class="c1"># todo consider unpacking *tapers to cover single/multiple taper/s at once?</span>
 <div class="viewcode-block" id="StructureFactor.tapered_estimator"><a class="viewcode-back" href="../../structure_factor.html#structure_factor.structure_factor.StructureFactor.tapered_estimator">[docs]</a>    <span class="k">def</span> <span class="nf">tapered_estimator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">tapers</span><span class="p">,</span> <span class="n">debiased</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">direct</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the (multi)tapered estimator parametrized by ``tapers`` of the structure factor of a stationary point process given a realization encapsulated in ``point_pattern``.</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the (multi)tapered estimator parametrized by ``tapers`` of the structure factor of a stationary point process given a realization encapsulated in ``point_pattern``.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            k (numpy.ndarray): Array of size :math:`n \times d`  where :math:`d` is the dimension of the space, and :math:`n` is the number of wavevectors where the tapered estimator is evaluated.</span>
@@ -300,7 +304,7 @@
         <span class="k">return</span> <span class="n">k</span><span class="p">,</span> <span class="n">estimated_sf_k</span></div>
 
 <div class="viewcode-block" id="StructureFactor.bartlett_isotropic_estimator"><a class="viewcode-back" href="../../structure_factor.html#structure_factor.structure_factor.StructureFactor.bartlett_isotropic_estimator">[docs]</a>    <span class="k">def</span> <span class="nf">bartlett_isotropic_estimator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k_norm</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute Bartlett&#39;s isotropic estimator :math:`\widehat{S}_{\mathrm{BI}}` from one realization of an isotropic point process encapsulated in the :py:attr:`~structure_factor.structure_factor.StructureFactor.point_pattern` attribute.</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute Bartlett&#39;s isotropic estimator :math:`\widehat{S}_{\mathrm{BI}}` from one realization of an isotropic point process encapsulated in the :py:attr:`~structure_factor.structure_factor.StructureFactor.point_pattern` attribute.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            k_norm (numpy.ndarray, optional): Array of wavenumbers of size :math:`n` where the estimator is to be evaluated. Defaults to None.</span>
@@ -369,7 +373,7 @@
         <span class="bp">self</span><span class="p">,</span> <span class="n">pcf</span><span class="p">,</span> <span class="n">k_norm</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;BaddourChouinard&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span>
     <span class="p">):</span>
         <span class="c1"># ? mettre k_nom avant pcf et donner le choix à l&#39;utilisateur d&#39;enter un None</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Approximate the structure factor of a stationary isotropic point process at values ``k_norm``, given its pair correlation function ``pcf``, using a quadrature ``method``.</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Approximate the structure factor of a stationary isotropic point process at values ``k_norm``, given its pair correlation function ``pcf``, using a quadrature ``method``.</span>
 
 <span class="sd">        .. warning::</span>
 
@@ -478,7 +482,7 @@
         <span class="n">file_name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
         <span class="o">**</span><span class="n">binning_params</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Display the outputs of the method :py:meth:`~structure_factor.structure_factor.StructureFactor.quadrature_estimator_isotropic`, or :py:meth:`~structure_factor.structure_factor.StructureFactor.tapered_estimator_isotropic`.</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Display the outputs of the method :py:meth:`~structure_factor.structure_factor.StructureFactor.quadrature_estimator_isotropic`, or :py:meth:`~structure_factor.structure_factor.StructureFactor.tapered_estimator_isotropic`.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            k_norm (numpy.ndarray): Vector of wavenumbers (i.e., norms of wavevectors) on which the structure factor has been approximated.</span>
@@ -534,7 +538,7 @@
         <span class="n">window_res</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">binning_params</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Display the outputs of the method :py:meth:`~structure_factor.structure_factor.StructureFactor.scattering_intensity`, :py:meth:`~structure_factor.structure_factor.StructureFactor.tapered_estimator`.</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Display the outputs of the method :py:meth:`~structure_factor.structure_factor.StructureFactor.scattering_intensity`, :py:meth:`~structure_factor.structure_factor.StructureFactor.tapered_estimator`.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            k (numpy.ndarray): Wavevector(s) on which the scattering intensity has been approximated. Array of size :math:`n \times d`  where :math:`d` is the dimension of the space, and :math:`n` is the number of wavevectors.</span>

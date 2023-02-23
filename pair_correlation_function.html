@@ -31,11 +31,15 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="index.html" class="icon icon-home"> structure-factor
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            structure-factor
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -71,8 +75,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Pair correlation function</li>
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Pair correlation function</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/For-a-few-DPPs-more/structure-factor/blob/main/docs/pair_correlation_function.rst" class="fa fa-github"> Edit on GitHub</a>
       </li>
@@ -102,7 +106,7 @@
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>point_pattern</strong> (<a class="reference internal" href="point_pattern.html#structure_factor.point_pattern.PointPattern" title="structure_factor.point_pattern.PointPattern"><code class="xref py py-class docutils literal notranslate"><span class="pre">PointPattern</span></code></a>) – Realization of the underlying point process.</p></li>
-<li><p><strong>method</strong> (<em>str</em><em>, </em><em>optional</em>) – Trigger the use of the routine <a class="reference external" href="https://www.rdocumentation.org/packages/spatstat/versions/1.64-1/topics/pcf.ppp">pcf.ppp</a> or <a class="reference external" href="https://www.rdocumentation.org/packages/spatstat.core/versions/2.3-1/topics/pcf.fv">pcf.fv</a> according to the value <code class="docutils literal notranslate"><span class="pre">&quot;ppp&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;fv&quot;</span></code>. These 2 methods approximate the pair correlation function of a point process from one realization encapsulated in <code class="docutils literal notranslate"><span class="pre">point_pattern</span></code>. For more details see <span id="id3">[<a class="reference internal" href="bibliography/index.html#id9" title="Adrian Baddeley, Ege Rubak, and Rolf Turner. Spatial Point Patterns: Methodology and Applications with R. Chapman and Hall/CRC Press, London, 2015.">BRT15</a>]</span>. Defaults to <code class="docutils literal notranslate"><span class="pre">&quot;fv&quot;</span></code>.</p></li>
+<li><p><strong>method</strong> (<em>str</em><em>, </em><em>optional</em>) – Trigger the use of the routine <a class="reference external" href="https://www.rdocumentation.org/packages/spatstat.explore/versions/3.0-6/topics/pcf.ppp">pcf.ppp</a> or <a class="reference external" href="https://www.rdocumentation.org/packages/spatstat.explore/versions/3.0-6/topics/pcf.fv">pcf.fv</a> according to the value <code class="docutils literal notranslate"><span class="pre">&quot;ppp&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;fv&quot;</span></code>. These 2 methods approximate the pair correlation function of a point process from one realization encapsulated in <code class="docutils literal notranslate"><span class="pre">point_pattern</span></code>. For more details see <span id="id3">[<a class="reference internal" href="bibliography/index.html#id9" title="Adrian Baddeley, Ege Rubak, and Rolf Turner. Spatial Point Patterns: Methodology and Applications with R. Chapman and Hall/CRC Press, London, 2015.">BRT15</a>]</span>. Defaults to <code class="docutils literal notranslate"><span class="pre">&quot;fv&quot;</span></code>.</p></li>
 <li><p><strong>install_spatstat</strong> (<em>bool</em><em>, </em><em>optional</em>) – <p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the <cite>R</cite> package <a class="reference external" href="https://github.com/spatstat/spatstat">spatstat</a>  will be automatically updated or installed (if not present) on your local machine, see also <a class="reference external" href="https://github.com/For-a-few-DPPs-more/spatstat-interface">spatstat-interface</a>. Note that this requires the installation of the <a class="reference external" href="https://cran.r-project.org/">R programming language</a>.</p>
 </p></li>
 </ul>
@@ -112,15 +116,15 @@
 <li><p>if <code class="docutils literal notranslate"><span class="pre">method</span> <span class="pre">=</span> <span class="pre">&quot;ppp&quot;</span></code></p>
 <blockquote>
 <div><ul class="simple">
-<li><p>keyword arguments of <a class="reference external" href="https://rdrr.io/cran/spatstat.core/man/pcf.ppp.html">spastat.core.pcf.ppp</a>, ex: r, correction …</p></li>
+<li><p>keyword arguments of <a class="reference external" href="https://www.rdocumentation.org/packages/spatstat.explore/versions/3.0-6/topics/pcf.ppp">spastat.explore.pcf.ppp</a>, ex: r, correction …</p></li>
 </ul>
 </div></blockquote>
 </li>
 <li><p>if <code class="docutils literal notranslate"><span class="pre">method</span> <span class="pre">=</span> <span class="pre">&quot;fv&quot;</span></code></p>
 <blockquote>
 <div><ul class="simple">
-<li><p><strong>Kest</strong> = dict(keyword arguments of <a class="reference external" href="https://rdrr.io/github/spatstat/spatstat.core/man/Kest.html">spastat.core.Kest</a>), ex: rmax …</p></li>
-<li><p><strong>fv</strong> = dict(keyword arguments of <a class="reference external" href="https://rdrr.io/cran/spatstat.core/man/pcf.fv.html">spastat.core.pcf.fv</a>), ex: method, spar …</p></li>
+<li><p><strong>Kest</strong> = dict(keyword arguments of <a class="reference external" href="https://www.rdocumentation.org/packages/spatstat.explore/versions/3.0-6/topics/Kest">spastat.explore.Kest</a>), ex: rmax …</p></li>
+<li><p><strong>fv</strong> = dict(keyword arguments of <a class="reference external" href="https://www.rdocumentation.org/packages/spatstat.explore/versions/3.0-6/topics/pcf.fv">spastat.explore.pcf.fv</a>), ex: method, spar …</p></li>
 </ul>
 </div></blockquote>
 </li>
@@ -128,7 +132,8 @@
 </p>
 </dd>
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>output of <a class="reference external" href="https://www.rdocumentation.org/packages/spatstat.core/versions/2.1-2/topics/pcf.ppp">spatstat.core.pcf.ppp</a> or <a class="reference external" href="https://www.rdocumentation.org/packages/spatstat.core/versions/2.1-2/topics/pcf.fv">spatsta.core.pcf.fv</a>. The first column of the DataFrame is the set of radii on which the pair correlation function was approximated. The others correspond to the approximated pair correlation function with different edge corrections.</p>
+<dd class="field-odd"><p><p>output of <a class="reference external" href="https://www.rdocumentation.org/packages/spatstat.explore/versions/3.0-6/topics/pcf.ppp">spastat.explore.pcf.ppp</a> or <a class="reference external" href="https://www.rdocumentation.org/packages/spatstat.explore/versions/3.0-6/topics/pcf.fv">spastat.explore.pcf.fv</a>. The first column of the DataFrame is the set of radii on which the pair correlation function was approximated. The others correspond to the approximated pair correlation function with different edge corrections.</p>
+</p>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p>pandas.DataFrame</p>
@@ -163,7 +168,7 @@
 <figure class="align-default">
 <img alt="_images/estimate_pcf.png" class="plot-directive" src="_images/estimate_pcf.png" />
 </figure>
-<div class="proof proof-type-definition" id="id9">
+<div class="proof proof-type-definition" id="id11">
 
     <div class="proof-title">
         <span class="proof-type">Definition </span>
@@ -174,7 +179,7 @@
 \[\mathbb{E} \bigg[ \sum_{\mathbf{x}, \mathbf{y} \in \mathcal{X}}^{\neq}
 f(\mathbf{x}, \mathbf{y}) \bigg] = \int_{\mathbb{R}^d \times \mathbb{R}^d} f(\mathbf{x}+\mathbf{y}, \mathbf{y})\rho^{2} g(\mathbf{x}) \mathrm{d} \mathbf{x} \mathrm{d}\mathbf{y},\]</div>
 <p>for any non-negative smooth function <span class="math notranslate nohighlight">\(f\)</span> with compact support.</p>
-<p>For more details, we refer to <span id="id6">[<a class="reference internal" href="bibliography/index.html#id4" title="Diala Hawat, Guillaume Gautier, Rémi Bardenet, and Raphaël Lachièze-Rey. On estimating the structure factor of a point process, with applications to hyperuniformity. arXiv preprint, 2022. arXiv: 2203.08749.">HGBLachiezeR22</a>]</span>, (Section 2).</p>
+<p>For more details, we refer to <span id="id8">[<a class="reference internal" href="bibliography/index.html#id4" title="Diala Hawat, Guillaume Gautier, Rémi Bardenet, and Raphaël Lachièze-Rey. On estimating the structure factor of a point process, with applications to hyperuniformity. arXiv preprint, 2022. arXiv: 2203.08749.">HGBLachiezeR22</a>]</span>, (Section 2).</p>
 </div></div><div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <ul class="simple">

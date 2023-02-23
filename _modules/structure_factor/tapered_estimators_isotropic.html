@@ -27,11 +27,15 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../index.html" class="icon icon-home"> structure-factor
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            structure-factor
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -67,9 +71,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../index.html">Module code</a> &raquo;</li>
-      <li>structure_factor.tapered_estimators_isotropic</li>
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">structure_factor.tapered_estimators_isotropic</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -92,7 +96,7 @@
 
 <span class="c1">#! care about case k=0</span>
 <div class="viewcode-block" id="bartlett_estimator"><a class="viewcode-back" href="../../tapered_estimators_isotropic.html#structure_factor.tapered_estimators_isotropic.bartlett_estimator">[docs]</a><span class="k">def</span> <span class="nf">bartlett_estimator</span><span class="p">(</span><span class="n">k_norm</span><span class="p">,</span> <span class="n">point_pattern</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute an estimation of the structure factor of a stationary isotropic point process from one realization encapsulated in ``point_pattern``, evaluated at ``k_norm``.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute an estimation of the structure factor of a stationary isotropic point process from one realization encapsulated in ``point_pattern``, evaluated at ``k_norm``.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        point_pattern (:py:class:`~structure_factor.point_pattern.PointPattern`): Realization of the underlying point process.</span>
@@ -157,7 +161,7 @@
 
 
 <div class="viewcode-block" id="allowed_k_norm_bartlett_isotropic"><a class="viewcode-back" href="../../tapered_estimators_isotropic.html#structure_factor.tapered_estimators_isotropic.allowed_k_norm_bartlett_isotropic">[docs]</a><span class="k">def</span> <span class="nf">allowed_k_norm_bartlett_isotropic</span><span class="p">(</span><span class="n">dimension</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="n">nb_values</span><span class="o">=</span><span class="mi">60</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Allowed wavenumbers of the Bartlett isotropic estimator, for a ``d``-dimensional point process observed in a ball window with radius ``radius``. Only for even values of ``d``.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Allowed wavenumbers of the Bartlett isotropic estimator, for a ``d``-dimensional point process observed in a ball window with radius ``radius``. Only for even values of ``d``.</span>
 
 <span class="sd">    .. warning::</span>
 

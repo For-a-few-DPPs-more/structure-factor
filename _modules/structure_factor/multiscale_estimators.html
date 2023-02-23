@@ -27,11 +27,15 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../index.html" class="icon icon-home"> structure-factor
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            structure-factor
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -67,9 +71,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../index.html">Module code</a> &raquo;</li>
-      <li>structure_factor.multiscale_estimators</li>
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">structure_factor.multiscale_estimators</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -104,7 +108,7 @@
     <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Sample from :math:`Z`  :cite:`HGBLR:22` using a PointPattern and a realization from the r.v. :math:`M`. See the definition of :math:`Z` below.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Sample from :math:`Z`  :cite:`HGBLR:22` using a PointPattern and a realization from the r.v. :math:`M`. See the definition of :math:`Z` below.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        point_pattern (:py:class:`~structure_factor.point_pattern.PointPattern`): An encapsulation of a realization of a point process, the observation window, and (optionally) the intensity of the point process.</span>
@@ -215,7 +219,7 @@
 
 
 <div class="viewcode-block" id="coupled_sum_estimator"><a class="viewcode-back" href="../../multiscale_estimators.html#structure_factor.multiscale_estimators.coupled_sum_estimator">[docs]</a><span class="k">def</span> <span class="nf">coupled_sum_estimator</span><span class="p">(</span><span class="n">y_list</span><span class="p">,</span> <span class="n">proba_list</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;The coupled sum estimator of :cite:`RhGl15`.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;The coupled sum estimator of :cite:`RhGl15`.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        y_list (list): List of :math:`M` realizations of the r.v. :math:`Y`.</span>
@@ -252,7 +256,7 @@
 <div class="viewcode-block" id="subwindows_list"><a class="viewcode-back" href="../../multiscale_estimators.html#structure_factor.multiscale_estimators.subwindows_list">[docs]</a><span class="k">def</span> <span class="nf">subwindows_list</span><span class="p">(</span>
     <span class="n">window</span><span class="p">,</span> <span class="n">subwindows_type</span><span class="o">=</span><span class="s2">&quot;BoxWindow&quot;</span><span class="p">,</span> <span class="n">param_0</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">param_max</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="kc">None</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Create a list of cubic (or ball)-shaped subwindows of a father window, with the associated minimum allowed wavevectors (or wavenumbers).</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a list of cubic (or ball)-shaped subwindows of a father window, with the associated minimum allowed wavevectors (or wavenumbers).</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        window (:py:class:`~structure_factor.spatial_windows.AbstractSpatialWindow`): Father window.</span>
@@ -322,7 +326,7 @@
 
 
 <div class="viewcode-block" id="m_threshold"><a class="viewcode-back" href="../../multiscale_estimators.html#structure_factor.multiscale_estimators.m_threshold">[docs]</a><span class="k">def</span> <span class="nf">m_threshold</span><span class="p">(</span><span class="n">window_min</span><span class="p">,</span> <span class="n">window_max</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Find the maximum number of integers ranging between the parameters (lengthside/radius) of ``window_min`` and the largest subwindow of ``window_max`` having the shape of ``window_min``.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Find the maximum number of integers ranging between the parameters (lengthside/radius) of ``window_min`` and the largest subwindow of ``window_max`` having the shape of ``window_min``.</span>
 <span class="sd">    In particular, it gives the maximum value of the r.v. :math:`M` that can be used to compute the :py:func:`~structure_factor.multiscale_estimators.multiscale_estimator` given the smallest and biggest subwindow.</span>
 
 <span class="sd">    Args:</span>

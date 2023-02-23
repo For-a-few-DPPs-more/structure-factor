@@ -27,11 +27,15 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../index.html" class="icon icon-home"> structure-factor
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            structure-factor
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -67,9 +71,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../index.html">Module code</a> &raquo;</li>
-      <li>structure_factor.spatial_windows</li>
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">structure_factor.spatial_windows</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -104,28 +108,28 @@
 
 
 <div class="viewcode-block" id="AbstractSpatialWindow"><a class="viewcode-back" href="../../spatial_windows.html#structure_factor.spatial_windows.AbstractSpatialWindow">[docs]</a><span class="k">class</span> <span class="nc">AbstractSpatialWindow</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">ABCMeta</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Encapsulate the notion of spatial window in :math:`\mathbb{R}^d`.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Encapsulate the notion of spatial window in :math:`\mathbb{R}^d`.&quot;&quot;&quot;</span>
 
     <span class="nd">@property</span>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">dimension</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return the ambient dimension of the corresponding window.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the ambient dimension of the corresponding window.&quot;&quot;&quot;</span>
 
     <span class="nd">@property</span>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">volume</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Compute the volume of the corresponding window.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute the volume of the corresponding window.&quot;&quot;&quot;</span>
 
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">point</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return True if :math:`d` dimensional vector ``point`` falls inside the corresponding :math:`d` dimensional window, otherwise return False.</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return True if :math:`d` dimensional vector ``point`` falls inside the corresponding :math:`d` dimensional window, otherwise return False.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            point (numpy.ndarray): :math:`d` dimensional vector to test.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="AbstractSpatialWindow.indicator_function"><a class="viewcode-back" href="../../spatial_windows.html#structure_factor.spatial_windows.AbstractSpatialWindow.indicator_function">[docs]</a>    <span class="k">def</span> <span class="nf">indicator_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the indicator function of the corresponding window evaluated at each of the :math:`n` ``points``.</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the indicator function of the corresponding window evaluated at each of the :math:`n` ``points``.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            points (numpy.ndarray): Vector of size :math:`d` or array of size :math:`n \times d` containing the point(s) to be tested.</span>
@@ -141,7 +145,7 @@
 
 <div class="viewcode-block" id="AbstractSpatialWindow.rand"><a class="viewcode-back" href="../../spatial_windows.html#structure_factor.spatial_windows.AbstractSpatialWindow.rand">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">rand</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Generate `n` points uniformly at random in the corresponding spatial window.</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Generate `n` points uniformly at random in the corresponding spatial window.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            n (int, optional): Number of points. Defaults to 1.</span>
@@ -155,7 +159,7 @@
 
 
 <div class="viewcode-block" id="BallWindow"><a class="viewcode-back" href="../../spatial_windows.html#structure_factor.spatial_windows.BallWindow">[docs]</a><span class="k">class</span> <span class="nc">BallWindow</span><span class="p">(</span><span class="n">AbstractSpatialWindow</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Create a :math:`d` dimensional ball window :math:`B(c, r)`, where :math:`c \in \mathbb{R}^d` and :math:`r&gt;0`.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Create a :math:`d` dimensional ball window :math:`B(c, r)`, where :math:`c \in \mathbb{R}^d` and :math:`r&gt;0`.</span>
 
 <span class="sd">    .. todo::</span>
 
@@ -173,7 +177,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="BallWindow.__init__"><a class="viewcode-back" href="../../spatial_windows.html#structure_factor.spatial_windows.BallWindow.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">center</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Initialize a :math:`d` dimensional ball window :math:`B(c, r)` from the prescribed ``center`` and ``radius``.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize a :math:`d` dimensional ball window :math:`B(c, r)` from the prescribed ``center`` and ``radius``.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            center (numpy.ndarray): Center :math:`c` of the ball.</span>
@@ -234,7 +238,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">center</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">radius</span> <span class="o">*</span> <span class="n">points</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="p">:</span><span class="n">d</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="BallWindow.to_spatstat_owin"><a class="viewcode-back" href="../../spatial_windows.html#structure_factor.spatial_windows.BallWindow.to_spatstat_owin">[docs]</a>    <span class="k">def</span> <span class="nf">to_spatstat_owin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Convert the object to a ``spatstat.geom.disc`` R object of type ``disc``, which is a subtype of ``owin``.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert the object to a ``spatstat.geom.disc`` R object of type ``disc``, which is a subtype of ``owin``.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            params (dict): Optional keyword arguments passed to ``spatstat.geom.disc``.</span>
@@ -253,7 +257,7 @@
         <span class="k">return</span> <span class="n">spatstat</span><span class="o">.</span><span class="n">geom</span><span class="o">.</span><span class="n">disc</span><span class="p">(</span><span class="n">radius</span><span class="o">=</span><span class="n">r</span><span class="p">,</span> <span class="n">centre</span><span class="o">=</span><span class="n">c</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="BallWindow.plot"><a class="viewcode-back" href="../../spatial_windows.html#structure_factor.spatial_windows.BallWindow.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Display the window on matplotlib `axis`.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Display the window on matplotlib `axis`.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            axis (plt.Axes, optional): Support axis of the plot. Defaults to None.</span>
@@ -278,7 +282,7 @@
 
 
 <div class="viewcode-block" id="UnitBallWindow"><a class="viewcode-back" href="../../spatial_windows.html#structure_factor.spatial_windows.UnitBallWindow">[docs]</a><span class="k">class</span> <span class="nc">UnitBallWindow</span><span class="p">(</span><span class="n">BallWindow</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Create a d-dimensional unit ball window :math:`B(c, r=1)`, where :math:`c \in \mathbb{R}^d`.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Create a d-dimensional unit ball window :math:`B(c, r=1)`, where :math:`c \in \mathbb{R}^d`.</span>
 
 <span class="sd">    .. note::</span>
 
@@ -286,7 +290,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="UnitBallWindow.__init__"><a class="viewcode-back" href="../../spatial_windows.html#structure_factor.spatial_windows.UnitBallWindow.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">center</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Initialize a :math:`d` dimensional unit ball window :math:`B(c, r=1)` from the prescribed ``center``.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize a :math:`d` dimensional unit ball window :math:`B(c, r=1)` from the prescribed ``center``.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            center (numpy.ndarray, optional): Center :math:`c` of the ball.</span>
@@ -295,7 +299,7 @@
 
 
 <div class="viewcode-block" id="BoxWindow"><a class="viewcode-back" href="../../spatial_windows.html#structure_factor.spatial_windows.BoxWindow">[docs]</a><span class="k">class</span> <span class="nc">BoxWindow</span><span class="p">(</span><span class="n">AbstractSpatialWindow</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Create a :math:`d` dimensional box window :math:`\prod_{i=1}^{d} [a_i, b_i]`.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Create a :math:`d` dimensional box window :math:`\prod_{i=1}^{d} [a_i, b_i]`.</span>
 
 <span class="sd">    .. todo::</span>
 
@@ -313,7 +317,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="BoxWindow.__init__"><a class="viewcode-back" href="../../spatial_windows.html#structure_factor.spatial_windows.BoxWindow.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bounds</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Initialize :math:`d` dimensional unit box window the prescibed  ``bounds[i, :]`` :math:`=[a_i, b_i]`.</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Initialize :math:`d` dimensional unit box window the prescibed  ``bounds[i, :]`` :math:`=[a_i, b_i]`.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            bounds (numpy.ndarray): :math:`d \times 2` array describing the bounds of the box.</span>
@@ -328,7 +332,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">bounds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the bounds decribing the BoxWindow.</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the bounds decribing the BoxWindow.</span>
 
 <span class="sd">        ``bounds[i, :]`` :math:`=[a_i, b_i]`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -360,7 +364,7 @@
         <span class="k">return</span> <span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">d</span><span class="p">,)</span> <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">d</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="BoxWindow.to_spatstat_owin"><a class="viewcode-back" href="../../spatial_windows.html#structure_factor.spatial_windows.BoxWindow.to_spatstat_owin">[docs]</a>    <span class="k">def</span> <span class="nf">to_spatstat_owin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Convert the object to a ``spatstat.geom.owin`` R object of type  ``owin``.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert the object to a ``spatstat.geom.owin`` R object of type  ``owin``.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            params (dict): Optional keyword arguments passed to ``spatstat.geom.owin``.</span>
@@ -382,7 +386,7 @@
         <span class="k">return</span> <span class="n">spatstat</span><span class="o">.</span><span class="n">geom</span><span class="o">.</span><span class="n">owin</span><span class="p">(</span><span class="n">xrange</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">yrange</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="BoxWindow.plot"><a class="viewcode-back" href="../../spatial_windows.html#structure_factor.spatial_windows.BoxWindow.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Display the window on matplotlib `axis`.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Display the window on matplotlib `axis`.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            axis (plt.Axes, optional): Support axis of the plot. Defaults to None.</span>
@@ -410,10 +414,10 @@
 
 
 <div class="viewcode-block" id="UnitBoxWindow"><a class="viewcode-back" href="../../spatial_windows.html#structure_factor.spatial_windows.UnitBoxWindow">[docs]</a><span class="k">class</span> <span class="nc">UnitBoxWindow</span><span class="p">(</span><span class="n">BoxWindow</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Create a :math:`d` dimensional unit box window :math:`\prod_{i=1}^{d} [c_i - \frac{1}{2}, c_i + \frac{1}{2}]` where :math:`c \in \mathbb{R}^d`.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Create a :math:`d` dimensional unit box window :math:`\prod_{i=1}^{d} [c_i - \frac{1}{2}, c_i + \frac{1}{2}]` where :math:`c \in \mathbb{R}^d`.&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="UnitBoxWindow.__init__"><a class="viewcode-back" href="../../spatial_windows.html#structure_factor.spatial_windows.UnitBoxWindow.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">center</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Initialize a :math:`d` dimensional unit box window :math:`\prod_{i=1}^{d} [c_i - \frac{1}{2}, c_i + \frac{1}{2}]`, i.e., a box window with length equal to 1 and prescribed ``center``, such that :math:`c_i=` ``center[i]``.</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Initialize a :math:`d` dimensional unit box window :math:`\prod_{i=1}^{d} [c_i - \frac{1}{2}, c_i + \frac{1}{2}]`, i.e., a box window with length equal to 1 and prescribed ``center``, such that :math:`c_i=` ``center[i]``.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            center (numpy.ndarray): Center :math:`c` of the box.</span>
@@ -426,7 +430,7 @@
 
 
 <div class="viewcode-block" id="check_cubic_window"><a class="viewcode-back" href="../../spatial_windows.html#structure_factor.spatial_windows.check_cubic_window">[docs]</a><span class="k">def</span> <span class="nf">check_cubic_window</span><span class="p">(</span><span class="n">window</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Check whether ``window`` is cubic.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check whether ``window`` is cubic.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        window (:py:class:`~structure_factor.spatial_windows.BoxWindow`): Window to be checked.</span>
@@ -445,7 +449,7 @@
 
 
 <div class="viewcode-block" id="check_centered_window"><a class="viewcode-back" href="../../spatial_windows.html#structure_factor.spatial_windows.check_centered_window">[docs]</a><span class="k">def</span> <span class="nf">check_centered_window</span><span class="p">(</span><span class="n">window</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Check whether ``window`` is centered at the origin.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check whether ``window`` is centered at the origin.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        window (:py:class:`~structure_factor.spatial_windows.AbstractSpatialWindow`): Window to be checked.</span>
@@ -469,7 +473,7 @@
 
 
 <div class="viewcode-block" id="subwindow_parameter_max"><a class="viewcode-back" href="../../spatial_windows.html#structure_factor.spatial_windows.subwindow_parameter_max">[docs]</a><span class="k">def</span> <span class="nf">subwindow_parameter_max</span><span class="p">(</span><span class="n">window</span><span class="p">,</span> <span class="n">subwindow_type</span><span class="o">=</span><span class="s2">&quot;BoxWindow&quot;</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the parameter i.e., lengthside (resp. radius) of the largest cubic (resp. ball)  subwindow of ``window``.</span>
 
 <span class="sd">    Args:</span>

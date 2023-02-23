@@ -27,11 +27,15 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../index.html" class="icon icon-home"> structure-factor
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            structure-factor
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -67,9 +71,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../index.html">Module code</a> &raquo;</li>
-      <li>structure_factor.tapers</li>
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">structure_factor.tapers</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -100,11 +104,11 @@
 
 
 <div class="viewcode-block" id="BartlettTaper"><a class="viewcode-back" href="../../tapers.html#structure_factor.tapers.BartlettTaper">[docs]</a><span class="k">class</span> <span class="nc">BartlettTaper</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Class representing the Bartlett tapering function.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class representing the Bartlett tapering function.&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="BartlettTaper.taper"><a class="viewcode-back" href="../../tapers.html#structure_factor.tapers.BartlettTaper.taper">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">taper</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">window</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Evaluate the Bartlett taper :math:`t(x, W)` at ``x`` given the rectangular ``window`` :math:`W`.</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Evaluate the Bartlett taper :math:`t(x, W)` at ``x`` given the rectangular ``window`` :math:`W`.</span>
 
 <span class="sd">        .. math::</span>
 
@@ -125,7 +129,7 @@
 
 <div class="viewcode-block" id="BartlettTaper.ft_taper"><a class="viewcode-back" href="../../tapers.html#structure_factor.tapers.BartlettTaper.ft_taper">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">ft_taper</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">window</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Evaluate the Fourier transform :math:`F[t(\cdot, W)](k)` of the taper :math:`t` (:py:meth:`~structure_factor.tapers.BartlettTaper.taper`).</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Evaluate the Fourier transform :math:`F[t(\cdot, W)](k)` of the taper :math:`t` (:py:meth:`~structure_factor.tapers.BartlettTaper.taper`).</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            k (numpy.ndarray): Array of size :math:`n \times d`, where :math:`d` is the ambient dimension and :math:`n` the number of points where the Fourier transform is evaluated.</span>
@@ -153,13 +157,13 @@
 
 
 <div class="viewcode-block" id="SineTaper"><a class="viewcode-back" href="../../tapers.html#structure_factor.tapers.SineTaper">[docs]</a><span class="k">class</span> <span class="nc">SineTaper</span><span class="p">:</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Class representing the sine tapering function.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Class representing the sine tapering function.&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="SineTaper.__init__"><a class="viewcode-back" href="../../tapers.html#structure_factor.tapers.SineTaper.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">p</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="SineTaper.taper"><a class="viewcode-back" href="../../tapers.html#structure_factor.tapers.SineTaper.taper">[docs]</a>    <span class="k">def</span> <span class="nf">taper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">window</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Evalute the sine taper :math:`t(x, W)` indexed by :py:attr:`~structure_factor.tapers.SineTaper.p` at ``x`` given the rectangular ``window`` :math:`W`.</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Evalute the sine taper :math:`t(x, W)` indexed by :py:attr:`~structure_factor.tapers.SineTaper.p` at ``x`` given the rectangular ``window`` :math:`W`.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            x (numpy.ndarray): Array of size :math:`n \times d`, where :math:`d` is the ambient dimension and :math:`n` the number of points where the tapering function is evaluated.</span>
@@ -182,7 +186,7 @@
         <span class="k">return</span> <span class="n">t</span></div>
 
 <div class="viewcode-block" id="SineTaper.ft_taper"><a class="viewcode-back" href="../../tapers.html#structure_factor.tapers.SineTaper.ft_taper">[docs]</a>    <span class="k">def</span> <span class="nf">ft_taper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">window</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Evaluate the Fourier transform :math:`F[t(\cdot, W)](k)` of the taper :math:`t` (:py:meth:`~structure_factor.tapers.SineTaper.taper`).</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Evaluate the Fourier transform :math:`F[t(\cdot, W)](k)` of the taper :math:`t` (:py:meth:`~structure_factor.tapers.SineTaper.taper`).</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            k (numpy.ndarray): Array of size :math:`n \times d`, where :math:`d` is the ambient dimension and :math:`n` the number of points where the Fourier transform is evaluated.</span>
@@ -221,7 +225,7 @@
 
 
 <div class="viewcode-block" id="multi_sinetaper_grid"><a class="viewcode-back" href="../../tapers.html#structure_factor.tapers.multi_sinetaper_grid">[docs]</a><span class="k">def</span> <span class="nf">multi_sinetaper_grid</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">p_component_max</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Given a class of taper `taper_p` of parameter `p` of :math:`\mathbb{R}^d`, return the list of taper `taper_p(p)` with :math:`p \in \{1, ..., P\}^d`.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Given a class of taper `taper_p` of parameter `p` of :math:`\mathbb{R}^d`, return the list of taper `taper_p(p)` with :math:`p \in \{1, ..., P\}^d`.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        d (int): Space dimension.</span>

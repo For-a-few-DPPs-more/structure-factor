@@ -27,11 +27,15 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../index.html" class="icon icon-home"> structure-factor
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            structure-factor
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -67,9 +71,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../index.html">Module code</a> &raquo;</li>
-      <li>structure_factor.transforms</li>
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">structure_factor.transforms</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -97,7 +101,7 @@
 
 
 <div class="viewcode-block" id="RadiallySymmetricFourierTransform"><a class="viewcode-back" href="../../transforms.html#structure_factor.transforms.RadiallySymmetricFourierTransform">[docs]</a><span class="k">class</span> <span class="nc">RadiallySymmetricFourierTransform</span><span class="p">:</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the Fourier transform of a radially symmetric function using the `correspondence with the Hankel transform &lt;https://en.wikipedia.org/wiki/Hankel_transform#Fourier_transform_in_d_dimensions_(radially_symmetric_case)&gt;`_.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the Fourier transform of a radially symmetric function using the `correspondence with the Hankel transform &lt;https://en.wikipedia.org/wiki/Hankel_transform#Fourier_transform_in_d_dimensions_(radially_symmetric_case)&gt;`_.</span>
 
 <span class="sd">    .. todo::</span>
 
@@ -105,7 +109,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="RadiallySymmetricFourierTransform.__init__"><a class="viewcode-back" href="../../transforms.html#structure_factor.transforms.RadiallySymmetricFourierTransform.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dimension</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Initialize the :math:`d`-dimensional Fourier transform.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the :math:`d`-dimensional Fourier transform.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            dimension (int): Dimension of the ambient space.</span>
@@ -118,7 +122,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">r_max</span> <span class="o">=</span> <span class="kc">None</span></div>
 
 <div class="viewcode-block" id="RadiallySymmetricFourierTransform.transform"><a class="viewcode-back" href="../../transforms.html#structure_factor.transforms.RadiallySymmetricFourierTransform.transform">[docs]</a>    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Evaluate the Fourier transform of the radially symmetric function :math:`f` at :math:`k` using the correspondence with the Hankel transform.</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Evaluate the Fourier transform of the radially symmetric function :math:`f` at :math:`k` using the correspondence with the Hankel transform.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            f (callable): Function to transform.</span>
@@ -205,7 +209,7 @@
 
 
 <div class="viewcode-block" id="HankelTransform"><a class="viewcode-back" href="../../transforms.html#structure_factor.transforms.HankelTransform">[docs]</a><span class="k">class</span> <span class="nc">HankelTransform</span><span class="p">:</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the `Hankel transform &lt;https://en.wikipedia.org/wiki/Hankel_transform&gt;`_ of order :math:`\nu`.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the `Hankel transform &lt;https://en.wikipedia.org/wiki/Hankel_transform&gt;`_ of order :math:`\nu`.</span>
 
 <span class="sd">    .. todo::</span>
 
@@ -219,7 +223,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="HankelTransform.__init__"><a class="viewcode-back" href="../../transforms.html#structure_factor.transforms.HankelTransform.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Initialize the Hankel transform with prescribed ``order``.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the Hankel transform with prescribed ``order``.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            order (int, optional): Order of the Hankel transform.</span>
@@ -229,7 +233,7 @@
 
 
 <div class="viewcode-block" id="HankelTransformBaddourChouinard"><a class="viewcode-back" href="../../transforms.html#structure_factor.transforms.HankelTransformBaddourChouinard">[docs]</a><span class="k">class</span> <span class="nc">HankelTransformBaddourChouinard</span><span class="p">(</span><span class="n">HankelTransform</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the Hankel transform, using the method of :cite:`BaCh15` considering that the input function is space-limited, i.e., :math:`f(r)=0` for :math:`r&gt;r_{max}`.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the Hankel transform, using the method of :cite:`BaCh15` considering that the input function is space-limited, i.e., :math:`f(r)=0` for :math:`r&gt;r_{max}`.</span>
 
 <span class="sd">    .. todo::</span>
 
@@ -242,7 +246,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="HankelTransformBaddourChouinard.__init__"><a class="viewcode-back" href="../../transforms.html#structure_factor.transforms.HankelTransformBaddourChouinard.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Initialize the Hankel transform with prescribed ``order``.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the Hankel transform with prescribed ``order``.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            order (int, optional): Order of the Hankel transform.</span>
@@ -253,7 +257,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">transformation_matrix</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Y in :cite:`BaCh15` Section 6.A</span></div>
 
 <div class="viewcode-block" id="HankelTransformBaddourChouinard.compute_transformation_parameters"><a class="viewcode-back" href="../../transforms.html#structure_factor.transforms.HankelTransformBaddourChouinard.compute_transformation_parameters">[docs]</a>    <span class="k">def</span> <span class="nf">compute_transformation_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r_max</span><span class="p">,</span> <span class="n">nb_points</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the parameters involved in the evaluation of the corresponding Hankel-type transform using the discretization scheme of :cite:`BaCh15`.</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the parameters involved in the evaluation of the corresponding Hankel-type transform using the discretization scheme of :cite:`BaCh15`.</span>
 
 <span class="sd">        The following object&#39;s attributes are defined</span>
 
@@ -278,7 +282,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">transformation_matrix</span> <span class="o">=</span> <span class="n">Y</span></div>
 
 <div class="viewcode-block" id="HankelTransformBaddourChouinard.transform"><a class="viewcode-back" href="../../transforms.html#structure_factor.transforms.HankelTransformBaddourChouinard.transform">[docs]</a>    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">interpolation_params</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the Hankel transform of ``f`` at ``k``.</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the Hankel transform of ``f`` at ``k``.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            f (callable): Function to be Hankel transformed.</span>
@@ -313,7 +317,7 @@
 
 
 <div class="viewcode-block" id="HankelTransformOgata"><a class="viewcode-back" href="../../transforms.html#structure_factor.transforms.HankelTransformOgata">[docs]</a><span class="k">class</span> <span class="nc">HankelTransformOgata</span><span class="p">(</span><span class="n">HankelTransform</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the Hankel transform using Ogata quadrature :cite:`Oga05`, (Section 5).</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the Hankel transform using Ogata quadrature :cite:`Oga05`, (Section 5).</span>
 
 <span class="sd">    .. todo::</span>
 
@@ -325,7 +329,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="HankelTransformOgata.__init__"><a class="viewcode-back" href="../../transforms.html#structure_factor.transforms.HankelTransformOgata.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Initialize the Hankel transform with prescribed ``order``.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the Hankel transform with prescribed ``order``.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            order (int, optional): Order of the Hankel transform. Defaults to 0.</span>
@@ -336,7 +340,7 @@
 <div class="viewcode-block" id="HankelTransformOgata.compute_transformation_parameters"><a class="viewcode-back" href="../../transforms.html#structure_factor.transforms.HankelTransformOgata.compute_transformation_parameters">[docs]</a>    <span class="k">def</span> <span class="nf">compute_transformation_parameters</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">r_max</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">nb_points</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="n">step_size</span><span class="o">=</span><span class="mf">0.01</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Compute the quadrature nodes and weights used by :cite:`Oga05` (Equation (5.2)), to evaluate the corresponding Hankel-type transform.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute the quadrature nodes and weights used by :cite:`Oga05` (Equation (5.2)), to evaluate the corresponding Hankel-type transform.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            r_max (float, optional): Maximum radius on which the input function :math:`f`, to be Hankel transformed, was evaluated before the interpolation. Parameter used to conclude a lower bound on :math:`k` on which :math:`f` to be Hankel transformed. Defaults to None.</span>
@@ -361,7 +365,7 @@
         <span class="k">return</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">weights</span></div>
 
 <div class="viewcode-block" id="HankelTransformOgata.transform"><a class="viewcode-back" href="../../transforms.html#structure_factor.transforms.HankelTransformOgata.transform">[docs]</a>    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the Hankel transform of ``f`` evaluated at ``k``, following the work of :cite:`Oga05` (Section 5).</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the Hankel transform of ``f`` evaluated at ``k``, following the work of :cite:`Oga05` (Section 5).</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            f (callable): Function to be Hankel transformed.</span>
@@ -389,12 +393,12 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_psi</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Change of variable used by :cite:`Oga05` Equation (5.1).&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Change of variable used by :cite:`Oga05` Equation (5.1).&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">t</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">tanh</span><span class="p">((</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sinh</span><span class="p">(</span><span class="n">t</span><span class="p">))</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_d_psi</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Change of variable used by :cite:`Oga05` Equation (5.1).&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Change of variable used by :cite:`Oga05` Equation (5.1).&quot;&quot;&quot;</span>
         <span class="n">threshold</span> <span class="o">=</span> <span class="mf">3.5</span>  <span class="c1"># threshold outside of which psi&#39; plateaus to -1, 1</span>
         <span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
         <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">threshold</span>

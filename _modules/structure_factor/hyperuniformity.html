@@ -27,11 +27,15 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../index.html" class="icon icon-home"> structure-factor
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            structure-factor
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -67,9 +71,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../index.html">Module code</a> &raquo;</li>
-      <li>structure_factor.hyperuniformity</li>
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">structure_factor.hyperuniformity</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -125,7 +129,7 @@
     <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the sample mean :math:`\bar{Z}` and the corresponding standard deviation :math:`\bar{\sigma}/\sqrt{N}` of the coupled sum estimator :math:`Z` of a point process using a list of :math:`N` PointPatterns and :math:`N` realizations from the random variable :math:`M`.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute the sample mean :math:`\bar{Z}` and the corresponding standard deviation :math:`\bar{\sigma}/\sqrt{N}` of the coupled sum estimator :math:`Z` of a point process using a list of :math:`N` PointPatterns and :math:`N` realizations from the random variable :math:`M`.</span>
 
 <span class="sd">    The test rejects the hyperuniformity hypothesis if the confidence interval :math:`CI[\mathbb{E}[Z]]= [\bar{Z} - z \bar{\sigma}/\sqrt{N}, \bar{Z} + z \bar{\sigma}/\sqrt{N}]`, doesn&#39;t contain zero, and vice-versa.</span>
 <span class="sd">    (See the multiscale hyperuniformity test in :cite:`HGBLR:22`).</span>
@@ -226,7 +230,7 @@
 
 
 <div class="viewcode-block" id="effective_hyperuniformity"><a class="viewcode-back" href="../../hyperuniformity.html#structure_factor.hyperuniformity.effective_hyperuniformity">[docs]</a><span class="k">def</span> <span class="nf">effective_hyperuniformity</span><span class="p">(</span><span class="n">k_norm</span><span class="p">,</span> <span class="n">sf</span><span class="p">,</span> <span class="n">k_norm_stop</span><span class="p">,</span> <span class="n">std_sf</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Evaluate the index :math:`H` of hyperuniformity of a point process using its structure factor ``sf``. If :math:`H&lt;10^{-3}` the corresponding point process is deemed effectively hyperuniform.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Evaluate the index :math:`H` of hyperuniformity of a point process using its structure factor ``sf``. If :math:`H&lt;10^{-3}` the corresponding point process is deemed effectively hyperuniform.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        k_norm (numpy.ndarray): Vector of wavenumbers (i.e. norms of wavevectors).</span>
@@ -303,7 +307,7 @@
 
 
 <div class="viewcode-block" id="hyperuniformity_class"><a class="viewcode-back" href="../../hyperuniformity.html#structure_factor.hyperuniformity.hyperuniformity_class">[docs]</a><span class="k">def</span> <span class="nf">hyperuniformity_class</span><span class="p">(</span><span class="n">k_norm</span><span class="p">,</span> <span class="n">sf</span><span class="p">,</span> <span class="n">k_norm_stop</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">std_sf</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Fit a polynomial :math:`y = c \cdot x^{\alpha}` to ``sf`` around zero. :math:`\alpha` is used to specify the possible class of hyperuniformity of the associated point process (as described below).</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Fit a polynomial :math:`y = c \cdot x^{\alpha}` to ``sf`` around zero. :math:`\alpha` is used to specify the possible class of hyperuniformity of the associated point process (as described below).</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        k_norm (numpy.ndarray): Vector of wavenumbers (i.e. norms of the wavevectors).</span>
@@ -361,7 +365,7 @@
 
 
 <div class="viewcode-block" id="bin_data"><a class="viewcode-back" href="../../hyperuniformity.html#structure_factor.hyperuniformity.bin_data">[docs]</a><span class="k">def</span> <span class="nf">bin_data</span><span class="p">(</span><span class="n">k_norm</span><span class="p">,</span> <span class="n">sf</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Split ``k_norm`` into sub-intervals (or bins) and evaluate, over each sub-interval, the mean and the standard deviation of the corresponding values in ``sf``.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Split ``k_norm`` into sub-intervals (or bins) and evaluate, over each sub-interval, the mean and the standard deviation of the corresponding values in ``sf``.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        k_norm (numpy.ndarray): Vector of wavenumbers (i.e. norms of wavevectors).</span>
@@ -398,7 +402,7 @@
 <div class="viewcode-block" id="subwindows"><a class="viewcode-back" href="../../hyperuniformity.html#structure_factor.hyperuniformity.subwindows">[docs]</a><span class="k">def</span> <span class="nf">subwindows</span><span class="p">(</span>
     <span class="n">window</span><span class="p">,</span> <span class="n">subwindows_type</span><span class="o">=</span><span class="s2">&quot;BoxWindow&quot;</span><span class="p">,</span> <span class="n">param_0</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">param_max</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="kc">None</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Create a list of cubic (or ball)-shaped subwindows of a father window, with the associated minimum allowed wavevectors (or wavenumbers).</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a list of cubic (or ball)-shaped subwindows of a father window, with the associated minimum allowed wavevectors (or wavenumbers).</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        window (:py:class:`~structure_factor.spatial_windows.AbstractSpatialWindow`): Father window.</span>
@@ -437,7 +441,7 @@
 <span class="c1"># todo doc</span>
 <span class="c1"># todo clarify x_max</span>
 <span class="k">def</span> <span class="nf">_fit</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">std</span><span class="p">,</span> <span class="n">function</span><span class="p">,</span> <span class="n">x_max</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Fit ``function`` using `scipy.scipy.optimize.curve_fit &lt;https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.curve_fit.html&gt;`_.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fit ``function`` using `scipy.scipy.optimize.curve_fit &lt;https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.curve_fit.html&gt;`_.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        function (callable): Function to fit.</span>

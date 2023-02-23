@@ -27,11 +27,15 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../index.html" class="icon icon-home"> structure-factor
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            structure-factor
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -67,9 +71,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../index.html">Module code</a> &raquo;</li>
-      <li>structure_factor.pair_correlation_function</li>
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">structure_factor.pair_correlation_function</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -100,7 +104,7 @@
 
 
 <div class="viewcode-block" id="estimate"><a class="viewcode-back" href="../../pair_correlation_function.html#structure_factor.pair_correlation_function.estimate">[docs]</a><span class="k">def</span> <span class="nf">estimate</span><span class="p">(</span><span class="n">point_pattern</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;fv&quot;</span><span class="p">,</span> <span class="n">install_spatstat</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Estimate the pair correlation function (pcf) of a point process encapsulated in ``point_pattern`` (only for stationary isotropic point processes of :math:`\mathbb{R}^2`). The available methods are the methods ``spastat.core.pcf_ppp`` and ``spastat.core.pcf_fv`` of the `R` package `spatstat &lt;https://github.com/spatstat/spatstat&gt;`_.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Estimate the pair correlation function (pcf) of a point process encapsulated in ``point_pattern`` (only for stationary isotropic point processes of :math:`\mathbb{R}^2`). The available methods are the methods ``spastat.core.pcf_ppp`` and ``spastat.core.pcf_fv`` of the `R` package `spatstat &lt;https://github.com/spatstat/spatstat&gt;`_.</span>
 
 <span class="sd">    .. warning::</span>
 
@@ -109,7 +113,7 @@
 <span class="sd">    Args:</span>
 <span class="sd">        point_pattern (:py:class:`~structure_factor.point_pattern.PointPattern`): Realization of the underlying point process.</span>
 
-<span class="sd">        method (str, optional): Trigger the use of the routine `pcf.ppp &lt;https://www.rdocumentation.org/packages/spatstat/versions/1.64-1/topics/pcf.ppp&gt;`_ or `pcf.fv &lt;https://www.rdocumentation.org/packages/spatstat.core/versions/2.3-1/topics/pcf.fv&gt;`_ according to the value ``&quot;ppp&quot;`` or ``&quot;fv&quot;``. These 2 methods approximate the pair correlation function of a point process from one realization encapsulated in ``point_pattern``. For more details see :cite:`Rbook15`. Defaults to ``&quot;fv&quot;``.</span>
+<span class="sd">        method (str, optional): Trigger the use of the routine `pcf.ppp &lt;https://www.rdocumentation.org/packages/spatstat.explore/versions/3.0-6/topics/pcf.ppp&gt;`_ or `pcf.fv &lt;https://www.rdocumentation.org/packages/spatstat.explore/versions/3.0-6/topics/pcf.fv&gt;`_ according to the value ``&quot;ppp&quot;`` or ``&quot;fv&quot;``. These 2 methods approximate the pair correlation function of a point process from one realization encapsulated in ``point_pattern``. For more details see :cite:`Rbook15`. Defaults to ``&quot;fv&quot;``.</span>
 
 <span class="sd">        install_spatstat (bool, optional): If ``True``, the `R` package `spatstat &lt;https://github.com/spatstat/spatstat&gt;`_  will be automatically updated or installed (if not present) on your local machine, see also `spatstat-interface &lt;https://github.com/For-a-few-DPPs-more/spatstat-interface&gt;`_. Note that this requires the installation of the `R programming language &lt;https://cran.r-project.org/&gt;`_.</span>
 
@@ -118,16 +122,16 @@
 
 <span class="sd">            - if ``method = &quot;ppp&quot;``</span>
 
-<span class="sd">                - keyword arguments of `spastat.core.pcf.ppp &lt;https://rdrr.io/cran/spatstat.core/man/pcf.ppp.html&gt;`_, ex: r, correction ...</span>
+<span class="sd">                - keyword arguments of `spastat.explore.pcf.ppp &lt;https://www.rdocumentation.org/packages/spatstat.explore/versions/3.0-6/topics/pcf.ppp&gt;`_, ex: r, correction ...</span>
 
 <span class="sd">            - if ``method = &quot;fv&quot;``</span>
 
-<span class="sd">                - **Kest** = dict(keyword arguments of `spastat.core.Kest &lt;https://rdrr.io/github/spatstat/spatstat.core/man/Kest.html&gt;`_), ex: rmax ...</span>
+<span class="sd">                - **Kest** = dict(keyword arguments of `spastat.explore.Kest &lt;https://www.rdocumentation.org/packages/spatstat.explore/versions/3.0-6/topics/Kest&gt;`_), ex: rmax ...</span>
 
-<span class="sd">                - **fv** = dict(keyword arguments of `spastat.core.pcf.fv &lt;https://rdrr.io/cran/spatstat.core/man/pcf.fv.html&gt;`_), ex: method, spar ...</span>
+<span class="sd">                - **fv** = dict(keyword arguments of `spastat.explore.pcf.fv &lt;https://www.rdocumentation.org/packages/spatstat.explore/versions/3.0-6/topics/pcf.fv&gt;`_), ex: method, spar ...</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        pandas.DataFrame: output of `spatstat.core.pcf.ppp &lt;https://www.rdocumentation.org/packages/spatstat.core/versions/2.1-2/topics/pcf.ppp&gt;`_ or `spatsta.core.pcf.fv &lt;https://www.rdocumentation.org/packages/spatstat.core/versions/2.1-2/topics/pcf.fv&gt;`_. The first column of the DataFrame is the set of radii on which the pair correlation function was approximated. The others correspond to the approximated pair correlation function with different edge corrections.</span>
+<span class="sd">        pandas.DataFrame: output of `spastat.explore.pcf.ppp &lt;https://www.rdocumentation.org/packages/spatstat.explore/versions/3.0-6/topics/pcf.ppp&gt;`_ or `spastat.explore.pcf.fv &lt;https://www.rdocumentation.org/packages/spatstat.explore/versions/3.0-6/topics/pcf.fv&gt;`_. The first column of the DataFrame is the set of radii on which the pair correlation function was approximated. The others correspond to the approximated pair correlation function with different edge corrections.</span>
 
 <span class="sd">    Example:</span>
 <span class="sd">        .. plot:: code/pair_correlation_function/estimate_pcf.py</span>
@@ -155,9 +159,9 @@
     <span class="k">assert</span> <span class="n">point_pattern</span><span class="o">.</span><span class="n">dimension</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">method</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;ppp&quot;</span><span class="p">,</span> <span class="s2">&quot;fv&quot;</span><span class="p">)</span>
 
-    <span class="c1"># core, geom and other subpackages are updated if install_spatstat</span>
+    <span class="c1"># explore, geom and other subpackages are updated if install_spatstat</span>
     <span class="n">spatstat</span> <span class="o">=</span> <span class="n">SpatstatInterface</span><span class="p">(</span><span class="n">update</span><span class="o">=</span><span class="n">install_spatstat</span><span class="p">)</span>
-    <span class="n">spatstat</span><span class="o">.</span><span class="n">import_package</span><span class="p">(</span><span class="s2">&quot;core&quot;</span><span class="p">,</span> <span class="s2">&quot;geom&quot;</span><span class="p">,</span> <span class="n">update</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">spatstat</span><span class="o">.</span><span class="n">import_package</span><span class="p">(</span><span class="s2">&quot;explore&quot;</span><span class="p">,</span> <span class="s2">&quot;geom&quot;</span><span class="p">,</span> <span class="n">update</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
     <span class="n">data</span> <span class="o">=</span> <span class="n">point_pattern</span><span class="o">.</span><span class="n">convert_to_spatstat_ppp</span><span class="p">()</span>
 
@@ -165,7 +169,7 @@
         <span class="n">r</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">r</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
             <span class="n">params</span><span class="p">[</span><span class="s2">&quot;r&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">robjects</span><span class="o">.</span><span class="n">vectors</span><span class="o">.</span><span class="n">FloatVector</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
-        <span class="n">pcf</span> <span class="o">=</span> <span class="n">spatstat</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">pcf_ppp</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span>
+        <span class="n">pcf</span> <span class="o">=</span> <span class="n">spatstat</span><span class="o">.</span><span class="n">explore</span><span class="o">.</span><span class="n">pcf_ppp</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span>
 
     <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;fv&quot;</span><span class="p">:</span>
         <span class="n">params_Kest</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Kest&quot;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">())</span>
@@ -173,9 +177,9 @@
         <span class="k">if</span> <span class="n">Kest_r</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">Kest_r</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
             <span class="n">params_Kest</span><span class="p">[</span><span class="s2">&quot;r&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">robjects</span><span class="o">.</span><span class="n">vectors</span><span class="o">.</span><span class="n">FloatVector</span><span class="p">(</span><span class="n">Kest_r</span><span class="p">)</span>
 
-        <span class="n">k_ripley</span> <span class="o">=</span> <span class="n">spatstat</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">Kest</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">params_Kest</span><span class="p">)</span>
+        <span class="n">k_ripley</span> <span class="o">=</span> <span class="n">spatstat</span><span class="o">.</span><span class="n">explore</span><span class="o">.</span><span class="n">Kest</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">params_Kest</span><span class="p">)</span>
         <span class="n">params_fv</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;fv&quot;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">())</span>
-        <span class="n">pcf</span> <span class="o">=</span> <span class="n">spatstat</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">pcf_fv</span><span class="p">(</span><span class="n">k_ripley</span><span class="p">,</span> <span class="o">**</span><span class="n">params_fv</span><span class="p">)</span>
+        <span class="n">pcf</span> <span class="o">=</span> <span class="n">spatstat</span><span class="o">.</span><span class="n">explore</span><span class="o">.</span><span class="n">pcf_fv</span><span class="p">(</span><span class="n">k_ripley</span><span class="p">,</span> <span class="o">**</span><span class="n">params_fv</span><span class="p">)</span>
 
     <span class="n">pcf_pd</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">pcf</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">pcf</span><span class="o">.</span><span class="n">names</span><span class="p">)</span>
     <span class="n">pcf_pd</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="s2">&quot;theo&quot;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -196,7 +200,7 @@
     <span class="n">extrapolate_with_one</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="o">**</span><span class="n">params</span>
 <span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Interpolate and then extrapolate the evaluation ``pcf_r`` of the pair correlation function (pcf) ``r``.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Interpolate and then extrapolate the evaluation ``pcf_r`` of the pair correlation function (pcf) ``r``.</span>
 
 <span class="sd">    The interpolation is performed with `scipy.interpolate.interp1d &lt;https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html&gt;`_.</span>
 
@@ -256,7 +260,7 @@
 
 <span class="c1">#! todo add example in the doc</span>
 <div class="viewcode-block" id="plot"><a class="viewcode-back" href="../../pair_correlation_function.html#structure_factor.pair_correlation_function.plot">[docs]</a><span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="n">pcf_dataframe</span><span class="p">,</span> <span class="n">exact_pcf</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">file_name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Plot the columns of ``pcf_dataframe`` with respect to the column ``pcf_dataframe[&quot;r&quot;]``.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Plot the columns of ``pcf_dataframe`` with respect to the column ``pcf_dataframe[&quot;r&quot;]``.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        pcf_dataframe (pandas.DataFrame): DataFrame to be visualized. Typically the output of :py:meth:`~structure_factor.structure_factor.StructureFactor.estimate`.</span>
@@ -292,7 +296,7 @@
 
 
 <span class="k">def</span> <span class="nf">_extrapolate_pcf</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">pcf_r</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Interpolate pcf_r for x=&lt;r_max and set to 1 for x&gt;r_max.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Interpolate pcf_r for x=&lt;r_max and set to 1 for x&gt;r_max.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        x (numpy.ndarray): Points on which the pair correlation function is to be evaluated.</span>

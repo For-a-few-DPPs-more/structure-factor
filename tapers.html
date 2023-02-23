@@ -31,11 +31,15 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="index.html" class="icon icon-home"> structure-factor
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            structure-factor
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -71,8 +75,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Tapers</li>
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Tapers</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/For-a-few-DPPs-more/structure-factor/blob/main/docs/tapers.rst" class="fa fa-github"> Edit on GitHub</a>
       </li>
@@ -94,13 +98,13 @@
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyTaper</span><span class="p">:</span>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">taper</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">window</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;A taper is a function supported on a window.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;A taper is a function supported on a window.&quot;&quot;&quot;</span>
         <span class="n">taper</span> <span class="o">=</span> <span class="o">...</span>  <span class="c1"># The taper</span>
         <span class="k">return</span> <span class="n">taper</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">ft_taper</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">window</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;The Fourier transform of the taper.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The Fourier transform of the taper.&quot;&quot;&quot;</span>
         <span class="n">ft</span> <span class="o">=</span> <span class="o">...</span>  <span class="c1"># Fourier transform of the taper</span>
         <span class="k">return</span> <span class="n">ft</span>
 </pre></div>
