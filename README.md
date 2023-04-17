@@ -164,15 +164,15 @@ Finally, we compared numerically the accuracy of the estimators.
 
 ### Citation
 
-If you use `structure-factor`, please consider citing it with this piece of BibTeX:
+If `structure-factor` has been significant in your research, and you would like to acknowledge the project in your academic publication, please consider citing it with this piece of BibTeX:
 
   ```bash
   @article{HGBLR:22,
-    arxivid = {2203.08749},
-    journal = {arXiv preprint},
+    journal = {Statistics and Computing},
     author  = {Hawat, Diala and Gautier, Guillaume and Bardenet, R{\'{e}}mi and Lachi{\`{e}}ze-Rey, Rapha{\"{e}}l},
-    note    = {arXiv: 2203.08749},
+    number  = {33},
+    volume  = {61},
     title   = {On estimating the structure factor of a point process, with applications to hyperuniformity},
-    year    = {2022},
+    year    = {2023},
   }
   ```
