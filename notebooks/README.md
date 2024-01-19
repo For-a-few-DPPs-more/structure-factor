@@ -1,9 +1,9 @@
 # Notebooks
 
-## Run a notebook remotely
+<!-- ## Run a notebook remotely
 
 - `tutorial_structure_factor.ipynb` [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/For-a-few-DPPs-more/structure-factor/blob/main/notebooks/tutorial_structure_factor.ipynb)
-
+-->
 ## Run a notebook locally
 
 It is suggested you clone the repository and get the latest version of the source code
