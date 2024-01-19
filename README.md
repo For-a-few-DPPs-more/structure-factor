@@ -6,7 +6,7 @@
 [![docs-page](https://img.shields.io/badge/docs-latest-blue)](https://for-a-few-dpps-more.github.io/structure-factor/)
 [![PyPi version](https://badgen.net/pypi/v/structure-factor/)](https://pypi.org/project/structure-factor/)
 [![Python >=3.7.1,<3.10](https://img.shields.io/badge/python->=3.7.1,<3.10-blue.svg)](https://www.python.org/downloads/release/python-371/)
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](./notebooks)
+<!-- [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](./notebooks) -->
 
 > Approximate the structure factor of a stationary point process, test its hyperuniformity, and identify its class of hyperuniformity.
 
